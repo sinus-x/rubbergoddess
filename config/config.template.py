@@ -47,7 +47,7 @@ class Config:
     log_channel = 692627997383065630     # bot-log
     bot_dev_channel = 692486570875551745 # bot-development
     vote_room = 692625063068827668       # bot-vote
-    bot_room = 692484824769757265        # bot
+    bot_room = 692484824769757265        # bot-spam
     mod_room = 691304580285202524        # mods
 
     allowed_channels = [

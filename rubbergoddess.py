@@ -172,7 +172,7 @@ async def missing_arg_error(ctx, error):
     if isinstance(error, commands.errors.MissingRequiredArgument):
         await ctx.send('Missing argument.')
 
-database.base.metadata.drop_all(database.db)
+#database.base.metadata.drop_all(database.db)
 database.base.metadata.create_all(database.db)
 session.commit()  # Making sure
 

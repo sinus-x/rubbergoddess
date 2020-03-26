@@ -1,6 +1,7 @@
 import random
 import smtplib
-import ssl
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import string
 
 import discord
@@ -19,19 +20,32 @@ class Verification(BaseFeature):
         super().__init__(bot)
         self.repo = user_repository
 
-    def send_mail(self, receiver_email, contents):
-        password = Config.email_pass
-        port = Config.email_smtp_port
-        sender_email = Config.email_addr
-        subject = "FEKT Discord verifikace"
-        mail_content = 'Subject: {}\n\n{}'.format(subject,
-                                                  contents)
+    def send_mail(self, receiver_email, code):
+        h = utils.git_hash()[:7]
+        cleartext = """\
+Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
+- Rubbergoddess (hash {h})
+""".format(code=code, h=h)
+        richtext = """\
+<body style="background-color:#54355F; margin:0; padding:20px;text-align:center;">
+    <img src="https://cdn.discordapp.com/avatars/673134999402184734/d61a5db0c50470804b3980567da3a1a0.png?size=128" alt="Rubbergoddess" style="margin:0 auto;border-radius:100%;border:5px solid white;">
+    <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;">Tvůj verifikační kód pro <span style="font-weight:bold;">VUT FEKT</span> Discord server:</p>
+    <p style="color:#45355F;font-family:Arial,Verdana,sans-serif;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:0;">{code}</p>
+    <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
+</body>""".format(code=code, h=h)
 
-        with smtplib.SMTP(Config.email_smtp_server, port) as server:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "VUT FEKT verification code"
+        msg['From'] = Config.email_addr
+        msg['To'] = receiver_email
+        msg.attach(MIMEText(cleartext, 'plain'))
+        msg.attach(MIMEText(richtext, 'html'))
+
+        with smtplib.SMTP(Config.email_smtp_server, Config.email_smtp_port) as server:
             server.starttls()
             server.ehlo()
-            server.login(Config.email_name, password)
-            server.sendmail(sender_email, receiver_email, mail_content)
+            server.login(Config.email_addr, Config.email_pass)
+            server.send_message(msg)
 
     async def has_role(self, user, role_name):
         if type(user) == Member:
@@ -46,10 +60,7 @@ class Verification(BaseFeature):
         code = ''.join(random.choices(string.ascii_uppercase +
                                       string.digits, k=8))
 
-        email_message = Config.default_prefix + "verify "
-        email_message += login + " " + code
-
-        self.send_mail(login + mail_postfix, email_message)
+        self.send_mail(login + mail_postfix, code)
 
         # Save the newly generated code into the database
         self.repo.save_sent_code(login, code)
