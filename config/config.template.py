@@ -1,12 +1,12 @@
 class Config:
     key = ''
     verification_role = ''
-    admin_id = 0  # for mention in case of false verification
-    guild_id = 0
+    admin_id = 663836659816857601 # for mention in case of false verification
+    guild_id = 691291706116538429 # FEKT VUT
 
     # Verification email sender settings
-    email_name = 'toasterrubbergod@gmail.com'
-    email_addr = 'toasterrubbergod@gmail.com'
+    email_name = ''
+    email_addr = ''
     email_smtp_server = 'smtp.gmail.com'
     email_smtp_port = 465
     email_pass = ''
@@ -30,32 +30,38 @@ class Config:
 
     # Karma
     karma_ban_role_id = -1
-    #                        add-roles         back-to-school
-    karma_banned_channels = [591384273051975683, 622202824377237504]
+    karma_banned_channels = [
+        692086702382121010, # add-programme
+        692626097669406720, # add-subjects
+        692084608778633217  # add-roles
+    ]
 
     # Voting
     vote_minimum = 20
     vote_minutes = 2
 
     # Pin emoji count to pin
-    pin_count = 20
+    pin_count = 5
 
     # Special channel IDs
-    log_channel = 531058805233156096
-    bot_dev_channel = 597009137905303552
-    vote_room = 461544375105749003
-    bot_room = 461549842896781312
-    mod_room = 505679727936143361
+    log_channel = 692627997383065630     # bot-log
+    bot_dev_channel = 692486570875551745 # bot-development
+    vote_room = 692625063068827668       # bot-vote
+    bot_room = 692484824769757265        # bot
+    mod_room = 691304580285202524        # mods
 
     allowed_channels = [
-            bot_room,
-            bot_dev_channel
+        bot_room,
+        bot_dev_channel
     ]
 
     # String constants
     role_string = 'Role\n'
-    #                add-roles         back-to-school        summertime-madness
-    role_channels = [591384273051975683, 622202824377237504, 623290691774316574]
+    role_channels = [
+        692086702382121010, # add-programme
+        692626097669406720, # add-subjects
+        692084608778633217  # add-roles
+    ]
     hug_emojis = ["<:peepoHug:600435649786544151>",
                   "<:peepoHugger:602052621007585280>",
                   "<:huggers:602823825880514561>", "(っ˘̩╭╮˘̩)っ", "(っ´▽｀)っ",
@@ -78,47 +84,61 @@ class Config:
 
     # Subjects shortcuts
     subjects = [
-        "ags", "alg", "ial", "iale", "ais", "ian", "mba", "ja3", "ja3", "ban1",
-        "ban2", "ban3", "ban3", "ban4", "ban4", "ja6d", "aeu", "aeu", "ait",
-        "ait", "fce", "pdd", "evo", "iach", "avs", "ata", "ibp", "ibt", "ibte",
-        "baya", "bms", "bza", "ibs", "bis", "bid", "bif", "iv108", "bin",
-        "bio", "csoa", "icuz", "icul", "czsa", "ids", "idse", "ds_2p", "fit",
-        "idf1", "idf2", "iddl", "iddz", "iw1", "c3p", "dfaa", "dip", "dipa",
-        "dipe", "idm", "dja", "eip", "iel", "eud", "evd", "fik", "ifan",
-        "fad", "ifj", "ifje", "flp", "fvs", "ifai", "ifea", "fyo", "fyoe",
-        "ifs", "gzn", "gja", "gjae", "gux", "gmu", "gal", "gale", "hsc",
-        "hsce", "iis", "ivg", "isd", "sin", "wap", "iipd", "iipd", "ijc",
-        "krd", "kko", "knn", "kry", "ikpt", "ikpt", "ilg", "sla", "log",
-        "imae", "mpr", "hko", "hko", "hvr", "hvr", "ima1", "mld", "mat",
-        "mate", "imf", "ism", "mmat", "imk", "imie", "imp", "impe", "ims",
-        "msd", "mid", "mmd", "mzd", "tid", "mtia", "mog", "mul", "mule",
-        "imu", "ini", "inc", "ince", "cpsa", "inp", "nav", "nsb", "inm",
-        "ios", "opd", "opm", "dpc-tk1", "orid", "prl", "pcg", "ipso", "ipso",
-        "ipz", "ipze", "pgd", "pgr", "pgre", "ippk", "ipk", "ipke", "pova",
-        "isc", "ipma", "pbi", "iam", "pgpa", "ili", "ipa", "pbd", "pcs",
-        "pdb", "pdbe", "pis", "pks", "pos", "pnd", "ccs", "ivs", "ppp", "prm",
-        "prm", "pds", "pdse", "toi", "ipp", "ippe", "ptd", "ips", "isu",
-        "iw5", "iza", "ip1", "pp1", "ip1e", "ip1e", "pp1e", "pp1e", "ip2",
-        "pp2", "ip2e", "ip3", "pma", "pdi", "rgd", "ret", "ret", "roba",
-        "isp", "itt", "sep", "sepa", "itte", "sepe", "ics", "icp", "ija",
-        "ijae", "smt", "ivh", "sem", "iw2", "iss", "snt", "c2p", "i1c", "isa",
-        "iw3", "isj", "sloa", "sfc", "js1", "js1", "iiz", "sav", "msp", "dma1",
-        "ssp", "sri", "sur", "sod", "spp", "rtsa", "itp", "i2c", "tin", "tine",
-        "tad", "pftd", "the", "tkd", "tjd", "its", "tama", "itu", "itue",
-        "itw", "itwe", "ity", "iuce", "upa", "sui", "iumi", "ius", "uxia",
-        "vdd", "viza", "apd", "vkd", "ivp1", "ivp2", "vpd", "sid", "zzd",
-        "vyf", "vge", "vgee", "vnd", "vnv", "vnve", "vypa", "vin", "zpx",
-        "zpx", "izep", "izfi", "zha", "izma", "izg", "izp", "izu", "izue",
-        "zzn", "jad", "jad", "izsl", "zpo", "zpoe", "zpd", "zpja", "asd",
-        "zre", "zree"
+        "aabs", "aana", "abce", "abch", "abej", "abin", "abse", "absn", "aeti",
+        "afy1", "afy2", "afyz", "akme", "aldt", "ama1", "ama2", "ama3", "ambm",
+        "amod", "amol", "aobf", "apbi", "apbt", "apfy", "aprg", "aprp", "arad",
+        "aspe", "asta", "astd", "atpt", "auin", "aumi", "axbe", "azlp", "azsl",
+        "azso", "bpc-ae1", "bpc-ae2", "bpc-aeb", "bpc-aei", "bpc-aey",
+        "bpc-ah1", "bpc-ah2", "bpc-akr", "bpc-ald", "bpc-an4", "bpc-ana",
+        "bpc-anh", "bpc-ant", "bpc-ars", "bpc-asi", "bpc-aud", "bpc-b2m",
+        "bpc-b2t", "bpc-b2ta", "bpc-b2tb", "bpc-bap", "bpc-bca", "bpc-bcm",
+        "bpc-bcs", "bpc-bct", "bpc-bcta", "bpc-bctb", "bpc-bps", "bpc-cpt",
+        "bpc-crt", "bpc-czs", "bpc-dak", "bpc-dbs", "bpc-de1", "bpc-de2",
+        "bpc-dee", "bpc-dhu", "bpc-dio", "bpc-diz", "bpc-dja", "bpc-dma",
+        "bpc-dph", "bpc-dts", "bpc-eee", "bpc-ek1", "bpc-ek2", "bpc-el1",
+        "bpc-el2", "bpc-ela", "bpc-elea", "bpc-elf", "bpc-elp", "bpc-els",
+        "bpc-emc", "bpc-emv1", "bpc-emv2", "bpc-epb", "bpc-epr", "bpc-es2",
+        "bpc-esb", "bpc-esi", "bpc-esm", "bpc-eso", "bpc-esop", "bpc-esos",
+        "bpc-esot", "bpc-fy1", "bpc-fy1a", "bpc-fy1b", "bpc-fy2", "bpc-fy2b",
+        "bpc-fys", "bpc-hel", "bpc-hnm", "bpc-ht1", "bpc-ht2", "bpc-hws",
+        "bpc-i40", "bpc-ic1", "bpc-ic2", "bpc-int", "bpc-iot", "bpc-ise",
+        "bpc-jez", "bpc-kez", "bpc-kkr", "bpc-kom", "bpc-kpn", "bpc-ks1",
+        "bpc-ks2", "bpc-los", "bpc-ma1", "bpc-ma1b", "bpc-ma2", "bpc-ma3",
+        "bpc-mam", "bpc-man", "bpc-mas", "bpc-mds", "bpc-mep", "bpc-mic",
+        "bpc-mko", "bpc-mms", "bpc-mod", "bpc-mp2", "bpc-mpe", "bpc-mps",
+        "bpc-mtp", "bpc-mts", "bpc-mva", "bpc-mvaa", "bpc-mve", "bpc-mvt",
+        "bpc-nao", "bpc-ndi", "bpc-neo", "bpc-nez", "bpc-nkzt", "bpc-nrp",
+        "bpc-nsp", "bpc-oko", "bpc-ook", "bpc-oop", "bpc-ozu", "bpc-pc1m",
+        "bpc-pc1s", "bpc-pc1t", "bpc-pc2m", "bpc-pc2s", "bpc-pc2t", "bpc-pce",
+        "bpc-pds", "bpc-pga", "bpc-pis", "bpc-pna", "bpc-pne", "bpc-pp1",
+        "bpc-pp2", "bpc-ppa", "bpc-ppc", "bpc-ppk", "bpc-prm", "bpc-prp",
+        "bpc-psd", "bpc-psm", "bpc-pst", "bpc-pts", "bpc-rbm", "bpc-reb",
+        "bpc-rep", "bpc-res", "bpc-rjm", "bpc-rr1", "bpc-rr2", "bpc-rsk",
+        "bpc-rzb", "bpc-sas", "bpc-sasb", "bpc-sbp", "bpc-scp", "bpc-sep",
+        "bpc-si1", "bpc-si2", "bpc-sks", "bpc-sni", "bpc-sos", "bpc-sp1",
+        "bpc-sp2", "bpc-spc", "bpc-spe", "bpc-spr", "bpc-ste", "bpc-stt",
+        "bpc-sue", "bpc-sze", "bpc-szz", "bpc-tde", "bpc-tin", "bpc-tmb",
+        "bpc-tmo", "bpc-trb", "bpc-tuz", "bpc-tvt", "bpc-udp", "bpc-uhb",
+        "bpc-uhr", "bpc-uin", "bpc-uip", "bpc-ukb", "bpc-ume", "bpc-up1a",
+        "bpc-up2a", "bpc-usk", "bpc-vee", "bpc-vel", "bpc-vft", "bpc-via",
+        "bpc-vmp", "bpc-vs1", "bpc-vs2", "bpc-xup", "bpc-zda", "bpc-zes",
+        "bpc-zha", "bpc-zin", "bpc-zkr", "bpc-zkz", "bpc-zsg", "bpc-zsw",
+        "bpc-zsy", "bpc-zvs", "hac1", "hac2", "hana", "hars", "hbap", "hben",
+        "hbts", "hcat", "hcpp", "hdan", "hdom", "hefe", "heit", "hele", "hesb",
+        "heso", "heva", "hfyz", "hgrs", "hils", "hjdt", "hksy", "hma1", "hmpr",
+        "hmtd", "hmva", "hodp", "hpa1", "hpa2", "hpa3", "hpa4", "hpa5", "hpa6",
+        "hpop", "hpra", "hrre", "hsca", "hsep", "hsis", "htrs", "hvde",
+        "xpc-ca1", "xpc-ca2", "xpc-ca3", "xpc-ca4", "xpc-ca5", "xpc-mw1",
+        "xpc-mw2", "xpc-mw3", "xpc-mw4"
     ]
-    reviews_forbidden_roles = ["MUNI", "Host"]
+    reviews_forbidden_roles = ["VUT", "MUNI", "GUEST"]
 
     # How many people to print if the limit argument is not specified
     rolehoarder_default_limit = 10
 
+    # NOT USED
     # Arcas
-    arcas_id = 140547421733126145
+    arcas_id = 0
     arcas_delay = 24
 
     # uh oh
