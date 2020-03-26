@@ -48,6 +48,8 @@ libpq-dev
 Install `docker` and `docker-compose` for your system (will vary from system to system)
 and run `docker` (`systemctl start docker.service`)
 
+If neccesray, add the current user to the docker group with `sudo usermod -aG docker $USER`.
+
 ```
 docker build .
 ```
