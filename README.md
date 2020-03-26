@@ -1,10 +1,11 @@
-# Discord bot for the VUT FIT discord server
+# Rubbergoddess
+
+![Rubbergoddess](https://repository-images.githubusercontent.com/238499660/ec829180-4868-11ea-948c-199e65da1347)
 
 ## About
 
-This bot manages the verification process, karma and a bunch of simple commands
-on our VUT FIT discord server. Since most of the features are custom-made I
-wouldn't recommend using it for different servers.
+This FEKTwide Discord bot manages the verification process, karma and some other
+commands on VUT FEKT Discord server. It is a younger sister of [Rubbergod](https://github.com/Toaster192/rubbergod).
 
 ## Installing and running the bot
 
@@ -14,8 +15,8 @@ Prerequisites:
 
 Start by cloning the repo:
 ```
-git clone https://github.com/toaster192/rubbergod.git
-cd rubbergod
+git clone https://github.com/sinus-x/rubbergoddess.git
+cd rubbergoddess
 ```
 
 ## Local setup (not recommended)
@@ -27,7 +28,7 @@ pip3 install -r requirements.txt
 
 Run the bot (might want to use `nohup` or something):
 ```
-python3 rubbergod.py
+python3 rubbergoddess.py
 ```
 
 #### Required/recommended packages (apt)
@@ -59,15 +60,12 @@ docker-compose down && docker-compose up --build
 
 ## Authors
 
-* [Matthew](https://github.com/matejsoroka)
-* [Toaster](https://github.com/toaster192)
-* [Fpmk](https://github.com/TheGreatfpmK)
-* [_peter](https://github.com/xdragu01)
-* [Urumasi](https://github.com/Urumasi)
-* [Leo](https://github.com/ondryaso)
+Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x).
 
-**Pull requests, issues or tips for new features are very much welcome!**
+Original authors include [Toaster](https://github.com/toaster192), [Matthew](https://github.com/matejsoroka), [Fpmk](https://github.com/TheGreatfpmK), [peter](https://github.com/xdragu01), [Urumasi](https://github.com/Urumasi) or [Leo](https://github.com/ondryaso).
 
 ## License
 
 This project is licensed under the GNU GPL v.3 License.
+
+Rubbergoddess image is a CC0 photography by Peter Sjo hosted on [Unsplash.com](https://unsplash.com/photos/Nxy-6QwGMzA).

@@ -56,12 +56,12 @@ class Acl(commands.Cog):
                                          name="Mod")
         if self.mod in ctx.author.roles:
             rules = acl_repo.list_rule()
-            rubbergod = discord.utils.get(guild.roles,
-                                          name="Rubbergod")
+            rubbergoddess = discord.utils.get(guild.roles,
+                                          name="Rubbergoddess")
             rules = [rule.acl_snowflake for rule in rules]
-            output = "Role pod rubbergodem co nejsou v ACL:\n```\n"
+            output = "Role pod Rubbergoddess co nejsou v ACL:\n```\n"
             for role in guild.roles:
-                if str(role.id) not in rules and role < rubbergod:
+                if str(role.id) not in rules and role < rubbergoddess:
                     output += str(role.name) + "  -  " + str(role.id) + "\n"
 
             await ctx.send(output + "\n```")

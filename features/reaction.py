@@ -26,8 +26,8 @@ class Reaction(BaseFeature):
         self.review = Review(bot)
 
     def make_embed(self, page):
-        embed = discord.Embed(title="Rubbergod",
-                              description="Nejlepší a nejúžasnější bot ever.",
+        embed = discord.Embed(title="Rubbergoddess",
+                              description="Rubbergod? Tss.",
                               color=0xeee657)
 
         prefix = Config.default_prefix
@@ -49,8 +49,8 @@ class Reaction(BaseFeature):
 
         embed.set_footer(text=f"Page {page} | Commit {utils.git_hash()}",
                          icon_url="https://cdn.discordapp.com/avatars/"
-                                  "560917571663298568/b93e8c1e93c2d18b"
-                                  "fbd226a0b614cf57.png?size=32")
+                                  "673134999402184734/d61a5db0c5047080"
+                                  "4b3980567da3a1a0.png?size=32")
         return embed
 
     # Returns list of role names and emotes that represent them
@@ -168,7 +168,7 @@ class Reaction(BaseFeature):
                 users = [x for y in users for x in y]
                 if users.count(member) > 1:
                     await message.remove_reaction(emoji, member)
-        elif message.embeds and message.embeds[0].title == "Rubbergod":
+        elif message.embeds and message.embeds[0].title == "Rubbergoddess":
             if emoji in ["◀", "▶"]:
                 page = int(message.embeds[0].footer.text[5])
                 next_page = self.pagination_next(emoji, page,

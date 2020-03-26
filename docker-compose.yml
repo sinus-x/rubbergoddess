@@ -7,7 +7,7 @@ services:
             - postgres_data:/var/lib/postgresql/data/
     bot:
         build: .
-        command: python rubbergod.py
+        command: python rubbergoddess.py
         depends_on:
             - db
 

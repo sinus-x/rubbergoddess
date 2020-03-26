@@ -12,11 +12,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 
--- Dumping database structure for rubbergod
-CREATE DATABASE IF NOT EXISTS `rubbergod` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
-USE `rubbergod`;
+-- Dumping database structure for rubbergoddess
+CREATE DATABASE IF NOT EXISTS `rubbergoddess` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+USE `rubbergoddess`;
 
--- Dumping structure for table rubbergod.bot_karma
+-- Dumping structure for table rubbergoddess.bot_karma
 CREATE TABLE IF NOT EXISTS `bot_karma` (
   `member_id` varchar(30) NOT NULL,
   `karma` int(11) DEFAULT NULL,
@@ -32,32 +32,32 @@ CREATE TABLE IF NOT EXISTS `bot_karma_giving` (
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dumping data for table rubbergod.bot_karma: ~0 rows (approximately)
+-- Dumping data for table rubbergoddess.bot_karma: ~0 rows (approximately)
 /*!40000 ALTER TABLE `bot_karma` DISABLE KEYS */;
 /*!40000 ALTER TABLE `bot_karma` ENABLE KEYS */;
 
--- Dumping structure for table rubbergod.bot_karma_emoji
+-- Dumping structure for table rubbergoddess.bot_karma_emoji
 CREATE TABLE IF NOT EXISTS `bot_karma_emoji` (
   `emoji_id` varchar(50) UNIQUE,
   `value` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dumping data for table rubbergod.bot_karma_emoji: ~0 rows (approximately)
+-- Dumping data for table rubbergoddess.bot_karma_emoji: ~0 rows (approximately)
 /*!40000 ALTER TABLE `bot_karma_emoji` DISABLE KEYS */;
 /*!40000 ALTER TABLE `bot_karma_emoji` ENABLE KEYS */;
 
--- Dumping structure for table rubbergod.bot_permit
+-- Dumping structure for table rubbergoddess.bot_permit
 CREATE TABLE IF NOT EXISTS `bot_permit` (
   `login` varchar(64) UNIQUE,
   `discord_name` text,
   `discord_id` text,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dumping data for table rubbergod.bot_permit: ~0 rows (approximately)
+-- Dumping data for table rubbergoddess.bot_permit: ~0 rows (approximately)
 /*!40000 ALTER TABLE `bot_permit` DISABLE KEYS */;
 /*!40000 ALTER TABLE `bot_permit` ENABLE KEYS */;
 
--- Dumping structure for table rubbergod.bot_valid_persons
+-- Dumping structure for table rubbergoddess.bot_valid_persons
 CREATE TABLE IF NOT EXISTS `bot_valid_persons` (
   `login` varchar(64) UNIQUE,
   `name` text,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `bot_people_to_remind` (
   FOREIGN KEY (`reminderID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dumping data for table rubbergod.bot_valid_persons: ~0 rows (approximately)
+-- Dumping data for table rubbergoddess.bot_valid_persons: ~0 rows (approximately)
 /*!40000 ALTER TABLE `bot_valid_persons` DISABLE KEYS */;
 /*!40000 ALTER TABLE `bot_valid_persons` ENABLE KEYS */;
 

@@ -39,7 +39,7 @@ for line in database_new:
         database.append(line)
 
 f = open("database_difference.sql", "w")
-f.write("USE `rubbergod`;\n")
+f.write("USE `rubbergoddess`;\n")
 f.write("INSERT INTO `bot_valid_persons`(\n")
 f.write("`login`,\n")
 f.write("`name`,\n")

@@ -5,8 +5,8 @@ ENV PYTHONUNBUFFERED 1
 RUN apk update && apk add gcc git postgresql-dev musl-dev tzdata
 ENV TZ=Europe/Prague
 
-VOLUME /rubbergod
-WORKDIR /rubbergod
+VOLUME /rubbergoddess
+WORKDIR /rubbergoddess
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt --user

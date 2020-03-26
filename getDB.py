@@ -17,7 +17,7 @@ for line in f:
         continue
 f.close()
 f = open("database.sql", "w")
-f.write("USE `rubbergod`;\n")
+f.write("USE `rubbergoddess`;\n")
 f.write("INSERT INTO `bot_valid_persons`(\n")
 f.write("`login`,\n")
 f.write("`name`,\n")

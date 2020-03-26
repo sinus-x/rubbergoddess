@@ -192,7 +192,7 @@ class Messages:
     review_add_denied = "{user}, na přidání hodnocení předmětu nemáš právo."
     subject_format = prefix + "subject [add, remove] [zkratka předmětu]"
 
-    pr_meme = "https://github.com/Toaster192/rubbergod/pulls"
+    pr_meme = "https://github.com/sinus-x/rubbergoddess/pulls"
     uhoh = "uh oh"
     question = ["<:what:638277508541710337>",
                 "<:wuuut:484470874003472394>",

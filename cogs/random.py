@@ -5,7 +5,7 @@ import utils
 from cogs import room_check
 from logic import roll_dice, rng
 
-# Logic (functionality used by features or rubbergod directly)
+# Logic (functionality used by features or rubbergoddess directly)
 roll_dice = roll_dice.Roll()
 rng = rng.Rng()
 
