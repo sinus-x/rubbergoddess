@@ -25,11 +25,11 @@ class Messages:
     acl_add_user = "Vyjimka pro uzivatele pridana."
     acl_edit_user = "Vyjimka pro uzivatele upravena."
     acl_del_user = "Vyjimka pro uzivatele smazana."
-    no_such_command = "Takový příkaz neznám. <:sadcat:576171980118687754>"
-    spamming = "{user} Nespamuj tolik <:sadcat:576171980118687754>"
+    no_such_command = "Takový příkaz neznám. <:sadcat:691413849978568724>"
+    spamming = "{user} Nespamuj tolik <:sadcat:691413849978568724>"
     insufficient_rights = "{user}, na použití tohoto příkazu nemáš právo."
     vote_room_only = "Tohle funguje jen v {room}."
-    bot_room_redirect = "{user} <:sadcat:576171980118687754> 👉 " \
+    bot_room_redirect = "{user} <:sadcat:691413849978568724> 👉 " \
                         "<#{bot_room}>\n"
     message_link_prefix = 'https://discordapp.com/channels/' \
                           + str(config.Config.guild_id) + '/'
@@ -37,8 +37,7 @@ class Messages:
     uhoh_counter = "{uhohs} uh ohs od spuštění."
     uptime_message = "Up since:  `{boottime}`\nUptime:\t`{uptime}`"
 
-    kachna_grillbot = "O Kachnu se teď stará Grillbot " \
-                      "<:feelsWowMan:493152294712377354> Použij $kachna."
+    kachna_grillbot = "<:wutcat:692496001155596388> Běž na FIT."
 
     karma = "{user} Karma uzivatele `{target}` je: **{karma}** " \
             "(**{order}.**)\nA rozdal:\n" \
@@ -117,7 +116,7 @@ class Messages:
                               "({admin} pls)."
     verify_send_format = "Očekávám jeden argument. " \
                          "Správný formát: " \
-                         "`" + prefix + "getcode [FIT login, " \
+                         "`" + prefix + "getcode [FEKT login, " \
                          "ve tvaru xlogin00, nebo MUNI UCO]`"
     verify_send_dumbshit = "{user} Tvůj login. {emote}"
     verify_send_success = "{user} Kód byl odeslán na tvůj mail " \
@@ -129,10 +128,10 @@ class Messages:
                             "prošel ({admin} pls)."
     verify_verify_format = "Očekávám dva argumenty. " \
                            "Správný formát:\n" \
-                           "`" + prefix + "verify [FIT login nebo " \
+                           "`" + prefix + "verify [FEKT login nebo " \
                            "MUNI UCO] [kód]`\n" \
                            "Pro získání kódu použij\n`" +\
-                           prefix + "getcode [FIT login, ve tvaru " \
+                           prefix + "getcode [FEKT login, ve tvaru " \
                            "xlogin00, nebo MUNI UCO]`"
     verify_verify_dumbshit = "{user} Kód, " \
                              "který ti přišel na mail. {emote}"
@@ -141,8 +140,9 @@ class Messages:
                            "jsi shady (Year: {year})"
     verify_verify_success = "{user} Gratuluji, byl jsi verifikován!"
     verify_post_verify_info = "Channely dobre navstivit po verifikaci:\n" \
-                              "<#591384273051975683> Pro pridani roli\n" \
-                              "<#489461089432633346> Pro pravidla " \
+                              "<#692086702382121010> Pro pridani oboru/skoly\n" \
+                              "<#692084608778633217> Pro pridani roli\n" \
+                              "<#692084651849678938> Pro pravidla " \
                               "a dalsi info"
 
     verify_verify_not_found = "{user} Login nenalezen nebo " \
@@ -160,8 +160,8 @@ class Messages:
                                                 "Pokud jsou vyplněny, bot pošle po uplynutí zprávu o výsledku," \
                                                 "když ho mezitím nikdo nevypne. " \
                                                 "Indikace výherné možnosti přežije i vypnutí."
-    vote_not_emoji = "{not_emoji} není emoji. <:sadcat:576171980118687754>"
-    vote_bad_date = "Hlasování může skončit jen v budoucnosti. <:objection:490989324125470720>"
+    vote_not_emoji = "{not_emoji} není emoji. <:sadcat:691413849978568724>"
+    vote_bad_date = "Hlasování může skončit jen v budoucnosti. <:objection:692102817120518145>"
 
     vote_winning = "Prozatím vyhrává možnost {winning_emoji} „{winning_option}“ s {votes} hlasy."
     vote_winning_multiple = "Prozatím vyhrávají možnosti {winning_emojis} s {votes} hlasy."
@@ -170,7 +170,7 @@ class Messages:
 
     vote_result = "V hlasování „{question}“ vyhrála možnost {winning_emoji} „{winning_option}“ s {votes} hlasy."
     vote_result_multiple = "V hlasování „{question}“ vyhrály možnosti {winning_emojis} s {votes} hlasy."
-    vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. <:sadcat:576171980118687754>"
+    vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. <:sadcat:691413849978568724>"
 
     review_format = prefix + "reviews [add, remove, zkratka předmětu]"
     review_add_format = prefix + "reviews add {ZkratkaPredmetu} {Tier (0-4, 0 je TOP)} (anonym - Pokud si přejete anonymní příspěvek) (VolitelnyText)\n" \
@@ -194,9 +194,7 @@ class Messages:
 
     pr_meme = "https://github.com/sinus-x/rubbergoddess/pulls"
     uhoh = "uh oh"
-    question = ["<:what:638277508541710337>",
-                "<:wuuut:484470874003472394>",
-                "nech mě <:sadcat:576171980118687754>"]
+    question = ["nech mě <:sadcat:691413849978568724>"]
     
     name_day_cz = "Dnes má svátek {name}"
     name_day_sk = "Dnes má meniny {name}"

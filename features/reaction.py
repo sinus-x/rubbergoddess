@@ -32,7 +32,7 @@ class Reaction(BaseFeature):
 
         prefix = Config.default_prefix
 
-        embed.add_field(name="Autor", value="Toaster#1111")
+        embed.add_field(name="Autor", value="Cauchy#5244")
 
         # Shows the number of servers the bot is member of.
         embed.add_field(name="Počet serverů s touto instancí bota",
