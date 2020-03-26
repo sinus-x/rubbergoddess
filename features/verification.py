@@ -15,7 +15,6 @@ from repository.user_repo import UserRepository
 
 
 class Verification(BaseFeature):
-
     def __init__(self, bot: Bot, user_repository: UserRepository):
         super().__init__(bot)
         self.repo = user_repository
@@ -25,7 +24,7 @@ class Verification(BaseFeature):
         port = Config.email_smtp_port
         context = ssl.create_default_context()
         sender_email = Config.email_addr
-        subject = "FIT Discord verifikace"
+        subject = "FEKT Discord verifikace"
         mail_content = 'Subject: {}\n\n{}'.format(subject,
                                                   contents)
 
@@ -80,7 +79,7 @@ class Verification(BaseFeature):
                 # Check if the login we got is in the database
                 if self.repo.has_unverified_login(login):
                     await self.gen_code_and_send_mail(message, login,
-                                                      "@stud.fit.vutbr.cz")
+                                                      "@stud.feec.vutbr.cz")
                 else:
                     await message.channel.send(utils.fill_message("verify_send_not_found",
                                                user=message.author.id, admin=Config.admin_id))
@@ -139,6 +138,7 @@ class Verification(BaseFeature):
         except discord.errors.Forbidden:
             return
 
+    #TODO
     @staticmethod
     def transform_year(raw_year: str):
         """Parses year string originally from /etc/passwd into a role name"""
