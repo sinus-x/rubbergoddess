@@ -340,8 +340,9 @@ class Reaction(BaseFeature):
         role = discord.utils.get(guild.roles, name=target)
         if role is not None:
             #HACK does not use db
+            #TODO remove role if False
             allowed = True
-            if role >= member.roles[-1]:
+            if role >= discord.utils.get(guild.roles, name='---'):
                 # do not allow privilege escalation
                 allowed = False
             if allowed:
@@ -352,6 +353,7 @@ class Reaction(BaseFeature):
                 bot_room = self.bot.get_channel(Config.bot_room)
                 await bot_room.send(utils.fill_message("role_add_denied",
                                     user=member.id, role=role.name))
+                return False
         else:
             try:
                 channel = discord.utils.get(guild.channels, id=int(target))
@@ -388,6 +390,7 @@ class Reaction(BaseFeature):
                 bot_room = self.bot.get_channel(Config.bot_room)
                 await bot_room.send(utils.fill_message("role_remove_denied",
                                         user=member.id, role=role.name))
+                return False
 
         else:
             try:
