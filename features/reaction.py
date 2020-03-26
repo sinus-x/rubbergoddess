@@ -28,7 +28,7 @@ class Reaction(BaseFeature):
     def make_embed(self, page):
         embed = discord.Embed(title="Rubbergoddess",
                               description="Rubbergod? Tss.",
-                              color=0xeee657)
+                              color=0x54355F)
 
         prefix = Config.default_prefix
 
@@ -337,12 +337,17 @@ class Reaction(BaseFeature):
 
     # Adds a role for user based on reaction
     async def add_role_on_reaction(self, target, member, channel, guild):
-        role = discord.utils.get(guild.roles,
-                                 name=target)
+        role = discord.utils.get(guild.roles, name=target)
         if role is not None:
-            if acl.get_perms(member.id, member.top_role,
-                             role.id, guild.roles):
+            #HACK does not use db
+            allowed = True
+            if role >= member.roles[-1]:
+                # do not allow privilege escalation
+                allowed = False
+            if allowed:
                 await member.add_roles(role)
+                return True
+
             else:
                 bot_room = self.bot.get_channel(Config.bot_room)
                 await bot_room.send(utils.fill_message("role_add_denied",
@@ -372,14 +377,18 @@ class Reaction(BaseFeature):
         role = discord.utils.get(guild.roles,
                                  name=target)
         if role is not None:
-            if role in member.roles:
-                if acl.get_perms(member.id, member.top_role,
-                                 role.id, guild.roles):
-                    await member.remove_roles(role)
-                else:
-                    bot_room = self.bot.get_channel(Config.bot_room)
-                    await bot_room.send(utils.fill_message("role_remove_denied",
+            #HACK does not use db
+            allowed = True
+            if role >= member.roles[-1]:
+                allowed = False
+            if allowed:
+                await member.remove_roles(role)
+                return True
+            else:
+                bot_room = self.bot.get_channel(Config.bot_room)
+                await bot_room.send(utils.fill_message("role_remove_denied",
                                         user=member.id, role=role.name))
+
         else:
             try:
                 channel = discord.utils.get(guild.channels, id=int(target))

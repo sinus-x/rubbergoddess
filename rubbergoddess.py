@@ -102,7 +102,7 @@ def load_subjects():
 
 @bot.event
 async def on_ready():
-    """If RGod is ready"""
+    """If Rubbergoddess is ready"""
     print("Ready")
 
     await presence.set_presence()
@@ -172,10 +172,12 @@ async def missing_arg_error(ctx, error):
     if isinstance(error, commands.errors.MissingRequiredArgument):
         await ctx.send('Missing argument.')
 
+database.base.metadata.drop_all(database.db)
 database.base.metadata.create_all(database.db)
 session.commit()  # Making sure
 
-# load_subjects()
+#load_dump()
+#load_subjects()
 
 for extension in config.extensions:
     bot.load_extension(f'cogs.{extension}')

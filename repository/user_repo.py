@@ -2,6 +2,7 @@ from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.verification import Permit, Valid_person
 
+from pprint import pprint
 
 class UserRepository(BaseRepository):
     # Status 0 = verified
@@ -10,8 +11,7 @@ class UserRepository(BaseRepository):
 
     def save_sent_code(self, login: str, code: str):
         """Updates a specified login with a new verification code"""
-        person = session.query(Valid_person).\
-            filter(Valid_person.login == login).one_or_none()
+        person = session.query(Valid_person).filter(Valid_person.login == login).one_or_none()
         person.code = code
         person.status = 2
         session.commit()
@@ -20,28 +20,24 @@ class UserRepository(BaseRepository):
         """"Inserts login with discord name into database"""
         session.add(Permit(login=login, discord_ID=discord_id))
 
-        person = session.query(Valid_person).\
-            filter(Valid_person.login == login).one_or_none()
+        person = session.query(Valid_person).filter(Valid_person.login == login).one_or_none()
         person.status = 0
 
         session.commit()
 
     def has_unverified_login(self, login: str):
         """"Checks if there's a login """
-        query = session.query(Valid_person).\
-            filter(Valid_person.login == login, Valid_person.status == 1).\
-            one_or_none()
+        query = session.query(Valid_person).filter(
+            Valid_person.login == login, Valid_person.status == 1).one_or_none()
         return True if query is not None else False
 
     def get_user(self, login: str, status: int = 2):
         """"Finds login from database"""
-        user = session.query(Valid_person).\
-            filter(Valid_person.login == login,
-                   Valid_person.status == status).\
-            one_or_none()
+        user = session.query(Valid_person).filter(
+            Valid_person.login == login, Valid_person.status == status).one_or_none()
         return user
 
-    def add_user(self, login: str, year: str, status: int = 1):
+    def add_user(self, login: str, almamater: str, status: int = 1):
         """"Finds login from database"""
-        session.add(Valid_person(login=login, year=year, status=status))
+        session.add(Valid_person(login=login, year=almamater, status=status))
         session.commit()

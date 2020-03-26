@@ -5,9 +5,7 @@ from repository.acl_repo import AclRepository
 
 messages = messages.Messages
 
-
 class Acl(BaseFeature):
-
     def __init__(self, acl_repository: AclRepository):
         self.acl_repo = acl_repository
 
