@@ -112,38 +112,33 @@ class Messages:
               "https://wiki.roll20.net/Dice_Reference\n" \
               "Implementovány featury podle obsahu: **8. Drop/Keep**"
 
-    verify_already_verified = "{user} Už jsi byl verifikován " \
-                              "({admin} pls)."
-    verify_send_format = "Očekávám jeden argument. " \
-                         "Správný formát: " \
-                         "`" + prefix + "getcode [FEKT login, " \
-                         "ve tvaru xlogin00, nebo MUNI UCO]`"
+    verify_already_verified = "{user} Už jsi byl verifikován ({admin} pls)."
+    verify_send_format = "Ocekavam jeden argument. Správný formát:\n" \
+                           "`{}verify [xlogin00|UČO]`".format(prefix)
     verify_send_dumbshit = "{user} Tvůj login. {emote}"
-    verify_send_success = "{user} Kód byl odeslán na tvůj mail " \
-                          "({mail})!\n" \
-                          "Pro verifikaci použij: " \
+    verify_send_success = "{user} Kód byl odeslán na tvůj mail " + \
+                          "({mail})!\n" + \
+                          "Pro verifikaci použij: " + \
                           "`" + prefix + "verify [login] [kód]`"
-    verify_send_not_found = "{user} Login nenalezen " \
-                            "nebo jsi už tímhle krokem " \
-                            "prošel ({admin} pls)."
-    verify_verify_format = "Očekávám dva argumenty. " \
-                           "Správný formát:\n" \
-                           "`" + prefix + "verify [FEKT login nebo " \
-                           "MUNI UCO] [kód]`\n" \
-                           "Pro získání kódu použij\n`" +\
-                           prefix + "getcode [FEKT login, ve tvaru " \
-                           "xlogin00, nebo MUNI UCO]`"
-    verify_verify_dumbshit = "{user} Kód, " \
-                             "který ti přišel na mail. {emote}"
+    verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
+    verify_verify_format = "Očekávám tři argumenty. " + \
+                           "Správný formát:\n" + \
+                           "`{}verify [xlogin00|UČO]`\n\n".format(prefix) + \
+                           "Pro získání kódu použij příkaz podle příslušnosti:\n" + \
+                           "`{}getcode [FEKT] [xlogin00]`\n".format(prefix) + \
+                           "`{}getcode [VUT]  [xlogin00]`\n".format(prefix) + \
+                           "`{}getcode [MUNI] [UČO]`\n".format(prefix) + \
+                           "`{}getcode jine host`".format(prefix)
+    verify_verify_dumbshit = "{user} Kód, který ti přišel na mail. {emote}"
     verify_verify_manual = "Čauec {user}, nechám {admin}, " \
                            "aby to udělal manuálně, " \
                            "jsi shady (Year: {year})"
-    verify_verify_success = "{user} Gratuluji, byl jsi verifikován!"
-    verify_post_verify_info = "Channely dobre navstivit po verifikaci:\n" \
-                              "<#692086702382121010> Pro pridani oboru/skoly\n" \
-                              "<#692084608778633217> Pro pridani roli\n" \
-                              "<#692084651849678938> Pro pravidla " \
-                              "a dalsi info"
+    verify_verify_success = "{user} Gratuluji k verifikaci!"
+    verify_post_verify_fekt = "Obor si zapiš v <#692086702382121010>\n" \
+                              "V <#692084608778633217> získáš další role pro zájmy\n" \
+                              "Obecné informace jsou v <#692084651849678938>."
+    verify_post_verify_guest = "V <#692084608778633217> získáš další role pro zájmy\n" \
+                              "Obecné informace jsou v <#692084651849678938>."
 
     verify_verify_not_found = "{user} Login nenalezen nebo " \
                               "jsi už tímhle krokem prošel " \
