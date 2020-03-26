@@ -1,10 +1,12 @@
-version: '3.7'
+version: '3.6'
 
 services:
     db:
         image: postgres:12-alpine
         volumes:
             - postgres_data:/var/lib/postgresql/data/
+        environment:
+            POSTGRES_HOST_AUTH_METHOD: "trust"
     bot:
         build: .
         command: python rubbergoddess.py
