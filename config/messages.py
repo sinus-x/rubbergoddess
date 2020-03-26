@@ -119,15 +119,15 @@ class Messages:
     verify_send_success = "{user} Kód byl odeslán na tvůj mail " + \
                           "({mail})!\n" + \
                           "Pro verifikaci použij: " + \
-                          "`" + prefix + "verify [login] [kód]`"
+                          "`" + prefix + "verify login kód`"
     verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_format = "Očekávám tři argumenty. " + \
                            "Správný formát:\n" + \
-                           "`{}verify [xlogin00|UČO]`\n\n".format(prefix) + \
+                           "`{}verify xlogin00/UČO`\n\n".format(prefix) + \
                            "Pro získání kódu použij příkaz podle příslušnosti:\n" + \
-                           "`{}getcode [FEKT] [xlogin00]`\n".format(prefix) + \
-                           "`{}getcode [VUT]  [xlogin00]`\n".format(prefix) + \
-                           "`{}getcode [MUNI] [UČO]`\n".format(prefix) + \
+                           "`{}getcode FEKT xlogin00`\n".format(prefix) + \
+                           "`{}getcode VUT  xlogin00`\n".format(prefix) + \
+                           "`{}getcode MUNI UČO`\n".format(prefix) + \
                            "`{}getcode jine host`".format(prefix)
     verify_verify_dumbshit = "{user} Kód, který ti přišel na mail. {emote}"
     verify_verify_manual = "Čauec {user}, nechám {admin}, " \
@@ -187,7 +187,7 @@ class Messages:
     review_add_denied = "{user}, na přidání hodnocení předmětu nemáš právo."
     subject_format = prefix + "subject [add, remove] [zkratka předmětu]"
 
-    pr_meme = "https://github.com/sinus-x/rubbergoddess/pulls"
+    pr_meme = "https://github.com/sinus-x/rubbergoddess/issues"
     uhoh = "uh oh"
     question = ["nech mě <:sadcat:691413849978568724>"]
     
