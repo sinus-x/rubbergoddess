@@ -219,6 +219,7 @@ class Verification(BaseFeature):
                 self.repo.save_verified(login, message.author.id)
 
                 await member.send(utils.fill_message("verify_verify_success", user=message.author.id))
+                guild = self.bot.get_guild(Config.guild_id)
                 fekt = discord.utils.get(guild.roles, name="FEKT")
                 if fekt in member.roles:
                     await member.send(Messages.verify_post_verify_fekt)
