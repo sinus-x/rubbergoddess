@@ -20,19 +20,27 @@ class Verification(BaseFeature):
         super().__init__(bot)
         self.repo = user_repository
 
-    def send_mail(self, receiver_email, code):
+    def send_mail(self, author, receiver_email, code):
+        user_name = author.name
+        user_img = author.avatar_url_as(static_format='jpg', size=32)
         h = utils.git_hash()[:7]
         cleartext = """\
 Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 - Rubbergoddess (hash {h})
 """.format(code=code, h=h)
         richtext = """\
-<body style="background-color:#54355F; margin:0; padding:20px;text-align:center;">
+<body style="background-color:#54355F;margin:0;text-align:center;">
+<div style="background-color:#54355F;margin:0;padding:20px;text-align:center;">
     <img src="https://cdn.discordapp.com/avatars/673134999402184734/d61a5db0c50470804b3980567da3a1a0.png?size=128" alt="Rubbergoddess" style="margin:0 auto;border-radius:100%;border:5px solid white;">
+    <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;font-size:24px;">
+        <img src="{user_img}" alt="" style="height:20px;width:20px;top:4px;margin-right:6px;border-radius:100%;border:2px solid white;display:inline;position:relative;"><span>{user_name}</span>
+    </p>
     <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;">Tvůj verifikační kód pro <span style="font-weight:bold;">VUT FEKT</span> Discord server:</p>
     <p style="color:#45355F;font-family:Arial,Verdana,sans-serif;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:0;">{code}</p>
     <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
-</body>""".format(code=code, h=h)
+</div>
+</body>""".format(code=code, h=h, user_img=user_img, user_name=user_name)
+
 
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "VUT FEKT verification code"
@@ -61,7 +69,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         code = ''.join(random.choices(string.ascii_uppercase +
                                       string.digits, k=8))
 
-        self.send_mail(login + mail_postfix, code)
+        self.send_mail(message.author, login + mail_postfix, code)
 
         # Save the newly generated code into the database
         self.repo.save_sent_code(login, code)
