@@ -43,9 +43,9 @@ class Karma(BaseFeature):
         message += '\n'
         message += utils.fill_message("karma_vote_info", delay=str(delay//60), minimum=str(cfg.vote_minimum))
         message = await channel.send(message)
-        await message.add_reaction("✅")
-        await message.add_reaction("❌")
+        await message.add_reaction("☑️")
         await message.add_reaction("0⃣")
+        await message.add_reaction("❎")
         await asyncio.sleep(delay)
 
         message = await channel.fetch_message(message.id)
@@ -55,9 +55,9 @@ class Karma(BaseFeature):
         neutral = 0
 
         for reaction in message.reactions:
-            if reaction.emoji == "✅":
+            if reaction.emoji == "☑️":
                 plus = reaction.count - 1
-            elif reaction.emoji == "❌":
+            elif reaction.emoji == "❎":
                 minus = reaction.count - 1
             elif reaction.emoji == "0⃣":
                 neutral = reaction.count - 1
@@ -74,23 +74,18 @@ class Karma(BaseFeature):
 
     async def emoji_vote_value(self, message):
         if len(message.content.split()) != 2:
-            await message.channel.send(
-                msg.karma_vote_format)
+            await message.channel.send(msg.karma_vote_format)
             return
 
         emojis = self.repo.get_all_emojis()
 
         for server_emoji in message.guild.emojis:
             if not server_emoji.animated:
-                e = list(
-                    filter(
-                        lambda x: test_emoji(x.emoji_ID, server_emoji),
-                        emojis))
+                e = list(filter(lambda x: test_emoji(x.emoji_ID, server_emoji), emojis))
 
                 if len(e) == 0:
                     self.repo.set_emoji_value(server_emoji, 0)
-                    vote_value = await self.emoji_process_vote(message.channel,
-                                                               server_emoji)
+                    vote_value = await self.emoji_process_vote(message.channel, server_emoji)
                     emoji = server_emoji  # Save for use outside loop
                     break
         else:

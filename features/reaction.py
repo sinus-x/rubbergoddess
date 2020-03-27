@@ -158,7 +158,7 @@ class Reaction(BaseFeature):
             else:
                 await message.remove_reaction(emoji, member)
         elif message.content.startswith(Messages.karma_vote_message_hack):
-            if emoji not in ["✅", "❌", "0⃣"]:
+            if emoji not in ["☑️", "❎", "0⃣"]:
                 await message.remove_reaction(emoji, member)
             else:
                 users = []
