@@ -114,16 +114,16 @@ class Messages:
 
     verify_already_verified = "{user} Už jsi byl verifikován ({admin} pls)."
     verify_send_format = "Ocekavam jeden argument. Správný formát:\n" \
-                           "`{}verify [xlogin00|UČO]`".format(prefix)
+                           "`{}verify xlogin00`".format(prefix)
     verify_send_dumbshit = "{user} Tvůj login. {emote}"
     verify_send_success = "{user} Kód byl odeslán na tvůj mail " + \
                           "({mail})!\n" + \
                           "Pro verifikaci použij: " + \
-                          "`" + prefix + "verify xlogin00/učo kód`"
+                          "`" + prefix + "verify xlogin00 kód`"
     verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_format = "Očekávám tři argumenty. " + \
                            "Správný formát:\n" + \
-                           "`{}verify xlogin00/UČO`\n\n".format(prefix) + \
+                           "`{}verify xlogin00`\n\n".format(prefix) + \
                            "Pro získání kódu použij příkaz podle příslušnosti:\n" + \
                            "`{}getcode FEKT xlogin00`\n".format(prefix) + \
                            "`{}getcode VUT  xlogin00`\n".format(prefix) + \
