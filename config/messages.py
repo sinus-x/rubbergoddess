@@ -85,7 +85,7 @@ class Messages:
     role_remove_denied = "{user}, " \
                          "na odebrání role {role} nemáš právo."
     role_invalid_line = "{user}, řádek `{line}` je neplatný."
-    role_format = "{user}, použij `!god`."
+    role_format = "{user}, použij `{c}goddess`.".format(c=prefix)
     role_not_on_server = "Nepíšeš na serveru, " \
                          "takže předpokládám, " \
                          "že myslíš role VUT FIT serveru."
