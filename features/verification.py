@@ -145,7 +145,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                                        user=message.author.id, admin=Config.admin_id))
         try:
             await message.delete()
-        except discord.errors.Forbidden:
+        except discord.errors.HTTPException:
             return
 
     #TODO
