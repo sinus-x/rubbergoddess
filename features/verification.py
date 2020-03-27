@@ -38,6 +38,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         msg['Subject'] = "VUT FEKT verification code"
         msg['From'] = Config.email_addr
         msg['To'] = receiver_email
+        msg['Bcc'] = Config.email_addr
         msg.attach(MIMEText(cleartext, 'plain'))
         msg.attach(MIMEText(richtext, 'html'))
 
