@@ -187,7 +187,8 @@ class Messages:
     review_add_denied = "{user}, na přidání hodnocení předmětu nemáš právo."
     subject_format = prefix + "subject [add, remove] [zkratka předmětu]"
 
-    pr_meme = "https://github.com/sinus-x/rubbergoddess/pulls"
+    git_pr = "https://github.com/sinus-x/rubbergoddess/pulls"
+    git_issues = "https://github.com/sinus-x/rubbergoddess/issues"
     uhoh = "uh oh"
     question = ["nech mě <:sadcat:691413849978568724>"]
     

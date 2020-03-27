@@ -32,7 +32,9 @@ class Meme(commands.Cog):
             await message.channel.send("uh oh")
             uhoh_counter += 1
         elif message.content == "PR":
-            await message.channel.send(messages.pr_meme)
+            await message.channel.send(messages.git_pr)
+        elif message.content == "🔧" or message.content == "\🔧":
+            await message.channel.send(messages.git_issues)
 
     @commands.command()
     async def uhoh(self, ctx):
