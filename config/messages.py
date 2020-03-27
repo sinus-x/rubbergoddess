@@ -119,7 +119,7 @@ class Messages:
     verify_send_success = "{user} Kód byl odeslán na tvůj mail " + \
                           "({mail})!\n" + \
                           "Pro verifikaci použij: " + \
-                          "`" + prefix + "verify login kód`"
+                          "`" + prefix + "verify xlogin00/učo kód`"
     verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_format = "Očekávám tři argumenty. " + \
                            "Správný formát:\n" + \
