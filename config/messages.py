@@ -4,9 +4,9 @@ from config import config
 class Messages:
     prefix = config.Config.default_prefix
 
-    server_warning = "Tohle funguje jen na VUT FIT serveru."
-    karma_get_missing = "Toaster pls, měls bordel v DB. Musel jsem za tebe uklidit."
-    missing_perms = "Na tohle nemas prava. {user}"
+    server_warning = "Tohle funguje jen na VUT FEKT serveru."
+    karma_get_missing = "Cauchy pls, byla špinavá databáze. Musela jsem za tebe uklidit."
+    missing_perms = "Na tohle nemáš prava. {user}"
     acl_help = "{user}, Pouziti:\n`!acl {{action}} {{table}} [args]`\n"\
                "action: add, edit, del nebo list\n"\
                "table: group, rule, role nebo user\n"\
@@ -25,19 +25,18 @@ class Messages:
     acl_add_user = "Vyjimka pro uzivatele pridana."
     acl_edit_user = "Vyjimka pro uzivatele upravena."
     acl_del_user = "Vyjimka pro uzivatele smazana."
+
     no_such_command = "Takový příkaz neznám. <:sadcat:691413849978568724>"
     spamming = "{user} Nespamuj tolik <:sadcat:691413849978568724>"
     insufficient_rights = "{user}, na použití tohoto příkazu nemáš právo."
     vote_room_only = "Tohle funguje jen v {room}."
-    bot_room_redirect = "{user} <:sadcat:691413849978568724> 👉 " \
-                        "<#{bot_room}>\n"
-    message_link_prefix = 'https://discordapp.com/channels/' \
-                          + str(config.Config.guild_id) + '/'
+    bot_room_redirect = "{user} <:sadcat:691413849978568724> 👉 <#{bot_room}>\n"
+    message_link_prefix = 'https://discordapp.com/channels/' + str(config.Config.guild_id) + '/'
 
     uhoh_counter = "{uhohs} uh ohs od spuštění."
     uptime_message = "Up since:  `{boottime}`\nUptime:\t`{uptime}`"
 
-    kachna_grillbot = "<:wutcat:692496001155596388> Běž na FIT."
+    kachna_grillbot = "<:wutcat:692496001155596388> Tady kachna není, běž na FIT."
 
     karma = "{user} Karma uzivatele `{target}` je: **{karma}** " \
             "(**{order}.**)\nA rozdal:\n" \
@@ -51,78 +50,56 @@ class Messages:
                         "Správný formát: `" + prefix + "karma vote`"
     karma_vote_message_hack = "Hlasování o karma ohodnocení emotu"
     karma_vote_message = karma_vote_message_hack + " {emote}"
-    karma_vote_info = "Hlasování skončí za **{delay}** " \
-                      "minut a minimální počet hlasů je " \
-                      "**{minimum}**."
-    karma_vote_result = "Výsledek hlasování o emotu {emote} " \
-                        "je {result}."
+    karma_vote_info = "Hlasování skončí za **{delay}** minut a minimální počet hlasů je **{minimum}**."
+    karma_vote_result = "Výsledek hlasování o emotu {emote} je {result}."
     karma_vote_notpassed = "Hlasovani o emotu {emote} neprošlo\n" \
-                           "Aspoň {minimum} hlasů potřeba."
+                           "Je potřeba alespoň {minimum} hlasů."
     karma_vote_allvoted = "Už se hlasovalo o všech emotech."
-    karma_revote_format = "Očekávám pouze formát: " \
-                          "`" + prefix + "karma revote [emote]`"
-    karma_emote_not_found = "Emote jsem na serveru nenašel."
+    karma_revote_format = "Očekávám pouze formát: `" + prefix + "karma revote [emote]`"
+    karma_emote_not_found = "Emote jsem na serveru nenašla."
     karma_get_format = "Použití:\n" \
-                       "`" + prefix + "karma get`: " \
-                       "vypíše všechny emoty s hodnotou.\n" \
-                       "`" + prefix + "karma get [emote]`: " \
-                       "vrátí hodnotu daného emotu."
+                       "`" + prefix + "karma get`: vypíše všechny emoty s hodnotou.\n" \
+                       "`" + prefix + "karma get [emote]`: vrátí hodnotu daného emotu."
     karma_get = "Hodnota {emote} je {value}."
     karma_get_emote_not_voted = "{emote} není ohodnocen."
-    karma_give_format = "Toaster pls, formát je " \
-                        "`" + prefix + "karma give [number] [user(s)]`"
-    karma_give_format_number = "Toaster pls, formát je " \
-                               "`" + prefix + "karma give " \
-                               "[number, jakože číslo, " \
-                               "ne {input}] [user(s)]` "
+    karma_give_format = "Cauchy pls, formát je `" + prefix + "karma give [number] [user(s)]`"
+    karma_give_format_number = "Cauchy pls, formát je `" + prefix + "karma give [number, ne {input}] [user(s)]` "
     karma_give_success = "Karma byla úspěšně přidaná."
     karma_give_negative_success = "Karma byla úspěšně odebraná."
     karma_message_format = prefix + "karma message [url, id]"
-    member_not_found = "{user} Nikoho takového jsem nenašel."
+    member_not_found = "{user} Nikoho takového jsem nenašla."
     karma_lederboard_offser_error = "{user} Špatný offset, zadej kladné číslo"
 
     role_add_denied = "{user}, na přidání role {role} nemáš právo."
-    role_remove_denied = "{user}, " \
-                         "na odebrání role {role} nemáš právo."
+    role_remove_denied = "{user}, na odebrání role {role} nemáš právo."
     role_invalid_line = "{user}, řádek `{line}` je neplatný."
     role_format = "{user}, použij `" + prefix + "goddess`."
-    role_not_on_server = "Nepíšeš na serveru, " \
-                         "takže předpokládám, " \
-                         "že myslíš role VUT FIT serveru."
+    role_not_on_server = "Nepíšeš na serveru, takže předpokládám, že myslíš role VUT FEKT serveru."
     role_not_role = "{user}, {not_role} není role."
-    role_invalid_emote = "{user}, {not_emote} " \
-                         "pro roli {role} není emote."
+    role_invalid_emote = "{user}, {not_emote} pro roli {role} není emote."
 
     rng_generator_format = "Použití: `" + prefix + "roll x [y]`\n" \
                            "x, y je rozmezí čísel,\n" \
                            "x, y jsou celá čísla,\n" \
-                           "pokud y není specifikováno, " \
-                           "je považováno za 0."
-    rng_generator_format_number = "{user}, zadej dvě celá čísla, " \
-                                  "**integers**."
+                           "pokud y není specifikováno, je považováno za 0."
+    rng_generator_format_number = "{user}, zadej dvě celá čísla, **integers**."
 
-    rd_too_many_dice_in_group = "Příliš moc kostek v jedné " \
-                                "skupině, maximum je {maximum}."
-    rd_too_many_dice_sides = "Příliš moc stěn na kostkách, " \
-                             "maximum je {maximum}."
-    rd_too_many_dice_groups = "Příliš moc skupin kostek, " \
-                              "maximum je {maximum}."
+    rd_too_many_dice_in_group = "Příliš moc kostek v jedné skupině, maximum je {maximum}."
+    rd_too_many_dice_sides = "Příliš moc stěn na kostkách, maximum je {maximum}."
+    rd_too_many_dice_groups = "Příliš moc skupin kostek, maximum je {maximum}."
     rd_format = "Chybná syntax hodu ve skupině {group}."
     rd_help = "Formát naleznete na " \
               "https://wiki.roll20.net/Dice_Reference\n" \
               "Implementovány featury podle obsahu: **8. Drop/Keep**"
 
-    verify_already_verified = "{user} Už jsi byl verifikován ({admin} pls)."
-    verify_send_format = "Ocekavam jeden argument. Správný formát:\n" \
+    verify_already_verified = "{user} Už jste byli ověřeni ({admin} pls)."
+    verify_send_format = "Čekám jeden argument. Správný formát:\n" \
                            "`{}verify xlogin00`".format(prefix)
     verify_send_dumbshit = "{user} Tvůj login. {emote}"
-    verify_send_success = "{user} Kód byl odeslán na tvůj mail " + \
-                          "({mail})!\n" + \
-                          "Pro verifikaci použij: " + \
-                          "`" + prefix + "verify xlogin00 kód`"
+    verify_send_success = "{user} Kód byl odeslán na tvůj mail ({mail})!\n" + \
+                          "Pro verifikaci použij: `" + prefix + "verify xlogin00 kód`"
     verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
-    verify_verify_format = "Očekávám tři argumenty. " + \
-                           "Správný formát:\n" + \
+    verify_verify_format = "Očekávám tři argumenty. Správný formát:\n" + \
                            "`{}verify xlogin00`\n\n".format(prefix) + \
                            "Pro získání kódu použij příkaz podle příslušnosti:\n" + \
                            "`{}getcode FEKT xlogin00`\n".format(prefix) + \
@@ -130,19 +107,15 @@ class Messages:
                            "`{}getcode MUNI UČO`\n".format(prefix) + \
                            "`{}getcode jine host`".format(prefix)
     verify_verify_dumbshit = "{user} Kód, který ti přišel na mail. {emote}"
-    verify_verify_manual = "Čauec {user}, nechám {admin}, " \
-                           "aby to udělal manuálně, " \
-                           "jsi shady (Year: {year})"
+    verify_verify_manual = "{user}, nechám {admin}, aby to udělal manuálně, jsi shady (Year: {year})"
     verify_verify_success = "{user} Gratuluji k verifikaci!"
-    verify_post_verify_fekt = "Obor si zapiš v <#692086702382121010>\n" \
+    verify_post_verify_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
                               "V <#692084608778633217> získáš další role pro zájmy\n" \
                               "Obecné informace jsou v <#692084651849678938>."
-    verify_post_verify_guest = "V <#692084608778633217> získáš další role pro zájmy\n" \
+    verify_post_verify_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
                               "Obecné informace jsou v <#692084651849678938>."
 
-    verify_verify_not_found = "{user} Login nenalezen nebo " \
-                              "jsi už tímhle krokem prošel " \
-                              "({admin} pls)."
+    verify_verify_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_wrong_code = "{user} Špatný kód."
 
     vote_format = "Použití vote:\n`" + prefix + "vote [datum] [čas] [otázka]\n[emoji]" \
@@ -168,15 +141,15 @@ class Messages:
     vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. <:sadcat:691413849978568724>"
 
     review_format = prefix + "reviews [add, remove, zkratka předmětu]"
-    review_add_format = prefix + "reviews add {ZkratkaPredmetu} {Tier (0-4, 0 je TOP)} (anonym - Pokud si přejete anonymní příspěvek) (VolitelnyText)\n" \
-                        "Například:\nPro anonymní příspěvek: `" + prefix +"reviews add ITU 0 anonym text recenze`\n" \
-                        "Jinak: `" + prefix +"reviews add IZP 2 text recenze`"
+    review_add_format = prefix + "reviews add {ZkratkaPredmetu} {0-4, 0 ~ bez problémů} (anonym - Pokud si přejete anonymní příspěvek) (VolitelnyText)\n" \
+                        "Například:\nPro anonymní příspěvek: `" + prefix +"reviews add bpc-kam 0 anonym text recenze`\n" \
+                        "Jinak: `" + prefix +"reviews add bpc-kam 2 text recenze`"
 
     review_wrong_subject = "Nesprávná zkratka předmětu"
-    review_tier = "Tier je z rozsahu 0-4, kde 0 je nejlepší"
-    review_text_len = "Maximální počet znaků v části 'text' je 1024"
+    review_tier = "Číselné hodnocení je z rozsahu 0-4, kde 0 je nejlepší"
+    review_text_len = "Maximální počet znaků je 1024"
     review_added = "Hodnocení předmětu bylo přidáno"
-    reviews_page_e = "Zavolej znova reviews pro aktualizaci"
+    reviews_page_e = "Pro aktualizaci zavolej reviews znovu"
 
     review_get_format = prefix + "reviews [zkratka předmětu]"
     review_remove_format = prefix + "reviews remove [zkratka předmětu]"
@@ -195,10 +168,8 @@ class Messages:
     name_day_cz = "Dnes má svátek {name}"
     name_day_sk = "Dnes má meniny {name}"
 
-    info = [[('karma', 'Vypíše vaši karmu, kolik pozitivní a negativní karmy'
-                       ' jste rozdali.'),
-             ('karma stalk [user]', 'Vypíše karmu uživatele, kolik pozitivní '
-                                    'a negativní karmy rozdal.'),
+    info = [[('karma', 'Vypíše vaši karmu, kolik pozitivní a negativní karmy jste rozdali.'),
+             ('karma stalk [user]', 'Vypíše karmu uživatele, kolik +/- karmy rozdal.'),
              ('karma get',
               'Vypíše, které emoty mají hodnotu 1 a -1.'),
              ('karma get [emote]',
@@ -227,5 +198,5 @@ class Messages:
                       'a jestli je sudý nebo lichý.'),
              ('uhoh', 'Vypíše počet uh ohs od spuštění.'),
              ('uptime', 'Vypíše čas spuštění a čas uplynulý od spuštění.'),
-             ('kachna', 'Vypíše čas do otevření kachny.'),
-             ('god', 'Vypíše tuto zprávu.')]]
+             ('kachna', 'Nejsme FIT, ani to nezkoušej.'),
+             ('goddess', 'Vypíše tuto zprávu.')]]
