@@ -36,7 +36,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         <img src="{user_img}" alt="" style="height:20px;width:20px;top:4px;margin-right:6px;border-radius:100%;border:2px solid white;display:inline;position:relative;"><span>{user_name}</span>
     </p>
     <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;">Tvůj verifikační kód pro <span style="font-weight:bold;">VUT FEKT</span> Discord server:</p>
-    <p style="color:#45355F;font-family:Arial,Verdana,sans-serif;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:0;">{code}</p>
+    <p style="color:#45355F;font-family:Arial,Verdana,sans-serif;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">{code}</p>
     <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
 </div>
 </body>""".format(code=code, h=h, user_img=user_img, user_name=user_name)
