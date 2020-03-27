@@ -29,7 +29,7 @@ to restart your session)._
 
 Build a docker container with `docker build .`.
 
-To run the bot, run `docker-compose down && docker-compose up --build`, optionally with `--detached` parameter.
+To run the bot, run `docker-compose down && docker-compose up --build`, optionally with `--detach` parameter.
 
 ### Option B: Local setup
 
