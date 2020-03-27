@@ -74,7 +74,7 @@ class Base(commands.Cog):
 
     @commands.cooldown(rate=2, per=60.0, type=commands.BucketType.user)
     @commands.command()
-    @commands.command(aliases=["goddess"])
+    @commands.command(aliases=["goddess", "help"])
     async def god(self, ctx):
         embed = self.reaction.make_embed(1)
 
