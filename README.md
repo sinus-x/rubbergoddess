@@ -5,7 +5,7 @@
 ## About
 
 This FEKTwide Discord bot manages the verification process, karma and some other
-commands on VUT FEKT Discord server. It is a younger sister of [Rubbergod](https://github.com/Toaster192/rubbergod).
+commands on VUT FEKT Discord server. A [Rubbergod's](https://github.com/Toaster192/rubbergod) younger sister.
 
 ## Installing and running the bot
 
@@ -19,17 +19,26 @@ git clone https://github.com/sinus-x/rubbergoddess.git
 cd rubbergoddess
 ```
 
-## Local setup (not recommended)
+### Option A: Docker compose setup
+
+Install `docker` and `docker-compose` (use your package manager of choice) and run `docker` service (`systemctl start docker`).
+
+_If neccesary, add the current user to the docker group with `sudo usermod -aG docker $USER`. You can
+verify this with `$ groups` (if there is a difference between `groups` and `groups $USER`, you need
+to restart your session)._
+
+Build a docker container with `docker build .`.
+
+To run the bot, run `docker-compose down && docker-compose up --build`, optionally with `--detached` parameter.
+
+### Option B: Local setup
 
 Install the required python modules (`venv` / `--user` flag recommended):
 ```
 pip3 install -r requirements.txt
 ```
 
-Run the bot (might want to use `nohup` or something):
-```
-python3 rubbergoddess.py
-```
+Run the bot (use `nohup` to run in detached mode) with `python3 rubbergoddess.py`.
 
 #### Required/recommended packages (apt)
 
@@ -43,31 +52,16 @@ postgresql-contrib
 libpq-dev
 ```
 
-## Docker compose setup
-
-Install `docker` and `docker-compose` for your system (will vary from system to system)
-and run `docker` (`systemctl start docker.service`)
-
-If neccesray, add the current user to the docker group with `sudo usermod -aG docker $USER`.
-
-```
-docker build .
-```
-
-and then everytime you want to run the app
-
-```
-docker-compose down && docker-compose up --build
-```
-
 ## Authors
 
 Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x).
 
-Original authors include [Toaster](https://github.com/toaster192), [Matthew](https://github.com/matejsoroka), [Fpmk](https://github.com/TheGreatfpmK), [peter](https://github.com/xdragu01), [Urumasi](https://github.com/Urumasi) or [Leo](https://github.com/ondryaso).
+Original authors include [Toaster](https://github.com/toaster192), [Matthew](https://github.com/matejsoroka), 
+[Fpmk](https://github.com/TheGreatfpmK), [peter](https://github.com/xdragu01), [Urumasi](https://github.com/Urumasi) 
+or [Leo](https://github.com/ondryaso).
 
 ## License
 
 This project is licensed under the GNU GPL v.3 License.
 
-Rubbergoddess image is a CC0 photography by Peter Sjo hosted on [Unsplash.com](https://unsplash.com/photos/Nxy-6QwGMzA).
+Rubbergoddess image is a CC0 photography by Peter Sjo hosted on [unsplash.com](https://unsplash.com/photos/Nxy-6QwGMzA).
