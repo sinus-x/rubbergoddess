@@ -57,7 +57,7 @@ libpq-dev
 Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x).
 
 Original authors include [Toaster](https://github.com/toaster192), [Matthew](https://github.com/matejsoroka), 
-[Fpmk](https://github.com/TheGreatfpmK), [peter](https://github.com/xdragu01), [Urumasi](https://github.com/Urumasi) 
+[Fpmk](https://github.com/TheGreatfpmK), [peter](https://github.com/peterdragun), [Urumasi](https://github.com/Urumasi) 
 or [Leo](https://github.com/ondryaso).
 
 ## License
