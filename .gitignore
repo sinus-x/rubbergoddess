@@ -1,4 +1,4 @@
-bckup*
+backups/
 config/config.py
 config/config.fektwide.py
 __pycache__
