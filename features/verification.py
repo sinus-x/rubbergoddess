@@ -43,7 +43,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
 
         msg = MIMEMultipart('alternative')
-        msg['Subject'] = "VUT FEKT verification code"
+        #FIXME can this be abused?
+        msg['Subject'] = "VUT FEKT verify → {}".format(user_name)
         msg['From'] = Config.email_addr
         msg['To'] = receiver_email
         msg['Bcc'] = Config.email_addr
