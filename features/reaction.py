@@ -27,8 +27,7 @@ class Reaction(BaseFeature):
 
     def make_embed(self, page):
         embed = discord.Embed(title="Rubbergoddess",
-                              description="Rubbergod? Tss.",
-                              color=0x54355F)
+                              description="Rubbergod? Tss.", color=Config.color)
 
         prefix = Config.default_prefix
 
@@ -262,7 +261,7 @@ class Reaction(BaseFeature):
                    reaction.count >= Config.pin_count and \
                    not message.pinned:
                     embed = discord.Embed(title="📌 Auto pin message log",
-                                          color=0xeee657)
+                                          color=Config.color)
                     users = await reaction.users().flatten()
                     user_names = ', '.join([user.name for user in users])
                     message_link = Messages.message_link_prefix +\

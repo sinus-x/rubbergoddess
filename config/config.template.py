@@ -55,6 +55,9 @@ class Config:
         bot_dev_channel
     ]
 
+    # Embeds
+    color = 0x54355F
+
     # String constants
     kachna_link = '' # where to link on ?kachna command
 

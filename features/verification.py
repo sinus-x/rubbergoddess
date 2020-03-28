@@ -134,8 +134,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             if unsuccessfull:
                 await message.channel.send(utils.fill_message("verify_send_not_found",
                     user=message.author.id, admin=Config.admin_id))
-                embed = discord.Embed(title="Neúspěšný pokus o verify",
-                    color=0xeee657)
+                embed = discord.Embed(title="Neúspěšný pokus o verify", color=Config.color)
                 embed.add_field(name="User", value=utils.generate_mention(message.author.id))
                 embed.add_field(name="Message", value=message.content, inline=False)
                 channel = self.bot.get_channel(Config.log_channel)
@@ -252,7 +251,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             else:
                 await message.channel.send(utils.fill_message(
                     "verify_verify_not_found", user=message.author.id, admin=Config.admin_id))
-                embed = discord.Embed(title="Neuspesny pokus o verify", color=0xeee657)
+                embed = discord.Embed(title="Neuspesny pokus o verify", color=Config.color)
                 embed.add_field(name="User", value=utils.generate_mention(message.author.id))
                 embed.add_field(name="Message", value=message.content, inline=False)
                 channel = self.bot.get_channel(Config.log_channel)
