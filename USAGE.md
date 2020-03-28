@@ -18,20 +18,20 @@ Displays embed with available commands
 
 ## VERIFY cog
 
-Implements verification system. Requires some setting-up: a _#jail_ channel with 
-RW permission for _@everyone_, and a _'VERIFY'_ role (or other, as specified in 
+Implements verification system. Requires some setting-up: a #jail channel with 
+RW permission for @everyone, and a 'VERIFY' role (or other, as specified in 
 config file). Other channels on a server should only be visible with (at least) 
-_'VERIFY'_ role. It is recommended to have RO channel _#jail-info_ visible only to 
-users without _'VERIFY'_ role, so newcomers know what to do.
+'VERIFY' role. It is recommended to have RO channel #jail-info visible only to 
+users without 'VERIFY' role, so newcomers know what to do.
 
-**getcode <class> <xlogin00>**
+**getcode &gt;class&lt; &gt;xlogin00&lt;**
 
-Request a security code. <class> is a role (_'FEKT'_, _'VUT'_ etc.), <xlogin00> 
+Request a security code. &gt;class&lt; is a role ('FEKT', 'VUT' etc.), &gt;xlogin00&lt; 
 is a VUT login or MUNI UČO.
 
-**verify <xlogin00> <code>**
+**verify &gt;xlogin00&lt; &gt;code&lt;**
 
-Submit a security code. <xlogin00> is a VUT login or MUNI UČO, <code> is a 
+Submit a security code. &gt;xlogin00&lt; is a VUT login or MUNI UČO, &gt;code&lt; is a 
 security code from verification e-mail.
 
 ## KARMA cog
@@ -48,11 +48,11 @@ channels), while still having control over core privileged roles.
 
 Admin only. Takes a server emote and creates a poll over emote's value.
 
-**karma revote <emote>**
+**karma revote &gt;emote&lt;**
 
 Admin only. Takes an emote and creates a poll over emote's value.
 
-**karma give <user> <value>**
+**karma give &gt;user&lt; &gt;value&lt;**
 
 Admin only. Add karma to user.
 
@@ -60,31 +60,31 @@ Admin only. Add karma to user.
 
 Show user's own karma.
 
-**karma stalk <user>**
+**karma stalk &gt;user&lt;**
 
 Show user's karma.
 
-**karma get <emote>**
+**karma get &gt;emote&lt;**
 
 Get emote's value.
 
-**karma message <url>**
+**karma message &gt;url&lt;**
 
 Show total karma value of a message.
 
-**leaderboard <offset>**
+**leaderboard &gt;offset&lt;**
 
 See karma leaderboard.
 
-**bajkarboard <offset>**
+**bajkarboard &gt;offset&lt;**
 
 See reversed karma leaderboard.
 
-**givingboard <offset>**
+**givingboard &gt;offset&lt;**
 
 See positive karma board.
 
-**ishaboard <offset>**
+**ishaboard &gt;offset&lt;**
 
 See negative karma board.
 
@@ -92,7 +92,7 @@ See negative karma board.
 
 **on_message() listener**
 
-- If 'uh oh' string is submitted by user, the bot says it too.
+- If 'uh oh' string is submitted by user, the bot says 'uh oh' too.
 - 'PR': Send link to Github pull requests
 - '🔧': Send link to Github issues
 
@@ -102,9 +102,9 @@ Say how many times the 'uh oh' triggered
 
 **question (??)**
 
-Send '?' response
+Send one of question responses.
 
-**hug <user>**
+**hug &gt;user&lt;**
 
 If no argument is specified, make the bot hug itself. Otherwise, hug mentioned 
 user.
@@ -115,7 +115,7 @@ user.
 
 Roll a dice (check [the manual](https://wiki.roll20.net/Dice_Reference))
 
-**pick <opt0> <opt1> [<opts>]**
+**pick &gt;opt0&lt; &gt;opt1&lt; [&gt;opts&lt;]**
 
 Pick between entered (space separated) options
 
@@ -123,7 +123,7 @@ Pick between entered (space separated) options
 
 Return true/false
 
-**roll <integer> [<integer>]**
+**roll &gt;integer&lt; [&gt;integer&lt;]**
 
 Pick a number in given interval. If only one argument is specified, pick 
 between 0 and number.
@@ -133,30 +133,30 @@ between 0 and number.
 Allows to submit subject reviews, allowing for less formal notion compared to 
 reviews in VUT's review system in it's IS.
 
-**reviews add <subject> <score> [anonym] <text>**
+**reviews add &gt;subject&lt; &gt;score&lt; [anonym] &gt;text&lt;**
 
 Add a subject review. The subject must be declared in config file. The score is 
 an integer between 0 and 4, 0 being the best.
 
-**reviews remove <subject>**
+**reviews remove &gt;subject&lt;**
 
 Remove submitted review.
 
-**reviews remove <subject> [id <number>]**
+**reviews remove &gt;subject&lt; [id &gt;number&lt;]**
 
 Admin only. Delete specified review.
 
-**reviews <subject>**
+**reviews &gt;subject&lt;**
 
 See reviews for a given subject. 
 
 ## VOTE cog
 
-**vote <date> <time> <question>**
+**vote &gt;date&lt; &gt;time&lt; &gt;question&lt;**
 
 Create a poll.
 
-Format each poll option as `<emote> Description`
+Format each poll option as `&gt;emote&lt; Description`
 
 ## NAME_DAY cog
 
@@ -180,9 +180,9 @@ Functionalities below are mod/admin only.
 
 ## FITWIDE cog
 
-**find_rolehoarders [<limit>]**
+**find_rolehoarders [&gt;limit&lt;]**
 
-Find users hoarding subject roles. Optional <limit> arguments specifies number 
+Find users hoarding subject roles. Optional &gt;limit&lt; arguments specifies number 
 of users to print.
 
 **role_check**
@@ -195,19 +195,19 @@ Increment user roles.
 
 _Non-FIT rewrite needed._
 
-**get_users_login <user>**
+**get_users_login &gt;user&lt;**
 
 Get user login information from database.
 
-**get_logins_user <user>**
+**get_logins_user &gt;user&lt;**
 
 ?
 
-**reset_login <login>**
+**reset_login &gt;login&lt;**
 
 Remove login from database.
 
-**connect_login_to_user <login> <user>**
+**connect_login_to_user &gt;login&lt; &gt;user&lt;**
 
 Connect login with user.
 
