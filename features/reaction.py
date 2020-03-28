@@ -337,12 +337,14 @@ class Reaction(BaseFeature):
 
     # Adds a role for user based on reaction
     async def add_role_on_reaction(self, target, member, channel, guild):
+        fekt = discord.utils.get(guild.roles, name='FEKT')
         role = discord.utils.get(guild.roles, name=target)
         if role is not None:
             #HACK does not use db
             #TODO remove role if False
             allowed = True
-            if role >= discord.utils.get(guild.roles, name='---'):
+            limit = '---FEKT' if fekt in member.roles else '---'
+            if role >= discord.utils.get(guild.roles, name=limit):
                 # do not allow privilege escalation
                 allowed = False
             if allowed:

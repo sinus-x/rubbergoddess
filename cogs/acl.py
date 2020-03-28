@@ -24,8 +24,7 @@ class Acl(commands.Cog):
     async def acl(self, ctx, *args):
         if self.mod is None:
             guild = self.bot.get_guild(config.guild_id)
-            self.mod = discord.utils.get(guild.roles,
-                                         name="Mod")
+            self.mod = discord.utils.get(guild.roles, name="MOD")
         if self.mod in ctx.author.roles:
             if not len(args):
                 await ctx.send(utils.fill_message("acl_help", user=ctx.author.id))
@@ -52,8 +51,7 @@ class Acl(commands.Cog):
     async def acl_roles(self, ctx, *args):
         guild = self.bot.get_guild(config.guild_id)
         if self.mod is None:
-            self.mod = discord.utils.get(guild.roles,
-                                         name="Mod")
+            self.mod = discord.utils.get(guild.roles, name="MOD")
         if self.mod in ctx.author.roles:
             rules = acl_repo.list_rule()
             rubbergoddess = discord.utils.get(guild.roles,
