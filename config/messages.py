@@ -38,6 +38,8 @@ class Messages:
 
     kachna_grillbot = "<:wutcat:692496001155596388> Tady kachna není, " \
         "běž na FIT: " + config.Config.kachna_link
+    
+    rolehoarders_none = "Žádné jsem nenašla."
 
     karma = "{user} Karma uzivatele `{target}` je: **{karma}** " \
             "(**{order}.**)\nA rozdal:\n" \

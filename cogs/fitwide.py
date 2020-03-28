@@ -62,11 +62,11 @@ class FitWide(commands.Cog):
         msg = ""
 
         if len(found_members) == 0:
-            msg = "Zadne jsem nenasel :slight_smile:"
+            msg = config.rolehoarders_none
         else:
             found_members.sort(key=lambda x: x[1], reverse=True)
             for member, role_count in found_members[:limit]:
-                line = "{id} - {name} ({num} roli)\n".format(id=member.id, name=member.name, num=role_count)
+                line = "{id} - {name} ({num} rolí)\n".format(id=member.id, name=member.name, num=role_count)
                 if len(line) + len(msg) >= 2000:
                     await ctx.send(msg)
                     msg = line
