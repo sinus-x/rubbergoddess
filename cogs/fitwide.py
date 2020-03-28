@@ -307,45 +307,6 @@ class FitWide(commands.Cog):
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(is_in_modroom)
     @commands.command()
-    async def update_db(self, ctx):
-        with open("merlin-latest", "r") as f:
-            data = f.readlines()
-
-        new_people = []
-        new_logins = []
-
-        for line in data:
-            line = line.split(":")
-            login = line[0]
-            name = line[4].split(",", 1)[0]
-            try:
-                year = line[4].split(",")[1]
-            except IndexError:
-                continue
-            new_people.append(Valid_person(login=login, year=year,
-                                           name=name))
-            new_logins.append(login)
-
-        for person in new_people:
-            session.merge(person)
-
-        for person in session.query(Valid_person):
-            if person.login not in new_logins:
-                try:
-                    # check for muni
-                    int(person.login)
-                    person.year = "MUNI"
-                except ValueError:
-                    person.year = "dropout"
-
-        session.commit()
-
-        await ctx.send("Update databaze probehl uspesne")
-
-
-    @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_in_modroom)
-    @commands.command()
     async def get_users_login(self, ctx, member: discord.Member):
         result = session.query(Permit).\
             filter(Permit.discord_ID == str(member.id)).one_or_none()
