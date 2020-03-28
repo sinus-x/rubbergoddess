@@ -24,14 +24,14 @@ config file). Other channels on a server should only be visible with (at least)
 'VERIFY' role. It is recommended to have RO channel #jail-info visible only to 
 users without 'VERIFY' role, so newcomers know what to do.
 
-**getcode &gt;class&lt; &gt;xlogin00&lt;**
+**getcode &lt;class&gt; &lt;xlogin00&gt;**
 
-Request a security code. &gt;class&lt; is a role ('FEKT', 'VUT' etc.), &gt;xlogin00&lt; 
+Request a security code. &lt;class&gt; is a role ('FEKT', 'VUT' etc.), &lt;xlogin00&gt; 
 is a VUT login or MUNI UČO.
 
-**verify &gt;xlogin00&lt; &gt;code&lt;**
+**verify &lt;xlogin00&gt; &lt;code&gt;**
 
-Submit a security code. &gt;xlogin00&lt; is a VUT login or MUNI UČO, &gt;code&lt; is a 
+Submit a security code. &lt;xlogin00&gt; is a VUT login or MUNI UČO, &lt;code&gt; is a 
 security code from verification e-mail.
 
 ## KARMA cog
@@ -48,11 +48,11 @@ channels), while still having control over core privileged roles.
 
 Admin only. Takes a server emote and creates a poll over emote's value.
 
-**karma revote &gt;emote&lt;**
+**karma revote &lt;emote&gt;**
 
 Admin only. Takes an emote and creates a poll over emote's value.
 
-**karma give &gt;user&lt; &gt;value&lt;**
+**karma give &lt;user&gt; &lt;value&gt;**
 
 Admin only. Add karma to user.
 
@@ -60,31 +60,31 @@ Admin only. Add karma to user.
 
 Show user's own karma.
 
-**karma stalk &gt;user&lt;**
+**karma stalk &lt;user&gt;**
 
 Show user's karma.
 
-**karma get &gt;emote&lt;**
+**karma get &lt;emote&gt;**
 
 Get emote's value.
 
-**karma message &gt;url&lt;**
+**karma message &lt;url&gt;**
 
 Show total karma value of a message.
 
-**leaderboard &gt;offset&lt;**
+**leaderboard &lt;offset&gt;**
 
 See karma leaderboard.
 
-**bajkarboard &gt;offset&lt;**
+**bajkarboard &lt;offset&gt;**
 
 See reversed karma leaderboard.
 
-**givingboard &gt;offset&lt;**
+**givingboard &lt;offset&gt;**
 
 See positive karma board.
 
-**ishaboard &gt;offset&lt;**
+**ishaboard &lt;offset&gt;**
 
 See negative karma board.
 
@@ -104,7 +104,7 @@ Say how many times the 'uh oh' triggered
 
 Send one of question responses.
 
-**hug &gt;user&lt;**
+**hug &lt;user&gt;**
 
 If no argument is specified, make the bot hug itself. Otherwise, hug mentioned 
 user.
@@ -115,7 +115,7 @@ user.
 
 Roll a dice (check [the manual](https://wiki.roll20.net/Dice_Reference))
 
-**pick &gt;opt0&lt; &gt;opt1&lt; [&gt;opts&lt;]**
+**pick &lt;opt0&gt; &lt;opt1&gt; [&lt;opts&gt;]**
 
 Pick between entered (space separated) options
 
@@ -123,7 +123,7 @@ Pick between entered (space separated) options
 
 Return true/false
 
-**roll &gt;integer&lt; [&gt;integer&lt;]**
+**roll &lt;integer&gt; [&lt;integer&gt;]**
 
 Pick a number in given interval. If only one argument is specified, pick 
 between 0 and number.
@@ -133,30 +133,30 @@ between 0 and number.
 Allows to submit subject reviews, allowing for less formal notion compared to 
 reviews in VUT's review system in it's IS.
 
-**reviews add &gt;subject&lt; &gt;score&lt; [anonym] &gt;text&lt;**
+**reviews add &lt;subject&gt; &lt;score&gt; [anonym] &lt;text&gt;**
 
 Add a subject review. The subject must be declared in config file. The score is 
 an integer between 0 and 4, 0 being the best.
 
-**reviews remove &gt;subject&lt;**
+**reviews remove &lt;subject&gt;**
 
 Remove submitted review.
 
-**reviews remove &gt;subject&lt; [id &gt;number&lt;]**
+**reviews remove &lt;subject&gt; [id &lt;number&gt;]**
 
 Admin only. Delete specified review.
 
-**reviews &gt;subject&lt;**
+**reviews &lt;subject&gt;**
 
 See reviews for a given subject. 
 
 ## VOTE cog
 
-**vote &gt;date&lt; &gt;time&lt; &gt;question&lt;**
+**vote &lt;date&gt; &lt;time&gt; &lt;question&gt;**
 
 Create a poll.
 
-Format each poll option as `&gt;emote&lt; Description`
+Format each poll option as `&lt;emote&gt; Description`
 
 ## NAME_DAY cog
 
@@ -180,9 +180,9 @@ Functionalities below are mod/admin only.
 
 ## FITWIDE cog
 
-**find_rolehoarders [&gt;limit&lt;]**
+**find_rolehoarders [&lt;limit&gt;]**
 
-Find users hoarding subject roles. Optional &gt;limit&lt; arguments specifies number 
+Find users hoarding subject roles. Optional &lt;limit&gt; arguments specifies number 
 of users to print.
 
 **role_check**
@@ -195,19 +195,19 @@ Increment user roles.
 
 _Non-FIT rewrite needed._
 
-**get_users_login &gt;user&lt;**
+**get_users_login &lt;user&gt;**
 
 Get user login information from database.
 
-**get_logins_user &gt;user&lt;**
+**get_logins_user &lt;user&gt;**
 
 ?
 
-**reset_login &gt;login&lt;**
+**reset_login &lt;login&gt;**
 
 Remove login from database.
 
-**connect_login_to_user &gt;login&lt; &gt;user&lt;**
+**connect_login_to_user &lt;login&gt; &lt;user&gt;**
 
 Connect login with user.
 
