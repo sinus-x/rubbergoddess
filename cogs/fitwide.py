@@ -110,7 +110,7 @@ class FitWide(commands.Cog):
 
         title = config.default_prefix + "offer_subjects result"
         desc = "For: {}".format(ctx.author.name)
-        cleared = "Yes, {} posts".format(deleted) if group is None else "No"
+        cleared = "Yes, {} post{}".format(deleted, "s" if deleted > 1 else "") if group is None else "No"
         embed = discord.Embed(title=title, description=desc, color=config.color)
         embed.add_field(name="Cleared?", value=cleared, inline=False)
         embed.add_field(name="Groups", value=ctr_ca, inline=True)
