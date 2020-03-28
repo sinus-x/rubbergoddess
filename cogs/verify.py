@@ -16,12 +16,12 @@ class Verify(commands.Cog):
 
     @commands.cooldown(rate=5, per=30.0, type=commands.BucketType.user)
     @commands.command()
-    async def verify(self, ctx):
+    async def submit(self, ctx):
         await self.verification.verify(ctx.message)
 
     @commands.cooldown(rate=5, per=30.0, type=commands.BucketType.user)
-    @commands.command()
-    async def getcode(self, ctx):
+    @commands.command(aliases=["getcode"])
+    async def verify(self, ctx):
         await self.verification.send_code(ctx.message)
 
 

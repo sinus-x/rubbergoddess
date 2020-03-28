@@ -101,18 +101,18 @@ class Messages:
 
     verify_already_verified = "{user} Už jste byli ověřeni ({admin} pls)."
     verify_send_format = "Čekám jeden argument. Správný formát:\n" \
-                           "`{}verify xlogin00`".format(prefix)
+                           "`{}submit xlogin00`".format(prefix)
     verify_send_dumbshit = "{user} Tvůj login. {emote}"
     verify_send_success = "{user} Kód byl odeslán na tvůj mail ({mail})!\n" + \
-                          "Pro verifikaci použij: `" + prefix + "verify xlogin00 kód`"
+                          "Pro verifikaci použij: `" + prefix + "submit xlogin00 kód`"
     verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_format = "Očekávám tři argumenty. Správný formát:\n" + \
-                           "`{}verify xlogin00`\n\n".format(prefix) + \
+                           "`{}submit xlogin00`\n\n".format(prefix) + \
                            "Pro získání kódu použij příkaz podle příslušnosti:\n" + \
-                           "`{}getcode FEKT xlogin00`\n".format(prefix) + \
-                           "`{}getcode VUT  xlogin00`\n".format(prefix) + \
-                           "`{}getcode MUNI UČO`\n".format(prefix) + \
-                           "`{}getcode jine host`".format(prefix)
+                           "`{}verify FEKT xlogin00`\n".format(prefix) + \
+                           "`{}verify VUT  xlogin00`\n".format(prefix) + \
+                           "`{}verify MUNI UČO`\n".format(prefix) + \
+                           "`{}verify jine host`".format(prefix)
     verify_verify_dumbshit = "{user} Kód, který ti přišel na mail. {emote}"
     verify_verify_manual = "{user}, nechám {admin}, aby to udělal manuálně, jsi shady (Year: {year})"
     verify_verify_success = "{user} Gratuluji k verifikaci!"
