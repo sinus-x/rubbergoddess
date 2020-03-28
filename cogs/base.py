@@ -37,11 +37,11 @@ class Base(commands.Cog):
             return
 
         if isinstance(error, commands.UserInputError):
-            await ctx.send("Chyba v inputu")
+            await ctx.send("Chyba na vstupu")
             return
 
         if isinstance(error, commands.CommandNotFound):
-            if not ctx.message.content.startswith('!'):
+            if not ctx.message.content[0] in config.command_prefix:
                 await ctx.send(messages.no_such_command)
             return
 
