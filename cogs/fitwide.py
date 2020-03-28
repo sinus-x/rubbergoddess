@@ -6,7 +6,7 @@ from discord.ext import commands
 
 
 import utils
-from config import config
+from config import config, messages
 from features import verification
 from repository import user_repo
 from repository.database import database, session
@@ -16,6 +16,7 @@ from repository.database.year_increment import User_backup
 user_r = user_repo.UserRepository()
 
 config = config.Config
+messages = messages.Messages
 
 class FitWide(commands.Cog):
     def __init__(self, bot):
@@ -48,7 +49,7 @@ class FitWide(commands.Cog):
         msg = ""
 
         if len(found_members) == 0:
-            msg = config.rolehoarders_none
+            msg = messages.rolehoarders_none
         else:
             found_members.sort(key=lambda x: x[1], reverse=True)
             for member, role_count in found_members[:limit]:
@@ -373,7 +374,6 @@ class FitWide(commands.Cog):
     @get_logins_user.error
     @role_check.error
     @increment_roles.error
-    @update_db.error
     async def fitwide_checks_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('Nothing to see here comrade. ' +
