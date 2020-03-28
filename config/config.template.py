@@ -138,11 +138,6 @@ class Config:
     # How many people to print if the limit argument is not specified
     rolehoarder_default_limit = 10
 
-    # NOT USED
-    # Arcas
-    arcas_id = 0
-    arcas_delay = 24
-
     # uh oh
     uhoh_string = 'uh oh'
 

@@ -16,9 +16,6 @@ from repository.database.year_increment import User_backup
 user_r = user_repo.UserRepository()
 
 config = config.Config
-arcas_time = (datetime.datetime.utcnow() -
-              datetime.timedelta(hours=config.arcas_delay))
-
 
 class FitWide(commands.Cog):
     def __init__(self, bot):
@@ -30,17 +27,6 @@ class FitWide(commands.Cog):
 
     async def is_in_modroom(ctx):
         return ctx.message.channel.id == config.mod_room
-
-
-    @commands.Cog.listener()
-    async def on_typing(self, channel, user, when):
-        global arcas_time
-        if arcas_time + datetime.timedelta(hours=config.arcas_delay) <\
-           when and config.arcas_id == user.id:
-            arcas_time = when
-            gif = discord.Embed()
-            gif.set_image(url="https://i.imgur.com/v2ueHcl.gif")
-            await channel.send(embed=gif)
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(is_in_modroom)
