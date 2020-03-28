@@ -1,6 +1,6 @@
 # Usage
 
-This document attempts to describe core functions.
+This document attempts to describe cog functions.
 
 ## BASE cog
 
@@ -18,21 +18,75 @@ Displays embed with available commands
 
 ## VERIFY cog
 
-Implements verification system. Requires some setting-up: a #jail channel with 
-RW permission for @everyone, and a 'VERIFY' role (or other, as specified in 
-config file). Other channels on a server should be visible only with at least 
-'VERIFY' role. It is reccomended to have RO channel #jail-info visible only to 
-users without 'VERIFY' role, so newcomers know what to do.
+Implements verification system. Requires some setting-up: a _#jail_ channel with 
+RW permission for _@everyone_, and a _'VERIFY'_ role (or other, as specified in 
+config file). Other channels on a server should only be visible with (at least) 
+_'VERIFY'_ role. It is recommended to have RO channel _#jail-info_ visible only to 
+users without _'VERIFY'_ role, so newcomers know what to do.
 
-**getcode**
+**getcode <class> <xlogin00>**
 
-Request a security code. 
+Request a security code. <class> is a role (_'FEKT'_, _'VUT'_ etc.), <xlogin00> 
+is a VUT login or MUNI UČO.
 
-**verify**
+**verify <xlogin00> <code>**
 
-Submit a security code from the e-mail.
+Submit a security code. <xlogin00> is a VUT login or MUNI UČO, <code> is a 
+security code from verification e-mail.
 
 ## KARMA cog
+
+Karma cog contains code for karma and react-to-role functionality.
+
+An emote can have positive, neutral or negative karma value. By reacting with 
+an emote users can rate each other, to show their (dis)approval of a post.
+
+React-to-role allows users independent management of selected roles (hobby 
+channels), while still having control over core privileged roles.
+
+**karma vote**
+
+Admin only. Takes a server emote and creates a poll over emote's value.
+
+**karma revote <emote>**
+
+Admin only. Takes an emote and creates a poll over emote's value.
+
+**karma give <user> <value>**
+
+Admin only. Add karma to user.
+
+**karma**
+
+Show user's own karma.
+
+**karma stalk <user>**
+
+Show user's karma.
+
+**karma get <emote>**
+
+Get emote's value.
+
+**karma message <url>**
+
+Show total karma value of a message.
+
+**leaderboard <offset>**
+
+See karma leaderboard.
+
+**bajkarboard <offset>**
+
+See reversed karma leaderboard.
+
+**givingboard <offset>**
+
+See positive karma board.
+
+**ishaboard <offset>**
+
+See negative karma board.
 
 ## MEME cog
 
@@ -50,10 +104,10 @@ Say how many times the 'uh oh' triggered
 
 Send '?' response
 
-**hug**
+**hug <user>**
 
-If no argument is specified, make the bot hug itself. Otherwise, print hug emote
- beside the tagged users' handle
+If no argument is specified, make the bot hug itself. Otherwise, hug mentioned 
+user.
 
 ## RANDOM cog
 
@@ -61,7 +115,7 @@ If no argument is specified, make the bot hug itself. Otherwise, print hug emote
 
 Roll a dice (check [the manual](https://wiki.roll20.net/Dice_Reference))
 
-**pick**
+**pick <opt0> <opt1> [<opts>]**
 
 Pick between entered (space separated) options
 
@@ -69,36 +123,32 @@ Pick between entered (space separated) options
 
 Return true/false
 
-**roll**
+**roll <integer> [<integer>]**
 
-Pick a number
-
-## FITWIDE cog
-
-## ACL cog
-
-The bot assumes that a server has a '---' role, which separates self-assignable 
-(hobby) and self-unassignable (MOD, VUT etc) roles. Anything below a '---' role 
-can be added by users themselves by react-to-role mechanics, roles above can 
-only be assigned by privileged user or by the bot.
+Pick a number in given interval. If only one argument is specified, pick 
+between 0 and number.
 
 ## REVIEW cog
 
 Allows to submit subject reviews, allowing for less formal notion compared to 
-reviews in VUT's review system in its IS.
+reviews in VUT's review system in it's IS.
 
-**reviews add**
+**reviews add <subject> <score> [anonym] <text>**
 
-Add a review in format `?review add <subject> <score> <text>`. For an anonymous 
-submission, use `?review add <subject> <score> anonym <text>`..
+Add a subject review. The subject must be declared in config file. The score is 
+an integer between 0 and 4, 0 being the best.
 
-**reviews remove**
+**reviews remove <subject>**
 
-Allows user to take his review back. Admin can delete any review.
+Remove submitted review.
+
+**reviews remove <subject> [id <number>]**
+
+Admin only. Delete specified review.
 
 **reviews <subject>**
 
-See reviews for a given subject.
+See reviews for a given subject. 
 
 ## VOTE cog
 
@@ -106,7 +156,7 @@ See reviews for a given subject.
 
 Create a poll.
 
-To add options, add an emote and a description to next line for every entry.
+Format each poll option as `<emote> Description`
 
 ## NAME_DAY cog
 
@@ -122,4 +172,48 @@ Check nameday in Slovakia.
 
 **kachna**
 
-Deprecated and FIT-specific; moved to [Grillbot](https://github.com/Misha12/GrillBot).
+FIT-specific. Deprecated; moved to [Grillbot](https://github.com/Misha12/GrillBot).
+
+---
+
+Functionalities below are mod/admin only.
+
+## FITWIDE cog
+
+**find_rolehoarders [<limit>]**
+
+Find users hoarding subject roles. Optional <limit> arguments specifies number 
+of users to print.
+
+**role_check**
+
+_Mysterious, non-FIT rewrite needed._
+
+**increment_roles**
+
+Increment user roles.
+
+_Non-FIT rewrite needed._
+
+**get_users_login <user>**
+
+Get user login information from database.
+
+**get_logins_user <user>**
+
+?
+
+**reset_login <login>**
+
+Remove login from database.
+
+**connect_login_to_user <login> <user>**
+
+Connect login with user.
+
+## ACL cog
+
+The bot assumes that a server has a '---' role, which separates self-assignable 
+(hobby) and self-unassignable (MOD, VUT etc) roles. Anything below a '---' role 
+can be added by users themselves by react-to-role mechanics, roles above can 
+only be assigned by privileged user or by the bot.
