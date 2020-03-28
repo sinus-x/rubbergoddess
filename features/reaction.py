@@ -109,6 +109,8 @@ class Reaction(BaseFeature):
                 try:
                     await message.add_reaction(line[1])
                 except discord.errors.HTTPException:
+                    if message.author.bot:
+                        return
                     await message.channel.send(utils.fill_message("role_invalid_emote",
                                                user=message.author.id,
                                                not_emote=discord.utils.escape_mentions(line[1]),

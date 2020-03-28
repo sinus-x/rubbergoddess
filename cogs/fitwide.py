@@ -4,7 +4,6 @@ from sqlalchemy.orm.exc import NoResultFound
 import discord
 from discord.ext import commands
 
-
 import utils
 from config import config, messages
 from logic import convert
@@ -71,17 +70,21 @@ class FitWide(commands.Cog):
         guild = self.bot.get_guild(config.guild_id)
         add_subjects = discord.utils.get(guild.channels, name="add-subjects")
 
+        # if adding everything, delete all posts
+        deleted = 0
+        if not group:
+            deleted = len(await add_subjects.purge())
+
+        ctr_ca = 0
+        ctr_ch = 0
         for category in guild.categories:
             has_subjects = False
-            print("Category {}".format(category.name.upper()))
             if not group:
                 for c in category.text_channels:
-                    print(" Channel {}".format(c.name))
                     if c.name in config.subjects:
                         has_subjects = True
                         break
             if not group and not has_subjects:
-                print("No subjects found; skipping.")
                 continue
 
             elif group and category.name.lower() != group.lower():
@@ -89,6 +92,7 @@ class FitWide(commands.Cog):
 
             await add_subjects.send("**{}**".format(category.name.upper()))
 
+            ctr_ca += 1
             msg = ""
             i = 0
             for channel in category.text_channels:
@@ -101,7 +105,18 @@ class FitWide(commands.Cog):
                 msg += "\n{} #{}".format(convert.emote_number_from_int(i), channel.name)
                 msg += " **{}**".format(channel.topic) if channel.topic else ""
                 i += 1
+                ctr_ch += 1
             await add_subjects.send(msg)
+
+        title = config.default_prefix + "offer_subjects result"
+        desc = "For: {}".format(ctx.author.name)
+        cleared = "Yes, {} posts".format(deleted) if group is None else "No"
+        embed = discord.Embed(title=title, description=desc, color=config.color)
+        embed.add_field(name="Cleared?", value=cleared, inline=False)
+        embed.add_field(name="Groups", value=ctr_ca, inline=True)
+        embed.add_field(name="Subjects", value=ctr_ch, inline=True)
+        await ctx.send(embed=embed)
+
         return
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
