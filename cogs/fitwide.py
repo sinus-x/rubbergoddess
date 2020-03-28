@@ -7,6 +7,7 @@ from discord.ext import commands
 
 import utils
 from config import config, messages
+from logic import convert
 from features import verification
 from repository import user_repo
 from repository.database import database, session
@@ -17,6 +18,7 @@ user_r = user_repo.UserRepository()
 
 config = config.Config
 messages = messages.Messages
+convert = convert.Convert
 
 class FitWide(commands.Cog):
     def __init__(self, bot):
@@ -61,6 +63,46 @@ class FitWide(commands.Cog):
                     msg += line
 
         await ctx.send(msg)
+
+    @commands.check(is_admin)
+    @commands.check(is_in_modroom)
+    @commands.command()
+    async def offer_subjects(self, ctx, group = None):
+        guild = self.bot.get_guild(config.guild_id)
+        add_subjects = discord.utils.get(guild.channels, name="add-subjects")
+
+        for category in guild.categories:
+            has_subjects = False
+            print("Category {}".format(category.name.upper()))
+            if not group:
+                for c in category.text_channels:
+                    print(" Channel {}".format(c.name))
+                    if c.name in config.subjects:
+                        has_subjects = True
+                        break
+            if not group and not has_subjects:
+                print("No subjects found; skipping.")
+                continue
+
+            elif group and category.name.lower() != group.lower():
+                continue
+
+            await add_subjects.send("**{}**".format(category.name.upper()))
+
+            msg = ""
+            i = 0
+            for channel in category.text_channels:
+                if channel.name not in config.subjects:
+                    continue
+                if i >= 10:
+                    await add_subjects.send(msg)
+                    i = 0
+                    msg = ""
+                msg += "\n{} #{}".format(convert.emote_number_from_int(i), channel.name)
+                msg += " **{}**".format(channel.topic) if channel.topic else ""
+                i += 1
+            await add_subjects.send(msg)
+        return
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(is_admin)
@@ -374,6 +416,7 @@ class FitWide(commands.Cog):
     @get_logins_user.error
     @role_check.error
     @increment_roles.error
+    @offer_subjects.error
     async def fitwide_checks_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('Nothing to see here comrade. ' +

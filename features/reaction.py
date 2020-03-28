@@ -98,13 +98,11 @@ class Reaction(BaseFeature):
         for line in data:
             not_role = discord.utils.get(guild.roles, name=line[0]) is None
             if isinstance(line[0], int) or line[0].isdigit():
-                not_channel = discord.utils.get(guild.channels,
-                                                id=int(line[0])) is None
+                not_channel = discord.utils.get(guild.channels, id=int(line[0])) is None
             else:
-                not_channel = line[0][0] != "#" or\
-                    discord.utils.get(guild.channels,
-                                      name=line[0][1:].lower()) is None
-            if not_role and not_channel:
+                not_channel = line[0][0] != "#" or \
+                    discord.utils.get(guild.channels, name=line[0][1:].lower()) is None
+            if not_role and not_channel and not message.author.bot:
                 await message.channel.send(utils.fill_message("role_not_role",
                                            user=message.author.id, 
                                            not_role=discord.utils.escape_mentions(line[0])))
@@ -134,7 +132,7 @@ class Reaction(BaseFeature):
         except discord.errors.NotFound:
             return
 
-        if member is None or message is None or member.bot:
+        if member is None or message is None:# or member.bot:
             return
 
         if payload.emoji.is_custom_emoji():
@@ -143,9 +141,6 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if emoji == "⏹️":
-            return
-            # grillbot emoji for removing message causes errors
         if message.content.startswith(Config.role_string) or\
            channel.id in Config.role_channels:
             role_data = await self.get_join_role_data(message)
@@ -345,7 +340,7 @@ class Reaction(BaseFeature):
             limit = '---FEKT' if fekt in member.roles else '---'
             if role >= discord.utils.get(guild.roles, name=limit):
                 allowed = False
-            if allowed:
+            if allowed or member.bot:
                 await member.add_roles(role)
                 return True
             else:
@@ -365,6 +360,8 @@ class Reaction(BaseFeature):
 
             errmsg = ""
             if channel.name in Config.subjects:
+                if member.bot:
+                    return
                 if fekt in member.roles or vut in member.roles:
                     await channel.set_permissions(member, read_messages=True)
                     return
