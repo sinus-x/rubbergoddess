@@ -338,6 +338,7 @@ class Reaction(BaseFeature):
     # Adds a role for user based on reaction
     async def add_role_on_reaction(self, target, member, channel, guild):
         fekt = discord.utils.get(guild.roles, name='FEKT')
+        vut  = discord.utils.get(guild.roles, name='VUT')
         role = discord.utils.get(guild.roles, name=target)
         if role is not None:
             allowed = True
@@ -362,12 +363,19 @@ class Reaction(BaseFeature):
             if channel is None:
                 return
 
+            errmsg = ""
             if channel.name in Config.subjects:
-                await channel.set_permissions(member, read_messages=True)
+                if fekt in member.roles or vut in member.roles:
+                    await channel.set_permissions(member, read_messages=True)
+                    return
+                else:
+                    errmsg = "subject_add_denied_guest"
             else:
-                bot_room = self.bot.get_channel(Config.bot_room)
-                await bot_room.send(utils.fill_message(
-                    "role_add_denied_channel", user=member.id, role=channel.name))
+                errmsg = "subject_add_denied_notsubject"
+
+            bot_room = self.bot.get_channel(Config.bot_room)
+            await bot_room.send(utils.fill_message(
+                errmsg, user=member.id, role=channel.name))
 
     # Removes a role for user based on reaction
     async def remove_role_on_reaction(self, target, member, channel, guild):
@@ -395,11 +403,19 @@ class Reaction(BaseFeature):
             if channel is None:
                 return
             if channel.name in Config.subjects:
-                await channel.set_permissions(member, read_messages=None)
-            else:
-                bot_room = self.bot.get_channel(Config.bot_room)
-                await bot_room.send(utils.fill_message(
-                    "role_remove_denied_channel", user=member.id, role=channel.name))
+                await channel.set_permissions(member, overwrite=None)
+                return
+            # While sending a permission error is supported, there is no need 
+            # to do it.
+            # How could have the guest gotten an access anyway? If it was assigned
+            # manually, so be it. They want to leave, let them leave.
+            # It is more likely that they clicked the reaction, did not get 
+            # access, so they are un-clicking it back.
+            # - subject_remove_denied_guest
+            # - subject_remove_denied_notsubject
+#            bot_room = self.bot.get_channel(Config.bot_room)
+#            await bot_room.send(utils.fill_message(
+#                errmsg, user=member.id, role=channel.name))
 
     def pagination_next(self, emoji, page, max_page):
         if emoji in ["▶", "🔽"]:
