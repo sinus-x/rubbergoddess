@@ -340,21 +340,17 @@ class Reaction(BaseFeature):
         fekt = discord.utils.get(guild.roles, name='FEKT')
         role = discord.utils.get(guild.roles, name=target)
         if role is not None:
-            #HACK does not use db
-            #TODO remove role if False
             allowed = True
             limit = '---FEKT' if fekt in member.roles else '---'
             if role >= discord.utils.get(guild.roles, name=limit):
-                # do not allow privilege escalation
                 allowed = False
             if allowed:
                 await member.add_roles(role)
                 return True
-
             else:
                 bot_room = self.bot.get_channel(Config.bot_room)
-                await bot_room.send(utils.fill_message("role_add_denied",
-                                    user=member.id, role=role.name))
+                await bot_room.send(utils.fill_message(
+                    "role_add_denied", user=member.id, role=role.name))
                 return False
         else:
             try:
@@ -362,26 +358,21 @@ class Reaction(BaseFeature):
             except ValueError:
                 channel = None
             if channel is None:
-                channel = discord.utils.get(guild.channels,
-                                            name=target[1:].lower())
+                channel = discord.utils.get(guild.channels, name=target[1:].lower())
             if channel is None:
                 return
-            perms = acl.get_perms(member.id, member.top_role,
-                                  channel.id, guild.roles)
-            # TODO give perms based on the int (like read-only)
-            if perms:
+
+            if channel.name in Config.subjects:
                 await channel.set_permissions(member, read_messages=True)
             else:
                 bot_room = self.bot.get_channel(Config.bot_room)
-                await bot_room.send(utils.fill_message("role_add_denied",
-                                    user=member.id, role=channel.name))
+                await bot_room.send(utils.fill_message(
+                    "role_add_denied_channel", user=member.id, role=channel.name))
 
     # Removes a role for user based on reaction
     async def remove_role_on_reaction(self, target, member, channel, guild):
-        role = discord.utils.get(guild.roles,
-                                 name=target)
+        role = discord.utils.get(guild.roles, name=target)
         if role is not None:
-            #HACK does not use db
             allowed = True
             if role >= member.roles[-1]:
                 allowed = False
@@ -390,8 +381,8 @@ class Reaction(BaseFeature):
                 return True
             else:
                 bot_room = self.bot.get_channel(Config.bot_room)
-                await bot_room.send(utils.fill_message("role_remove_denied",
-                                        user=member.id, role=role.name))
+                await bot_room.send(utils.fill_message(
+                    "role_remove_denied", user=member.id, role=role.name))
                 return False
 
         else:
@@ -400,19 +391,15 @@ class Reaction(BaseFeature):
             except ValueError:
                 channel = None
             if channel is None:
-                channel = discord.utils.get(guild.channels,
-                                            name=target[1:].lower())
+                channel = discord.utils.get(guild.channels, name=target[1:].lower())
             if channel is None:
                 return
-            perms = acl.get_perms(member.id, member.top_role,
-                                  channel.id, guild.roles)
-            if perms:
-                await channel.set_permissions(member, read_messages=None,
-                                              send_messages=None)
+            if channel.name in Config.subjects:
+                await channel.set_permissions(member, read_messages=None)
             else:
                 bot_room = self.bot.get_channel(Config.bot_room)
-                await bot_room.send(utils.fill_message("role_remove_denied",
-                                    user=member.id, role=channel.name))
+                await bot_room.send(utils.fill_message(
+                    "role_remove_denied_channel", user=member.id, role=channel.name))
 
     def pagination_next(self, emoji, page, max_page):
         if emoji in ["▶", "🔽"]:

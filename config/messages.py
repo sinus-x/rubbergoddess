@@ -75,6 +75,8 @@ class Messages:
 
     role_add_denied = "{user}, na přidání role {role} nemáš právo."
     role_remove_denied = "{user}, na odebrání role {role} nemáš právo."
+    role_add_denied_channel = "{user}, přidávat se dají jen kanály předmětů."
+    role_remove_denied_channel = "{user}, odebírat se dají jen kanály předmětů."
     role_invalid_line = "{user}, řádek `{line}` je neplatný."
     role_format = "{user}, použij `" + prefix + "goddess`."
     role_not_on_server = "Nepíšeš na serveru, takže předpokládám, že myslíš role VUT FEKT serveru."
