@@ -118,16 +118,15 @@ class Messages:
     verify_verify_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_wrong_code = "{user} Špatný kód."
 
-    vote_format = "Použití vote:\n`" + prefix + "vote [datum] [čas] [otázka]\n[emoji]" \
-                                                " [odpověď 1]\n[emoji] [odpověď 2]\na tak dále`\n" \
-                                                "Datum je ve formátu `dd.MM.(yy)`. Čas je ve formátu `hh:mm`. " \
-                                                "Pouze vyplněný čas použije den odeslání zprávy, " \
-                                                "pouze vyplněné datum použije čas 00:00. " \
-                                                "Datum a čas jsou nepovinné argumenty, " \
-                                                "hlasování bude bez jejich uvedení funkční neustále. " \
-                                                "Pokud jsou vyplněny, bot pošle po uplynutí zprávu o výsledku," \
-                                                "když ho mezitím nikdo nevypne. " \
-                                                "Indikace výherné možnosti přežije i vypnutí."
+    vote_format = "Použití vote:\n```" + \
+        prefix + "vote [datum] [čas] [otázka]\n" \
+        "[emoji] [odpověď 1]\n" \
+        "[emoji] [odpověď 2]\n" \
+        "...```\n" \
+        "Datum je ve formátu `dd.MM.(yy)`, čas `hh:mm`.\n" \
+        "Pouze čas použije dnešní datum, pouze datum použije čas 00:00.\n" \
+        "Bez argumentů času bude hlasování funkční neustále.\n" \
+        "(Indikace výherné možnosti přežije i vypnutí.)"
     vote_not_emoji = "{not_emoji} není emoji. <:sadcat:691413849978568724>"
     vote_bad_date = "Hlasování může skončit jen v budoucnosti. <:objection:692102817120518145>"
 
@@ -141,9 +140,11 @@ class Messages:
     vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. <:sadcat:691413849978568724>"
 
     review_format = prefix + "reviews [add, remove, zkratka předmětu]"
-    review_add_format = prefix + "reviews add {ZkratkaPredmetu} {0-4, 0 ~ bez problémů} (anonym - Pokud si přejete anonymní příspěvek) (VolitelnyText)\n" \
-                        "Například:\nPro anonymní příspěvek: `" + prefix +"reviews add bpc-kam 0 anonym text recenze`\n" \
-                        "Jinak: `" + prefix +"reviews add bpc-kam 2 text recenze`"
+    review_add_format = "```" + prefix + "reviews add {ZkratkaPredmetu} {0-4, 0 ~ bez problémů} [anonym] {Text recenze}```\n" \
+                        "Příklad:\n" \
+                        "```" + prefix +"reviews add bpc-kam 2 Text recenze```\n" \
+                        "Příklad anonymního příspěvku:\n" \
+                        "```" + prefix +"reviews add bpc-kam 0 anonym Text recenze```" \
 
     review_wrong_subject = "Nesprávná zkratka předmětu"
     review_tier = "Číselné hodnocení je z rozsahu 0-4, kde 0 je nejlepší"
