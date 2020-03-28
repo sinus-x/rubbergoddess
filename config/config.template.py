@@ -56,6 +56,8 @@ class Config:
     ]
 
     # String constants
+    kachna_link = '' # where to link on ?kachna command
+
     role_string = 'Role\n'
     role_channels = [
         692086702382121010, # add-programme

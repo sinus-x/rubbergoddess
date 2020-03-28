@@ -36,7 +36,8 @@ class Messages:
     uhoh_counter = "{uhohs} uh ohs od spuštění."
     uptime_message = "Up since:  `{boottime}`\nUptime:\t`{uptime}`"
 
-    kachna_grillbot = "<:wutcat:692496001155596388> Tady kachna není, běž na FIT."
+    kachna_grillbot = "<:wutcat:692496001155596388> Tady kachna není, " \
+        "běž na FIT: " + config.Config.kachna_link
 
     karma = "{user} Karma uzivatele `{target}` je: **{karma}** " \
             "(**{order}.**)\nA rozdal:\n" \
