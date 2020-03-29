@@ -36,6 +36,9 @@ class Meme(commands.Cog):
             await message.channel.send(messages.git_pr)
         elif message.content == "🔧" or message.content == "\🔧":
             await message.channel.send(messages.git_issues)
+        elif message.content == "🔧👶" or message.content == "\🔧👶"
+            link = messages.git_issues.replace("issues", "labels/good first issue")
+            await message.channel.send(link)
 
     @commands.command()
     async def uhoh(self, ctx):
