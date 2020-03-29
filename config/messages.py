@@ -5,7 +5,7 @@ class Messages:
     prefix = config.Config.default_prefix
 
     server_warning = "Tohle funguje jen na VUT FEKT serveru."
-    karma_get_missing = "Cauchy pls, byla špinavá databáze. Musela jsem za tebe uklidit."
+    karma_get_missing = "Cauchy, musela jsem za tebe uklidit."
     missing_perms = "Na tohle nemáš prava. {user}"
     acl_help = "{user}, Pouziti:\n`!acl {{action}} {{table}} [args]`\n"\
                "action: add, edit, del nebo list\n"\
@@ -172,8 +172,8 @@ class Messages:
     uhoh = "uh oh"
     question = ["nech mě " + emote.sad, "nech mě " + emote.angry, emote.angry, emote.ree]
     
-    name_day_cz = "Dnes má svátek {name}" + emote.happy
-    name_day_sk = "Dnes má meniny {name}" + emote.happy
+    name_day_cz = "Dnes má svátek {name} " + emote.happy
+    name_day_sk = "Dnes má meniny {name} " + emote.happy
 
     info = [[('karma', 'Vypíše vaši karmu, kolik pozitivní a negativní karmy jste rozdali.'),
              ('karma stalk [user]', 'Vypíše karmu uživatele, kolik +/- karmy rozdal.'),
@@ -191,7 +191,7 @@ class Messages:
              ('bajkarboard [offset]', 'Karma leaderboard reversed'),
              ('givingboard [offset]', 'Leaderboard rozdávání pozitivní karmy.'),
              ('ishaboard [offset]', 'Leaderboard rozdávání negativní karmy.'),
-             (review_add_format[1:], 'Přidá recenzi na předmět.'),
+             (review_add_format[4:], 'Přidá recenzi na předmět.'),
              (review_get_format[1:], 'Vypíše recenze na vybraný předmět.'),
              (review_remove_format[1:], 'Odstraní hodnocení.'),
              ('vote', 'Zahájí hlasování.')],
