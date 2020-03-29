@@ -135,8 +135,8 @@ class Reaction(BaseFeature):
                 if str(emoji) == line[1]:
                     await self.add_role_on_reaction(line[0], member, message.channel, guild)
                     break
-                else:
-                    await message.remove_reaction(emoji, member)
+            else:
+                await message.remove_reaction(emoji, member)
         elif message.content.startswith(Messages.karma_vote_message_hack):
             if emoji not in ["☑️", "0⃣", "❎"]:
                 print("DEBUG removing in reaction.py:add() {}".format(message.content))
