@@ -34,10 +34,10 @@ class Meme(commands.Cog):
             uhoh_counter += 1
         elif message.content == "PR":
             await message.channel.send(messages.git_pr)
-        elif message.content == "🔧" or message.content == "\🔧":
+        elif message.content == "🔧":
             await message.channel.send(messages.git_issues)
-        elif message.content == "🔧👶" or message.content == "\🔧👶"
-            link = messages.git_issues.replace("issues", "labels/good first issue")
+        elif message.content == "🔧👶":
+            link = messages.git_issues.replace("issues", f"labels/good%20first%20issue")
             await message.channel.send(link)
 
     @commands.command()
