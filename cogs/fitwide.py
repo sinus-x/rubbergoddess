@@ -71,7 +71,7 @@ class FitWide(commands.Cog):
         guild = self.bot.get_guild(config.guild_id)
         add_subjects = discord.utils.get(guild.channels, name="add-subjects")
 
-        # if adding everything, delete all posts
+        # when adding everything, delete all previous posts
         deleted = 0
         if not group:
             deleted = len(await add_subjects.purge())

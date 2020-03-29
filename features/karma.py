@@ -95,13 +95,12 @@ class Karma(BaseFeature):
 
         if vote_value is None:
             self.repo.remove_emoji(emoji)
-            await message.channel.send(utils.fill_message("karma_vote_notpassed", 
-                                       emote=str(emoji), minimum=str(cfg.vote_minimum)))
-
+            await message.channel.send(utils.fill_message(
+                "karma_vote_notpassed", emote=str(emoji), minimum=str(cfg.vote_minimum)))
         else:
             self.repo.set_emoji_value(emoji, vote_value)
-            await message.channel.send(utils.fill_message("karma_vote_result",
-                                       emote=str(emoji), result=str(vote_value)))
+            await message.channel.send(utils.fill_message(
+                "karma_vote_result", emote=str(emoji), result=str(vote_value)))
 
     async def emoji_revote_value(self, message):
         content = message.content.split()

@@ -70,51 +70,32 @@ class Vote(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: Reaction, user):
-        if self.__handle(reaction.message.id, user.id, reaction.emoji, True,
-                         False):
-            # print("Already handled")
+        if self.__handle(reaction.message.id, user.id, reaction.emoji, True, False):
             return
-
-        # print("Handling")
         await self.voter.handle_reaction(reaction, user, True)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent):
-        if self.__handle(payload.message_id, payload.user_id, payload.emoji,
-                         True, True):
-            # print("Already handled (in RAW)")
+        if self.__handle(payload.message_id, payload.user_id, payload.emoji, True, True):
             return
-
-        # print("Handling RAW")
         try:
             if not await self.handle_raw_reaction(payload, True):
                 print("Couldn't find reaction, that is rather weird.")
         except HTTPException:
-            # ignore HTTP Exceptions
             return
-
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction: Reaction, user):
-        if self.__handle(reaction.message.id, user.id, reaction.emoji, False,
-                         False):
-            # print("Already handled")
+        if self.__handle(reaction.message.id, user.id, reaction.emoji, False, False):
             return
-
-        # print("Handling")
         await self.voter.handle_reaction(reaction, user, False)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: RawReactionActionEvent):
-        if self.__handle(payload.message_id, payload.user_id, payload.emoji,
-                         False, True):
-            # print("Already handled (in RAW)")
+        if self.__handle(payload.message_id, payload.user_id, payload.emoji, False, True):
             return
-
-        # print("Handling RAW")
         if not await self.handle_raw_reaction(payload, False):
             print("Couldn't find reaction, that is rather weird.")
-
 
 def setup(bot):
     bot.add_cog(Vote(bot))

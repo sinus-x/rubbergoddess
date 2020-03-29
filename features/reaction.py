@@ -26,30 +26,17 @@ class Reaction(BaseFeature):
         self.review = Review(bot)
 
     def make_embed(self, page):
-        embed = discord.Embed(title="Rubbergoddess",
-                              description="Rubbergod? Tss.", color=Config.color)
-
+        embed = discord.Embed(title="Rubbergoddess", description="Rubbergod? Tss.", color=Config.color)
         prefix = Config.default_prefix
-
         embed.add_field(name="Autor", value="Cauchy#5244")
-
-        # Shows the number of servers the bot is member of.
-        embed.add_field(name="Počet serverů s touto instancí bota",
-                        value=f"{len(self.bot.guilds)}")
-
+        embed.add_field(name="Počet serverů s touto instancí bota", value=f"{len(self.bot.guilds)}")
         embed.add_field(name="\u200b", value="Příkazy:", inline=False)
-
         info = Messages.info[page - 1]
-
         for command in info:
-            embed.add_field(name=prefix + command[0],
-                            value=command[1],
-                            inline=False)
-
+            embed.add_field(name=prefix + command[0], value=command[1], inline=False)
         embed.set_footer(text=f"Page {page} | Commit {utils.git_hash()}",
-                         icon_url="https://cdn.discordapp.com/avatars/"
-                                  "673134999402184734/d61a5db0c5047080"
-                                  "4b3980567da3a1a0.png?size=32")
+            icon_url="https://cdn.discordapp.com/avatars/673134999402184734/d61a5db0c5047080"
+                     "4b3980567da3a1a0.png?size=32")
         return embed
 
     # Returns list of role names and emotes that represent them
@@ -112,9 +99,8 @@ class Reaction(BaseFeature):
                     if message.author.bot:
                         return
                     await message.channel.send(utils.fill_message("role_invalid_emote",
-                                               user=message.author.id,
-                                               not_emote=discord.utils.escape_mentions(line[1]),
-                                               role=discord.utils.escape_mentions(line[0])))
+                        user=message.author.id, not_emote=discord.utils.escape_mentions(line[1]),
+                        role=discord.utils.escape_mentions(line[0])))
 
     async def add(self, payload):
         channel = self.bot.get_channel(payload.channel_id)
@@ -133,7 +119,7 @@ class Reaction(BaseFeature):
         except discord.errors.NotFound:
             return
 
-        if member is None or message is None:# or member.bot:
+        if member is None or message is None or member.bot:
             return
 
         if payload.emoji.is_custom_emoji():
@@ -142,19 +128,18 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if message.content.startswith(Config.role_string) or\
+        if message.content.startswith(Config.role_string) or \
            channel.id in Config.role_channels:
             role_data = await self.get_join_role_data(message)
             for line in role_data:
                 if str(emoji) == line[1]:
-                    await self.add_role_on_reaction(line[0], member,
-                                                    message.channel,
-                                                    guild)
+                    await self.add_role_on_reaction(line[0], member, message.channel, guild)
                     break
-            else:
-                await message.remove_reaction(emoji, member)
+                else:
+                    await message.remove_reaction(emoji, member)
         elif message.content.startswith(Messages.karma_vote_message_hack):
-            if emoji not in ["☑️", "❎", "0⃣"]:
+            if emoji not in ["☑️", "0⃣", "❎"]:
+                print("DEBUG removing in reaction.py:add() {}".format(message.content))
                 await message.remove_reaction(emoji, member)
             else:
                 users = []
