@@ -140,14 +140,12 @@ class AclRepository(BaseRepository):
 
     def add_user(self, acl_group_id, user_id, perms):
         # TODO check group id validity
-        rule = Acl_user_binding(acl_group_id=acl_group_id,
-                                user_id=user_id, perms=perms)
+        rule = Acl_user_binding(acl_group_id=acl_group_id, user_id=user_id, perms=perms)
         session.add(rule)
         session.commit()
 
     def edit_user(self, id, acl_group_id, user_id, perms):
-        rule = Acl_role_binding(id=id, acl_group_id=acl_group_id,
-                                user_id=user_id, perms=perms)
+        rule = Acl_role_binding(id=id, acl_group_id=acl_group_id, user_id=user_id, perms=perms)
         session.merge(rule)
         session.commit()
 
