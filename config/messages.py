@@ -97,31 +97,39 @@ class Messages:
     rd_help = "Formát naleznete na https://wiki.roll20.net/Dice_Reference\n" \
               "Implementovány featury podle obsahu: **8. Drop/Keep**"
 
-    verify_already_verified = "{user} Už jste byli ověřeni ({admin} pls)."
-    verify_send_format = "Čekám jeden argument. Správný formát:\n" \
-                           "`{}submit identifikátor kód`".format(prefix)
-    verify_send_dumbshit = "{user} Tvůj login. {emote}"
-    verify_send_success = "{user} Kód byl odeslán na tvůj mail ({mail})!\n" + \
-                          "Pro verifikaci použij: `" + prefix + "submit identifikátor kód`"
-    verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
-    verify_verify_format = "Očekávám tři argumenty. Správný formát:\n" + \
-                           "`{}submit xlogin00`\n\n".format(prefix) + \
-                           "Pro získání kódu použij příkaz podle příslušnosti:\n" + \
-                           "`{}verify FEKT xlogin00`\n".format(prefix) + \
-                           "`{}verify VUT  xlogin00`\n".format(prefix) + \
-                           "`{}verify MUNI UČO`\n".format(prefix) + \
-                           "`{}verify jine host`".format(prefix)
-    verify_verify_dumbshit = "{user} Kód, který ti přišel na mail. {emote}"
-    verify_verify_manual = "{user}, nechám {admin}, aby to udělal manuálně ({year})"
+    # VERIFY
+    verify_no_email = "__Tvůj__ e-mail, {user} {emote}"
+    verify_no_login = "__Tvůj__ login, {user} {emote}"
+
+    verify_send_dumbshit = "{user}, použij __svůj__ identifikátor. " + emote.facepalm
+    verify_already_sent = "{user}, e-mail už jsem ti jednou poslala ({admin}...?)"
+    verify_already_verified = "Tebe už jsem si prověřila, {user}..."
+    verify_send_kicked = "{admin}, {user} byl vykopnut a snaží se verifikovat."
+    verify_send_banned = "{admin}, {user} byl zabanován a snaží se verifikovat."
+    verify_send_success = "{user} Na e-mail ({mail}) jsem ti poslala ověřovací kód.\n" + \
+                          "Pro verifikaci použij: `" + prefix + "submit {id} kód`"
+    verify_send_error = "{user}, došlo k chybě " + emote.sad + ". {admin}?"
+    verify_send_format = "{user}:\n" \
+        "```" + prefix + "verify [FEKT|VUT] xlogin00\n" + \
+        prefix + "verify email```"
+
+    verify_verify_no_code = "{user} Ten kód, který jsem ti poslala na e-mail {emote}"
+    verify_verify_not_found = "{user}, takový login jsem nenašla."
+    verify_verify_wrong_code = "{user} Špatný kód."
+    verify_verify_manual = "{admin}, {user} asi chybí skupina ({year})."
     verify_verify_success = "{user} Gratuluji k verifikaci!"
-    verify_post_verify_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
+    verify_verify_success_info = "Nový uživatel {user} byl úspěšně přidán s rolí {group}."
+    verify_congrats_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
                               "V <#692084608778633217> získáš další role pro zájmy\n" \
                               "Obecné informace jsou v <#692084651849678938>."
-    verify_post_verify_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
+    verify_congrats_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
                               "Obecné informace jsou v <#692084651849678938>."
 
-    verify_verify_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
-    verify_verify_wrong_code = "{user} Špatný kód."
+    verify_verify_format = "Pro získání kódu použij příkaz podle příslušnosti:```\n" + \
+                           "{}verify FEKT xlogin00\n".format(prefix) + \
+                           "{}verify VUT  xlogin00\n".format(prefix) + \
+                           "{}verify e-mail```\n".format(prefix) + \
+                           "xlogin00 nebo e-mail je váš identifikátor pro další krok."
 
     vote_format = "Použití vote:\n```" \
         + prefix + "vote [datum] [čas] [otázka]\n" \
