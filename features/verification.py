@@ -67,8 +67,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
     async def gen_code_and_send_mail(self, message, login, mail_postfix):
         # Generate a verification code
-        code = ''.join(random.choices(string.ascii_uppercase +
-                                      string.digits, k=8))
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
         self.send_mail(message.author, login + mail_postfix, code)
 
@@ -171,15 +170,14 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         # Check if the user doesn't have the verify role
         # otherwise they wouldn't need to verify, right?
         if not await self.has_role(message.author, Config.verification_role):
-            # Some of them will use 'xlogin00' as stated in help
-            if login == "xlogin00":
+        	# test default input
+            if login == "identifikátor":
                 guild = self.bot.get_guild(Config.guild_id)
                 emote = await guild.fetch_emoji(692103675384037458)
                 await message.channel.send(utils.fill_message("verify_send_dumbshit",
                                            user=message.author.id, emote=str(emote)))
                 return
-            # Same here
-            if code == "kód" or code == "[kód]":
+            if code == "kód":
                 guild = self.bot.get_guild(Config.guild_id)
                 emote = await guild.fetch_emoji(692103675384037458)
                 await message.channel.send(utils.fill_message("verify_verify_dumbshit",
@@ -200,7 +198,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     return
 
                 # try get the year role
-                year = self.transform_year (new_user.year)
+                year = self.transform_year(new_user.year)
 
                 if year is None:
                     await message.channel.send(utils.fill_message(

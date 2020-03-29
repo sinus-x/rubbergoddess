@@ -99,10 +99,10 @@ class Messages:
 
     verify_already_verified = "{user} Už jste byli ověřeni ({admin} pls)."
     verify_send_format = "Čekám jeden argument. Správný formát:\n" \
-                           "`{}submit xlogin00`".format(prefix)
+                           "`{}submit identifikátor kód`".format(prefix)
     verify_send_dumbshit = "{user} Tvůj login. {emote}"
     verify_send_success = "{user} Kód byl odeslán na tvůj mail ({mail})!\n" + \
-                          "Pro verifikaci použij: `" + prefix + "submit xlogin00 kód`"
+                          "Pro verifikaci použij: `" + prefix + "submit identifikátor kód`"
     verify_send_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_format = "Očekávám tři argumenty. Správný formát:\n" + \
                            "`{}submit xlogin00`\n\n".format(prefix) + \
@@ -112,7 +112,7 @@ class Messages:
                            "`{}verify MUNI UČO`\n".format(prefix) + \
                            "`{}verify jine host`".format(prefix)
     verify_verify_dumbshit = "{user} Kód, který ti přišel na mail. {emote}"
-    verify_verify_manual = "{user}, nechám {admin}, aby to udělal manuálně, jsi shady (Year: {year})"
+    verify_verify_manual = "{user}, nechám {admin}, aby to udělal manuálně ({year})"
     verify_verify_success = "{user} Gratuluji k verifikaci!"
     verify_post_verify_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
                               "V <#692084608778633217> získáš další role pro zájmy\n" \
