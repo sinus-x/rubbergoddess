@@ -89,9 +89,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
             if login == "xlogin00":
                 guild = self.bot.get_guild(Config.guild_id)
-                emote = await guild.fetch_emoji(692103675384037458)
                 await message.channel.send(utils.fill_message("verify_send_dumbshit",
-                    user=message.author.id, emote=str(emote)))
+                    user=message.author.id, emote=emote.facepalm))
                 return
 
             # 0 ... verified
@@ -179,9 +178,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                 return
             if code == "kód":
                 guild = self.bot.get_guild(Config.guild_id)
-                emote = await guild.fetch_emoji(692103675384037458)
-                await message.channel.send(utils.fill_message("verify_verify_dumbshit",
-                                           user=message.author.id, emote=str(emote)))
+                await message.channel.send(utils.fill_message(
+                	"verify_verify_dumbshit", user=message.author.id, emote=emote.facepalm))
                 return
 
             new_user = self.repo.get_user(login)
