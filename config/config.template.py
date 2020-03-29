@@ -57,6 +57,8 @@ class Config:
 
     # Embeds
     color = 0x54355F
+    delay_message = 2.0 # when to delete user's command, in seconds
+    delay_embed = 120.0 # when to delete embed, in seconds
 
     # String constants
     kachna_link = '' # where to link on ?kachna command

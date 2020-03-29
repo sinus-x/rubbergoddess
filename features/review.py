@@ -20,7 +20,7 @@ class Review(BaseFeature):
             title=subject.lower() + " reviews",
             description="Average tier: " + tier_average
         )
-        colour = 0x6d6a69
+        colour = config.color
         id = 0
         if review is not None:
             guild = self.bot.get_guild(config.guild_id)
@@ -29,7 +29,7 @@ class Review(BaseFeature):
             else:
                 author = guild.get_member(int(review.member_ID))
             embed.add_field(name="Author", value=author)
-            embed.add_field(name="Tier", value=review.tier)
+            embed.add_field(name="Mark", value=review.tier)
             embed.add_field(name="Date", value=review.date)
             text = review.text_review
             if text is not None:

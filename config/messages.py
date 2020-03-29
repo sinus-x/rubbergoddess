@@ -145,27 +145,27 @@ class Messages:
     vote_result_multiple = "V hlasování „{question}“ vyhrály možnosti {winning_emojis} s {votes} hlasy."
     vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. " + emote.sad
 
-    review_format = prefix + "reviews [add, remove, zkratka předmětu]"
-    review_add_format = "```" + prefix + "reviews add {ZkratkaPredmetu} {0-4, 0 ~ bez problémů} [anonym] {Text recenze}```\n" \
-                        "Příklad:\n" \
-                        "```" + prefix +"reviews add bpc-kam 2 Text recenze```\n" \
-                        "Příklad anonymního příspěvku:\n" \
-                        "```" + prefix +"reviews add bpc-kam 0 anonym Text recenze```" \
+    review_format = "```" + prefix + "reviews [add|remove|<zkratka předmětu>]```"
+    review_add_format_short = "```" + prefix + "reviews add <zkratka> <známka 1-5> <Text recenze>```"
+    review_add_format = review_add_format_short + \
+                        "\nPříklad:\n" \
+                        "```" + prefix +"reviews add bpc-kom 2 Text recenze```\n" \
+                        "Pro vytvoření anonymní recenze zprávu pošlete do DM."
 
     review_wrong_subject = "Nesprávná zkratka předmětu"
-    review_tier = "Číselné hodnocení je z rozsahu 0-4, kde 0 je nejlepší"
+    review_tier = "Číselné hodnocení je známka z rozsahu 1-5"
     review_text_len = "Maximální počet znaků je 1024"
     review_added = "Hodnocení předmětu bylo přidáno"
     reviews_page_e = "Pro aktualizaci zavolej reviews znovu"
 
-    review_get_format = prefix + "reviews [zkratka předmětu]"
-    review_remove_format = prefix + "reviews remove [zkratka předmětu]"
-    review_remove_format_admin = prefix + "reviews remove [zkratka předmětu, id + číslo]"
-    review_remove_id_format = "reviews remove id [id]"
+    review_get_format = "```" + prefix + "reviews <zkratka předmětu>```"
+    review_remove_format = "```" + prefix + "reviews remove <zkratka předmětu>```"
+    review_remove_format_admin = "```" + prefix + "reviews remove <zkratka předmětu> [<id + číslo>]```"
+    review_remove_id_format = "```reviews remove id <id>```"
     review_remove_success = "Hodnocení předmětu bylo odebráno"
     review_remove_error = "Hodnocení předmětu nebylo nalezeno"
     review_add_denied = "{user}, na přidání hodnocení předmětu nemáš právo."
-    subject_format = prefix + "subject [add, remove] [zkratka předmětu]"
+    subject_format = "```" + prefix + "subject [add|remove] <zkratka předmětu>```"
 
     git_pr = "https://github.com/sinus-x/rubbergoddess/pulls"
     git_issues = "https://github.com/sinus-x/rubbergoddess/issues"
@@ -188,12 +188,12 @@ class Messages:
              ('karma message [url, id]',
               'Zobrazí karmu získanou za zprávu')],
             [('leaderboard [offset]', 'Karma leaderboard'),
-             ('bajkarboard [offset]', 'Karma leaderboard reversed'),
+             ('bajkarboard [offset]', 'Karma leaderboard v opačném pořadí'),
              ('givingboard [offset]', 'Leaderboard rozdávání pozitivní karmy.'),
              ('ishaboard [offset]', 'Leaderboard rozdávání negativní karmy.'),
-             (review_add_format[4:], 'Přidá recenzi na předmět.'),
-             (review_get_format[1:], 'Vypíše recenze na vybraný předmět.'),
-             (review_remove_format[1:], 'Odstraní hodnocení.'),
+             (review_add_format_short[4:].replace('`',''), 'Přidá recenzi na předmět.'),
+             (review_get_format[4:].replace('`',''), 'Vypíše recenze na vybraný předmět.'),
+             (review_remove_format[4:].replace('`',''), 'Odstraní hodnocení.'),
              ('vote', 'Zahájí hlasování.')],
             [('roll X Y',
               'Vygeneruje náhodné celé číslo z intervalu <**X**, **Y**>.'),

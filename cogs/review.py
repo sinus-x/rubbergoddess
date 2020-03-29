@@ -84,7 +84,7 @@ class Review(commands.Cog):
                 if not embed:
                     await ctx.send(messages.review_wrong_subject)
                     return
-                msg = await ctx.send(embed=embed)
+                msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
                 footer = msg.embeds[0].footer.text.split('|')[0]
                 if msg.embeds[0].description[-1].isnumeric():
                     if footer != "Review: 1/1 ":
@@ -97,6 +97,7 @@ class Review(commands.Cog):
                     if msg.embeds[0].fields[3].name == "Text page":
                         await msg.add_reaction("🔼")
                         await msg.add_reaction("🔽")
+                await ctx.message.delete(delay=config.delay_message)
 
     @reviews.error
     async def review_error(self, ctx, error):

@@ -85,7 +85,8 @@ class Base(commands.Cog):
             except discord.errors.Forbidden:
                 return
         else:
-            msg = await ctx.send(embed=embed)
+            msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
+            await ctx.message.delete(delay=config.delay_message)
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
 
