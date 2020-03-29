@@ -6,6 +6,7 @@ from discord.ext import commands
 
 import utils
 from config import config, messages
+from config.emotes import Emotes as emote
 from logic import convert
 from features import verification
 from repository import user_repo
@@ -357,7 +358,7 @@ class FitWide(commands.Cog):
                                           send_messages=True)
 
         await ctx.send('Holy fuck, vsechno se povedlo, '
-                       'tak zase za rok <:Cauec:602052606210211850>')
+                       'tak zase za rok ' + emote.wave)
 
     # TODO: the opposite of increment_roles (for rollback and testing)
     # and role_check to check if peoples roles match the database
@@ -434,8 +435,7 @@ class FitWide(commands.Cog):
     @offer_subjects.error
     async def fitwide_checks_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            await ctx.send('Nothing to see here comrade. ' +
-                           '<:KKomrade:484470873001164817>')
+            await ctx.send('Nothing to see here comrade. ' + emote.ok)
 
 def setup(bot):
     bot.add_cog(FitWide(bot))

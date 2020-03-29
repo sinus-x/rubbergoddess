@@ -7,6 +7,7 @@ from emoji import demojize
 
 import utils
 from config import config, messages
+from config.emotes import Emotes as emotes
 from features.base_feature import BaseFeature
 from repository.karma_repo import KarmaRepository
 from repository.database.karma import Karma as Database_karma
@@ -309,12 +310,12 @@ class Karma(BaseFeature):
             if order == "DESC":
                 column = 'positive'
                 attribute = Database_karma.positive.desc()
-                emote = "<:peepolove:562305740132450359>"
+                emote = emotes.love
                 output += emote + "KARMA GIVINGBOARD " + emote + "\n"
             else:
                 column = 'negative'
                 attribute = Database_karma.negative.desc()
-                emote = "<:ishagrin:638277508651024394>"
+                emote = emotes.ree
                 output += emote + " KARMA ISHABOARD " + emote + "\n"
         elif action == 'get':
             column = 'karma'
@@ -324,7 +325,7 @@ class Karma(BaseFeature):
                 output += emote + " KARMA LEADERBOARD " + emote + "\n"
             else:
                 attribute = Database_karma.karma
-                emote = "<:coolStoryArcasCZ:489539455271829514>"
+                emote = emotes.facepalm
                 output += emote + " KARMA BAJKARBOARD " + emote + "\n"
         else:
             raise Exception('Action neni get/give')

@@ -1,6 +1,7 @@
 backups/
 config/config.py
 config/config.fektwide.py
+config/emotes.py
 __pycache__
 .idea
 .venv/

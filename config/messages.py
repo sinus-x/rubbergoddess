@@ -1,5 +1,5 @@
 from config import config
-
+from config.emotes import Emotes as emote
 
 class Messages:
     prefix = config.Config.default_prefix
@@ -26,18 +26,17 @@ class Messages:
     acl_edit_user = "Vyjimka pro uzivatele upravena."
     acl_del_user = "Vyjimka pro uzivatele smazana."
 
-    no_such_command = "Takový příkaz neznám. <:sadcat:691413849978568724>"
-    spamming = "{user} Nespamuj tolik <:sadcat:691413849978568724>"
+    no_such_command = "Takový příkaz neznám. " + emote.sad
+    spamming = "{user} Nespamuj tolik" + emote.sad
     insufficient_rights = "{user}, na použití tohoto příkazu nemáš právo."
     vote_room_only = "Tohle funguje jen v {room}."
-    bot_room_redirect = "{user} <:sadcat:691413849978568724> 👉 <#{bot_room}>\n"
+    bot_room_redirect = "{user} " + emote.sad + " 👉 <#{bot_room}>\n"
     message_link_prefix = 'https://discordapp.com/channels/' + str(config.Config.guild_id) + '/'
 
     uhoh_counter = "{uhohs} uh ohs od spuštění."
     uptime_message = "Up since:  `{boottime}`\nUptime:\t`{uptime}`"
 
-    kachna_grillbot = "<:wutcat:692496001155596388> Tady kachna není, " \
-        "běž na FIT: " + config.Config.kachna_link
+    kachna_grillbot = emote.wtf + " Tady kachna není, běž na FIT: " + config.Config.kachna_link
     
     rolehoarders_none = "Žádné jsem nenašla."
 
@@ -134,8 +133,8 @@ class Messages:
         "Pouze čas použije dnešní datum, pouze datum použije čas 00:00.\n" \
         "Bez argumentů času bude hlasování funkční neustále.\n" \
         "(Indikace výherné možnosti přežije i vypnutí.)"
-    vote_not_emoji = "{not_emoji} není emoji. <:sadcat:691413849978568724>"
-    vote_bad_date = "Hlasování může skončit jen v budoucnosti. <:objection:692102817120518145>"
+    vote_not_emoji = "{not_emoji} není emoji. " + emote.sad
+    vote_bad_date = "Hlasování může skončit jen v budoucnosti. " + emote.objection
 
     vote_winning = "Prozatím vyhrává možnost {winning_emoji} „{winning_option}“ s {votes} hlasy."
     vote_winning_multiple = "Prozatím vyhrávají možnosti {winning_emojis} s {votes} hlasy."
@@ -144,7 +143,7 @@ class Messages:
 
     vote_result = "V hlasování „{question}“ vyhrála možnost {winning_emoji} „{winning_option}“ s {votes} hlasy."
     vote_result_multiple = "V hlasování „{question}“ vyhrály možnosti {winning_emojis} s {votes} hlasy."
-    vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. <:sadcat:691413849978568724>"
+    vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. " + emote.sad
 
     review_format = prefix + "reviews [add, remove, zkratka předmětu]"
     review_add_format = "```" + prefix + "reviews add {ZkratkaPredmetu} {0-4, 0 ~ bez problémů} [anonym] {Text recenze}```\n" \
@@ -171,10 +170,10 @@ class Messages:
     git_pr = "https://github.com/sinus-x/rubbergoddess/pulls"
     git_issues = "https://github.com/sinus-x/rubbergoddess/issues"
     uhoh = "uh oh"
-    question = ["nech mě <:sadcat:691413849978568724>"]
+    question = ["nech mě " + emote.sad, "nech mě " + emote.angry, emote.angry, emote.ree]
     
-    name_day_cz = "Dnes má svátek {name}"
-    name_day_sk = "Dnes má meniny {name}"
+    name_day_cz = "Dnes má svátek {name}" + emote.happy
+    name_day_sk = "Dnes má meniny {name}" + emote.happy
 
     info = [[('karma', 'Vypíše vaši karmu, kolik pozitivní a negativní karmy jste rozdali.'),
              ('karma stalk [user]', 'Vypíše karmu uživatele, kolik +/- karmy rozdal.'),

@@ -47,9 +47,9 @@ class weather(commands.Cog):
         elif(str(res["cod"]) == "404"):
             await ctx.send("Město nenalezeno")
         elif(str(res["cod"]) == "401"):
-            await ctx.send("Rip token -> Rebel pls fix")
+            await ctx.send("Rip token")
         else:
-            await ctx.send("Město nenalezeno! <:pepeGun:484470874246742018> (" + res["message"] + ")")
+            await ctx.send("Město nenalezeno! " + emote.panic + " (" + res["message"] + ")")
 
 def setup(bot):
     bot.add_cog(weather(bot))

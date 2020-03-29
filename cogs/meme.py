@@ -5,6 +5,7 @@ from discord.ext import commands
 
 import utils
 from config import config, messages
+from config.emotes import Emotes as emote
 
 config = config.Config
 messages = messages.Messages
@@ -52,7 +53,7 @@ class Meme(commands.Cog):
         if user is None:
             user = ctx.author
         elif user == self.bot.user:
-            await ctx.send("<:huggers:602823825880514561>")
+            await ctx.send(emote.hug_left)
             return
 
         emojis = config.hug_emojis
