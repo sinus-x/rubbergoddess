@@ -1,3 +1,5 @@
+from config.emotes import Emotes as emote
+
 class Config:
     key = ''
     verification_role = ''
@@ -69,9 +71,7 @@ class Config:
         692626097669406720, # add-subjects
         692084608778633217  # add-roles
     ]
-    hug_emojis = ["<:peepoHug:600435649786544151>",
-                  "<:peepoHugger:602052621007585280>",
-                  "<:huggers:602823825880514561>", "(っ˘̩╭╮˘̩)っ", "(っ´▽｀)っ",
+    hug_emojis = [emote.hug_right, "(っ˘̩╭╮˘̩)っ", "(っ´▽｀)っ",
                   "╰(*´︶`*)╯", "(つ≧▽≦)つ", "(づ￣ ³￣)づ", "(づ｡◕‿‿◕｡)づ",
                   "(づ￣ ³￣)づ", "(っ˘̩╭╮˘̩)っ", "⁽₍੭ ՞̑◞ළ̫̉◟՞̑₎⁾੭",
                   "(੭ु｡╹▿╹｡)੭ु⁾⁾", "(*´σЗ`)σ", "(っ´▽｀)っ", "(っ´∀｀)っ",
@@ -138,7 +138,9 @@ class Config:
         "xpc-ca1", "xpc-ca2", "xpc-ca3", "xpc-ca4", "xpc-ca5", "xpc-mw1",
         "xpc-mw2", "xpc-mw3", "xpc-mw4"
     ]
-    reviews_forbidden_roles = ["VUT", "MUNI", "GUEST"]
+
+    roles_native = ["FEKT"]
+    roles_guest = ["VUT", "MUNI", "ČVUT", "UK", "GUEST"]
 
     # How many people to print if the limit argument is not specified
     rolehoarder_default_limit = 10

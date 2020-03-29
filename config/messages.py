@@ -27,7 +27,7 @@ class Messages:
     acl_del_user = "Vyjimka pro uzivatele smazana."
 
     no_such_command = "Takový příkaz neznám. " + emote.sad
-    spamming = "{user} Nespamuj tolik" + emote.sad
+    spamming = "{user} Nespamuj tolik " + emote.sad
     insufficient_rights = "{user}, na použití tohoto příkazu nemáš právo."
     vote_room_only = "Tohle funguje jen v {room}."
     bot_room_redirect = "{user} " + emote.sad + " 👉 <#{bot_room}>\n"
@@ -61,14 +61,14 @@ class Messages:
     karma_emote_not_found = "Emote jsem na serveru nenašla."
     karma_get_format = "Použití:\n" \
                        "`" + prefix + "karma get`: vypíše všechny emoty s hodnotou.\n" \
-                       "`" + prefix + "karma get [emote]`: vrátí hodnotu daného emotu."
+                       "`" + prefix + "karma get <emote>`: vrátí hodnotu daného emotu."
     karma_get = "Hodnota {emote} je {value}."
     karma_get_emote_not_voted = "{emote} není ohodnocen."
     karma_give_format = "Cauchy pls, formát je `" + prefix + "karma give [number] [user(s)]`"
     karma_give_format_number = "Cauchy pls, formát je `" + prefix + "karma give [number, ne {input}] [user(s)]` "
     karma_give_success = "Karma byla úspěšně přidaná."
     karma_give_negative_success = "Karma byla úspěšně odebraná."
-    karma_message_format = prefix + "karma message [url, id]"
+    karma_message_format = prefix + "karma message [<url>|<id>]"
     member_not_found = "{user} Nikoho takového jsem nenašla."
     karma_lederboard_offser_error = "{user} Špatný offset, zadej kladné číslo"
 
@@ -94,8 +94,7 @@ class Messages:
     rd_too_many_dice_sides = "Příliš moc stěn na kostkách, maximum je {maximum}."
     rd_too_many_dice_groups = "Příliš moc skupin kostek, maximum je {maximum}."
     rd_format = "Chybná syntax hodu ve skupině {group}."
-    rd_help = "Formát naleznete na " \
-              "https://wiki.roll20.net/Dice_Reference\n" \
+    rd_help = "Formát naleznete na https://wiki.roll20.net/Dice_Reference\n" \
               "Implementovány featury podle obsahu: **8. Drop/Keep**"
 
     verify_already_verified = "{user} Už jste byli ověřeni ({admin} pls)."
@@ -124,10 +123,10 @@ class Messages:
     verify_verify_not_found = "{user} Login nenalezen nebo jste tímto krokem již prošli ({admin} pls)."
     verify_verify_wrong_code = "{user} Špatný kód."
 
-    vote_format = "Použití vote:\n```" + \
-        prefix + "vote [datum] [čas] [otázka]\n" \
-        "[emoji] [odpověď 1]\n" \
-        "[emoji] [odpověď 2]\n" \
+    vote_format = "Použití vote:\n```" \
+        + prefix + "vote [datum] [čas] [otázka]\n" \
+        "<emote> <odpověď 1>\n" \
+        "<emoji> <odpověď 2>\n" \
         "...```\n" \
         "Datum je ve formátu `dd.MM.(yy)`, čas `hh:mm`.\n" \
         "Pouze čas použije dnešní datum, pouze datum použije čas 00:00.\n" \
@@ -176,16 +175,16 @@ class Messages:
     name_day_sk = "Dnes má meniny {name} " + emote.happy
 
     info = [[('karma', 'Vypíše vaši karmu, kolik pozitivní a negativní karmy jste rozdali.'),
-             ('karma stalk [user]', 'Vypíše karmu uživatele, kolik +/- karmy rozdal.'),
+             ('karma stalk <user>', 'Vypíše karmu uživatele, kolik +/- karmy rozdal.'),
              ('karma get',
               'Vypíše, které emoty mají hodnotu 1 a -1.'),
-             ('karma get [emote]',
+             ('karma get <emote>',
               'Vrátí karma hodnotu emotu.'),
              ('karma vote',
               'Odstartuje hlasování o hodnotě zatím neohodnoceného emotu.'),
-             ('karma revote [emote]',
+             ('karma revote <emote>',
               'Odstartuje hlasování o nové hodnotě emotu.'),
-             ('karma message [url, id]',
+             ('karma message [<url>|<id>]',
               'Zobrazí karmu získanou za zprávu')],
             [('leaderboard [offset]', 'Karma leaderboard'),
              ('bajkarboard [offset]', 'Karma leaderboard v opačném pořadí'),
