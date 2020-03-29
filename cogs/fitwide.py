@@ -120,6 +120,46 @@ class FitWide(commands.Cog):
 
         return
 
+    @commands.check(is_admin)
+    @commands.command()
+    async def purge(self, ctx, channel, limit = None, stopAtPin = None):
+        #TODO Add user argument
+        guild = self.bot.get_guild(config.guild_id)
+        ch = discord.utils.get(guild.channels, name=channel.replace("#", ""))
+        pin = False
+        deleted = 0
+
+        if limit:
+            try:
+                limit = int(limit) + 1
+            except ValueError:
+                self.purgeHelp()
+        if stopAtPin and stopAtPin == "pin":
+            pin = True
+
+        if limit:
+            msgs = ch.history(limit=limit)
+        else:
+            msgs = ch.history()
+        async for m in msgs:
+            if pin and m.pinned:
+                await ctx.send(":point_up_2: pinned " + emote.happy)
+                return
+            try:
+                await m.delete()
+            except discord.HTTPException:
+                await ctx.send("HTTPException " + emote.ree)
+                return
+
+
+    @purge.error
+    async def purgeHelp(self, ctx, error):
+        # print embed
+        embed = discord.Embed(title="?purge", color=config.color)
+        embed.add_field(name="Usage:", value="?purge <channel> [<count>] [pin]")
+        await ctx.send(embed=embed)
+
+
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(is_admin)
     @commands.command()
