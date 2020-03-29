@@ -19,38 +19,35 @@ class Review(commands.Cog):
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def reviews(self, ctx, subcommand=None, subject=None,
-                      tier: int = None, *args):
+    async def reviews(self, ctx, subcommand=None, subject=None, tier: int = None, *args):
+        anonym = False
         if subcommand is None:
             await ctx.send(messages.review_format)
         else:
             if isinstance(ctx.message.channel, discord.DMChannel):
                 guild = self.bot.get_guild(config.guild_id)
                 roles = guild.get_member(ctx.message.author.id).roles
+                anonym = True
             else:
                 roles = ctx.message.author.roles
             if subcommand == 'add':
                 for role in roles:
-                    if role.name in config.reviews_forbidden_roles:
-                        await ctx.send(utils.fill_message("review_add_denied",
-                                       user=ctx.message.author.id))
+                    if role.name in config.roles_guest:
+                        await ctx.send(utils.fill_message(
+                            "review_add_denied", user=ctx.message.author.id))
                         return
                 if subject is None or tier is None:
                     await ctx.send(messages.review_add_format)
                     return
                 author = ctx.message.author.id
-                anonym = False
-                if tier < 0 or tier > 4:
+                if tier < 1 or tier > 5:
                     await ctx.send(messages.review_tier)
                     return
-                if args:
-                    if args[0] == "anonym":
-                        anonym = True
-                        args = args[1:]
-                    args = ' '.join(args)
                 args_len = len(args)
                 if args_len == 0:
                     args = None
+                else:
+                    args = ' '.join(args)
                 try:
                     self.rev.add_review(author, subject.lower(), tier, anonym, args)
                 except Exception:
