@@ -3,13 +3,14 @@ import traceback
 from discord.ext import commands
 
 import utils
-from config import config
+from config.config import Config as config
 from features import presence
 from repository.database import database, session
 from repository.user_repo import UserRepository
 from repository.review_repo import ReviewRepository
 
-config = config.Config
+import discord
+from datetime import datetime
 
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or(*config.command_prefix),
@@ -29,6 +30,16 @@ def load_subjects():
 async def on_ready():
     """If Rubbergoddess is ready"""
     print("Ready")
+    channel = bot.get_channel(config.log_channel)
+    embed = discord.Embed(title="Informace o spuštění", color=config.color)
+    embed.add_field(inline=False,
+        name="{timestamp}".format(timestamp=datetime.now().
+            strftime("%Y-%m-%d %H:%M:%S")),
+        value="Commit **{commit}**".format(commit=utils.git_hash()[:7]))
+    embed.add_field(inline=False,
+        name="Povolená rozšíření",
+        value=", ".join(config.extensions))
+    await channel.send(embed=embed)
 
     await presence.set_presence()
 
