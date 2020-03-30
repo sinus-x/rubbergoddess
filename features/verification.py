@@ -76,9 +76,12 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         self.repo.save_code(code=code, discord_id=str(message.author.id))
         # print approving answer
         domain = email.split("@")[1]
+        c = "?verify "
+        c += "**[redacted]**@"+domain if group not in ["FEKT", "VUT"] \
+                                            else group + "** [redacted]**"
         identifier = "xlogin00" if email.endswith("vutbr.cz") else "e-mail"
         await message.channel.send(utils.fill_message(
-            "verify_send_success", user=message.author.id, mail=domain, id=identifier))
+            "verify_send_success", user=message.author.id, command=c, id=identifier))
 
     async def send_code(self, message):
         # get variables
