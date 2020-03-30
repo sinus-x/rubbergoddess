@@ -1,4 +1,3 @@
-import re
 import traceback
 
 from discord.ext import commands
@@ -7,9 +6,7 @@ import utils
 from config import config
 from features import presence
 from repository.database import database, session
-from repository.database.karma import Karma, Karma_emoji
-from repository.database.review import Review, ReviewRelevance, Subject
-from repository.database.verification import Permit, Valid_person
+from repository.user_repo import UserRepository
 from repository.review_repo import ReviewRepository
 
 config = config.Config
@@ -104,7 +101,6 @@ async def missing_arg_error(ctx, error):
 database.base.metadata.create_all(database.db)
 session.commit()  # Making sure
 
-#load_dump()
 #load_subjects()
 
 for extension in config.extensions:

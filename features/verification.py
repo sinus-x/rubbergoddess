@@ -9,8 +9,9 @@ from discord import Member
 from discord.ext.commands import Bot
 
 import utils
-from config.config import Config
-from config.messages import Messages
+from config.config import Config as config
+from config.messages import Messages as messages
+from config.emotes import Emotes as emote
 from features.base_feature import BaseFeature
 from repository.user_repo import UserRepository
 
@@ -45,217 +46,209 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         msg = MIMEMultipart('alternative')
         #FIXME can this be abused?
         msg['Subject'] = "VUT FEKT verify → {}".format(user_name)
-        msg['From'] = Config.email_addr
+        msg['From'] = config.email_addr
         msg['To'] = receiver_email
-        msg['Bcc'] = Config.email_addr
+        msg['Bcc'] = config.email_addr
         msg.attach(MIMEText(cleartext, 'plain'))
         msg.attach(MIMEText(richtext, 'html'))
 
-        with smtplib.SMTP(Config.email_smtp_server, Config.email_smtp_port) as server:
+        with smtplib.SMTP(config.email_smtp_server, config.email_smtp_port) as server:
             server.starttls()
             server.ehlo()
-            server.login(Config.email_addr, Config.email_pass)
+            server.login(config.email_addr, config.email_pass)
             server.send_message(msg)
 
     async def has_role(self, user, role_name):
         if type(user) == Member:
             return utils.has_role(user, role_name)
         else:
-            guild = await self.bot.fetch_guild(Config.guild_id)
+            guild = await self.bot.fetch_guild(config.guild_id)
             member = await guild.fetch_member(user.id)
             return utils.has_role(member, role_name)
 
-    async def gen_code_and_send_mail(self, message, login, mail_postfix):
-        # Generate a verification code
+    async def gen_code_and_send_mail(self, message, email):
+        # generate code
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
-        self.send_mail(message.author, login + mail_postfix, code)
-
-        # Save the newly generated code into the database
-        self.repo.save_sent_code(login, code)
-
-        await message.channel.send(utils.fill_message("verify_send_success",
-                                   user=message.author.id, mail=mail_postfix))
+        # send mail
+        self.send_mail(message.author, email, code)
+        # save the newly generated code into the database
+        self.repo.save_code(code=code, discord_id=str(message.author.id))
+        # print approving answer
+        domain = email.split("@")[1]
+        identifier = "xlogin00" if email.endswith("vutbr.cz") else "e-mail"
+        await message.channel.send(utils.fill_message(
+            "verify_send_success", user=message.author.id, mail=domain, id=identifier))
 
     async def send_code(self, message):
-        if len(str(message.content).split(" ")) != 3:
-            await message.channel.send(Messages.verify_verify_format)
+        # get variables
+        args = str(message.content).split(" ")
+        login = None
+        group = None
+        if len(args) == 2:
+            login = args[1]
+        elif len(args) == 3:
+            group = args[1]
+            login = args[2]
+        else:
+            await message.channel.send(messages.verify_send_format)
             return
 
         # check if the user doesn't have the verify role
-        if not await self.has_role(message.author, Config.verification_role):
-            almamater = str(message.content).split(" ")[1]
-            login = str(message.content).split(" ")[2]
-
+        if await self.has_role(message.author, config.verification_role):
+            await message.channel.send(utils.fill_message("verify_already_verified",
+                user=message.author.id))
+        else:
+            errmsg = None
+            if login == "e-mail":
+                errmsg = "verify_no_email"
             if login == "xlogin00":
-                guild = self.bot.get_guild(Config.guild_id)
-                await message.channel.send(utils.fill_message("verify_send_dumbshit",
+                errmsg = "verify_no_login"
+            if errmsg:
+                await message.channel.send(utils.fill_message(errmsg,
                     user=message.author.id, emote=emote.facepalm))
                 return
 
-            # 0 ... verified
-            # 1 ... unverified
-            # 2 ... pending
-            unsuccessfull = False
-            if almamater.upper() == "FEKT":
-                if self.repo.get_user(login, status=0) is None and \
-                   self.repo.get_user(login, status=2) is None:
-                    if self.repo.get_user(login, status=1) is None:
-                        self.repo.add_user(login, "FEKT", status=2)
-                    await self.gen_code_and_send_mail(message, login, "@stud.feec.vutbr.cz")
-                else:
-                    unsuccessfull = True
-            elif almamater.upper() == "VUT":
-                if self.repo.get_user(login, status=0) is None and \
-                   self.repo.get_user(login, status=2) is None:
-                    if self.repo.get_user(login, status=1) is None:
-                        self.repo.add_user(login, "VUT", status=2)
-                    await self.gen_code_and_send_mail(message, login, "@vutbr.cz")
-                else:
-                    unsuccessfull = True
-            elif almamater.upper() == "MUNI":
-                try:
-                    int(login)
-                except ValueError:
-                    unsuccessfull = True
+            # unknown - pending - verified - kicked - banned
+            errmsg = None
+            u = self.repo.get_user(login=login, discord_id=str(message.author.id))
 
-                if self.repo.get_user(login, status=0) is None and \
-                   self.repo.get_user(login, status=2) is None:
-                    if self.repo.get_user(login, status=1) is None:
-                        self.repo.add_user(login, "MUNI", status=2)
-                    await self.gen_code_and_send_mail(message, login, "@mail.muni.cz")
+            if u is None or u and u.status == "unknown":
+                # send verify message
+                if group and group.upper() == "FEKT":
+                    email = "{}@stud.feec.vutbr.cz".format(login)
+                elif group and group.upper() == "VUT":
+                    email = "{}@vutbr.cz".format(login)
                 else:
-                    unsuccessfull = True
+                    if "@" not in login:
+                        await message.channel.send(utils.fill_message("verify_no_email",
+                            user=message.author.id, emote=emote.facepalm))
+                        return
+                    email = login
+                    if login.endswith("muni.cz"):
+                        group = "MUNI"
+                    elif login.endswith("cuni.cz"):
+                        group = "CUNI"
+                    elif login.endswith("cvut.cz"):
+                        group = "ČVUT"
+                    else:
+                        group = "GUEST"
+                self.repo.add_user(login, group, status="pending", discord_id=str(message.author.id))
+                await self.gen_code_and_send_mail(message, email)
+
+            elif u.status == "pending":
+                # say that message has been sent
+                await message.channel.send(utils.fill_message(
+                    "verify_already_sent", user=message.author.id, admin=config.admin_id))
+
+            elif u.status == "verified":
+                # say that the user is already verified
+                #TODO do nothing if not in #jail
+                await message.channel.send(utils.fill_message(
+                    "verify_already_verified", user=message.author.id))
+
+            elif u.status == "kicked":
+                # say that the user has been kicked before
+                errmsg = "Pokus o verify s *kicked* záznamem"
+                await message.channel.send(utils.fill_message(
+                    "verify_send_kicked", user=message.author.id, admin=config.admin_id))
+
+            elif u.status == "banned":
+                # say that the user has been banned before
+                errmsg = "Pokus o verify s *banned* záznamem"
+                await message.channel.send(utils.fill_message(
+                    "verify_send_banned", user=message.author.id, admin=config.admin_id))
+
             else:
-                unsuccessfull = True
+                # show help
+                await message.channel.send(utils.fill_message(
+                    "verify_send_format", user=message.author.id))
 
-            if unsuccessfull:
-                await message.channel.send(utils.fill_message("verify_send_not_found",
-                    user=message.author.id, admin=Config.admin_id))
-                embed = discord.Embed(title="Neúspěšný pokus o verify", color=Config.color)
+            if errmsg:
+                embed = discord.Embed(title=errmsg, color=config.color)
                 embed.add_field(name="User", value=utils.generate_mention(message.author.id))
                 embed.add_field(name="Message", value=message.content, inline=False)
-                channel = self.bot.get_channel(Config.log_channel)
+                channel = self.bot.get_channel(config.log_channel)
                 await channel.send(embed=embed)
-        else:
-            await message.channel.send(utils.fill_message("verify_already_verified",
-                                       user=message.author.id, admin=Config.admin_id))
+
         try:
             await message.delete()
-        except discord.errors.HTTPException:
+        except discord.Errors.HTTPException:
             return
-
-    #TODO
-    @staticmethod
-    def transform_year (almamater: str):
-        if almamater == "FEKT":
-            am = "FEKT"
-        elif almamater == "VUT":
-            am = "VUT"
-        elif len(almamater) == 1:
-            if almamater[0] == "MUNI":
-                am = "MUNI"
-        return am
 
     async def verify (self, message):
-        """"Verify if login is from database"""
-        if len(str(message.content).split(" ")) != 3:
-            await message.channel.send(Messages.verify_verify_format)
+        """Verify user entry in database"""
+        # get variables
+        if len(str(message.content).split(" ")) != 2:
+            await message.channel.send(messages.verify_verify_format)
             return
+        code = str(message.content).split(" ")[1]
 
-        login = str(message.content).split(" ")[1]
-        code = str(message.content).split(" ")[2]
+        # only process users that are not verified
+        if not await self.has_role(message.author, config.verification_role):
+            guild = self.bot.get_guild(config.guild_id)
 
-        # Check if the user doesn't have the verify role
-        # otherwise they wouldn't need to verify, right?
-        if not await self.has_role(message.author, Config.verification_role):
-        	# test default input
-            if login == "identifikátor":
-                guild = self.bot.get_guild(Config.guild_id)
-                emote = await guild.fetch_emoji(692103675384037458)
-                await message.channel.send(utils.fill_message("verify_send_dumbshit",
-                                           user=message.author.id, emote=str(emote)))
+            # test for common errors
+            errmsg = None
+            if code == "kód" or code == "kod":
+                await message.channel.send(utils.fill_message("verify_verify_no_code",
+                    user=message.author.id, emote=emote.facepalm))
                 return
-            if code == "kód":
-                guild = self.bot.get_guild(Config.guild_id)
+
+            new_user = self.repo.get_user(discord_id=str(message.author.id))
+            errmsg = None
+            if new_user is None:
                 await message.channel.send(utils.fill_message(
-                	"verify_verify_dumbshit", user=message.author.id, emote=emote.facepalm))
-                return
-
-            new_user = self.repo.get_user(login)
-
-            if new_user is not None:
-                # check the code
-                if code != new_user.code:
-                    await message.channel.send(utils.fill_message("verify_verify_wrong_code", user=message.author.id))
-                    embed = discord.Embed(title="Neuspesny pokus o verify (kod)", color=0xeee657)
-                    embed.add_field(name="User", value=utils.generate_mention(message.author.id))
-                    embed.add_field(name="Message", value=message.content, inline=False)
-                    channel = self.bot.get_channel(Config.log_channel)
-                    await channel.send(embed=embed)
-                    return
-
-                # try get the year role
-                year = self.transform_year(new_user.year)
-
-                if year is None:
-                    await message.channel.send(utils.fill_message(
-                        "verify_verify_manual",
-                        user=message.author.id,
-                        admin=Config.admin_id,
-                        year=str(new_user.year)
-                        )
-                    )
-
-                    embed = discord.Embed(title="Neuspesny pokus o verify (manual)",
-                                          color=0xeee657)
-                    embed.add_field(name="User", value=utils.generate_mention(message.author.id))
-                    embed.add_field(name="Message", value=message.content, inline=False)
-                    channel = self.bot.get_channel(Config.log_channel)
-                    await channel.send(embed=embed)
-                    return
-
-                try:
-                    # Get server verify role
-                    verify = discord.utils.get(message.guild.roles, name=Config.verification_role)
-                    year = discord.utils.get(message.guild.roles, name=year)
-                    member = message.author
-                except AttributeError:
-                    # jsme v PM
-                    guild = self.bot.get_guild(Config.guild_id)
-                    verify = discord.utils.get(
-                        guild.roles,
-                        name=Config.verification_role)
-                    year = discord.utils.get(guild.roles, name=year)
-                    member = guild.get_member(message.author.id)
-
-                await member.add_roles(verify)
-                await member.add_roles(year)
-
-                self.repo.save_verified(login, message.author.id)
-
-                await member.send(utils.fill_message("verify_verify_success", user=message.author.id))
-                guild = self.bot.get_guild(Config.guild_id)
-                fekt = discord.utils.get(guild.roles, name="FEKT")
-                if fekt in member.roles:
-                    await member.send(Messages.verify_post_verify_fekt)
-                else:
-                    await member.send(Messages.verify_post_verify_guest)
-
-                if message.channel.type is not discord.ChannelType.private:
-                    await message.channel.send(utils.fill_message("verify_verify_success", user=message.author.id))
+                    "verify_verify_not_found", user=message.author.id,
+                    admin=config.admin_id))
             else:
-                await message.channel.send(utils.fill_message(
-                    "verify_verify_not_found", user=message.author.id, admin=Config.admin_id))
-                embed = discord.Embed(title="Neuspesny pokus o verify", color=Config.color)
+                # check the verification code
+                if code.upper() != new_user.code:
+                    await message.channel.send(utils.fill_message(
+                        "verify_verify_wrong_code", user=message.author.id))
+                    errmsg = "Neúspěšný pokus o verifikaci kódem"
+                else:
+                    group = new_user.group
+
+                    if group is None:
+                        await message.channel.send(utils.fill_message(
+                            "verify_verify_manual", user=message.author.id, admin=config.admin_id))
+                        errmsg = "Neúspěšný pokus o verifikaci kódem (chybí skupina)"
+                    else:
+                        # add verify role
+                        guild = self.bot.get_guild(config.guild_id)
+                        try:
+                            verify = discord.utils.get(message.guild.roles,
+                                name=config.verification_role)
+                            role = discord.utils.get(message.guild.roles, name=group)
+                            member = message.author
+                            await message.channel.send(utils.fill_message(
+                                "verify_verify_success_public", user=message.author.id,
+                                group=group))
+                        except AttributeError:
+                            # DM
+                            verify = discord.utils.get(guild.roles,
+                                name=config.verification_rolei)
+                            role = discord.utils.get(guild.roles, name=group)
+                            member = guild.get_member(message.author.id)
+                        await member.add_roles(verify)
+                        await member.add_roles(role)
+
+                        # save to database
+                        self.repo.save_verified(discord_id=str(message.author.id))
+
+                        # text user
+                        await member.send(utils.fill_message(
+                            "verify_verify_success_private", user=message.author.id))
+                        if role.name == "FEKT":
+                            await member.send(messages.verify_congrats_fekt)
+                        else:
+                            await member.send(messages.verify_congrats_guest)
+            if errmsg:
+                embed = discord.Embed(title=errmsg, color=config.color)
                 embed.add_field(name="User", value=utils.generate_mention(message.author.id))
                 embed.add_field(name="Message", value=message.content, inline=False)
-                channel = self.bot.get_channel(Config.log_channel)
+                channel = self.bot.get_channel(config.log_channel)
                 await channel.send(embed=embed)
-        else:
-            await message.channel.send(utils.fill_message(
-                "verify_already_verified", user=message.author.id, admin=Config.admin_id))
-
         try:
             await message.delete()
         except discord.errors.Forbidden:

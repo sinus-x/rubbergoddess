@@ -11,7 +11,7 @@ from logic import convert
 from features import verification
 from repository import user_repo
 from repository.database import database, session
-from repository.database.verification import Valid_person, Permit
+from repository.database.verification import User
 from repository.database.year_increment import User_backup
 
 user_r = user_repo.UserRepository()
