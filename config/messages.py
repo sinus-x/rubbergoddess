@@ -7,24 +7,6 @@ class Messages:
     server_warning = "Tohle funguje jen na VUT FEKT serveru."
     karma_get_missing = "Cauchy, musela jsem za tebe uklidit."
     missing_perms = "Na tohle nemáš prava. {user}"
-    acl_help = "{user}, Pouziti:\n`!acl {{action}} {{table}} [args]`\n"\
-               "action: add, edit, del nebo list\n"\
-               "table: group, rule, role nebo user\n"\
-               "args zalezi na zvolene akci a tabulce, napriklad kdyz chcete"\
-               "pridat groupu, musite zadat nazev groupy a nepovinne take "\
-               "ID rodice jako argumnet"  # TODO: Correct to proper czech
-    acl_add_group = "Group vytvorena."
-    acl_edit_group = "Group zmenena."
-    acl_del_group = "Group smazana."
-    acl_add_rule = "Pravidlo vytvoreno."
-    acl_edit_rule = "Pravidlo zmeneno."
-    acl_del_rule = "Pravidlo smazano."
-    acl_add_role = "Vyjimka pro roli pridana."
-    acl_edit_role = "Vyjimka pro roli upravena."
-    acl_del_role = "Vyjimka pro roli smazana."
-    acl_add_user = "Vyjimka pro uzivatele pridana."
-    acl_edit_user = "Vyjimka pro uzivatele upravena."
-    acl_del_user = "Vyjimka pro uzivatele smazana."
 
     no_such_command = "Takový příkaz neznám. " + emote.sad
     spamming = "{user} Nespamuj tolik " + emote.sad
@@ -118,12 +100,13 @@ class Messages:
     verify_verify_wrong_code = "Špatný kód, {user}."
     verify_verify_manual = "{admin}, {user} asi nemá skupinu."
     verify_verify_success_private = "{user} Gratuluji k verifikaci!"
-    verify_verify_success_public = "Nový uživatel {user} byl úspěšně přidán s rolí **{group}**."
+    verify_verify_success_public = emote.wave + " Nový uživatel {user} byl úspěšně přidán s rolí **{group}**."
     verify_congrats_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
                            "V <#692084608778633217> získáš další role pro zájmy\n" \
                            "Obecné informace jsou v <#692084651849678938>."
     verify_congrats_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
                             "Obecné informace jsou v <#692084651849678938>."
+    verify_verify_format = "{user}, pro verifikaci použij: `" + prefix + "submit kód`"
 
     verify_wrong_channel = "To zde použít nejde, {user}"
 

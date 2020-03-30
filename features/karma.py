@@ -258,9 +258,11 @@ class Karma(BaseFeature):
     async def message_karma(self, channel_out, msg):
         author = channel_out.author
         reactions = msg.reactions
-        colour = 0x6d6a69
+        colour = cfg.color
         output = {'-1': [], '1': [], '0': []}
         karma = 0
+        if msg.channel in cfg.karma_banned_channels:
+            return karma
         for react in reactions:
             emoji = react.emoji
             val = self.repo.emoji_value_raw(emoji)

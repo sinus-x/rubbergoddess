@@ -106,6 +106,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         else:
             errmsg = None
             if login == "e-mail":
+                #FIXME this is also called if user supplies "FEKT" or "VUT"
                 errmsg = "verify_no_email"
             if login == "xlogin00":
                 errmsg = "verify_no_login"
@@ -130,7 +131,14 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                             user=message.author.id, emote=emote.facepalm))
                         return
                     email = login
-                    if login.endswith("muni.cz"):
+                    if login.endswith("stud.feec.vutbr.cz"):
+                        group = "FEKT"
+                    elif login.endswith("@feec.vutbr.cz"):
+                        group = "FEKT"
+                        email = email.replace("@feec", "@stud.feec")
+                    elif login.endswith("vutbr.cz"):
+                        group = "VUT"
+                    elif login.endswith("muni.cz"):
                         group = "MUNI"
                     elif login.endswith("cuni.cz"):
                         group = "CUNI"
@@ -140,7 +148,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         group = "VŠB"
                     else:
                         group = "GUEST"
-                self.repo.add_user(login, group, status="pending", discord_id=str(message.author.id))
+                self.repo.add_user(login, group.upper(), status="pending", discord_id=str(message.author.id))
                 await self.gen_code_and_send_mail(message, email, group=group)
 
             elif u.status == "pending":
