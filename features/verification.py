@@ -172,7 +172,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
         try:
             await message.delete()
-        except discord.Errors.HTTPException:
+        except discord.HTTPException:
             return
 
     async def verify (self, message):
@@ -227,7 +227,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         except AttributeError:
                             # DM
                             verify = discord.utils.get(guild.roles,
-                                name=config.verification_rolei)
+                                name=config.verification_role)
                             role = discord.utils.get(guild.roles, name=group)
                             member = guild.get_member(message.author.id)
                         await member.add_roles(verify)
@@ -251,5 +251,5 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                 await channel.send(embed=embed)
         try:
             await message.delete()
-        except discord.errors.Forbidden:
+        except discord.HTTPException:
             return
