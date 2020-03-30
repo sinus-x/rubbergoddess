@@ -51,6 +51,7 @@ class Config:
     vote_room = 692625063068827668       # bot-vote
     bot_room = 692484824769757265        # bot-spam
     mod_room = 691304580285202524        # mods
+    jail = 691291706116538429            # jail
 
     allowed_channels = [
         bot_room,
