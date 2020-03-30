@@ -7,6 +7,8 @@ services:
             - postgres_data:/var/lib/postgresql/data/
         environment:
             POSTGRES_HOST_AUTH_METHOD: "trust"
+            POSTGRES_LOG_MIN_LEVEL: "fatal"
+        command: ["postgres", "-c", "log_min_messages=fatal"]
     bot:
         build: .
         command: python rubbergoddess.py
