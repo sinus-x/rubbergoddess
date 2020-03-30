@@ -1,47 +1,62 @@
 from repository.base_repository import BaseRepository
 from repository.database import session
-from repository.database.verification import Permit, Valid_person
+from repository.database.verification import User
+
+from datetime import date
 
 class UserRepository(BaseRepository):
-    # 0 ... unknown
-    # 1 ... pending
-    # 2 ... verified
-    # 3 ... kicked
-    # 4 ... banned
+    # unknown - pending - verified - kicked - banned
 
-    def save_sent_code(self, login: str, code: str):
-        """Update a specified login with a new verification code"""
-        person = session.query(Valid_person).filter(Valid_person.login == login).one_or_none()
-        person.code = code
-        person.status = 1
+    def add_user(self, login: str, group: str = "GUEST", status: str = "unknown",
+        discord_id: str = ""):
+        """Add new user"""
+        session.add(User(login=login, group=group, status=status,
+            comment="Added automatically", discord_id=discord_id))
         session.commit()
 
-    def save_verified(self, login: str, discord_id: str):
+    def save_code(self, code: str, discord_id: str):
+        """Update a specified user with a new verification code"""
+        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
+        if not user:
+            self.add_user(discord_id)
+            user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
+        user.code = code
+        user.discord_id = discord_id
+        user.status = "pending"
+        user.comment = "Requested verification"
+        user.changed = date.today().strftime("%Y%m%d")
+        session.commit()
+
+    def save_verified(self, discord_id: str):
         """Insert login with discord name into database"""
-        session.add(Permit(login=login, discord_ID=discord_id))
-        person = session.query(Valid_person).filter(Valid_person.login == login).one_or_none()
-        person.status = 2
+        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
+        user.login = login
+        user.status = "verified"
+        user.comment = "Verified"
+        user.changed = date.today().strftime("%Y%m%d")
+        session.commit()
+
+    def update_status(self, login: str, status: str, comment: str):
+        """Update status"""
+        user = session.query(User).filter(User.login == login).one_or_none()
+        user.status = status
+        user.comment = comment
+        user.changed = date.today().strftime("%Y%m%d")
         session.commit()
 
     def has_unverified_login(self, login: str):
         """Check if there's a login """
-        #TODO check twice for FEKT/VUT option
-        query = session.query(Valid_person).filter(
-            Valid_person.login == login, Valid_person.status == 1).one_or_none()
+        #FIXME does not seem to be used anywhere
+        query = session.query(User).filter(
+            User.login == login, User.status == 0).one_or_none()
         return True if query is not None else False
 
-    def get_user(self, login: str, status):
+    def get_user(self, login: str = None, discord_id: str = None):
         """Find login from database"""
-        #TODO check twice for FEKT/VUT option
-        if not status:
-            user = session.query(Valid_person).filter(Valid_person.login == login).one_or_none()
+        if login:
+            user = session.query(User).filter(User.login == login).one_or_none()
+        elif discord_id:
+            user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         else:
-            user = session.query(Valid_person).filter(
-                Valid_person.login == login, Valid_person.status == status).one_or_none()
+            return
         return user
-
-    def add_user(self, login: str, group: str, status: int = 1):
-        #TODO check twice for FEKT/VUT option
-        """Find login from database"""
-        session.add(Valid_person(login=login, year=group, status=status))
-        session.commit()

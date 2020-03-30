@@ -72,7 +72,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         # send mail
         self.send_mail(message.author, email, code)
         # save the newly generated code into the database
-        self.repo.save_sent_code(email, code)
+        self.repo.save_code(code=code, discord_id=str(message.author.id))
         # print approving answer
         domain = email.split("@")[1]
         identifier = "xlogin00" if email.endswith("vutbr.cz") else "e-mail"
@@ -90,7 +90,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             group = args[1]
             login = args[2]
         else:
-            await message.channel.send(messages.verify_verify_format)
+            await message.channel.send(messages.verify_send_format)
             return
 
         # check if the user doesn't have the verify role
@@ -108,13 +108,11 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     user=message.author.id, emote=emote.facepalm))
                 return
 
-            # 0/NaN ... unknown
-            # 1 ....... pending
-            # 2 ....... verified
-            # 3 ....... kicked
-            # 4 ....... banned
+            # unknown - pending - verified - kicked - banned
             errmsg = None
-            if self.repo.get_user(login, status=None) is None:
+            u = self.repo.get_user(login=login, discord_id=str(message.author.id))
+
+            if u is None or u and u.status == "unknown":
                 # send verify message
                 if group and group.upper() == "FEKT":
                     email = "{}@stud.feec.vutbr.cz".format(login)
@@ -134,31 +132,37 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         group = "ČVUT"
                     else:
                         group = "GUEST"
-                self.repo.add_user(login, group, status=1)
+                self.repo.add_user(login, group, status=1, discord_id=str(message.author.id))
                 await self.gen_code_and_send_mail(message, email)
-            elif self.repo.get_user(login, status=1) is not None:
+
+            elif u.status == "pending":
                 # say that message has been sent
                 await message.channel.send(utils.fill_message(
                     "verify_already_sent", user=message.author.id, admin=config.admin_id))
-            elif self.repo.get_user(login, status=2) is not None:
+
+            elif u.status == "verified":
                 # say that the user is already verified
                 #TODO do nothing if not in #jail
                 await message.channel.send(utils.fill_message(
                     "verify_already_verified", user=message.author.id))
-            elif self.repo.get_user(login, status=3) is not None:
+
+            elif u.status == "kicked":
                 # say that the user has been kicked before
                 errmsg = "Pokus o verify s *kicked* záznamem"
                 await message.channel.send(utils.fill_message(
                     "verify_send_kicked", user=message.author.id, admin=config.admin_id))
-            elif self.repo.get_user(login, status=4) is not None:
+
+            elif u.status == "banned":
                 # say that the user has been banned before
                 errmsg = "Pokus o verify s *banned* záznamem"
                 await message.channel.send(utils.fill_message(
                     "verify_send_banned", user=message.author.id, admin=config.admin_id))
+
             else:
                 # show help
                 await message.channel.send(utils.fill_message(
                     "verify_send_format", user=message.author.id))
+
             if errmsg:
                 embed = discord.Embed(title=errmsg, color=config.color)
                 embed.add_field(name="User", value=utils.generate_mention(message.author.id))
@@ -174,49 +178,41 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
     async def verify (self, message):
         """Verify user entry in database"""
         # get variables
-        if len(str(message.content).split(" ")) != 3:
+        if len(str(message.content).split(" ")) != 2:
             await message.channel.send(messages.verify_verify_format)
             return
+        code = str(message.content).split(" ")[1]
+        print("DEBUG code = {}".format(code))
 
-        login = str(message.content).split(" ")[1]
-        code = str(message.content).split(" ")[2]
-
-        # only process non-VERIFY users
+        # only process users that are not verified
         if not await self.has_role(message.author, config.verification_role):
             guild = self.bot.get_guild(config.guild_id)
 
             # test for common errors
             errmsg = None
-            if login == "e-mail":
-                errmsg = "verify_no_email"
-            elif login == "xlogin00":
-                errmsg = "verify_no_login"
-            elif code == "kód":
-                errmsg = "verify_verify_no_code"
-            if errmsg:
-                await message.channel.send(utils.fill_message(errmsg,
+            if code == "kód" or code == "kod":
+                await message.channel.send(utils.fill_message("verify_verify_no_code",
                     user=message.author.id, emote=emote.facepalm))
                 return
 
-            new_user = self.repo.get_user(login, status=None)
+            new_user = self.repo.get_user(discord_id=str(message.author.id))
             errmsg = None
             if new_user is None:
-                await message.channel.send("verify_verify_not_found",
-                    user=message.author.id)
-                message.delete()
-                return
+                await message.channel.send(utils.fill_message(
+                    "verify_verify_not_found", user=message.author.id,
+                    admin=config.admin_id))
             else:
                 # check the verification code
-                if code.upper() != new_user.code.upper():
+                if code.upper() != new_user.code:
                     await message.channel.send(utils.fill_message(
                         "verify_verify_wrong_code", user=message.author.id))
                     errmsg = "Neúspěšný pokus o verifikaci kódem"
                 else:
-                    group = new_user.year
+                    group = new_user.group
 
                     if group is None:
                         await message.channel.send(utils.fill_message(
-                            "verify_verify_manual"))
+                            "verify_verify_manual", user=message.author.id, admin=config.admin_id))
                         errmsg = "Neúspěšný pokus o verifikaci kódem (chybí skupina)"
                     else:
                         # add verify role
@@ -227,7 +223,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                             role = discord.utils.get(message.guild.roles, name=group)
                             member = message.author
                             await message.channel.send(utils.fill_message(
-                                "verify_verify_success_info", user=message.author.id,
+                                "verify_verify_success_public", user=message.author.id,
                                 group=group))
                         except AttributeError:
                             # DM
@@ -239,11 +235,11 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         await member.add_roles(role)
 
                         # save to database
-                        self.repo.save_verified(login, message.author.id)
+                        self.repo.save_verified(discord_id=str(message.author.id))
 
                         # text user
                         await member.send(utils.fill_message(
-                            "verify_verify_success", user=message.author.id))
+                            "verify_verify_success_private", user=message.author.id))
                         if role.name == "FEKT":
                             await member.send(messages.verify_congrats_fekt)
                         else:

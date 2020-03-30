@@ -99,37 +99,30 @@ class Messages:
 
     # VERIFY
     verify_no_email = "__Tvůj__ e-mail, {user} {emote}"
-    verify_no_login = "__Tvůj__ login, {user} {emote}"
+    verify_no_login = "__Tvůj__ xlogin, {user} {emote}"
 
-    verify_send_dumbshit = "{user}, použij __svůj__ identifikátor. " + emote.facepalm
     verify_already_sent = "{user}, e-mail už jsem ti jednou poslala ({admin}...?)"
-    verify_already_verified = "Tebe už jsem si prověřila, {user}..."
+    verify_already_verified = "{user}, tebe už znám..."
     verify_send_kicked = "{admin}, {user} byl vykopnut a snaží se verifikovat."
     verify_send_banned = "{admin}, {user} byl zabanován a snaží se verifikovat."
     verify_send_success = "{user} Na e-mail ({mail}) jsem ti poslala ověřovací kód.\n" + \
-                          "Pro verifikaci použij: `" + prefix + "submit {id} kód`"
-    verify_send_error = "{user}, došlo k chybě " + emote.sad + ". {admin}?"
-    verify_send_format = "{user}:\n" \
-        "```" + prefix + "verify [FEKT|VUT] xlogin00\n" + \
-        prefix + "verify email```"
+                          "Pro verifikaci použij: `" + prefix + " kód`"
+    verify_send_format = "Pro získání kódu použij příkaz podle toho, kam patříš:```\n" + \
+                         "{}verify FEKT xlogin00\n".format(prefix) + \
+                         "{}verify VUT  xlogin00\n".format(prefix) + \
+                         "{}verify e-mail```\n".format(prefix)
 
-    verify_verify_no_code = "{user} Ten kód, který jsem ti poslala na e-mail {emote}"
-    verify_verify_not_found = "{user}, takový login jsem nenašla."
-    verify_verify_wrong_code = "{user} Špatný kód."
-    verify_verify_manual = "{admin}, {user} asi chybí skupina ({year})."
-    verify_verify_success = "{user} Gratuluji k verifikaci!"
-    verify_verify_success_info = "Nový uživatel {user} byl úspěšně přidán s rolí {group}."
+    verify_verify_no_code = "{user}, ten kód, který jsem ti poslala na e-mail {emote}"
+    verify_verify_not_found = "{user}, nemám tě v databázi. {admin}?"
+    verify_verify_wrong_code = "Špatný kód, {user}."
+    verify_verify_manual = "{admin}, {user} asi nemá skupinu."
+    verify_verify_success_private = "{user} Gratuluji k verifikaci!"
+    verify_verify_success_public = "Nový uživatel {user} byl úspěšně přidán s rolí **{group}**."
     verify_congrats_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
-                              "V <#692084608778633217> získáš další role pro zájmy\n" \
-                              "Obecné informace jsou v <#692084651849678938>."
+                           "V <#692084608778633217> získáš další role pro zájmy\n" \
+                           "Obecné informace jsou v <#692084651849678938>."
     verify_congrats_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
-                              "Obecné informace jsou v <#692084651849678938>."
-
-    verify_verify_format = "Pro získání kódu použij příkaz podle příslušnosti:```\n" + \
-                           "{}verify FEKT xlogin00\n".format(prefix) + \
-                           "{}verify VUT  xlogin00\n".format(prefix) + \
-                           "{}verify e-mail```\n".format(prefix) + \
-                           "xlogin00 nebo e-mail je váš identifikátor pro další krok."
+                            "Obecné informace jsou v <#692084651849678938>."
 
     vote_format = "Použití vote:\n```" \
         + prefix + "vote [datum] [čas] [otázka]\n" \

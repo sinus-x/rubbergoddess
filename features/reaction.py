@@ -7,16 +7,11 @@ import utils
 from config.config import Config
 from config.messages import Messages
 from features.base_feature import BaseFeature
-from features.acl import Acl
 from features.review import Review
 from repository.karma_repo import KarmaRepository
-from repository.acl_repo import AclRepository
 from repository.review_repo import ReviewRepository
 
-acl_repo = AclRepository()
-acl = Acl(acl_repo)
 review_r = ReviewRepository()
-
 
 class Reaction(BaseFeature):
 

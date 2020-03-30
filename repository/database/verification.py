@@ -1,19 +1,19 @@
 from sqlalchemy import Column, String, Integer
 from repository.database import database
 
+# 0 ... unknown
+# 1 ... pending
+# 2 ... verified
+# 3 ... kicked
+# 4 ... banned
 
-class Permit(database.base):
-    __tablename__ = 'bot_permit'
+class User(database.base):
+	__tablename__ = 'users'
 
-    login = Column(String, primary_key=True)
-    discord_ID = Column(String)
-
-
-class Valid_person(database.base):
-    __tablename__ = 'bot_valid_persons'
-
-    login = Column(String, primary_key=True)
-    name = Column(String)
-    year = Column(String)
-    code = Column(String)
-    status = Column(Integer, default=1)
+	login =      Column(String, primary_key=True)
+	discord_id = Column(String)
+	code =       Column(String)
+	group =      Column(String)
+	status =     Column(Integer, default=0)
+	changed =    Column(String)
+	comment =    Column(String)
