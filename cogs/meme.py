@@ -36,7 +36,7 @@ class Meme(commands.Cog):
             await message.channel.send(messages.git_pr)
         elif message.content == "🔧":
             await message.channel.send(messages.git_issues)
-        elif message.content == "🔧👶":
+        elif message.content == "🔧👶" or message.content == "🔧 👶":
             link = messages.git_issues.replace("issues", f"labels/good%20first%20issue")
             await message.channel.send(link)
 
