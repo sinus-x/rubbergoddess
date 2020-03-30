@@ -131,6 +131,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         group = "CUNI"
                     elif login.endswith("cvut.cz"):
                         group = "ČVUT"
+                    elif login.endswith("vsb.cz"):
+                        group = "VŠB"
                     else:
                         group = "GUEST"
                 self.repo.add_user(login, group, status="pending", discord_id=str(message.author.id))

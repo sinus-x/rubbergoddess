@@ -140,7 +140,7 @@ class Config:
     ]
 
     roles_native = ["FEKT"]
-    roles_guest = ["VUT", "MUNI", "ČVUT", "UK", "GUEST"]
+    roles_guest = ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 
     # How many people to print if the limit argument is not specified
     rolehoarder_default_limit = 10
