@@ -28,6 +28,11 @@ class FitWide(commands.Cog):
     async def is_admin(ctx):
         return ctx.author.id == config.admin_id
 
+    async def is_mod(ctx):
+        guild = ctx.message.guild
+        mod = discord.utils.get(guild.roles, name="MOD")
+        return mod in ctx.author.roles
+
     async def is_in_modroom(ctx):
         return ctx.message.channel.id == config.mod_room
 
@@ -64,7 +69,7 @@ class FitWide(commands.Cog):
 
         await ctx.send(msg)
 
-    @commands.check(is_admin)
+    @commands.check(is_mod)
     @commands.check(is_in_modroom)
     @commands.command()
     async def offer_subjects(self, ctx, group = None):
@@ -120,12 +125,13 @@ class FitWide(commands.Cog):
 
         return
 
-    @commands.check(is_admin)
+    @commands.check(is_mod)
     @commands.command()
-    async def purge(self, ctx, channel, limit = None, stopAtPin = None):
+    async def purge(self, ctx, channel, limit = None, pinMode = None):
         #TODO Add user argument
         guild = self.bot.get_guild(config.guild_id)
-        ch = discord.utils.get(guild.channels, name=channel.replace("#", ""))
+        ch = discord.utils.get(guild.text_channels, name=channel.replace("#", ""))
+        log = discord.utils.get(guild.text_channels, id=config.log_channel)
         pin = False
         deleted = 0
 
@@ -134,29 +140,41 @@ class FitWide(commands.Cog):
                 limit = int(limit) + 1
             except ValueError:
                 self.purgeHelp()
-        if stopAtPin and stopAtPin == "pin":
+        if pinMode:
             pin = True
 
         if limit:
             msgs = ch.history(limit=limit)
         else:
             msgs = ch.history()
+        ctr_del = 0
+        ctr_skip = 0
         async for m in msgs:
-            if pin and m.pinned:
+            if pin and m.pinned and pinMode == "pinStop":
                 await ctx.send(":point_up_2: pinned " + emote.happy)
                 return
+            elif pin and m.pinned and pinMode == "pinSkip":
+                ctr_skip += 1
+                continue
             try:
                 await m.delete()
+                ctr_del += 1
             except discord.HTTPException:
                 await ctx.send("HTTPException " + emote.ree)
-                return
+        desc = "Log entry for " + ctx.author.name
+        embed = discord.Embed(title="?purge", description=desc, color=config.color)
+        embed.add_field(name="Settings", value="Channel **{}**, limit **{}**, pinMode **{}**".
+            format(channel, limit-1 if limit else "none", pinMode if pinMode else "ignore"))
+        embed.add_field(name="Result", value="**{}** removed, **{}** skipped".
+            format(ctr_del-1, ctr_skip), inline=False)
+        await log.send(embed=embed)
 
 
     @purge.error
     async def purgeHelp(self, ctx, error):
         # print embed
         embed = discord.Embed(title="?purge", color=config.color)
-        embed.add_field(name="Usage:", value="?purge <channel> [<count>] [pin]")
+        embed.add_field(name="Usage:", value="?purge <channel> [<count>] [pinSkip|pinStop]")
         await ctx.send(embed=embed)
 
 
