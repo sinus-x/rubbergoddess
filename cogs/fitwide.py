@@ -422,7 +422,7 @@ class FitWide(commands.Cog):
     # and role_check to check if peoples roles match the database
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_in_modroom)
+    @commands.check(is_mod)
     @commands.command()
     async def get_users_login(self, ctx, member: discord.Member):
         result = session.query(Permit).\
@@ -443,7 +443,7 @@ class FitWide(commands.Cog):
                         "Rocnik: `{p.year}`").format(p=person))
         
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_in_modroom)
+    @commands.check(is_mod)
     @commands.command()
     async def get_logins_user(self, ctx, login):
         result = session.query(Permit).\
@@ -455,7 +455,7 @@ class FitWide(commands.Cog):
             await ctx.send(utils.generate_mention(result.discord_ID))
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_in_modroom)
+    @commands.check(is_mod)
     @commands.command()
     async def reset_login(self, ctx, login):
 
@@ -471,7 +471,7 @@ class FitWide(commands.Cog):
             await ctx.send("Done")
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_in_modroom)
+    @commands.check(is_mod)
     @commands.command()
     async def connect_login_to_user(self, ctx, login, member: discord.Member):
 
