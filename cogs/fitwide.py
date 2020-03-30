@@ -152,8 +152,7 @@ class FitWide(commands.Cog):
         ctr_err = 0
         async for m in msgs:
             if pin and m.pinned and pinMode == "pinStop":
-                await ctx.send(":point_up_2: pinned " + emote.happy)
-                return
+                break
             elif pin and m.pinned and pinMode == "pinSkip":
                 ctr_skip += 1
                 continue
