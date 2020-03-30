@@ -127,12 +127,15 @@ class FitWide(commands.Cog):
 
     @commands.check(is_mod)
     @commands.command()
-    async def purge(self, ctx, channel, limit = None, pinMode = None):
+    async def purge(self, ctx, channel, limit = None, pinMode = "pinSkip"):
         #TODO Add user argument
         guild = self.bot.get_guild(config.guild_id)
-        ch = discord.utils.get(guild.text_channels, name=channel.replace("#", ""))
+        if channel == ".":
+            ch = ctx.channel
+            channel = ch.name
+        else:            
+            ch = discord.utils.get(guild.text_channels, name=channel.replace("#", ""))
         log = discord.utils.get(guild.text_channels, id=config.log_channel)
-        pin = False
         deleted = 0
 
         if limit:
@@ -140,8 +143,6 @@ class FitWide(commands.Cog):
                 limit = int(limit) + 1
             except ValueError:
                 self.purgeHelp()
-        if pinMode:
-            pin = True
 
         if limit:
             msgs = ch.history(limit=limit)
@@ -149,32 +150,37 @@ class FitWide(commands.Cog):
             msgs = ch.history()
         ctr_del = 0
         ctr_skip = 0
+        ctr_pin = 0
         ctr_err = 0
         async for m in msgs:
-            if pin and m.pinned and pinMode == "pinStop":
+            if m.pinned and pinMode == "pinStop":
                 break
-            elif pin and m.pinned and pinMode == "pinSkip":
+            elif m.pinned and pinMode == "pinSkip":
                 ctr_skip += 1
                 continue
+            elif m.pinned and pinMode == "pinIgnore":
+                ctr_pin += 1
             try:
                 await m.delete()
                 ctr_del += 1
             except discord.HTTPException:
                 ctr_err += 1
-        desc = "Log entry for " + ctx.author.name
+
+        desc = "Log for " + ctx.author.name
         embed = discord.Embed(title="?purge", description=desc, color=config.color)
         embed.add_field(name="Settings", value="Channel **{}**, limit **{}**, pinMode **{}**".
             format(channel, limit-1 if limit else "none", pinMode if pinMode else "ignore"))
-        embed.add_field(name="Result", value="**{}** removed, **{}** skipped. **{}** errors occured.".
-            format(ctr_del-1, ctr_skip, ctr_err), inline=False)
+        embed.add_field(inline=False, name="Result",
+            value="**{deleted}** removed (**{pinned}** were pined), **{skipped}** skipped.\n" \
+                "**{err}** errors occured.".format(
+                deleted=ctr_del-1 + ctr_pin, skipped=ctr_skip, pinned=ctr_pin, err=ctr_err))
         await log.send(embed=embed)
-
 
     @purge.error
     async def purgeHelp(self, ctx, error):
         # print embed
         embed = discord.Embed(title="?purge", color=config.color)
-        embed.add_field(name="Usage:", value="?purge <channel> [<count>] [pinSkip|pinStop]")
+        embed.add_field(name="Usage:", value="?purge [<channel>|.] [<count>] [pinSkip|pinStop|pinIgnore]")
         await ctx.send(embed=embed)
 
 
