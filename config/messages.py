@@ -83,7 +83,7 @@ class Messages:
     verify_no_email = "__Tvůj__ e-mail, {user} {emote}"
     verify_no_login = "__Tvůj__ xlogin, {user} {emote}"
 
-    verify_already_sent = "{user}, e-mail už jsem ti jednou poslala ({admin}...?)"
+    verify_already_sent = "{user}, e-mail už jsem ti jednou poslala (kdyžtak napiš DM {admin})"
     verify_already_verified = "{user}, tebe už znám..."
     verify_send_kicked = "{admin}, {user} byl vykopnut a snaží se verifikovat."
     verify_send_banned = "{admin}, {user} byl zabanován a snaží se verifikovat."
