@@ -232,6 +232,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                             verify = discord.utils.get(guild.roles,
                                 name=config.verification_role)
                             role = discord.utils.get(guild.roles, name=group)
+                            if not message.author.id:
+                                return
                             member = guild.get_member(message.author.id)
                         await member.add_roles(verify)
                         await member.add_roles(role)
