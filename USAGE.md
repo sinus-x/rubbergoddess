@@ -24,15 +24,22 @@ config file). Other channels on a server should only be visible with (at least)
 'VERIFY' role. It is recommended to have RO channel #jail-info visible only to 
 users without 'VERIFY' role, so newcomers know what to do.
 
-**getcode &lt;class&gt; &lt;xlogin00&gt;**
+**verify &lt;group&gt; &lt;xlogin00&gt;**
 
-Request a security code. &lt;class&gt; is a role ('FEKT', 'VUT' etc.), &lt;xlogin00&gt; 
-is a VUT login or MUNI UČO.
+Request a security code. &lt;group&gt; is a privileged role ('FEKT', 'VUT' 
+etc.), &lt;xlogin00&gt; is a VUT identifier.
 
-**verify &lt;xlogin00&gt; &lt;code&gt;**
+**verify &lt;e-mail&gt;**
 
-Submit a security code. &lt;xlogin00&gt; is a VUT login or MUNI UČO, &lt;code&gt; is a 
-security code from verification e-mail.
+Request a security code. Used for non-VUT users.
+
+If user submits e-mail from known university, they will be assigned a role 
+(currently supported: 'MUNI', 'ČVUT', 'CUNI', 'VŠB').
+
+**submit &lt;code&gt;**
+
+Submit a security code. &lt;xlogin00&gt; is a VUT login or MUNI UČO, 
+&lt;code&gt; is a security code from verification e-mail.
 
 ## KARMA cog
 
@@ -95,12 +102,13 @@ See negative karma board.
 - If 'uh oh' string is submitted by user, the bot says 'uh oh' too.
 - 'PR': Send link to Github pull requests
 - '🔧': Send link to Github issues
+- '🔧👶': Send link to Github issues labeled as "good first issue"
 
 **uhoh**
 
 Say how many times the 'uh oh' triggered
 
-**question (??)**
+**???**
 
 Send one of question responses.
 
@@ -185,35 +193,41 @@ Functionalities below are mod/admin only.
 Find users hoarding subject roles. Optional &lt;limit&gt; arguments specifies number 
 of users to print.
 
-**role_check**
+**offer_subjects [&lt;group&gt;]**
+
+Send a react-to-role message. Data are read from channel listing.
+
+If no group is selected, prints all channels labeled as subject.
+
+**purge &lt;channel&gt; [&lt;limit&gt;] [&lt;pinMode&gt;]**
+
+Deletes messages from channel. If no limit is entered, all messages are delted.
+
+If no pinMode is entered, pins are ignored. `pinStop` stops at pin, `pinSkip` 
+skips the message.
+
+**role_check (deprecated)**
 
 _Mysterious, non-FIT rewrite needed._
 
-**increment_roles**
+**increment_roles (deprecated)**
 
 Increment user roles.
 
 _Non-FIT rewrite needed._
 
-**get_users_login &lt;user&gt;**
+**get_users_login &lt;user&gt; (deprecated)**
 
 Get user login information from database.
 
-**get_logins_user &lt;user&gt;**
+**get_logins_user &lt;user&gt; (deprecated)**
 
 ?
 
-**reset_login &lt;login&gt;**
+**reset_login &lt;login&gt; (deprecated)**
 
 Remove login from database.
 
-**connect_login_to_user &lt;login&gt; &lt;user&gt;**
+**connect_login_to_user &lt;login&gt; &lt;user&gt; (deprecated)**
 
 Connect login with user.
-
-## ACL cog
-
-The bot assumes that a server has a '---' role, which separates self-assignable 
-(hobby) and self-unassignable (MOD, VUT etc) roles. Anything below a '---' role 
-can be added by users themselves by react-to-role mechanics, roles above can 
-only be assigned by privileged user or by the bot.
