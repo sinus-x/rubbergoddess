@@ -149,6 +149,7 @@ class FitWide(commands.Cog):
             msgs = ch.history()
         ctr_del = 0
         ctr_skip = 0
+        ctr_err = 0
         async for m in msgs:
             if pin and m.pinned and pinMode == "pinStop":
                 await ctx.send(":point_up_2: pinned " + emote.happy)
@@ -160,13 +161,13 @@ class FitWide(commands.Cog):
                 await m.delete()
                 ctr_del += 1
             except discord.HTTPException:
-                await ctx.send("HTTPException " + emote.ree)
+                ctr_err += 1
         desc = "Log entry for " + ctx.author.name
         embed = discord.Embed(title="?purge", description=desc, color=config.color)
         embed.add_field(name="Settings", value="Channel **{}**, limit **{}**, pinMode **{}**".
             format(channel, limit-1 if limit else "none", pinMode if pinMode else "ignore"))
-        embed.add_field(name="Result", value="**{}** removed, **{}** skipped".
-            format(ctr_del-1, ctr_skip), inline=False)
+        embed.add_field(name="Result", value="**{}** removed, **{}** skipped. **{}** errors occured.".
+            format(ctr_del-1, ctr_skip, ctr_err), inline=False)
         await log.send(embed=embed)
 
 
