@@ -124,6 +124,9 @@ class Messages:
     verify_congrats_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
                             "Obecné informace jsou v <#692084651849678938>."
 
+    verify_wrong_channel = "To zde použít nejde, {user}"
+
+    # VOTE
     vote_format = "Použití vote:\n```" \
         + prefix + "vote [datum] [čas] [otázka]\n" \
         "<emote> <odpověď 1>\n" \
