@@ -52,10 +52,10 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         msg.attach(MIMEText(cleartext, 'plain'))
         msg.attach(MIMEText(richtext, 'html'))
 
-        with smtplib.SMTP(Config.email_smtp_server, Config.email_smtp_port) as server:
+        with smtplib.SMTP(config.email_smtp_server, config.email_smtp_port) as server:
             server.starttls()
             server.ehlo()
-            server.login(Config.email_addr, Config.email_pass)
+            server.login(config.email_addr, config.email_pass)
             server.send_message(msg)
 
     async def has_role(self, user, role_name):
@@ -132,7 +132,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         group = "ČVUT"
                     else:
                         group = "GUEST"
-                self.repo.add_user(login, group, status=1, discord_id=str(message.author.id))
+                self.repo.add_user(login, group, status="pending", discord_id=str(message.author.id))
                 await self.gen_code_and_send_mail(message, email)
 
             elif u.status == "pending":
@@ -182,7 +182,6 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             await message.channel.send(messages.verify_verify_format)
             return
         code = str(message.content).split(" ")[1]
-        print("DEBUG code = {}".format(code))
 
         # only process users that are not verified
         if not await self.has_role(message.author, config.verification_role):

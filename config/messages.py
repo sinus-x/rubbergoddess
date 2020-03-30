@@ -106,7 +106,7 @@ class Messages:
     verify_send_kicked = "{admin}, {user} byl vykopnut a snaží se verifikovat."
     verify_send_banned = "{admin}, {user} byl zabanován a snaží se verifikovat."
     verify_send_success = "{user} Na e-mail ({mail}) jsem ti poslala ověřovací kód.\n" + \
-                          "Pro verifikaci použij: `" + prefix + " kód`"
+                          "Pro verifikaci použij: `" + prefix + "submit kód`"
     verify_send_format = "Pro získání kódu použij příkaz podle toho, kam patříš:```\n" + \
                          "{}verify FEKT xlogin00\n".format(prefix) + \
                          "{}verify VUT  xlogin00\n".format(prefix) + \

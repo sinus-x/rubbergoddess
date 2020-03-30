@@ -8,10 +8,10 @@ class UserRepository(BaseRepository):
     # unknown - pending - verified - kicked - banned
 
     def add_user(self, login: str, group: str = "GUEST", status: str = "unknown",
-        discord_id: str = ""):
+        discord_id: str = "", comment: str = ""):
         """Add new user"""
         session.add(User(login=login, group=group, status=status,
-            comment="Added automatically", discord_id=discord_id))
+            comment=comment, discord_id=discord_id))
         session.commit()
 
     def save_code(self, code: str, discord_id: str):
@@ -23,16 +23,15 @@ class UserRepository(BaseRepository):
         user.code = code
         user.discord_id = discord_id
         user.status = "pending"
-        user.comment = "Requested verification"
+        user.comment = ""
         user.changed = date.today().strftime("%Y%m%d")
         session.commit()
 
     def save_verified(self, discord_id: str):
         """Insert login with discord name into database"""
         user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
-        user.login = login
         user.status = "verified"
-        user.comment = "Verified"
+        user.comment = ""
         user.changed = date.today().strftime("%Y%m%d")
         session.commit()
 
