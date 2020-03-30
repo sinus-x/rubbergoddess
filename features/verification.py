@@ -38,7 +38,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
     </p>
     <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;">Tvůj verifikační kód pro <span style="font-weight:bold;">VUT FEKT</span> Discord server:</p>
     <p style="color:#45355F;font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">{code}</p>
-    <p style="color:white;font-family:Arial,Verdana,sans-serif;">Můžeš ho použít jako <span style="font-weight:bold;color:#45355F;padding:5px 10px;font-family:monospace;background-color:white;border-radius:2px;">?submit {code}</span>.</p>
+    <p style="color:white;font-family:Arial,Verdana,sans-serif;margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:#45355F;padding:5px 10px;font-family:monospace;background-color:white;border-radius:2px;">?submit {code}</span></p>
     <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
 </div>
 </body>""".format(code=code, h=h, user_img=user_img, user_name=user_name)
@@ -69,7 +69,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
     async def gen_code_and_send_mail(self, message, email):
         # generate code
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        code = ''.join(random.choices(string.ascii_uppercase.replace("O","") + string.digits, k=8))
         # send mail
         self.send_mail(message.author, email, code)
         # save the newly generated code into the database
