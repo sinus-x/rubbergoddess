@@ -67,7 +67,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             member = await guild.fetch_member(user.id)
             return utils.has_role(member, role_name)
 
-    async def gen_code_and_send_mail(self, message, email):
+    async def gen_code_and_send_mail(self, message, email, group = None):
         # generate code
         code = ''.join(random.choices(string.ascii_uppercase.replace("O","") + string.digits, k=8))
         # send mail
@@ -77,8 +77,10 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         # print approving answer
         domain = email.split("@")[1]
         c = "?verify "
-        c += "**[redacted]**@"+domain if group not in ["FEKT", "VUT"] \
-                                            else group + "** [redacted]**"
+        if group and group in ["FEKT", "VUT"]:
+            c += group + "** [redacted]**"
+        else:
+            c += "**[redacted]**@"+domain
         identifier = "xlogin00" if email.endswith("vutbr.cz") else "e-mail"
         await message.channel.send(utils.fill_message(
             "verify_send_success", user=message.author.id, command=c, id=identifier))
@@ -139,7 +141,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     else:
                         group = "GUEST"
                 self.repo.add_user(login, group, status="pending", discord_id=str(message.author.id))
-                await self.gen_code_and_send_mail(message, email)
+                await self.gen_code_and_send_mail(message, email, group=group)
 
             elif u.status == "pending":
                 # say that message has been sent
