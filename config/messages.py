@@ -109,7 +109,7 @@ class Messages:
                           "Pro verifikaci použij: `" + prefix + "submit kód`"
     verify_send_format = "Pro získání kódu použij příkaz podle toho, kam patříš:```\n" + \
                          "{}verify FEKT xlogin00\n".format(prefix) + \
-                         "{}verify VUT  xlogin00\n".format(prefix) + \
+                         "{}verify VUT xlogin00\n".format(prefix) + \
                          "{}verify e-mail```\n".format(prefix)
 
     verify_verify_no_code = "{user}, ten kód, který jsem ti poslala na e-mail {emote}"
