@@ -107,12 +107,14 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             guild = message.channel.guild
             jail_info = discord.utils.get(guild.channels, name="jail-info")
             errmsg = None
-            if login[0]=="x" and int(login[-2:]):
-                errmsg = "verify_login_only"
-            elif login == "e-mail":
-                errmsg = "verify_no_email"
-            elif login == "xlogin00":
-                errmsg = "verify_no_login"
+#            if len(args) == 2 and login[0]=="x" and int(login[-2:]):
+#                errmsg = "verify_login_only"
+#            if login == "e-mail":
+#                errmsg = "verify_no_email"
+#            elif login == "xlogin00":
+#                errmsg = "verify_no_login"
+            if login == "e-mail" or login == "xlogin00":
+                errmsg = "verify_wrong_arguments"
             if errmsg:
                 await message.channel.send(utils.fill_message(errmsg,
                     user=message.author.id,
@@ -132,8 +134,9 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     email = "{}@vutbr.cz".format(login)
                 else:
                     if "@" not in login:
-                        await message.channel.send(utils.fill_message("verify_no_email",
-                            user=message.author.id, emote=emote.facepalm))
+                        await message.channel.send(utils.fill_message("verify_wrong_arguments",
+                            user=message.author.id, emote=emote.facepalm, 
+                            channel=jail_info.mention))
                         return
                     email = login
                     if login.endswith("stud.feec.vutbr.cz"):

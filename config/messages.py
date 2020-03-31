@@ -83,6 +83,7 @@ class Messages:
     verify_no_email = "__Tvůj__ e-mail, {user} ({channel} {emote})"
     verify_login_only = "{user}, ještě chybí, jestli jsi přímo z FEKTu, nebo z VUT ({channel} {emote})"
     verify_no_login = "__Tvůj__ xlogin, {user} ({channel} {emote})"
+    verify_wrong_arguments = "{user}, podívej se do {channel} na příklad. {emote}"
 
     verify_already_sent = "{user}, e-mail už jsem ti jednou poslala (kdyžtak napiš DM {admin})"
     verify_already_verified = "{user}, tebe už znám..."
