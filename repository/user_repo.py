@@ -8,10 +8,11 @@ class UserRepository(BaseRepository):
     # unknown - pending - verified - kicked - banned
 
     def add_user(self, login: str, group: str = "GUEST", status: str = "unknown",
-        discord_id: str = "", comment: str = ""):
+        discord_id: str = "", comment: str = "", code: str = ""):
         """Add new user"""
         session.add(User(login=login, group=group, status=status,
-            comment=comment, discord_id=discord_id))
+            comment=comment, discord_id=discord_id, code=code,
+            changed=date.today().strftime("%Y%m%d")))
         session.commit()
 
     def save_code(self, code: str, discord_id: str):
