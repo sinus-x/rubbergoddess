@@ -121,6 +121,7 @@ class FitWide(commands.Cog):
         embed.add_field(name="Cleared?", value=cleared, inline=False)
         embed.add_field(name="Groups", value=ctr_ca, inline=True)
         embed.add_field(name="Subjects", value=ctr_ch, inline=True)
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
         return
@@ -171,9 +172,10 @@ class FitWide(commands.Cog):
         embed.add_field(name="Settings", value="Channel **{}**, limit **{}**, pinMode **{}**".
             format(channel, limit-1 if limit else "none", pinMode if pinMode else "ignore"))
         embed.add_field(inline=False, name="Result",
-            value="**{deleted}** removed (**{pinned}** were pined), **{skipped}** skipped.\n" \
+            value="**{deleted}** removed (**{pinned}** were pinned), **{skipped}** skipped.\n" \
                 "**{err}** errors occured.".format(
                 deleted=ctr_del-1 + ctr_pin, skipped=ctr_skip, pinned=ctr_pin, err=ctr_err))
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         await log.send(embed=embed)
 
     @purge.error
@@ -181,6 +183,7 @@ class FitWide(commands.Cog):
         # print embed
         embed = discord.Embed(title="?purge", color=config.color)
         embed.add_field(name="Usage:", value="?purge [<channel>|.] [<count>] [pinSkip|pinStop|pinIgnore]")
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
 
