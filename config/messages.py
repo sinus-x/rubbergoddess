@@ -80,15 +80,16 @@ class Messages:
               "Implementovány featury podle obsahu: **8. Drop/Keep**"
 
     # VERIFY
-    verify_no_email = "__Tvůj__ e-mail, {user} {emote}"
-    verify_no_login = "__Tvůj__ xlogin, {user} {emote}"
+    verify_no_email = "__Tvůj__ e-mail, {user} ({channel} {emote})"
+    verify_login_only = "{user}, ještě chybí, jestli jsi přímo z FEKTu, nebo z VUT ({channel} {emote})"
+    verify_no_login = "__Tvůj__ xlogin, {user} ({channel} {emote})"
 
     verify_already_sent = "{user}, e-mail už jsem ti jednou poslala (kdyžtak napiš DM {admin})"
     verify_already_verified = "{user}, tebe už znám..."
     verify_send_kicked = "{admin}, {user} byl vykopnut a snaží se verifikovat."
     verify_send_banned = "{admin}, {user} byl zabanován a snaží se verifikovat."
     verify_send_success = "> {command}\n" + \
-                          "V pořádku, {user}, poslala jsem ti ověřovací kód.\n" + \
+                          "V pořádku, {user}, poslala jsem ti ověřovací kód. " + \
                           "Pro verifikaci použij: `" + prefix + "submit kód`"
     verify_send_format = "Pro získání kódu použij příkaz podle toho, kam patříš:```\n" + \
                          "{}verify FEKT xlogin00\n".format(prefix) + \

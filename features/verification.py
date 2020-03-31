@@ -104,15 +104,20 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             await message.channel.send(utils.fill_message("verify_already_verified",
                 user=message.author.id))
         else:
+            guild = message.channel.guild
+            jail_info = discord.utils.get(guild.channels, name="jail-info")
             errmsg = None
-            if login == "e-mail":
-                #FIXME this is also called if user supplies "FEKT" or "VUT"
+            if login[0]=="x" and int(login[-2:]):
+                errmsg = "verify_login_only"
+            elif login == "e-mail":
                 errmsg = "verify_no_email"
-            if login == "xlogin00":
+            elif login == "xlogin00":
                 errmsg = "verify_no_login"
             if errmsg:
                 await message.channel.send(utils.fill_message(errmsg,
-                    user=message.author.id, emote=emote.facepalm))
+                    user=message.author.id,
+                    emote=emote.facepalm,
+                    channel=jail_info.mention))
                 return
 
             # unknown - pending - verified - kicked - banned
