@@ -100,7 +100,7 @@ class Messages:
     verify_verify_wrong_code = "Špatný kód, {user}."
     verify_verify_manual = "{admin}, {user} asi nemá skupinu."
     verify_verify_success_private = "{user} Gratuluji k verifikaci!"
-    verify_verify_success_public = "Nový uživatel {user} byl úspěšně přidán s rolí **{group}**. " + emote.happy
+    verify_verify_success_public = emote.welcome + " Nový uživatel {user} byl úspěšně přidán s rolí **{group}**. "
     verify_congrats_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
                            "V <#692084608778633217> získáš další role pro zájmy\n" \
                            "Obecné informace jsou v <#692084651849678938>."

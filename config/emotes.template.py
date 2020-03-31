@@ -15,3 +15,7 @@ class Emotes:
 	hug_right = '<:code:000>'
 	objection = '<:code:000>'
 	tagrage =   '<:code:000>'
+
+	yes =     '<:code:000>'
+	no =      '<:code:000>'
+	welcome = '<:code:000>'
