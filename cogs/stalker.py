@@ -29,11 +29,17 @@ class Stalker (commands.Cog):
         mod = discord.utils.get(guild.roles, name="MOD")
         return mod in ctx.author.roles
 
+    async def is_submod (ctx):
+        guild = ctx.message.guild
+        mod = discord.utils.get(guild.roles, name="MOD")
+        submod = discord.utils.get(guild.roles, name="SUBMOD")
+        return mod in ctx.author.roles or submod in ctx.author.roles
+
     async def is_in_modroom (ctx):
         return ctx.message.channel.id == config.mod_room
 
 
-    @commands.check(is_mod)
+    @commands.check(is_submod)
     @commands.check(is_in_modroom)
     @commands.command()
     async def whois (self, ctx, discord_id: str = 0):
@@ -140,7 +146,7 @@ class Stalker (commands.Cog):
 
     @commands.check(is_mod)
     @commands.check(is_in_modroom)
-    @commands.command()
+    @commands.command(aliases=["removeUser"])
     async def deleteUser (self, ctx, discord_id: str, force = None):
         if discord_id is None or len(discord_id) < 1:
             await self.deleteUserHelp(ctx)
@@ -206,6 +212,35 @@ class Stalker (commands.Cog):
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
+    @commands.check(is_submod)
+    @commands.check(is_in_modroom)
+    @commands.command()
+    async def comment (self, ctx, discord_id: str, *args: str):
+        if discord_id is None or len(discord_id) < 1 \
+        or args is None or len(args) < 1:
+            self.commentHelp()
+            return
+
+        repository.update_comment(
+            discord_id=discord_id,
+            comment=' '.join(args))
+
+        await self.whois(ctx, discord_id)
+
+    @comment.error
+    async def commentError (self, ctx, error):
+        await self.commentHelp(ctx)
+
+    async def commentHelp (self, ctx):
+        embed = discord.Embed(color=config.color,
+            title="?comment help",
+            description=ctx.message.content)
+        embed.add_field(
+            name="?comment <int: discord_id> <str: comment>",
+            value="**discord_id**: Users's Discord ID\n" + \
+                  "**comment**: Comment\n")
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Stalker(bot))

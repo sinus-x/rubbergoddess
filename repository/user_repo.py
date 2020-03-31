@@ -36,10 +36,17 @@ class UserRepository(BaseRepository):
         user.changed = date.today().strftime("%Y%m%d")
         session.commit()
 
-    def update_status(self, login: str, status: str, comment: str):
+    def update_status(self, discord_id: str, status: str, comment: str = ""):
         """Update status"""
-        user = session.query(User).filter(User.login == login).one_or_none()
+        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         user.status = status
+        user.comment = comment
+        user.changed = date.today().strftime("%Y%m%d")
+        session.commit()
+
+    def update_comment(self, discord_id: str, comment: str):
+        """Update comment"""
+        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         user.comment = comment
         user.changed = date.today().strftime("%Y%m%d")
         session.commit()

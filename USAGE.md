@@ -186,6 +186,24 @@ FIT-specific. Deprecated; moved to [Grillbot](https://github.com/Misha12/GrillBo
 
 Functionalities below are mod/admin only.
 
+## STALKER cog
+
+**whois &lt;discord id&gr;**
+
+Fetch info from database.
+
+**addUser &lt;discord id&gr; &lt;login&gt; &lt;group&gt;**
+
+Add entry into database.
+
+**deleteUser &lt;discord id&gt; [force]**
+
+Remove entry from database. Use **force** to apply, simulate otherwise.
+
+**comment &lt;discord id&gt; &lt;comment&gt;**
+
+Add comment to user's database entry.
+
 ## FITWIDE cog
 
 **find_rolehoarders [&lt;limit&gt;]**
