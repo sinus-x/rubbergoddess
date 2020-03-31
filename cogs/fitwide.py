@@ -115,9 +115,8 @@ class FitWide(commands.Cog):
             await add_subjects.send(msg)
 
         title = config.default_prefix + "offer_subjects result"
-        desc = "For: {}".format(ctx.author.name)
         cleared = "Yes, {} post{}".format(deleted, "s" if deleted > 1 else "") if group is None else "No"
-        embed = discord.Embed(title=title, description=desc, color=config.color)
+        embed = discord.Embed(title=title, color=config.color)
         embed.add_field(name="Cleared?", value=cleared, inline=False)
         embed.add_field(name="Groups", value=ctr_ca, inline=True)
         embed.add_field(name="Subjects", value=ctr_ch, inline=True)
@@ -167,8 +166,7 @@ class FitWide(commands.Cog):
             except discord.HTTPException:
                 ctr_err += 1
 
-        desc = "Log for " + ctx.author.name
-        embed = discord.Embed(title="?purge", description=desc, color=config.color)
+        embed = discord.Embed(title="?purge", color=config.color)
         embed.add_field(name="Settings", value="Channel **{}**, limit **{}**, pinMode **{}**".
             format(channel, limit-1 if limit else "none", pinMode if pinMode else "ignore"))
         embed.add_field(inline=False, name="Result",
