@@ -83,10 +83,12 @@ class Messages:
     verify_no_email = "__Tvůj__ e-mail, {user} ({channel} {emote})"
     verify_login_only = "{user}, ještě chybí, jestli jsi přímo z FEKTu, nebo z VUT ({channel} {emote})"
     verify_no_login = "__Tvůj__ xlogin, {user} ({channel} {emote})"
-    verify_wrong_arguments = "{user}, podívej se do {channel} na příklad. {emote}"
+    verify_wrong_arguments = "> ?verify **{login}**\n" + \
+                             "{user}, podívej se do {channel} na příklad. {emote}"
 
     verify_already_sent = "{user}, e-mail už jsem ti jednou poslala (kdyžtak napiš DM {admin})"
-    verify_already_verified = "{user}, tebe už znám..."
+    verify_already_verified_role = "{user}, tebe už znám... {admin}?"
+    verify_already_verified_db = "{user} se podle záznamů už verifikoval... {admin}?"
     verify_send_kicked = "{admin}, {user} byl vykopnut a snaží se verifikovat."
     verify_send_banned = "{admin}, {user} byl zabanován a snaží se verifikovat."
     verify_send_success = "> {command}\n" + \
@@ -95,7 +97,7 @@ class Messages:
     verify_send_format = "Pro získání kódu použij příkaz podle toho, kam patříš:```\n" + \
                          "{}verify FEKT xlogin00\n".format(prefix) + \
                          "{}verify VUT xlogin00\n".format(prefix) + \
-                         "{}verify e-mail```\n".format(prefix)
+                         "{}verify e-mail (ideálně školní)```\n".format(prefix)
 
     verify_verify_no_code = "{user}, ten kód, který jsem ti poslala na e-mail {emote}"
     verify_verify_not_found = "{user}, nemám tě v databázi. {admin}?"

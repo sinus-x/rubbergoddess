@@ -82,8 +82,11 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         else:
             c += "**[redacted]**@"+domain
         identifier = "xlogin00" if email.endswith("vutbr.cz") else "e-mail"
-        await message.channel.send(utils.fill_message(
-            "verify_send_success", user=message.author.id, command=c, id=identifier))
+        await message.channel.send(
+            utils.fill_message(
+                "verify_send_success", user=message.author.id, command=c, id=identifier),
+            delete_after=config.delay_verify
+        )
 
     async def send_code(self, message):
         # get variables
@@ -101,25 +104,26 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
         # check if the user doesn't have the verify role
         if await self.has_role(message.author, config.verification_role):
-            await message.channel.send(utils.fill_message("verify_already_verified",
-                user=message.author.id))
+            await message.channel.send(
+                utils.fill_message(
+                    "verify_already_verified_role",
+                    user=message.author.id,
+                    admin=config.admin_id))
         else:
-            guild = message.channel.guild
+            guild = self.bot.get_guild(config.guild_id)
             jail_info = discord.utils.get(guild.channels, name="jail-info")
             errmsg = None
-#            if len(args) == 2 and login[0]=="x" and int(login[-2:]):
-#                errmsg = "verify_login_only"
-#            if login == "e-mail":
-#                errmsg = "verify_no_email"
-#            elif login == "xlogin00":
-#                errmsg = "verify_no_login"
             if login == "e-mail" or login == "xlogin00":
-                errmsg = "verify_wrong_arguments"
-            if errmsg:
-                await message.channel.send(utils.fill_message(errmsg,
+                await message.channel.send(utils.fill_message("verify_wrong_arguments",
                     user=message.author.id,
+                    login=login,
                     emote=emote.facepalm,
-                    channel=jail_info.mention))
+                    channel=jail_info.mention),
+                    delete_after=config.delay_verify)
+                try:
+                    await message.delete()
+                except discord.HTTPException:
+                    return
                 return
 
             # unknown - pending - verified - kicked - banned
@@ -162,13 +166,18 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             elif u.status == "pending":
                 # say that message has been sent
                 await message.channel.send(utils.fill_message(
-                    "verify_already_sent", user=message.author.id, admin=config.admin_id))
+                    "verify_already_sent", user=message.author.id, admin=config.admin_id),
+                    delete_after=config.delay_verify)
 
             elif u.status == "verified":
                 # say that the user is already verified
                 #TODO do nothing if not in #jail
-                await message.channel.send(utils.fill_message(
-                    "verify_already_verified", user=message.author.id))
+                await message.channel.send(
+                    utils.fill_message(
+                        "verify_already_verified_db",
+                        user=message.author.id,
+                        admin=config.admin_id),
+                    delete_after=config.delay_verify)
 
             elif u.status == "kicked":
                 # say that the user has been kicked before
@@ -185,7 +194,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             else:
                 # show help
                 await message.channel.send(utils.fill_message(
-                    "verify_send_format", user=message.author.id))
+                    "verify_send_format", user=message.author.id),
+                    delete_after=config.delay_verify)
 
             if errmsg:
                 embed = discord.Embed(title=errmsg, color=config.color)
@@ -215,7 +225,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             errmsg = None
             if code == "kód" or code == "kod":
                 await message.channel.send(utils.fill_message("verify_verify_no_code",
-                    user=message.author.id, emote=emote.facepalm))
+                    user=message.author.id, emote=emote.facepalm),
+                    delete_after=config.delay_verify)
                 return
 
             new_user = self.repo.get_user(discord_id=str(message.author.id))
@@ -223,12 +234,14 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             if new_user is None:
                 await message.channel.send(utils.fill_message(
                     "verify_verify_not_found", user=message.author.id,
-                    admin=config.admin_id))
+                    admin=config.admin_id),
+                    delete_after=config.delay_verify)
             else:
                 # check the verification code
                 if code.upper() != new_user.code:
                     await message.channel.send(utils.fill_message(
-                        "verify_verify_wrong_code", user=message.author.id))
+                        "verify_verify_wrong_code", user=message.author.id),
+                        delete_after=config.delay_verify)
                     errmsg = "Neúspěšný pokus o verifikaci kódem"
                 else:
                     group = new_user.group
@@ -247,7 +260,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                             member = message.author
                             await message.channel.send(utils.fill_message(
                                 "verify_verify_success_public", user=message.author.id,
-                                group=group))
+                                group=group),
+                                delete_after=config.delay_verify)
                         except AttributeError:
                             # DM
                             verify = discord.utils.get(guild.roles,
