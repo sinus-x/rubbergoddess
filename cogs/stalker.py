@@ -39,7 +39,6 @@ class Stalker (commands.Cog):
         return
 
     @commands.command(name="whois", aliases=["stalk"])
-    @commands.has_permissions(administrator=True)
     async def whois (self, ctx: commands.Context, member: discord.Member = None, pin = None):
         """Get information about user
 
@@ -165,11 +164,6 @@ class Stalker (commands.Cog):
         guild = self.bot.get_guild(config.guild_id)
         force = self._parseForce(force)
 
-        #TODO make function for command title
-        p = ' '.join((p.name) for p in ctx.command.parents) + " " if ctx.command.parents else ""
-        t = config.default_prefix + p + ctx.command.name
-        d = "Result" if force else "Simulation, run with `force` to apply"
-        embed = discord.Embed(color=config.color_true, title=t, description=d)
         try:
             if force:
                 result = repository.delete_users(discord_id=str(member.id))
@@ -179,7 +173,12 @@ class Stalker (commands.Cog):
             await self._getError(ctx, messages.stalker_err_read)
             return
 
+        #TODO make function for command title
+        p = ' '.join((p.name) for p in ctx.command.parents) + " " if ctx.command.parents else ""
+        t = config.default_prefix + p + ctx.command.name
+        d = "Result" if force else "Simulation, run with `force` to apply"
         if force:
+            embed = discord.Embed(color=config.color_success, title=t, description=d)
             # delete
             if result is None or result < 1:
                 await self._getError(ctx, messages.stalker_err_delete_not_found)
@@ -189,6 +188,7 @@ class Stalker (commands.Cog):
             #TODO remove all roles
         else:
             # simulate
+            embed = discord.Embed(color=config.color_notify, title=t, description=d)
             for r in result:
                 embed.add_field(inline=False,
                     name=self.dbobj2email(r),
@@ -202,14 +202,9 @@ class Stalker (commands.Cog):
 
     @database.group(name="update")
     async def database_update (self, ctx: commands.Context):
-        """Manages updating the database"""
+        """Set of functions to update database entries"""
         if ctx.invoked_subcommand is None:
             await self.database_update_help(ctx)
-
-    @database_update.command(name="help")
-    async def database_update_help(self, ctx: commands.Context):
-        """Display help"""
-        await self._getHelp(ctx)
 
     @database_update.command(name="login")
     async def database_update_login (self, ctx: commands.Context, member: discord.Member, login: str):
@@ -218,7 +213,7 @@ class Stalker (commands.Cog):
         member: A server member
         login: User's xlogin (FEKT, VUT) or e-mail
         """
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
         return
 
     @database_update.command(name="group")
@@ -228,7 +223,7 @@ class Stalker (commands.Cog):
         member: A server member
         group: A role from `roles_native` or `roles_guest` in config file
         """
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
 
     @database_update.command(name="status")
     async def database_update_status (self, ctx: commands.Context, member: discord.Member, status: str):
@@ -237,7 +232,7 @@ class Stalker (commands.Cog):
         member: A server member
         status: unknown, pending, verified, kicked, banned
         """
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
 
     @database_update.command(name="comment")
     async def database_update_comment (self, ctx: commands.Context, member: discord.Member, *args):
@@ -246,7 +241,7 @@ class Stalker (commands.Cog):
         member: A server member
         args: Commentary on user
         """
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
 
     @database_update.command(name="nickname")
     async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
@@ -255,7 +250,7 @@ class Stalker (commands.Cog):
         member: A server member
         args: A new nickname
         """
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
 
     @database_update.command(name="tempnickname")
     async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
@@ -264,21 +259,21 @@ class Stalker (commands.Cog):
         member: A server member
         args: A new temporary nickname. If empty, reset to default
         """
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
 
     @database.command(name="statistics", aliases=["stats"])
     async def database_statistics (self, ctx: commands.Context):
         """Display statistics about known users"""
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
 
     @database.command(name="today")
     async def database_today (self, ctx: commands.Context):
         """Display the count of users that joined/were verified today"""
-        await self._getError(ctx, messages.stalker_err_not_implemented, pin=False)        
+        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)        
 
 
     def _getEmbed (self, ctx: commands.Context, color: str = None, pin = False):
-        if color not in [config.color_true, config.color_false]:
+        if color not in [config.color_success, config.color_error, config.color_notify]:
             color = config.color
         c = ctx.command
         p = ' '.join((p.name) for p in c.parents) + " " if c.parents else ""
@@ -294,13 +289,22 @@ class Stalker (commands.Cog):
     async def _getError (self, ctx: commands.Context, errmsg: str,
                                delete: bool = True, pin: bool = None):
         """Show an error embed"""
-        embed = self._getEmbed(ctx, color=config.color_false, pin = pin)
+        embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
         embed.add_field(name="Error occured", value=errmsg, inline=False)
         embed.add_field(name="Command", value=ctx.message.content, inline=False)
         if delete:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         else:
             await ctx.send(embed=embed)
+        await self._tryDelete(ctx, now=True)
+
+    async def _getNotification (self, ctx: commands.Context, msg: str,
+                                    pin: bool = False):
+        """Show a notification embed"""
+        embed = self._getEmbed(ctx, color=config.color_notify, pin=pin)
+        embed.add_field(name="Notification", value=msg, inline=False)
+        embed.add_field(name="Command", value=ctx.message.content, inline=False)
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self._tryDelete(ctx, now=True)
 
     async def _getDescription (self, ctx: commands.Context):

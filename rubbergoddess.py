@@ -31,7 +31,8 @@ async def on_ready():
     """If Rubbergoddess is ready"""
     print("Ready")
     channel = bot.get_channel(config.log_channel)
-    embed = discord.Embed(title="Informace o spuštění", color=config.color_true)
+
+    embed = discord.Embed(title="Informace o spuštění", color=config.color_success)
     embed.add_field(inline=False,
         name="{timestamp}".format(timestamp=datetime.now().
             strftime("%Y-%m-%d %H:%M:%S")),
