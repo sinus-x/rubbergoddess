@@ -90,18 +90,22 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
     async def send_code(self, message):
         # get variables
-        args = str(message.content).split(" ")
+        args = str(message.content).strip().split(" ")
         login = None
         group = None
-        if len(args) == 2:
+        if len(args) == 2 and "@" in args[1]:
             login = args[1]
-        elif len(args) == 3:
+        elif len(args) == 3 and len(args[2]) > 0:
             group = args[1]
             login = args[2]
         else:
             await message.channel.send(
                 messages.verify_send_format,
                 delete_after=config.delay_verify)
+            try:
+                await message.delete()
+            except discord.HTTPException:
+                return
             return
 
         # check if the user doesn't have the verify role
