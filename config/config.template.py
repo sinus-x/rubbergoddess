@@ -60,10 +60,12 @@ class Config:
     ]
 
     # Embeds
-    color = 0x54355F
-    delay_message = 2  # when to delete user's bot interacton, in seconds
-    delay_embed = 120  # when to delete embed, in seconds
-    delay_verify = 240 # when to delete verification messages, in seconds
+    color =       0x54355F
+    color_true =  0x1EBF49
+    color_false = 0xD82B1C
+    delay_message = 2   # when to delete user's bot interacton, in seconds
+    delay_embed =   120 # when to delete embed, in seconds
+    delay_verify =  240 # when to delete verification messages, in seconds
 
     # String constants
     kachna_link = '' # where to link on ?kachna command
