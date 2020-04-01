@@ -75,7 +75,7 @@ class Stalker (commands.Cog):
             # add embeds
             email = self.dbobj2email(dbobj)
             embed.add_field(name="E-mail", value=email, inline=False)
-            embed.add_field(name="Verification code", value=dbobj.code)
+            embed.add_field(name="Verification code", value=dbobj.code if dbobj.code else "_none_")
             embed.add_field(name="Status", value=dbobj.status)
             embed.add_field(name="Last changed", value=dbobj.changed)
             if dbobj.comment is not None and len(dbobj.comment) > 0:
