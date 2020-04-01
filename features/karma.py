@@ -261,7 +261,8 @@ class Karma(BaseFeature):
         colour = cfg.color
         output = {'-1': [], '1': [], '0': []}
         karma = 0
-        if msg.channel in cfg.karma_banned_channels:
+        if msg.channel in cfg.karma_banned_channels or \
+           msg.channel.name in cfg.subjects:
             return karma
         for react in reactions:
             emoji = react.emoji
