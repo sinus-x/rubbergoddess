@@ -234,7 +234,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             errmsg = None
             if new_user is None:
                 await message.channel.send(utils.fill_message(
-                    "verify_verify_not_found", user=message.author.id)
+                    "verify_verify_not_found", user=message.author.id),
                     delete_after=config.delay_verify)
             else:
                 # check the verification code
