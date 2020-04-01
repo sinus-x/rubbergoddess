@@ -29,7 +29,7 @@ class FitWide(commands.Cog):
         return ctx.author.id == config.admin_id
 
     async def is_mod(ctx):
-        guild = ctx.message.guild
+        guild = self.bot.get_guild(config.guild_id)
         mod = discord.utils.get(guild.roles, name="MOD")
         return mod in ctx.author.roles
 
