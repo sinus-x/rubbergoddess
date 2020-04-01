@@ -99,7 +99,9 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             group = args[1]
             login = args[2]
         else:
-            await message.channel.send(messages.verify_send_format)
+            await message.channel.send(
+                messages.verify_send_format,
+                delete_after=config.delay_verify)
             return
 
         # check if the user doesn't have the verify role
@@ -176,8 +178,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     utils.fill_message(
                         "verify_already_verified_db",
                         user=message.author.id,
-                        admin=config.admin_id),
-                    delete_after=config.delay_verify)
+                        admin=config.admin_id))
 
             elif u.status == "kicked":
                 # say that the user has been kicked before
@@ -233,8 +234,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             errmsg = None
             if new_user is None:
                 await message.channel.send(utils.fill_message(
-                    "verify_verify_not_found", user=message.author.id,
-                    admin=config.admin_id),
+                    "verify_verify_not_found", user=message.author.id)
                     delete_after=config.delay_verify)
             else:
                 # check the verification code

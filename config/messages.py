@@ -100,7 +100,7 @@ class Messages:
                          "{}verify e-mail (ideálně školní)```\n".format(prefix)
 
     verify_verify_no_code = "{user}, ten kód, který jsem ti poslala na e-mail {emote}"
-    verify_verify_not_found = "{user}, nemám tě v databázi. {admin}?"
+    verify_verify_not_found = "{user}, nemám tě v databázi, je nutné zažádat o verifikační kód"
     verify_verify_wrong_code = "Špatný kód, {user}."
     verify_verify_manual = "{admin}, {user} asi nemá skupinu."
     verify_verify_success_private = "{user} Gratuluji k verifikaci!"
