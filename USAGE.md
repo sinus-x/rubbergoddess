@@ -12,7 +12,8 @@ Sends uptime message
 
 Tells if the current calender & study week is even or odd
 
-**god (goddess, help)**
+**goddess**  
+aliases **god**, **help**
 
 Displays embed with available commands
 
@@ -182,27 +183,41 @@ Check nameday in Slovakia.
 
 FIT-specific. Deprecated; moved to [Grillbot](https://github.com/Misha12/GrillBot).
 
----
-
-Functionalities below are mod/admin only.
-
 ## STALKER cog
 
-**whois &lt;discord id&gr;**
+**whois &lt;user&gt;**
 
 Fetch info from database.
 
-**addUser &lt;discord id&gr; &lt;login&gt; &lt;group&gt;**
+Displays discord and database info if called by admin in mod room.
+Displays discord info if called by regular user or in public channel.
+
+**database**  
+alias **db**
+
+A command group.
+
+**database add &lt;user&gt; &lt;login&gt; &lt;group&gt;**
 
 Add entry into database.
 
-**deleteUser &lt;discord id&gt; [force]**
+**database remove &lt;user&gt; [force]**  
+alias **db delete**
 
 Remove entry from database. Use **force** to apply, simulate otherwise.
 
-**comment &lt;discord id&gt; &lt;comment&gt;**
+***database update [login, group, status, comment, nickname, tempnickname] <string>***
 
-Add comment to user's database entry.
+Edit entry. Not implemented.
+
+***database statistics [since] [until]***  
+alias ***db stats***
+
+Display statistics about users. Not implemented.
+
+***database today***
+
+See what happened on that day. Not implemented.
 
 ## FITWIDE cog
 
@@ -213,9 +228,9 @@ of users to print.
 
 **offer_subjects [&lt;group&gt;]**
 
-Send a react-to-role message. Data are read from channel listing.
+Send a react-to-role messages to add-subjects. Data are read from channel listing.
 
-If no group is selected, prints all channels labeled as subject.
+If no group is selected, prints all channels labeled as subjects.
 
 **purge &lt;channel&gt; [&lt;limit&gt;] [&lt;pinMode&gt;]**
 
@@ -226,7 +241,7 @@ skips the message.
 
 **role_check (deprecated)**
 
-_Mysterious, non-FIT rewrite needed._
+_Non-FIT rewrite needed._
 
 **increment_roles (deprecated)**
 
