@@ -31,7 +31,7 @@ async def on_ready():
     """If Rubbergoddess is ready"""
     print("Ready")
     channel = bot.get_channel(config.log_channel)
-    embed = discord.Embed(title="Informace o spuštění", color=config.color)
+    embed = discord.Embed(title="Informace o spuštění", color=config.color_true)
     embed.add_field(inline=False,
         name="{timestamp}".format(timestamp=datetime.now().
             strftime("%Y-%m-%d %H:%M:%S")),
@@ -116,6 +116,6 @@ session.commit()  # Making sure
 
 for extension in config.extensions:
     bot.load_extension(f'cogs.{extension}')
-    print(f'{extension} loaded')
+    print('{} cog loaded'.format(extension.upper()))
 
 bot.run(config.key)
