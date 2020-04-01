@@ -130,7 +130,10 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
             # unknown - pending - verified - kicked - banned
             errmsg = None
-            u = self.repo.get_user(login=login, discord_id=str(message.author.id))
+            try:
+                u = self.repo.get_users(discord_id=str(message.author.id))[0]
+            except IndexError:
+                u = None
 
             if u is None or u and u.status == "unknown":
                 # send verify message
@@ -162,7 +165,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         group = "VŠB"
                     else:
                         group = "GUEST"
-                self.repo.add_user(login, group.upper(), status="pending", discord_id=str(message.author.id))
+                self.repo.add_user(discord_id=str(message.author.id), login=login,
+                                   group=group.upper(), status="pending")
                 await self.gen_code_and_send_mail(message, email, group=group)
 
             elif u.status == "pending":
@@ -230,7 +234,11 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     delete_after=config.delay_verify)
                 return
 
-            new_user = self.repo.get_user(discord_id=str(message.author.id))
+            try:
+                new_user = self.repo.get_users(discord_id=str(message.author.id))[0]
+            except IndexError:
+                new_user = None
+
             errmsg = None
             if new_user is None:
                 await message.channel.send(utils.fill_message(

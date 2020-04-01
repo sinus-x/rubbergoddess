@@ -7,8 +7,9 @@ from datetime import date
 class UserRepository(BaseRepository):
     # unknown - pending - verified - kicked - banned
 
-    def add_user(self, login: str, group: str = "GUEST", status: str = "unknown",
-        discord_id: str = "", comment: str = "", code: str = ""):
+    def add_user(self, discord_id: str = "", login: str = "xlogin00",
+        group: str = "GUEST", status: str = "unknown", code: str = "NONE",
+        comment: str = ""):
         """Add new user"""
         session.add(User(login=login, group=group, status=status,
             comment=comment, discord_id=discord_id, code=code,
@@ -54,16 +55,18 @@ class UserRepository(BaseRepository):
     def has_unverified_login(self, login: str):
         """Check if there's a login """
         #FIXME does not seem to be used anywhere
-        query = session.query(User).filter(
-            User.login == login, User.status == 0).one_or_none()
+        unknown = session.query(User).filter(
+            User.login == login, User.status == "unknown").one_or_none()
+        pending = session.query(User).filter(
+            User.login == login, User.status == "pending").one_or_none()
         return True if query is not None else False
 
-    def get_user(self, login: str = None, discord_id: str = None):
-        """Find login from database"""
-        if login:
-            user = session.query(User).filter(User.login == login).one_or_none()
-        elif discord_id:
-            user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
-        else:
-            return
-        return user
+    def get_users (self, discord_id: str = None):
+        """Find user in database"""
+        users = session.query(User).filter(User.discord_id == discord_id).all()
+        return users
+
+    def delete_users (self, discord_id: str = None):
+        users = session.query(User).filter(User.discord_id == discord_id).delete()
+        session.commit()
+        return users

@@ -198,3 +198,17 @@ class Messages:
              ('uptime', 'Vypíše čas spuštění a čas uplynulý od spuštění.'),
              ('kachna', 'Nejsme FIT, ani to nezkoušej.'),
              ('goddess', 'Vypíše tuto zprávu.')]]
+
+    ##
+    ## ERROR MESSAGES FOR COGS BUILD AS THEY SHOULD HAVE BEEN BUILT
+    ##
+    cog_err = "{error}"
+
+    # STALKER
+    stalker_err_not_implemented = "Stalker is not ready for this yet."
+    stalker_err_not_found = "There are no users with specified parameters."
+    stalker_err_read = "Could not read from database"
+    stalker_err_new_entry_exists = "Given user ID is already present in the database"
+    stalker_err_new_entry_write = "Could not write to the database"
+    stalker_err_delete = "Could not delete user."
+    stalker_err_delete_not_found = "User could not be deleted because is not in the database"
