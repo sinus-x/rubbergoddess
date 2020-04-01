@@ -28,16 +28,12 @@ class FitWide(commands.Cog):
     async def is_admin(ctx):
         return ctx.author.id == config.admin_id
 
-    async def is_mod(ctx):
-        guild = self.bot.get_guild(config.guild_id)
-        mod = discord.utils.get(guild.roles, name="MOD")
-        return mod in ctx.author.roles
-
     async def is_in_modroom(ctx):
         return ctx.message.channel.id == config.mod_room
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(is_in_modroom)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def find_rolehoarders(self, ctx, limit=config.rolehoarder_default_limit):
         guild = self.bot.get_guild(config.guild_id)
@@ -69,7 +65,7 @@ class FitWide(commands.Cog):
 
         await ctx.send(msg)
 
-    @commands.check(is_mod)
+    @commands.has_permissions(administrator=True)
     @commands.check(is_in_modroom)
     @commands.command()
     async def offer_subjects(self, ctx, group = None):
@@ -125,7 +121,7 @@ class FitWide(commands.Cog):
 
         return
 
-    @commands.check(is_mod)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def purge(self, ctx, channel, limit = None, pinMode = "pinSkip"):
         #TODO Add user argument
@@ -186,7 +182,7 @@ class FitWide(commands.Cog):
 
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_admin)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def role_check(self, ctx, p_verified: bool = True,
                          p_move: bool = True, p_status: bool = True,
@@ -280,7 +276,7 @@ class FitWide(commands.Cog):
         await ctx.send("Done")
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_admin)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def increment_roles(self, ctx):
         database.base.metadata.create_all(database.db)
@@ -429,7 +425,7 @@ class FitWide(commands.Cog):
     # and role_check to check if peoples roles match the database
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_mod)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def get_users_login(self, ctx, member: discord.Member):
         result = session.query(Permit).\
@@ -450,7 +446,7 @@ class FitWide(commands.Cog):
                         "Rocnik: `{p.year}`").format(p=person))
         
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_mod)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def get_logins_user(self, ctx, login):
         result = session.query(Permit).\
@@ -462,7 +458,7 @@ class FitWide(commands.Cog):
             await ctx.send(utils.generate_mention(result.discord_ID))
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_mod)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def reset_login(self, ctx, login):
 
@@ -478,7 +474,7 @@ class FitWide(commands.Cog):
             await ctx.send("Done")
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_mod)
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def connect_login_to_user(self, ctx, login, member: discord.Member):
 

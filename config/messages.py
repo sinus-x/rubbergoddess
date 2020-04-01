@@ -202,10 +202,9 @@ class Messages:
     ##
     ## ERROR MESSAGES FOR COGS BUILD AS THEY SHOULD HAVE BEEN BUILT
     ##
-    cog_err = "{error}"
+    notif_not_implemented = "I don't know how to do this yet."
 
     # STALKER
-    stalker_err_not_implemented = "Stalker is not ready for this yet."
     stalker_err_not_found = "There are no users with specified parameters."
     stalker_err_read = "Could not read from database"
     stalker_err_new_entry_exists = "Given user ID is already present in the database"
