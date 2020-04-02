@@ -21,8 +21,8 @@ class Config:
     default_prefix = '?'
 
     # Extensions loaded on bot start
-    extensions = ['base', 'karma', 'meme', 'random', 'verify', 'fitwide',
-                  'acl', 'review', 'vote', 'kachna', 'name_day',
+    extensions = ['errors', 'base', 'karma', 'meme', 'random', 'verify',
+                  'fitwide', 'acl', 'review', 'vote', 'kachna', 'name_day',
                   'stalker']
 
     # Roll dice

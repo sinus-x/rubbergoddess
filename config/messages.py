@@ -202,7 +202,15 @@ class Messages:
     ##
     ## ERROR MESSAGES FOR COGS BUILD AS THEY SHOULD HAVE BEEN BUILT
     ##
-    notif_not_implemented = "I don't know how to do this yet."
+
+    # ERRORS
+    exc_not_implemented = "To ještě neumím... " + emote.sad
+    exc_no_permission = "Na to nemáš dostatečnou roli."
+    exc_no_requirements = "Na to nemáš oprávnění."
+    exc_no_command = "Takový příkaz neznám " + emote.sad
+    exc_command_err = "Chyba v příkazu."
+    exc_cooldown = "Tento příkaz nemůžeš zadávat tak často"
+    exc_extension_err = "Chyba rozšíření " + emote.ree
 
     # STALKER
     stalker_err_not_found = "There are no users with specified parameters."

@@ -5,76 +5,45 @@ import discord
 from discord.ext import commands
 
 import utils
-from config import config, messages
+from config.config import Config as config
+from config.messages import Messages as messages
 from logic import rng
 from features import reaction
 from repository import karma_repo
-from cogs import room_check
+from cogs import room_check, errors
 
 rng = rng.Rng()
-config = config.Config
-messages = messages.Messages
 karma_r = karma_repo.KarmaRepository()
 
 boottime = datetime.datetime.now().replace(microsecond=0)
 
 
-class Base(commands.Cog):
-
+class Base (commands.Cog):
+    """About-bot cog"""
     def __init__(self, bot):
         self.bot = bot
         self.reaction = reaction.Reaction(bot, karma_r)
         self.check = room_check.RoomCheck(bot)
+        self.errors = errors.Errors(bot)
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        # The local handlers so far only catch bad arguments so we still
-        # want to print the rest
-        if (isinstance(error, commands.BadArgument) or
-            isinstance(error, commands.errors.CheckFailure) or
-            isinstance(error, commands.errors.MissingRequiredArgument)) and\
-           hasattr(ctx.command, 'on_error'):
-            return
-
-        if isinstance(error, commands.UserInputError):
-            await ctx.send("Chyba na vstupu")
-            return
-
-        if isinstance(error, commands.CommandNotFound):
-            if not ctx.message.content[0] in config.command_prefix:
-                await ctx.send(messages.no_such_command)
-            return
-
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(utils.fill_message("spamming", user=ctx.author.id))
-            return
-
-        output = 'Ignoring exception in command {}:\n'.format(ctx.command)
-        output += ''.join(traceback.format_exception(type(error),
-                                                     error,
-                                                     error.__traceback__))
-        channel = self.bot.get_channel(config.bot_dev_channel)
-        print(output)
-        output = list(output[0 + i: 1900 + i] for i in range(0, len(output), 1900))
-        if channel is not None:
-            for message in output:
-                await channel.send("```\n" + message + "\n```")
-
-    @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
+    @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def uptime(self, ctx):
+        """Display bot uptime"""
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - boottime
         await ctx.send(utils.fill_message("uptime_message", boottime=str(boottime), uptime=str(delta)))
 
-    @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
+    @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def week(self, ctx):
+        """See if the current week is odd or even"""
         await ctx.send(rng.week())
 
-    @commands.cooldown(rate=2, per=60.0, type=commands.BucketType.user)
-    @commands.command(aliases=["goddess", "help"])
+    @commands.cooldown (rate=2, per=60.0, type=commands.BucketType.user)
+    @commands.command(aliases=["goddess"])
     async def god(self, ctx):
+        """Display information about bot functions"""
         embed = self.reaction.make_embed(1)
 
         channel = await self.check.get_room(ctx.message)
@@ -90,6 +59,33 @@ class Base(commands.Cog):
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
 
+    @commands.command()
+    async def help (self, ctx, pin: str = None):
+        """Display information about bot functions (beta)
+
+        This should replace current `?god`/`?goddess` commands in the future
+        Instead of reading help from file it is taking dostrings inside the code
+        """
+        pin = self.errors._parsePin(pin)
+        t = self.errors._getEmbedTitle(ctx)
+        if pin is not None and pin:
+            t = "📌 " + t
+        embed = discord.Embed(color=config.color,
+            title=t, description=ctx.command.short_doc)
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+
+        cogs = self.bot.cogs
+        for cog in cogs:
+            cog = self.bot.get_cog(cog)
+            embed.add_field(
+                name=cog.qualified_name,
+                value=cog.description if cog.description else "_No description available_")
+
+
+        msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await msg.add_reaction("◀")
+        await msg.add_reaction("▶")
+        await self.errors._tryDelete(ctx, now=True)
 
 def setup(bot):
     bot.add_cog(Base(bot))

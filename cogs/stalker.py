@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 import utils
-from cogs import room_check
+from cogs import errors
 from features import verification
 from repository import user_repo
 from repository.database import database, session
@@ -21,7 +21,7 @@ class Stalker (commands.Cog):
 
     def __init__ (self, bot):
         self.bot = bot
-        self.check = room_check.RoomCheck(bot)
+        self.errors = errors.Errors(bot)
 
     async def is_in_modroom (ctx):
         return ctx.message.channel.id == config.mod_room
@@ -38,6 +38,7 @@ class Stalker (commands.Cog):
             return email
         return
 
+    @commands.guild_only()
     @commands.command(name="whois", aliases=["stalk"])
     async def whois (self, ctx: commands.Context, member: discord.Member = None, pin = None):
         """Get information about user
@@ -46,12 +47,12 @@ class Stalker (commands.Cog):
         pin: A "pin" string that will prevent the embed from disappearing
         """
         if member is None:
-            await self._getHelp(ctx)
+            await self.errors._getHelp(ctx)
             return
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
-        pin = self._parsePin(pin)
+        pin = self.errors._parsePin(pin)
 
         # get user from database
         try:
@@ -96,13 +97,13 @@ class Stalker (commands.Cog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self._tryDelete(ctx, now=True)
 
-
+    @commands.guild_only()
     @commands.group(aliases=["db"])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     async def database (self, ctx: commands.Context):
         """Manage users"""
         if ctx.invoked_subcommand is None:
-            await self._getOptions(ctx)
+            await self.errors._getOptions(ctx)
 
     @database.command(name="add")
     async def database_add (self, ctx: commands.Context,
@@ -115,7 +116,7 @@ class Stalker (commands.Cog):
         group: A role from `roles_native` or `roles_guest` in config file
         """
         if member is None or login is None or group is None:
-            await self._getHelp(ctx)
+            await self.errors._getHelp(ctx)
             return
 
         # define variables
@@ -125,7 +126,7 @@ class Stalker (commands.Cog):
         # try to write to database
         try:
             result = repository.get_users(discord_id=str(member.id))[0]
-            await self._getError(ctx, messages.stalker_err_new_entry_exists)
+            await self.errors._getError(ctx, messages.stalker_err_new_entry_exists)
             return
         except IndexError:
             # no result is good, we won't have collision
@@ -135,7 +136,7 @@ class Stalker (commands.Cog):
             repository.add_user(discord_id=str(member.id), login=login,
                             group=group.name, status="verified", code="MANUAL")
         except:
-            await self._getError(ctx, messages.stalker_err_new_entry_write)
+            await self.errors._getError(ctx, messages.stalker_err_new_entry_write)
             return
 
         # assign roles, if neccesary
@@ -157,12 +158,12 @@ class Stalker (commands.Cog):
         force: "force" string. If omitted, show what will be deleted
         """
         if member is None:
-            await self._getHelp(ctx)
+            await self.errors._getHelp(ctx)
             return
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
-        force = self._parseForce(force)
+        force = self.errors._parseForce(force)
 
         try:
             if force:
@@ -170,7 +171,7 @@ class Stalker (commands.Cog):
             else:
                 result = repository.get_users(discord_id=str(member.id))
         except:
-            await self._getError(ctx, messages.stalker_err_read)
+            await self.errors._getError(ctx, messages.stalker_err_read)
             return
 
         #TODO make function for command title
@@ -181,7 +182,7 @@ class Stalker (commands.Cog):
             embed = discord.Embed(color=config.color_success, title=t, description=d)
             # delete
             if result is None or result < 1:
-                await self._getError(ctx, messages.stalker_err_delete_not_found)
+                await self.errors._getError(ctx, messages.stalker_err_delete_not_found)
                 return
             embed.add_field(inline=False,
                 name="Success", value="Deleted {} entries".format(result))
@@ -213,7 +214,7 @@ class Stalker (commands.Cog):
         member: A server member
         login: User's xlogin (FEKT, VUT) or e-mail
         """
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
         return
 
     @database_update.command(name="group")
@@ -223,7 +224,7 @@ class Stalker (commands.Cog):
         member: A server member
         group: A role from `roles_native` or `roles_guest` in config file
         """
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="status")
     async def database_update_status (self, ctx: commands.Context, member: discord.Member, status: str):
@@ -232,7 +233,7 @@ class Stalker (commands.Cog):
         member: A server member
         status: unknown, pending, verified, kicked, banned
         """
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="comment")
     async def database_update_comment (self, ctx: commands.Context, member: discord.Member, *args):
@@ -241,7 +242,7 @@ class Stalker (commands.Cog):
         member: A server member
         args: Commentary on user
         """
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="nickname")
     async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
@@ -250,7 +251,7 @@ class Stalker (commands.Cog):
         member: A server member
         args: A new nickname
         """
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="tempnickname")
     async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
@@ -259,115 +260,18 @@ class Stalker (commands.Cog):
         member: A server member
         args: A new temporary nickname. If empty, reset to default
         """
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="statistics", aliases=["stats"])
     async def database_statistics (self, ctx: commands.Context):
         """Display statistics about known users"""
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="today")
     async def database_today (self, ctx: commands.Context):
         """Display the count of users that joined/were verified today"""
-        await self._getNotification(ctx, messages.notif_not_implemented, pin=False)        
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
-
-    def _getEmbed (self, ctx: commands.Context, color: str = None, pin = False):
-        if color not in [config.color_success, config.color_error, config.color_notify]:
-            color = config.color
-        c = ctx.command
-        p = ' '.join((p.name) for p in c.parents) + " " if c.parents else ""
-        t = config.default_prefix + p + c.name
-        if pin is not None and pin:
-            t = "📌 " + t
-        d = "**{}** cog".format(c.cog_name)
-        embed = discord.Embed(color=color,
-            title=t, description=d, delete_after=config.delay_embed)
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-        return embed
-
-    async def _getError (self, ctx: commands.Context, errmsg: str,
-                               delete: bool = True, pin: bool = None):
-        """Show an error embed"""
-        embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
-        embed.add_field(name="Error occured", value=errmsg, inline=False)
-        embed.add_field(name="Command", value=ctx.message.content, inline=False)
-        if delete:
-            await ctx.send(embed=embed, delete_after=config.delay_embed)
-        else:
-            await ctx.send(embed=embed)
-        await self._tryDelete(ctx, now=True)
-
-    async def _getNotification (self, ctx: commands.Context, msg: str,
-                                    pin: bool = False):
-        """Show a notification embed"""
-        embed = self._getEmbed(ctx, color=config.color_notify, pin=pin)
-        embed.add_field(name="Notification", value=msg, inline=False)
-        embed.add_field(name="Command", value=ctx.message.content, inline=False)
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self._tryDelete(ctx, now=True)
-
-    async def _getDescription (self, ctx: commands.Context):
-        """Show description for command"""
-        embed = self._getEmbed(ctx)
-        embed.add_field(name="Description", value=ctx.command.short_doc)
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self._tryDelete(ctx, now=True)
-
-    async def _getHelp (self, ctx: commands.Context):
-        """Show parameters for command"""
-        #TODO add bold text to the first line and parameter names
-        embed = self._getEmbed(ctx)
-        embed.add_field(name="Help", value=ctx.command.help)
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self._tryDelete(ctx, now=False)
-
-    async def _getOptions (self, ctx: commands.Context):
-        """Show commands available inside of a command group"""
-        embed = self._getEmbed(ctx)
-        if ctx.command.commands:
-            for opt in ctx.command.commands:
-                # ctx.command.commands are probably sorted as they are loaded,
-                # eg. backwards. This is not 100% reliable, but it works,
-                # generally
-                embed.insert_field_at(index=0,
-                    name=opt.name, value=opt.short_doc, inline=False)
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self._tryDelete(ctx, now=True)
-
-    async def _tryDelete (self, ctx: commands.Context, now: bool = False):
-        """Try to delete the context message.
-
-        now: On "now" string, do not wait for embed delay
-        """
-        try:
-            if now:
-                await ctx.message.delete()
-            else:
-                await ctx.message.delete(delay=config.delay_embed)
-        except discord.HTTPException:
-            pass
-
-    #FIXME Can this be done in a dynamic way?
-    def _parsePin (self, pin):
-        return pin is not None and pin == "pin"
-    def _parseForce (self, force):
-        return force is not None and force == "force"
-
-    #FIXME Can those be caucht on one line?
-    @whois.error
-    @database_add.error
-    @database_remove.error
-    @database_update.error
-    @database_update_login.error
-    @database_update_comment.error
-    @database_update_status.error
-    @database_update_group.error
-    @database_update_nickname.error
-    @database_statistics.error
-    async def stalker_error (self, ctx, error):
-        """Print error"""
-        await self._getError(ctx, error, delete = False)
 
 def setup(bot):
     bot.add_cog(Stalker(bot))
