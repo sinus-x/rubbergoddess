@@ -210,7 +210,7 @@ class Stalker (commands.Cog):
     async def database_update (self, ctx: commands.Context):
         """Set of functions to update database entries"""
         if ctx.invoked_subcommand is None:
-            await self.database_update_help(ctx)
+            await self.errors._getOptions(ctx)
 
     @database_update.command(name="login")
     async def database_update_login (self, ctx: commands.Context, member: discord.Member, login: str):
@@ -265,6 +265,32 @@ class Stalker (commands.Cog):
         member: A server member
         args: A new temporary nickname. If empty, reset to default
         """
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+
+    @database.group(name="show")
+    async def database_show (self, ctx: commands.Context):
+        """Set of filter functions"""
+        if ctx.invoked_subcommand is None:
+            await self.errors._getOptions(ctx)
+
+    @database.command(name="unverified")
+    async def database_show_unverified (self, ctx: commands.Context):
+        """List users that have not yet requested verification code"""
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+
+    @database.command(name="pending")
+    async def database_show_pending (self, ctx: commands.Context):
+        """List users that have not yet submitted the verification code"""
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+
+    @database.command(name="kicked")
+    async def database_show_kicked (self, ctx: commands.Context):
+        """List users that have been kicked"""
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+
+    @database.command(name="banned")
+    async def database_show_banned (self, ctx: commands.Context):
+        """List users that have been banned"""
         await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="statistics", aliases=["stats"])
