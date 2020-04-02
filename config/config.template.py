@@ -23,7 +23,7 @@ class Config:
     # Extensions loaded on bot start
     extensions = ['errors', 'base', 'karma', 'meme', 'random', 'verify',
                   'fitwide', 'acl', 'review', 'vote', 'kachna', 'name_day',
-                  'stalker']
+                  'stalker', 'wormhole']
 
     # Roll dice
     max_dice_at_once = 1000
@@ -77,6 +77,7 @@ class Config:
         692626097669406720, # add-subjects
         692084608778633217  # add-roles
     ]
+
     hug_emojis = [emote.hug_right, "(っ˘̩╭╮˘̩)っ", "(っ´▽｀)っ",
                   "╰(*´︶`*)╯", "(つ≧▽≦)つ", "(づ￣ ³￣)づ", "(づ｡◕‿‿◕｡)づ",
                   "(づ￣ ³￣)づ", "(っ˘̩╭╮˘̩)っ", "⁽₍੭ ՞̑◞ළ̫̉◟՞̑₎⁾੭",
@@ -164,6 +165,6 @@ class Config:
     # weather token to openweather API
     weather_token = "678a5932f6dd92ac668b20e9f89c0318"
 
-    # Warphole config
-    warphole_sibling_id = 0
-    warphole_channel_id = 0
+    # Wormhole config
+    wormhole_sibling_id = 0
+    wormhole_channel_id = 0
