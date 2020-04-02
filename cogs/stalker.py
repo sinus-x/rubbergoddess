@@ -24,7 +24,7 @@ class Stalker (commands.Cog):
         self.errors = errors.Errors(bot)
 
     async def is_in_modroom (ctx):
-        return ctx.message.channel.id == config.mod_room
+        return ctx.message.channel.id == config.channel_mods
 
     def dbobj2email (self, dbobj):
         if dbobj is not None:
@@ -60,7 +60,7 @@ class Stalker (commands.Cog):
             dbobj = None
         
         t = "📌 " if pin else ""
-        t += config.default_prefix + ctx.command.name
+        t += config.prefix + ctx.command.name
         embed = discord.Embed(color=config.color,
             title=t, description=member.mention)
         n = "**{} ({})**".format(member.nick, member.name) \
@@ -70,7 +70,7 @@ class Stalker (commands.Cog):
                 name=n, d_id=member.id, date=member.joined_at.strftime("%Y-%m-%d")))
 
         # do not display sensitive information in public channels
-        if dbobj is not None and ctx.channel.id == config.mod_room:
+        if dbobj is not None and ctx.channel.id == config.channel_mods:
             # private channel, found in database
             email = self.dbobj2email(dbobj)
             embed.add_field(name="E-mail", value=email if email else "_none_", inline=False)
@@ -80,11 +80,11 @@ class Stalker (commands.Cog):
             if dbobj.comment is not None and len(dbobj.comment) > 0:
                 embed.add_field(name="Comment", value=dbobj.comment, inline=False)
 
-        elif not dbobj and ctx.channel.id == config.mod_room:
+        elif not dbobj and ctx.channel.id == config.channel_mods:
             # private channel, not found
             embed.add_field(name="Not in database", value="Server only", inline=False)
 
-        elif dbobj is not None and ctx.channel.id != config.mod_room:
+        elif dbobj is not None and ctx.channel.id != config.channel_mods:
             # public channel
             embed.add_field(inline=False,
                 name="Status", value=dbobj.status if dbobj.status else "_none_")
@@ -181,7 +181,7 @@ class Stalker (commands.Cog):
 
         #TODO make function for command title
         p = ' '.join((p.name) for p in ctx.command.parents) + " " if ctx.command.parents else ""
-        t = config.default_prefix + p + ctx.command.name
+        t = config.prefix + p + ctx.command.name
         d = "Result" if force else "Simulation, run with `force` to apply"
         if force:
             embed = discord.Embed(color=config.color_success, title=t, description=d)

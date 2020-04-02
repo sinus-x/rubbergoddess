@@ -2,7 +2,7 @@ from config import config
 from config.emotes import Emotes as emote
 
 class Messages:
-    prefix = config.Config.default_prefix
+    prefix = config.Config.prefix
 
     server_warning = "Tohle funguje jen na VUT FEKT serveru."
     karma_get_missing = "Cauchy, musela jsem za tebe uklidit."

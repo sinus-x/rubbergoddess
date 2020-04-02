@@ -22,7 +22,7 @@ class Reaction(BaseFeature):
 
     def make_embed(self, page):
         embed = discord.Embed(title="Rubbergoddess", description="Rubbergod? Tss.", color=Config.color)
-        prefix = Config.default_prefix
+        prefix = Config.prefix
         embed.add_field(name="Autor", value="Cauchy#5244")
         embed.add_field(name="Počet serverů s touto instancí bota", value=f"{len(self.bot.guilds)}")
         embed.add_field(name="\u200b", value="Příkazy:", inline=False)
@@ -256,7 +256,7 @@ class Reaction(BaseFeature):
                     embed.set_footer(
                         text=datetime.datetime.now().replace(microsecond=0)
                     )
-                    channel = self.bot.get_channel(Config.log_channel)
+                    channel = self.bot.get_channel(Config.channel_log)
                     await channel.send(embed=embed)
                     try:
                         await message.pin()
@@ -326,7 +326,7 @@ class Reaction(BaseFeature):
                 await member.add_roles(role)
                 return True
             else:
-                bot_room = self.bot.get_channel(Config.bot_room)
+                bot_room = self.bot.get_channel(Config.channel_botspam)
                 await bot_room.send(utils.fill_message(
                     "role_add_denied", user=member.id, role=role.name))
                 return False
@@ -352,7 +352,7 @@ class Reaction(BaseFeature):
             else:
                 errmsg = "subject_add_denied_notsubject"
 
-            bot_room = self.bot.get_channel(Config.bot_room)
+            bot_room = self.bot.get_channel(Config.channel_botspam)
             await bot_room.send(utils.fill_message(
                 errmsg, user=member.id, role=channel.name))
 
@@ -367,7 +367,7 @@ class Reaction(BaseFeature):
                 await member.remove_roles(role)
                 return True
             else:
-                bot_room = self.bot.get_channel(Config.bot_room)
+                bot_room = self.bot.get_channel(Config.channel_botspam)
                 await bot_room.send(utils.fill_message(
                     "role_remove_denied", user=member.id, role=role.name))
                 return False
@@ -392,7 +392,7 @@ class Reaction(BaseFeature):
             # access, so they are un-clicking it back.
             # - subject_remove_denied_guest
             # - subject_remove_denied_notsubject
-#            bot_room = self.bot.get_channel(Config.bot_room)
+#            bot_room = self.bot.get_channel(Config.channel_botspam)
 #            await bot_room.send(utils.fill_message(
 #                errmsg, user=member.id, role=channel.name))
 

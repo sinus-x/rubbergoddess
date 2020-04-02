@@ -14,7 +14,7 @@ class Presence(BaseFeature):
 
         self.activity = discord.Game(
             start=datetime.datetime.utcnow(),
-            name=Config.default_prefix + 'goddess | ' + utils.git_hash()[:7])
+            name=Config.prefix + 'goddess | ' + utils.git_hash()[:7])
 
     async def set_presence(self):
         await self.bot.change_presence(activity=self.activity)

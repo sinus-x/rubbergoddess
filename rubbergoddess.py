@@ -13,7 +13,7 @@ import discord
 from datetime import datetime
 
 bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or(*config.command_prefix),
+    command_prefix=commands.when_mentioned_or(*config.prefix),
                    help_command=None, case_insensitive=True)
 
 presence = presence.Presence(bot)
@@ -30,7 +30,7 @@ def load_subjects():
 async def on_ready():
     """If Rubbergoddess is ready"""
     print("Ready")
-    channel = bot.get_channel(config.log_channel)
+    channel = bot.get_channel(config.channel_log)
 
     embed = discord.Embed(title="Informace o spuštění", color=config.color_success)
     embed.add_field(inline=False,
@@ -47,7 +47,7 @@ async def on_ready():
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    channel = bot.get_channel(config.bot_dev_channel)
+    channel = bot.get_channel(config.channel_botdev)
     output = traceback.format_exc()
     print(output)
     if channel is not None:

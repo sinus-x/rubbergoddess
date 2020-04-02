@@ -54,7 +54,7 @@ class Base (commands.Cog):
         embed = self.reaction.make_embed(1)
 
         channel = await self.check.get_room(ctx.message)
-        if channel is not None and channel.id != config.bot_room:
+        if channel is not None and channel.id != config.channel_botspam:
             try:
                 msg = await ctx.author.send(embed=embed)
                 await ctx.message.delete()

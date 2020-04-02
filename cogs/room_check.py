@@ -13,7 +13,7 @@ class RoomCheck():
         room = await self.get_room(message)
         if room is not None and room.id not in config.allowed_channels:
             await message.channel.send(utils.fill_message("bot_room_redirect",
-                                       user=message.author.id, bot_room=config.bot_room))
+                                       user=message.author.id, bot_room=config.channel_botspam))
 
     async def get_room(self, message):
         guild = self.bot.get_guild(config.guild_id)

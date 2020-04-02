@@ -32,7 +32,7 @@ class Errors(commands.Cog):
             return
 
         elif isinstance(error, commands.CommandNotFound):
-            if not ctx.message.content[0] in config.command_prefix:
+            if not ctx.message.content[0] in config.prefixes:
                 await self._getNotification(ctx, messages.exc_no_command)
             return
 
@@ -48,7 +48,7 @@ class Errors(commands.Cog):
         # print traceback to stdout
         print(output)
         # send traceback to dedicated channel
-        channel = self.bot.get_channel(config.bot_dev_channel)
+        channel = self.bot.get_channel(config.channel_botdev)
         output = list(output[0+i:1960+i] for i in range(0, len(output), 1960))
         if channel is not None:
             for message in output:
@@ -62,7 +62,7 @@ class Errors(commands.Cog):
     def _getEmbedTitle (self, ctx: commands.Context):
         """Create title for command embed"""
         path = ' '.join((p.name) for p in ctx.command.parents) + " " if ctx.command.parents else ""
-        return config.default_prefix + path + ctx.command.name
+        return config.prefix + path + ctx.command.name
 
     def _getEmbed (self, ctx: commands.Context, color: str = None, pin = False):
         """Create embed for command info/notification/error

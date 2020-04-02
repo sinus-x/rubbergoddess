@@ -29,13 +29,13 @@ class FitWide(commands.Cog):
         return ctx.author.id == config.admin_id
 
     async def is_in_modroom(ctx):
-        return ctx.message.channel.id == config.mod_room
+        return ctx.message.channel.id == config.channel_mods
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(is_in_modroom)
     @commands.has_permissions(administrator=True)
     @commands.command()
-    async def find_rolehoarders(self, ctx, limit=config.rolehoarder_default_limit):
+    async def find_rolehoarders(self, ctx, limit=config.rolehoarders_limit):
         guild = self.bot.get_guild(config.guild_id)
         members = guild.members
 
@@ -110,7 +110,7 @@ class FitWide(commands.Cog):
                 ctr_ch += 1
             await add_subjects.send(msg)
 
-        title = config.default_prefix + "offer_subjects result"
+        title = config.prefix + "offer_subjects result"
         cleared = "Yes, {} post{}".format(deleted, "s" if deleted > 1 else "") if group is None else "No"
         embed = discord.Embed(title=title, color=config.color)
         embed.add_field(name="Cleared?", value=cleared, inline=False)
@@ -131,7 +131,7 @@ class FitWide(commands.Cog):
             channel = ch.name
         else:            
             ch = discord.utils.get(guild.text_channels, name=channel.replace("#", ""))
-        log = discord.utils.get(guild.text_channels, id=config.log_channel)
+        log = discord.utils.get(guild.text_channels, id=config.channel_log)
         deleted = 0
 
         if limit:

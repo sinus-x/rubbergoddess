@@ -86,7 +86,7 @@ class Karma(commands.Cog):
             if not await self.check.guild_check(ctx.message):
                 await ctx.send(messages.server_warning)
             else:
-                if ctx.message.channel.id == config.vote_room or \
+                if ctx.message.channel.id == config.channel_vote or \
                    ctx.author.id == config.admin_id:
                     try:
                         await ctx.message.delete()
@@ -95,13 +95,13 @@ class Karma(commands.Cog):
                         return
                 else:
                     await ctx.send(utils.fill_message("vote_room_only",
-                                   room=discord.utils.get(ctx.guild.channels, id=config.vote_room)))
+                                   room=discord.utils.get(ctx.guild.channels, id=config.channel_vote)))
 
         elif args[0] == "vote":
             if not await self.check.guild_check(ctx.message):
                 await ctx.send(messages.server_warning)
             else:
-                if ctx.message.channel.id == config.vote_room or \
+                if ctx.message.channel.id == config.channel_vote or \
                    ctx.author.id == config.admin_id:
                     try:
                         await ctx.message.delete()
@@ -110,7 +110,7 @@ class Karma(commands.Cog):
                         return
                 else:
                     await ctx.send(utils.fill_message("vote_room_only", 
-                                   room=discord.utils.get(ctx.guild.channels, id=config.vote_room)))
+                                   room=discord.utils.get(ctx.guild.channels, id=config.channel_vote)))
 
         elif args[0] == "give":
             if ctx.author.id == config.admin_id:

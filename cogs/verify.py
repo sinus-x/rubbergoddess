@@ -19,7 +19,7 @@ class Verify(commands.Cog):
         if ctx.guild is None:
             # allow verification in DMs
             return True
-        return ctx.channel.id == config.jail
+        return ctx.channel.id == config.channel_jail
 
     @commands.cooldown(rate=5, per=30.0, type=commands.BucketType.user)
     @commands.check(in_jail)

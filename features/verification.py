@@ -109,7 +109,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             return
 
         # check if the user doesn't have the verify role
-        if await self.has_role(message.author, config.verification_role):
+        if await self.has_role(message.author, config.verify):
             await message.channel.send(
                 utils.fill_message(
                     "verify_already_verified_role",
@@ -210,7 +210,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                 embed = discord.Embed(title=errmsg, color=config.color)
                 embed.add_field(name="User", value=utils.generate_mention(message.author.id))
                 embed.add_field(name="Message", value=message.content, inline=False)
-                channel = self.bot.get_channel(config.log_channel)
+                channel = self.bot.get_channel(config.channel_log)
                 await channel.send(embed=embed)
 
         try:
@@ -227,7 +227,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         code = str(message.content).split(" ")[1]
 
         # only process users that are not verified
-        if not await self.has_role(message.author, config.verification_role):
+        if not await self.has_role(message.author, config.verify):
             guild = self.bot.get_guild(config.guild_id)
 
             # test for common errors
@@ -267,7 +267,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         guild = self.bot.get_guild(config.guild_id)
                         try:
                             verify = discord.utils.get(message.guild.roles,
-                                name=config.verification_role)
+                                name=config.verify)
                             role = discord.utils.get(message.guild.roles, name=group)
                             member = message.author
                             await message.channel.send(utils.fill_message(
@@ -277,7 +277,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         except AttributeError:
                             # DM
                             verify = discord.utils.get(guild.roles,
-                                name=config.verification_role)
+                                name=config.verify)
                             role = discord.utils.get(guild.roles, name=group)
                             if not message.author.id:
                                 return
@@ -299,7 +299,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                 embed = discord.Embed(title=errmsg, color=config.color)
                 embed.add_field(name="User", value=utils.generate_mention(message.author.id))
                 embed.add_field(name="Message", value=message.content, inline=False)
-                channel = self.bot.get_channel(config.log_channel)
+                channel = self.bot.get_channel(config.channel_log)
                 await channel.send(embed=embed)
         try:
             await message.delete()

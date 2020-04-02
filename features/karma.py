@@ -216,7 +216,7 @@ class Karma(BaseFeature):
                 pass  # TODO: error handling?
 
         if error:
-            channel = await self.bot.fetch_channel(cfg.bot_dev_channel)
+            channel = await self.bot.fetch_channel(cfg.channel_botdev)
             await channel.send(msg.karma_get_missing)
 
     async def karma_give(self, message):
