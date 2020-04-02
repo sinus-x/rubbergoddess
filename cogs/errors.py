@@ -14,6 +14,10 @@ class Errors(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error (self, ctx: commands.Context, error):
         """Handle errors"""
+        if hasattr(ctx.command, 'on_error') or \
+           hasattr(ctx.command, 'on_command_error'):
+            return
+        error = getattr(error, 'original', error)
 
         if isinstance(error, commands.MissingPermissions):
             await self._getNotification(ctx, messages.exc_no_permission)
@@ -57,10 +61,8 @@ class Errors(commands.Cog):
 
     def _getEmbedTitle (self, ctx: commands.Context):
         """Create title for command embed"""
-        c = ctx.command
-        p = ' '.join((p.name) for p in c.parents) + " " if c.parents else ""
-        t = config.default_prefix + p + c.name
-        return t
+        path = ' '.join((p.name) for p in ctx.command.parents) + " " if ctx.command.parents else ""
+        return config.default_prefix + path + ctx.command.name
 
     def _getEmbed (self, ctx: commands.Context, color: str = None, pin = False):
         """Create embed for command info/notification/error
@@ -70,10 +72,10 @@ class Errors(commands.Cog):
         """
         if color not in [config.color_success, config.color_error, config.color_notify]:
             color = config.color
-        t = self._getEmbedTitle()
+        t = self._getEmbedTitle(ctx)
         if pin is not None and pin:
             t = "📌 " + t
-        d = "**{}** cog".format(c.cog_name)
+        d = "**{}** cog".format(ctx.command.cog_name)
         embed = discord.Embed(color=color,
             title=t, description=d, delete_after=config.delay_embed)
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
@@ -150,10 +152,10 @@ class Errors(commands.Cog):
 
     #FIXME Can this be done in a dynamic way?
     #FIXME Can these functions be here?
-    def _parsePin (self, pin):
+    def _parsePin (self, pin = None):
         """Return True only if pin is 'pin'"""
         return pin is not None and pin == "pin"
-    def _parseForce (self, force):
+    def _parseForce (self, force = None):
         """Return True only if force is 'force'"""
         return force is not None and force == "force"
 

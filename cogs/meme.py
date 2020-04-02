@@ -4,28 +4,26 @@ import discord
 from discord.ext import commands
 
 import utils
-from config import config, messages
-from config.emotes import Emotes as emote
-
-config = config.Config
-messages = messages.Messages
+from config.config import Config as config
+from config.messages import Messages as messages
 
 uhoh_counter = 0
 
-
 class Meme(commands.Cog):
-
+    """Interact with users"""
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message (self, message):
         global uhoh_counter
 
         if message.author.bot:
-            if message.author.id == config.grillbot_id and \
+            if self.bot.user.id is not None and \
+               message.author.id != self.bot.user.id and \
                message.content.startswith("<:") and \
                message.content.endswith(">"):
+                # if another bot has an emoji trigger, say it too
                 await message.channel.send(message.content)
             return
 
@@ -41,18 +39,20 @@ class Meme(commands.Cog):
             await message.channel.send(link)
 
     @commands.command()
-    async def uhoh(self, ctx):
+    async def uhoh (self, ctx):
+        """Something is wrong. Say 'uh oh' too"""
         await ctx.send(utils.fill_message("uhoh_counter", uhohs=uhoh_counter))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
-    @commands.command(name='??')
-    async def question(self, ctx):
+    @commands.command(name='??', aliases=["???"])
+    async def question (self, ctx):
+        """What?"""
         await ctx.send(choice(messages.question))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def hug(self, ctx, user: discord.Member = None, intensity: int = 0):
-        """Because everyone likes hugs"""
+    async def hug (self, ctx, user: discord.Member = None, intensity: int = 0):
+        """Hug someone!"""
         if user is None:
             user = ctx.author
         elif user == self.bot.user:
@@ -68,9 +68,9 @@ class Meme(commands.Cog):
             await ctx.send(choice(emojis) + f" **{user}**")
 
     @hug.error
-    async def hug_error(self, ctx, error):
+    async def hugError (self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            await ctx.send(utils.fill_message("member_not_found", user=ctx.author.id))
+            await ctx.send(utils.fill_message("meme_hug_not_found", user=ctx.author.id))
 
 
 def setup(bot):

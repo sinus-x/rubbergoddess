@@ -51,13 +51,12 @@ class Stalker (commands.Cog):
             return
 
         # define variables
-        guild = self.bot.get_guild(config.guild_id)
+        guild = ctx.guild
         pin = self.errors._parsePin(pin)
-
         # get user from database
         try:
             dbobj = repository.get_users(discord_id=str(member.id))[0]
-        except:
+        except IndexError:
             dbobj = None
         
         t = "📌 " if pin else ""
@@ -72,17 +71,21 @@ class Stalker (commands.Cog):
 
         # do not display sensitive information in public channels
         if dbobj is not None and ctx.channel.id == config.mod_room:
-            # add embeds
+            # private channel, found in database
             email = self.dbobj2email(dbobj)
             embed.add_field(name="E-mail", value=email, inline=False)
             embed.add_field(name="Verification code", value=dbobj.code if dbobj.code else "_none_")
-            embed.add_field(name="Status", value=dbobj.status)
-            embed.add_field(name="Last changed", value=dbobj.changed)
+            embed.add_field(name="Status", value=dbobj.status if dbobj.status else "_none_")
+            embed.add_field(name="Last changed", value=dbobj.changed if dbobj.changed else "_none_")
             if dbobj.comment is not None and len(dbobj.comment) > 0:
                 embed.add_field(name="Comment", value=dbobj.comment, inline=False)
+
         elif not dbobj and ctx.channel.id == config.mod_room:
+            # private channel, not found
             embed.add_field(name="Not in database", value="Server only", inline=False)
+
         elif dbobj is not None and ctx.channel.id != config.mod_room:
+            # public channel
             embed.add_field(name="Status", value=dbobj.status, inline=False)
             if dbobj.comment is not None and len(dbobj.comment) > 0:
                 embed.add_field(name="Comment", value=dbobj.comment, inline=False)
@@ -95,11 +98,11 @@ class Stalker (commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self._tryDelete(ctx, now=True)
+        await self.errors._tryDelete(ctx, now=True)
 
     @commands.guild_only()
     @commands.group(aliases=["db"])
-    @commands.has_guild_permissions(administrator=True)
+    @commands.has_any_role('MOD', 'SUBMOD')
     async def database (self, ctx: commands.Context):
         """Manage users"""
         if ctx.invoked_subcommand is None:

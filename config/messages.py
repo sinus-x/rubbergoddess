@@ -212,6 +212,10 @@ class Messages:
     exc_cooldown = "Tento příkaz nemůžeš zadávat tak často"
     exc_extension_err = "Chyba rozšíření " + emote.ree
 
+
+    # MEME
+    meme_hug_not_found = "Nikoho takového nevidím " + emote.sad
+
     # STALKER
     stalker_err_not_found = "There are no users with specified parameters."
     stalker_err_read = "Could not read from database"

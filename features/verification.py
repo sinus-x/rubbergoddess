@@ -149,7 +149,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     if "@" not in login:
                         await message.channel.send(utils.fill_message("verify_wrong_arguments",
                             user=message.author.id, emote=emote.facepalm, 
-                            channel=jail_info.mention))
+                            channel=jail_info.mention, login="**[redacted]]**"))
                         return
                     email = login
                     if login.endswith("stud.feec.vutbr.cz"):
