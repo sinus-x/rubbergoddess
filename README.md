@@ -5,13 +5,9 @@
 ## About
 
 This FEKTwide Discord bot manages the verification process, karma and some other
-commands on VUT FEKT Discord server. [Rubbergod's](https://github.com/Toaster192/rubbergod) younger sister.
+commands on VUT FEKT Discord server. [Rubbergod](https://github.com/Toaster192/rubbergod)'s younger sister.
 
 ## Installing and running the bot
-
-Prerequisites:
-* Postgresql
-* Python3.6+
 
 Start by cloning the repo:
 ```
@@ -57,14 +53,11 @@ libpq-dev
 
 ### First run
 Use `config.template.py` file in `config` folder to set up Discord variables. 
-See USAGE.md if needed.
-
-_Tip: To have **Copy ID** option in right-click menu, enable Developer mode in 
-Settings/Appearance._
+See [USAGE.md]() if needed.
 
 Aside from `config.py` file, you'll probably need to edit the `messages.py`, as 
 well as some of the code, because roles and e-mails are hardcoded and server-specific. 
-Just look through and keep editing until the bot runs.
+Just look through and keep editing until the bot runs as needed.
 
 ## Authors
 
