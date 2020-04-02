@@ -61,8 +61,13 @@ class Errors(commands.Cog):
 
     def _getEmbedTitle (self, ctx: commands.Context):
         """Create title for command embed"""
-        path = ' '.join((p.name) for p in ctx.command.parents) + " " if ctx.command.parents else ""
-        return config.prefix + path + ctx.command.name
+        if ctx.command is None:
+            response = "(no command)"
+        else:
+            path = ' '.join((p.name) for p in ctx.command.parents) + \
+            " " if ctx.command.parents else ""
+            response = config.prefix + path + ctx.command.name
+        return response
 
     def _getEmbed (self, ctx: commands.Context, color: str = None, pin = False):
         """Create embed for command info/notification/error
@@ -75,7 +80,10 @@ class Errors(commands.Cog):
         t = self._getEmbedTitle(ctx)
         if pin is not None and pin:
             t = "📌 " + t
-        d = "**{}** cog".format(ctx.command.cog_name)
+        if ctx.command is None:
+            d = "Chlapicek pls"
+        else:
+            d = "**{}** cog".format(ctx.command.cog_name)
         embed = discord.Embed(color=color,
             title=t, description=d, delete_after=config.delay_embed)
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)

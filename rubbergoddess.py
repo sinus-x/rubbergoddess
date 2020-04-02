@@ -33,10 +33,12 @@ async def on_ready():
     channel = bot.get_channel(config.channel_log)
 
     embed = discord.Embed(title="Informace o spuštění", color=config.color_success)
-    embed.add_field(inline=False,
+    embed.add_field(inline=True,
         name="{timestamp}".format(timestamp=datetime.now().
             strftime("%Y-%m-%d %H:%M:%S")),
         value="Commit **{commit}**".format(commit=utils.git_hash()[:7]))
+    embed.add_field(inline=True,
+        name="Bot host location", value=config.host if config.host else "_unknown_")
     embed.add_field(inline=False,
         name="Povolená rozšíření",
         value=", ".join(config.extensions))

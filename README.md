@@ -59,6 +59,20 @@ Aside from `config.py` file, you'll probably need to edit the `messages.py`, as
 well as some of the code, because roles and e-mails are hardcoded and server-specific. 
 Just look through and keep editing until the bot runs as needed.
 
+### Using the bot
+Please note that the current state is not ready to be used on multiple servers. 
+
+For example:
+```python
+    @commands.guild_only()
+    @commands.group(aliases=["db"])
+    @commands.has_any_role('MOD', 'SUBMOD')
+    async def database (self, ctx: commands.Context):
+```
+
+This may seem safe, but anyone can create MOD role and read data from the 
+database on their server.
+
 ## Authors
 
 Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x).
