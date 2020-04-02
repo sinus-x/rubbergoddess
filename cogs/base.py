@@ -29,10 +29,17 @@ class Base (commands.Cog):
     @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def uptime(self, ctx):
-        """Display bot uptime"""
+        """Bot uptime"""
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - boottime
-        await ctx.send(utils.fill_message("uptime_message", boottime=str(boottime), uptime=str(delta)))
+
+        t = self.errors._getEmbedTitle(ctx)
+        embed = discord.Embed(color=config.color, title=t, description=ctx.command.short_doc)
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        embed.add_field(name="Boot", value=str(boottime), inline=False)
+        embed.add_field(name="Uptime", value=str(delta), inline=False)
+        await ctx.send(embed=embed, delete_after=config.delay_message)
+        await self.errors._tryDelete(ctx, now=True)
 
     @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
     @commands.command()
