@@ -212,6 +212,8 @@ class Messages:
     exc_cooldown = "Tento příkaz nemůžeš zadávat tak často"
     exc_extension_err = "Chyba rozšíření " + emote.ree
 
+    # VERIFY
+    verify_not_jail = "Verifikovat se jde jen v #jail."
 
     # MEME
     meme_hug_not_found = "Nikoho takového nevidím " + emote.sad

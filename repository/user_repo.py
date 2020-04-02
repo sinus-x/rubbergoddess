@@ -52,14 +52,13 @@ class UserRepository(BaseRepository):
         user.changed = date.today().strftime("%Y%m%d")
         session.commit()
 
-    def has_unverified_login(self, login: str):
-        """Check if there's a login """
-        #FIXME does not seem to be used anywhere
+    def is_not_verified(self, discord_id: str):
+        """Check if there's a discord_id"""
         unknown = session.query(User).filter(
-            User.login == login, User.status == "unknown").one_or_none()
+            User.discord_id == discord_id, User.status == "unknown").all()
         pending = session.query(User).filter(
-            User.login == login, User.status == "pending").one_or_none()
-        return True if query is not None else False
+            User.discord_id == discord_id, User.status == "pending").all()
+        return len(unknown) > 0 or len(pending) > 0
 
     def get_users (self, discord_id: str = None):
         """Find user in database"""
