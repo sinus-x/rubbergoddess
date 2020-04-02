@@ -229,8 +229,8 @@ class Reaction(BaseFeature):
                 guild.id == Config.guild_id and\
                 message.channel.id not in \
                 Config.karma_banned_channels and \
-                Config.karma_ban_role_id not in map(lambda x: x.id,
-                                                    member.roles):
+                message.channe.name not in Config.subjects and \
+                Config.karma_ban_role_id not in map(lambda x: x.id, member.roles):
             if isinstance(emoji, str):
                 self.karma_repo.karma_emoji(message.author, member, emoji)
             else:
@@ -302,6 +302,7 @@ class Reaction(BaseFeature):
                 guild.id == Config.guild_id and \
                 message.channel.id not in \
                 Config.karma_banned_channels and \
+                message.channel.name not in Config.subjects and \
                 Config.karma_ban_role_id not in map(lambda x: x.id,
                                                     member.roles):
             if isinstance(emoji, str):
