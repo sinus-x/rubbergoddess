@@ -32,3 +32,23 @@ docker exec -it rubbergoddess_db_1 pg_dumpall -c -U postgres > dump_`date +%Y-%m
 ```bash
 cat dump.sql | docker exec -it rubbergoddess_db_1 psql -U postgres
 ```
+
+
+## SYSTEMD
+_This next part assumes you have special user account `rubbergoddess`._
+
+If you want to run the bot with systemd, copy `rubbergoddess.service` file into 
+`/etc/systemd/system/rubbergoddess.service` and run it with 
+`systemctl start rubbergoddess`.
+
+If you want to grant `rubbergoddess` acount as little permissions as possible, 
+you can use `visudo` and add the following entry:
+
+```
+Cmnd_Alias RGS = /bin/systemctl start rubbergoddess, /bin/systemctl stop rubbergoddess, /bin/systemctl restart rubbergoddess, /bin/journalctl -u rubbergoddess
+rubbergoddess ALL=(ALL) NOPASSWD: RGS
+```
+
+`RGS` commands will be the only privileged ones the account can run.
+
+
