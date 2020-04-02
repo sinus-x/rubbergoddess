@@ -73,7 +73,7 @@ class Stalker (commands.Cog):
         if dbobj is not None and ctx.channel.id == config.mod_room:
             # private channel, found in database
             email = self.dbobj2email(dbobj)
-            embed.add_field(name="E-mail", value=email, inline=False)
+            embed.add_field(name="E-mail", value=email if email else "_none_", inline=False)
             embed.add_field(name="Verification code", value=dbobj.code if dbobj.code else "_none_")
             embed.add_field(name="Status", value=dbobj.status if dbobj.status else "_none_")
             embed.add_field(name="Last changed", value=dbobj.changed if dbobj.changed else "_none_")
@@ -86,12 +86,14 @@ class Stalker (commands.Cog):
 
         elif dbobj is not None and ctx.channel.id != config.mod_room:
             # public channel
-            embed.add_field(name="Status", value=dbobj.status, inline=False)
+            embed.add_field(inline=False,
+                name="Status", value=dbobj.status if dbobj.status else "_none_")
             if dbobj.comment is not None and len(dbobj.comment) > 0:
                 embed.add_field(name="Comment", value=dbobj.comment, inline=False)
 
+        role_list = ', '.join(list((m.name) for m in member.roles[::-1])[:-1])
         embed.add_field(inline=False,
-            name="Roles", value=', '.join(list((m.name) for m in member.roles[::-1])[:-1]))
+            name="Roles", value=role_list if len(role_list) > 0 else "_none_")
 
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         if pin:
