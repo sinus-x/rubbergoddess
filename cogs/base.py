@@ -38,7 +38,7 @@ class Base (commands.Cog):
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
-        await ctx.send(embed=embed, delete_after=config.delay_message)
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.errors._tryDelete(ctx, now=True)
 
     @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
