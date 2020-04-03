@@ -229,7 +229,8 @@ class Reaction(BaseFeature):
                 guild.id == Config.guild_id and\
                 message.channel.id not in \
                 Config.karma_banned_channels and \
-                message.channel.name not in Config.subjects and \
+                (isinstance(message.channel, discord.TextChannel) and \
+                message.channel.name not in Config.subjects) and \
                 Config.karma_ban_role_id not in map(lambda x: x.id, member.roles):
             if isinstance(emoji, str):
                 self.karma_repo.karma_emoji(message.author, member, emoji)
@@ -294,20 +295,18 @@ class Reaction(BaseFeature):
             role_data = await self.get_join_role_data(message)
             for line in role_data:
                 if str(emoji) == line[1]:
-                    await self.remove_role_on_reaction(line[0], member,
-                                                       message.channel,
-                                                       guild)
+                    await self.remove_role_on_reaction(
+                        line[0], member, message.channel, guild)
                     break
         elif member.id != message.author.id and \
                 guild.id == Config.guild_id and \
                 message.channel.id not in \
                 Config.karma_banned_channels and \
-                message.channel.name not in Config.subjects and \
-                Config.karma_ban_role_id not in map(lambda x: x.id,
-                                                    member.roles):
+                (isinstance(message.channel, discord.TextChannel) and \
+                message.channel.name not in Config.subjects) and \
+                Config.karma_ban_role_id not in map(lambda x: x.id, member.roles):
             if isinstance(emoji, str):
-                self.karma_repo.karma_emoji_remove(message.author,
-                                                   member, emoji)
+                self.karma_repo.karma_emoji_remove(message.author, member, emoji)
             else:
                 self.karma_repo.karma_emoji_remove(
                     message.author, member, emoji.id)
