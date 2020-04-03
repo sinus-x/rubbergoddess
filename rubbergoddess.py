@@ -38,7 +38,7 @@ async def on_ready():
             strftime("%Y-%m-%d %H:%M:%S")),
         value="Commit **{commit}**".format(commit=utils.git_hash()[:7]))
     embed.add_field(inline=True,
-        name="Bot host location", value=config.host if config.host else "_unknown_")
+        name="Server", value=config.host if config.host else "_unknown_")
     embed.add_field(inline=False,
         name="Povolená rozšíření",
         value=", ".join(config.extensions))

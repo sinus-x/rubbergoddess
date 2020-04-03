@@ -20,9 +20,7 @@ class Config:
     prefixes = ('?', '!')
     prefix = prefixes[0]
     # Extensions loaded on bot start.
-    extensions = ['errors', 'base', 'karma', 'meme', 'random', 'verify',
-                  'fitwide', 'review', 'vote', 'kachna', 'name_day',
-                  'stalker', 'wormhole']
+    extensions = []
     # Channel IDs (used all over the code)
     channel_jail =    0 # Jail channel for verification
     channel_mods =    0 # Private channel, so database information does not leak outside
