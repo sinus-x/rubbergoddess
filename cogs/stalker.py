@@ -304,5 +304,13 @@ class Stalker (commands.Cog):
         await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
 
 
+    @commands.guild_only()
+    @commands.command(name="guild", aliases=["server"])
+    async def guild (self, ctx: commands.Context):
+        """Display general about guild"""
+        #TODO users, channels, categories, owner, create date etc
+        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+
+
 def setup(bot):
     bot.add_cog(Stalker(bot))
