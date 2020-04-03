@@ -9,14 +9,16 @@ class Config:
     key = ''
     # This user will be mentioned when something goes wrong,
     # mostly by Verify cog.
-    admin = 0
+    admin_id = 0
     # The ID of guild the bot is in
-    guild = 0
+    guild_id = 0
+    # The server, where the bot is being hosted. Used for development.
+    host = "(Not set)"
     # Database connection link. You won't need to change this.
     db_string = "postgres://postgres:postgres@db:5432/postgres"
     # Prefixes the bot responds to.
     prefixes = ('?', '!')
-    prefix = self.prefixes[0]
+    prefix = prefixes[0]
     # Extensions loaded on bot start.
     extensions = ['errors', 'base', 'karma', 'meme', 'random', 'verify',
                   'fitwide', 'review', 'vote', 'kachna', 'name_day',
@@ -141,6 +143,7 @@ class Config:
     ##
     # Weather token to openweather API
     weather_token = "678a5932f6dd92ac668b20e9f89c0318"
+
 
     ##
     ## WORMHOLE COG
