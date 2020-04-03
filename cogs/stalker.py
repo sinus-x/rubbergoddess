@@ -203,7 +203,7 @@ class Stalker (commands.Cog):
                 embed.add_field(name="No entry", value="User is not in the database", inline=False)
         embed.set_footer(text=ctx.author)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self._tryDelete(ctx)
+        await self.errors._tryDelete(ctx)
 
 
     @database.group(name="update")
