@@ -5,7 +5,7 @@ import utils
 from config.config import Config as config
 from config.messages import Messages as messages
 
-class RubberCog (commands.Cog):
+class Rubbercog (commands.Cog):
     """Main cog class"""
     self.visible = True
 
@@ -17,7 +17,6 @@ class RubberCog (commands.Cog):
     ##
     ## Helper functions
     ##
-
     def _getEmbedTitle (self, ctx: commands.Context):
         """Helper function assembling title for embeds"""
         if ctx.command is None:
@@ -34,7 +33,7 @@ class RubberCog (commands.Cog):
         pin: whether to pin the embed or let it be deleted
         """
         if color not in config.colors:
-            color = config['base']
+            color = config.color
         if pin is not None and pin:
             title = "📌 " + self._getEmbedTitle(ctx)
         else:
@@ -53,9 +52,26 @@ class RubberCog (commands.Cog):
         delay = 0.0 if now else config.delay_embed
         try:
             await ctx.message.delete(delay=delay)
-        except discord.HTTPException:
-            #TODO log
+        except discord.HTTPException as err:
+            self.logException(ctx, err)
             pass
+
+    ##
+    ## Utils
+    ##
+    def logError (self, ctx: commands.Context):
+        """Save event into the server log channel"""
+        channel = self.bot.get_channel(config.guildlog)
+        channel.send(utils.fill_message(
+            "log_error", channel=ctx.channel, user=ctx.author.id,
+            command=ctx.message.content))
+
+    def logException (self, ctx:commands.Context, error):
+        """Save exception to the server log channel"""
+        channel = self.bot.get_channel(config.guildlog)
+        channel.send(utils.fill_message(
+            "log_exception", channel=ctx.channel, user=ctx.author.id,
+            command=ctx.message.content, error=error))
 
     def parseArg (self, arg: str = None):
         """Return true if supported argument is matched"""
@@ -66,8 +82,8 @@ class RubberCog (commands.Cog):
     ##
     ## Embeds
     ##
-    async def triggerError (self, ctx: commands.Context, errmsg: str,
-                                  delete: bool = False, pin: bool = None):
+    async def throwError (self, ctx: commands.Context, errmsg: str,
+                                delete: bool = False, pin: bool = None):
         """Show an embed with thrown error."""
         embed = self._getEmbed(ctx, color=config.colors['error'], pin=pin)
         embed.add_field(name="Nastala chyba", value=errmsg, inline=False)
@@ -79,8 +95,8 @@ class RubberCog (commands.Cog):
             await ctx.send(embed=embed)
         await self.deleteCommand(ctx, now=True)
 
-    async def triggerNotify (self, ctx: commands.Context, msg: str,
-                                   pin: bool = False):
+    async def throwNotify (self, ctx: commands.Context, msg: str,
+                                 pin: bool = False):
         """Show an embed with a message."""
         embed = self._getEmbed(ctx, color=config.colors['notify'], pin=pin)
         embed.add_field(name="Upozornění", value=msg, inline=False)
@@ -91,7 +107,7 @@ class RubberCog (commands.Cog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
 
-    async def triggerDescription (self, ctx: commands.Context, pin: bool = False):
+    async def throwDescription (self, ctx: commands.Context, pin: bool = False):
         """Show an embed with full docstring content."""
         #TODO Make first line and parameters bold
         embed = self._getEmbed(ctx)
@@ -102,7 +118,7 @@ class RubberCog (commands.Cog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
         
-    async def triggerHelp (self, ctx: commands.Context, pin: bool = False):
+    async def throwHelp (self, ctx: commands.Context, pin: bool = False):
         """Show an embed with help. Show options for groups"""
         embed = self._getEmbed(ctx)
         embed.add_field(name="Nápověda", value=ctx.command.help)

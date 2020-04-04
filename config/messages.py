@@ -199,9 +199,9 @@ class Messages:
              ('kachna', 'Nejsme FIT, ani to nezkoušej.'),
              ('goddess', 'Vypíše tuto zprávu.')]]
 
-    ##
-    ## ERROR MESSAGES FOR COGS BUILD AS THEY SHOULD HAVE BEEN BUILT
-    ##
+    # Core
+    log_error = "Error in {channel} by {user}:\n> {command}"
+    log_exception = "Exception in {channel} by {user}:\n> {command}\n{error}"
 
     # ERRORS
     exc_not_implemented = "To ještě neumím... " + emote.sad

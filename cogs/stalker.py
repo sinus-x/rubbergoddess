@@ -5,7 +5,6 @@ from discord.ext import commands
 
 import utils
 from cogs import errors
-from features import verification
 from repository import user_repo
 from repository.database import database, session
 from repository.database.verification import User
