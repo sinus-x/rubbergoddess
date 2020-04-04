@@ -7,7 +7,6 @@ from config.messages import Messages as messages
 
 class Rubbercog (commands.Cog):
     """Main cog class"""
-    self.visible = True
 
     def __init__ (self, bot: commands.Bot, visible: bool = True):
         super().__init__(bot)

@@ -1,8 +1,8 @@
-from config import config
+from config.config import config
 from config.emotes import Emotes as emote
 
 class Messages:
-    prefix = config.Config.prefix
+    prefix = config.prefix
 
     server_warning = "Tohle funguje jen na VUT FEKT serveru."
     karma_get_missing = "Cauchy, musela jsem za tebe uklidit."
@@ -13,12 +13,12 @@ class Messages:
     insufficient_rights = "{user}, na použití tohoto příkazu nemáš právo."
     vote_room_only = "Tohle funguje jen v {room}."
     bot_room_redirect = "{user} " + emote.sad + " 👉 <#{bot_room}>\n"
-    message_link_prefix = 'https://discordapp.com/channels/' + str(config.Config.guild_id) + '/'
+    message_link_prefix = 'https://discordapp.com/channels/' + str(config.guild_id) + '/'
 
     uhoh_counter = "{uhohs} uh ohs od spuštění."
     uptime_message = "Up since:  `{boottime}`\nUptime:\t`{uptime}`"
 
-    kachna_grillbot = emote.wtf + " Tady kachna není, běž na FIT: " + config.Config.kachna_link
+    kachna_grillbot = emote.wtf + " Tady kachna není, běž na FIT: " + config.meme_kachna
     
     rolehoarders_none = "Žádné jsem nenašla."
 

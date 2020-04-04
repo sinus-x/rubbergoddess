@@ -5,8 +5,11 @@ import discord
 from discord.ext import commands
 
 import utils
-from config.config import Config as config
+from config.config import config
 from config.messages import Messages as messages
+
+from core.rubbercog import Rubbercog
+
 from logic import rng
 from features import reaction
 from repository import karma_repo
@@ -18,7 +21,7 @@ karma_r = karma_repo.KarmaRepository()
 boottime = datetime.datetime.now().replace(microsecond=0)
 
 
-class Base (commands.Cog):
+class Base (Rubbercog):
     """About-bot cog"""
     def __init__(self, bot):
         self.bot = bot

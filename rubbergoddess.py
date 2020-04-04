@@ -3,7 +3,7 @@ import traceback
 from discord.ext import commands
 
 import utils
-from config.config import Config as config
+from config.config import config
 from features import presence
 from repository.database import database, session
 from repository.user_repo import UserRepository
@@ -30,7 +30,7 @@ def load_subjects():
 async def on_ready():
     """If Rubbergoddess is ready"""
     print("Ready")
-    channel = bot.get_channel(config.channel_log)
+    channel = bot.get_channel(config.botlog)
 
     embed = discord.Embed(title="Informace o spuštění", color=config.color_success)
     embed.add_field(inline=True,

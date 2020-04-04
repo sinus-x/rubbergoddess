@@ -1,0 +1,73 @@
+{
+	"bot": {
+		"key": "",
+		"admin id": 0,
+		"guild id": 0,
+		"host": "",
+		"db string": "postgres://postgres:postgres@db:5432/postgres",
+		"prefixes": ["?", "!"],
+		"extensions": ["errors"]
+	},
+	"channels": {
+		"jail": 0,
+		"mods": 0,
+		"botdev": 0,
+		"botlog": 0,
+		"guildlog": 0,
+		"vote": 0,
+		"botspam": 0,
+		"bot allowed": ["mods", "botdev", "botspam"]
+	},
+	"color": {
+		"main": 5518687,
+		"success": 2015049,
+		"notify": 15042615,
+		"error": 14166812
+	},
+	"delay": {
+		"embed": 120,
+		"verify": 900
+	},
+	"email": {
+		"address": "",
+		"server": "",
+		"port": 465,
+		"password": ""
+	},
+	"roles": {
+		"verify": "VERIFY",
+		"mod": "MOD",
+		"elevated": ["MOD", "SUBMOD", "HELPER"],
+		"native": ["FEKT"],
+		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
+	},
+
+	"reaction cog": {
+		"trigger": "Role\n",
+		"channels": ["add-programme", "add-subjects", "add-roles"],
+		"pin limit": 5
+	},
+	"karma cog": {
+		"banned roles": [],
+		"banned channels": [],
+		"vote limit": 5,
+		"vote time": 120
+	},
+	"meme cog": {
+		"kachna": "",
+		"uhoh": "uh oh"
+	},
+	"librarian cog": {
+		"nameday cz": "http://svatky.adresa.info/json",
+		"nameday sk": "http://svatky.adresa.info/json?lang=sk",
+		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
+	},
+	"wormhole cog": {
+		"local channel": 0,
+		"distant channel": 0,
+		"bots": [0]
+	},
+	"warden cog": {
+		"rolehoarders": 10
+	}
+}
