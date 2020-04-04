@@ -2,6 +2,7 @@ backups/
 config/config.py
 config/config.fektwide.py
 config/config.testing.py
+config/config.ini
 config/emotes.py
 __pycache__
 .idea
