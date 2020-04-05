@@ -31,25 +31,37 @@ class UserRepository(BaseRepository):
 
     def save_verified(self, discord_id: str):
         """Insert login with discord name into database"""
-        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
-        user.status = "verified"
-        user.comment = ""
-        user.changed = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        session.query(User).filter(User.discord_id == discord_id).\
+        update({User.status: "verified", User.changed: ch})
+        session.commit()
+
+    def update_login(self, discord_id: str, login: str):
+        """Update status"""
+        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        session.query(User).filter(User.discord_id == discord_id).\
+        update({User.login: login, User.changed: ch})
+        session.commit()
+
+    def update_group(self, discord_id: str, group: str):
+        """Update status"""
+        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        session.query(User).filter(User.discord_id == discord_id).\
+        update({User.group: group, User.changed: ch})
         session.commit()
 
     def update_status(self, discord_id: str, status: str, comment: str = ""):
         """Update status"""
-        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
-        user.status = status
-        user.comment = comment
-        user.changed = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        session.query(User).filter(User.discord_id == discord_id).\
+        update({User.status: status, User.comment: comment, User.changed: ch})
         session.commit()
 
     def update_comment(self, discord_id: str, comment: str):
         """Update comment"""
-        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
-        user.comment = comment
-        user.changed = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        session.query(User).filter(User.discord_id == discord_id).\
+        update({User.comment: comment, User.changed: ch})
         session.commit()
 
     def is_not_verified(self, discord_id: str):

@@ -117,7 +117,7 @@ class Stalker (Rubbercog):
     async def database (self, ctx: commands.Context):
         """Manage users"""
         if ctx.invoked_subcommand is None:
-            await self.throwOptions(ctx)
+            await self.throwHelp(ctx)
 
     @database.command(name="add")
     async def database_add (self, ctx: commands.Context,
@@ -219,68 +219,95 @@ class Stalker (Rubbercog):
     async def database_update (self, ctx: commands.Context):
         """Set of functions to update database entries"""
         if ctx.invoked_subcommand is None:
-            await self.throwOptions(ctx)
+            await self.throwHelp(ctx)
 
     @database_update.command(name="login")
-    async def database_update_login (self, ctx: commands.Context, member: discord.Member, login: str):
+    async def database_update_login (self, ctx: commands.Context,
+                                     member: discord.Member = None,
+                                     login: str = None):
         """Update user's registered login
 
         member: A server member
         login: User's xlogin (FEKT, VUT) or e-mail
         """
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
-        return
+        if member is None or login is None:
+            await self.throwHelp(ctx)
+            await self.deleteCommand(ctx)
+            return
+
+        try:
+            repository.update_login(discord_id=member.id, login=login)
+        except:
+            await self.throwError(ctx, messages.stalker_err_update)
+        await self.deleteCommand(ctx)
 
     @database_update.command(name="group")
-    async def database_update_group (self, ctx: commands.Context, member: discord.Member, group: discord.Role):
+    async def database_update_group (self, ctx: commands.Context,
+                                     member: discord.Member = None,
+                                     group: discord.Role = None):
         """Update user's registered group
 
         member: A server member
         group: A role from `roles_native` or `roles_guest` in config file
         """
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        if member is None or group is None:
+            await self.throwHelp(ctx)
+            await self.deleteCommand(ctx)
+            return
+
+        try:
+            repository.update_group(discord_id=member.id, group=group)
+        except:
+            await self.throwError(ctx, messages.stalker_err_update)
+        await self.deleteCommand(ctx)
 
     @database_update.command(name="status")
-    async def database_update_status (self, ctx: commands.Context, member: discord.Member, status: str):
+    async def database_update_status (self, ctx: commands.Context,
+                                      member: discord.Member = None,
+                                      status: str = None):
         """Update user's verification status
 
         member: A server member
         status: unknown, pending, verified, kicked, banned
         """
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        if member is None or status is None:
+            await self.throwHelp(ctx)
+            await self.deleteCommand(ctx)
+            return
+
+        try:
+            repository.update_status(discord_id=member.id, status=status)
+        except:
+            await self.throwError(ctx, messages.stalker_err_update)
+        await self.deleteCommand(ctx)
 
     @database_update.command(name="comment")
-    async def database_update_comment (self, ctx: commands.Context, member: discord.Member, *args):
+    async def database_update_comment (self, ctx: commands.Context,
+                                       member: discord.Member = None, *args):
         """Update comment on user
 
         member: A server member
         args: Commentary on user
         """
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        if member is None:
+            await self.throwHelp(ctx)
+            await self.deleteCommand(ctx)
+            return
 
-    @database_update.command(name="nickname")
-    async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
-        """Update user's nickname
+        comment = ' '.join(args) if args else ''
+        try:
+            repository.update_comment(discord_id=str(member.id), comment=comment)
+            await self.whois(ctx, member)
+        except:
+            await self.throwError(ctx, messages.stalker_err_update)
+        await self.deleteCommand(ctx)
 
-        member: A server member
-        args: A new nickname
-        """
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
-
-    @database_update.command(name="tempnickname")
-    async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
-        """Update user's nickname
-
-        member: A server member
-        args: A new temporary nickname. If empty, reset to default
-        """
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.group(name="show")
     async def database_show (self, ctx: commands.Context):
         """Set of filter functions"""
         if ctx.invoked_subcommand is None:
-            await self.throwOptions(ctx)
+            await self.throwHelp(ctx)
 
     @database.command(name="unverified")
     async def database_show_unverified (self, ctx: commands.Context):
