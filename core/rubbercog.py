@@ -1,17 +1,17 @@
 import discord
 from discord.ext import commands
 
-import utils
-from config.config import Config as config
+from core import utils
+from config.config import config
 from config.messages import Messages as messages
 
 class Rubbercog (commands.Cog):
     """Main cog class"""
+    visible = True
 
-    def __init__ (self, bot: commands.Bot, visible: bool = True):
-        super().__init__(bot)
+    def __init__(self, bot):
+        super().__init__()
         self.bot = bot
-        self.visible = visible
 
     ##
     ## Helper functions
@@ -41,7 +41,7 @@ class Rubbercog (commands.Cog):
 
         embed = discord.Embed(title=title, description=description, color=color)
         if ctx.author is not None:
-            embed.set_footer(ctx.author, icon_url=ctx.author.avatar_url)
+            embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         return embed
 
     async def deleteCommand(self, ctx: commands.Context, now: bool = True):
@@ -84,7 +84,7 @@ class Rubbercog (commands.Cog):
     async def throwError (self, ctx: commands.Context, errmsg: str,
                                 delete: bool = False, pin: bool = None):
         """Show an embed with thrown error."""
-        embed = self._getEmbed(ctx, color=config.colors['error'], pin=pin)
+        embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
         embed.add_field(name="Nastala chyba", value=errmsg, inline=False)
         embed.add_field(name="Příkaz", value=ctx.message.content, inline=False)
         delete = False if pin else delete
@@ -97,7 +97,7 @@ class Rubbercog (commands.Cog):
     async def throwNotify (self, ctx: commands.Context, msg: str,
                                  pin: bool = False):
         """Show an embed with a message."""
-        embed = self._getEmbed(ctx, color=config.colors['notify'], pin=pin)
+        embed = self._getEmbed(ctx, color=config.color_notify, pin=pin)
         embed.add_field(name="Upozornění", value=msg, inline=False)
         embed.add_field(name="Příkaz", value=ctx.message.content, inline=False)
         if pin:

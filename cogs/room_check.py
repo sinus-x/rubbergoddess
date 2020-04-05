@@ -1,8 +1,5 @@
-import utils
-from config import config
-
-config = config.Config
-
+from core import utils
+from config.config import config
 
 class RoomCheck():
 

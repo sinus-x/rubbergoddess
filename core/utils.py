@@ -1,8 +1,9 @@
 import git
-from discord import Member
+import discord
+from discord.ext import commands
 
 from config.messages import Messages
-
+from config.config import config
 
 def generate_mention(user_id):
     return '<@' + str(user_id) + '>'
@@ -32,7 +33,7 @@ def str_emoji_id(emoji):
 
 
 def has_role(user, role_name: str):
-    if type(user) != Member:
+    if type(user) != discord.Member:
         return None
 
     return role_name.lower() in [x.name.lower() for x in user.roles]
@@ -58,3 +59,19 @@ def fill_message(message_name, *args, **kwargs):
         return template.format(*args, **kwargs)
     except AttributeError:
         raise ValueError("Invalid template {}".format(message_name))
+
+
+async def notify(ctx: commands.Context, msg: str):
+    """Show an embed.
+
+    A skinny version of rubbercog.throwNotify()
+    """
+    if ctx.message is None:
+        return
+    if msg is None:
+        msg = ""
+    embed = discord.Embed(title=ctx.message.content, color=config.color)
+    embed.add_field(name="Výsledek", value=msg, inline=False)
+    embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=embed, delete_after=config.delay_embed)
+

@@ -1,9 +1,9 @@
-import utils
 from sqlalchemy import func
+
+from core import utils
 from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.karma import Karma, Karma_emoji
-
 
 class Karma_row_data():
     def __init__(self, value, position):

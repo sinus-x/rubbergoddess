@@ -1,10 +1,11 @@
 import datetime
-import discord
-from discord.ext.commands import Bot
 import re
 
-import utils
-from config.config import Config
+import discord
+from discord.ext.commands import Bot
+
+from core import utils
+from config.config import config
 from config.messages import Messages
 from features.base_feature import BaseFeature
 from features.review import Review

@@ -4,16 +4,14 @@ import traceback
 import discord
 from discord.ext import commands
 
-import utils
+from core import utils
+from core.rubbercog import Rubbercog
+from cogs import errors, room_check
 from config.config import config
 from config.messages import Messages as messages
-
-from core.rubbercog import Rubbercog
-
-from logic import rng
 from features import reaction
+from logic import rng
 from repository import karma_repo
-from cogs import room_check, errors
 
 rng = rng.Rng()
 karma_r = karma_repo.KarmaRepository()
@@ -23,8 +21,8 @@ boottime = datetime.datetime.now().replace(microsecond=0)
 
 class Base (Rubbercog):
     """About-bot cog"""
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot: commands.Bot):
+        super().__init__(bot)
         self.reaction = reaction.Reaction(bot, karma_r)
         self.check = room_check.RoomCheck(bot)
         self.errors = errors.Errors(bot)

@@ -1,17 +1,18 @@
-import utils
 import traceback
+
 import discord
 from discord.ext import commands
 
+from core import utils
 from core.rubbercog import Rubbercog
-
 from config.config import config
-from config.messages import Messages as messages
 from config.emotes import Emotes as emote
+from config.messages import Messages as messages
 
-class Errors(commands.Cog):
-    def __init__ (self, bot):
-        self.bot = bot
+class Errors(Rubbercog):
+    def __init__(self, bot):
+        super().__init__(bot)
+        self.visible = False
 
     @commands.Cog.listener()
     async def on_command_error (self, ctx: commands.Context, error):
@@ -22,28 +23,28 @@ class Errors(commands.Cog):
         error = getattr(error, 'original', error)
 
         if isinstance(error, commands.MissingPermissions):
-            await self._getNotification(ctx, messages.exc_no_permission)
+            await self.throwNotification(ctx, messages.exc_no_permission)
             return
 
         if isinstance(error, commands.CommandOnCooldown):
-            await self._getNotification(ctx, messages.exc_cooldown)
+            await self.throwNotification(ctx, messages.exc_cooldown)
             return
 
         elif isinstance(error, commands.CheckFailure):
-            await self._getNotification(ctx, messages.exc_no_requirements)
+            await self.throwNotification(ctx, messages.exc_no_requirements)
             return
 
         elif isinstance(error, commands.CommandNotFound):
             if not ctx.message.content[0] in config.prefixes:
-                await self._getNotification(ctx, messages.exc_no_command)
+                await self.throwNotification(ctx, messages.exc_no_command)
             return
 
         elif isinstance(error, commands.ExtensionError):
-            await self._getError(ctx, messages.exc_extension_err)
+            await self.throwError(ctx, messages.exc_extension_err)
             return
 
         # display error message
-        await self._getError(ctx, ctx.message.content)
+        await self.throwError(ctx, ctx.message.content)
 
         output = 'Ignoring exception in command {}: \n\n'.format(ctx.command)
         output += ''.join(traceback.format_exception(type(error), error, error.__traceback__))

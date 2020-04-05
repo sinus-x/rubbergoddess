@@ -1,7 +1,7 @@
 from datetime import date
 from random import randint, choice
 
-import utils
+from core import utils
 from config.messages import Messages
 
 

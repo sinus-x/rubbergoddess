@@ -1,23 +1,20 @@
 import traceback
-
-from discord.ext import commands
-
-import utils
-from config.config import config
-from features import presence
-from repository.database import database, session
-from repository.user_repo import UserRepository
-from repository.review_repo import ReviewRepository
+from datetime import datetime
 
 import discord
-from datetime import datetime
+from discord.ext import commands
+
+from config.config import config
+from core import utils
+from features import presence
+from repository.database import database
+from repository.database import session
 
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or(*config.prefix),
                    help_command=None, case_insensitive=True)
 
 presence = presence.Presence(bot)
-
 
 # fill DB with subjects shortcut, needed for reviews
 def load_subjects():
@@ -30,9 +27,9 @@ def load_subjects():
 async def on_ready():
     """If Rubbergoddess is ready"""
     print("Ready")
-    channel = bot.get_channel(config.botlog)
+    channel = bot.get_channel(config.channel_botlog)
 
-    embed = discord.Embed(title="Informace o spuštění", color=config.color_success)
+    embed = discord.Embed(title="Přihlášení", color=config.color_success)
     embed.add_field(inline=True,
         name="{timestamp}".format(timestamp=datetime.now().
             strftime("%Y-%m-%d %H:%M:%S")),
@@ -61,11 +58,13 @@ async def pull(ctx):
     if ctx.author.id == config.admin_id:
         try:
             utils.git_pull()
-            await ctx.send("Git pulled")
+            await utils.notify(ctx, "Úspěšně dokončeno")
         except Exception:
-            await ctx.send("Git pull error")
+            await utils.notify(ctx, "Došlo k chybě")
+            #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
+        #TODO log event
 
 
 @bot.command()
@@ -73,9 +72,10 @@ async def load(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.load_extension(f'cogs.{extension}')
-            await ctx.send(f'{extension} loaded')
+            await utils.notify(ctx, f'Přidáno: {extension}')
         except Exception:
-            await ctx.send("loading error")
+            await utils.notify(ctx, "Došlo k chybě")
+            #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
 
@@ -85,23 +85,27 @@ async def unload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.unload_extension(f'cogs.{extension}')
-            await ctx.send(f'{extension} unloaded')
+            await utils.notify(ctx, f'Odebráno: {extension}')
         except Exception:
-            await ctx.send("unloading error")
+            await utils.notify(ctx, "Došlo k chybě")
+            #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
+        #TODO log event
 
 
 @bot.command()
 async def reload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
-            bot.reload_extension(f'cogs.{extension}')
-            await ctx.send(f'{extension} reloaded')
+            bot.unload_extension(f'cogs.{extension}')
+            await utils.notify(ctx, f'Restartováno: {extension}')
         except Exception:
-            await ctx.send("reloading error")
+            await utils.notify(ctx, "Došlo k chybě")
+            #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
+        #TODO log event
 
 
 @reload.error
@@ -109,7 +113,7 @@ async def reload(ctx, extension):
 @unload.error
 async def missing_arg_error(ctx, error):
     if isinstance(error, commands.errors.MissingRequiredArgument):
-        await ctx.send('Missing argument.')
+        await utils.notify(ctx, "Nesprávný počet argumentů")
 
 #database.base.metadata.drop_all(database.db)
 database.base.metadata.create_all(database.db)
