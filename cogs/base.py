@@ -40,7 +40,7 @@ class Base (Rubbercog):
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.errors._tryDelete(ctx, now=True)
+        await self.deleteCommand(ctx, now=True)
 
     @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -63,7 +63,7 @@ class Base (Rubbercog):
                 return
         else:
             msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
-            await ctx.message.delete(delay=config.delay_message)
+            await self.deleteCommand(ctx)
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
 
@@ -74,8 +74,8 @@ class Base (Rubbercog):
         This should replace current `?god`/`?goddess` commands in the future
         Instead of reading help from file it is taking dostrings inside the code
         """
-        pin = self.errors._parsePin(pin)
-        t = self.errors._getEmbedTitle(ctx)
+        pin = self.parseArg(pin)
+        t = self._getEmbedTitle(ctx)
         if pin is not None and pin:
             t = "📌 " + t
         embed = discord.Embed(color=config.color,
@@ -93,7 +93,7 @@ class Base (Rubbercog):
         msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
-        await self.errors._tryDelete(ctx, now=True)
+        await self.deleteCommand(ctx, now=True)
 
 def setup(bot):
     bot.add_cog(Base(bot))
