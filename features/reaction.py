@@ -135,7 +135,6 @@ class Reaction(BaseFeature):
                 await message.remove_reaction(emoji, member)
         elif message.content.startswith(Messages.karma_vote_message_hack):
             if emoji not in ["☑️", "0⃣", "❎"]:
-                print("DEBUG removing in reaction.py:add() {}".format(message.content))
                 await message.remove_reaction(emoji, member)
             else:
                 users = []
