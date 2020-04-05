@@ -18,6 +18,7 @@ class Rubbercog (commands.Cog):
     ##
     def _getEmbedTitle (self, ctx: commands.Context):
         """Helper function assembling title for embeds"""
+        #TODO Make sure parents are in right order - `?update database login` occures.
         if ctx.command is None:
             return "(no command)"
 
@@ -86,8 +87,8 @@ class Rubbercog (commands.Cog):
                                 delete: bool = False, pin: bool = None):
         """Show an embed with thrown error."""
         embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
-        embed.add_field(name="Nastala chyba", value=errmsg, inline=False)
-        embed.add_field(name="Příkaz", value=ctx.message.content, inline=False)
+        embed.add_field(name="An error occured", value=errmsg, inline=False)
+        embed.add_field(name="Command", value=ctx.message.content, inline=False)
         delete = False if pin else delete
         if delete:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
@@ -99,8 +100,8 @@ class Rubbercog (commands.Cog):
                                  pin: bool = False):
         """Show an embed with a message."""
         embed = self._getEmbed(ctx, color=config.color_notify, pin=pin)
-        embed.add_field(name="Upozornění", value=msg, inline=False)
-        embed.add_field(name="Příkaz", value=ctx.message.content, inline=False)
+        embed.add_field(name="Notification", value=msg, inline=False)
+        embed.add_field(name="Command", value=ctx.message.content, inline=False)
         if pin:
             await ctx.send(embed=embed)
         else:
@@ -111,7 +112,7 @@ class Rubbercog (commands.Cog):
         """Show an embed with full docstring content."""
         #TODO Make first line and parameters bold
         embed = self._getEmbed(ctx)
-        embed.add_field(name="O funkci", value=ctx.command.short_doc)
+        embed.add_field(name="About", value=ctx.command.short_doc)
         if pin:
             await ctx.send(embed=embed)
         else:
@@ -121,10 +122,12 @@ class Rubbercog (commands.Cog):
     async def throwHelp (self, ctx: commands.Context, pin: bool = False):
         """Show an embed with help. Show options for groups"""
         embed = self._getEmbed(ctx)
-        embed.add_field(name="Nápověda", value=ctx.command.help)
+        embed.add_field(name="Help", value=ctx.command.help)
 
         if isinstance(ctx.command, commands.Group) and ctx.command.commands:
-            for opt in sorted(ctx.command.commands):
+            embed.add_field(name="-"*60, value="SUBCOMMANDS:", inline=False)
+            #TODO Sort by lambda or something
+            for opt in ctx.command.commands:
                 embed.add_field(name=opt.name, value=opt.short_doc, inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
