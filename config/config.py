@@ -33,13 +33,13 @@ class Config:
 
         ##
         ## CHANNELS
-        self.jail     = self.get('channels', 'jail')
-        self.mods     = self.get('channels', 'mods')
-        self.botdev   = self.get('channels', 'botdev')
-        self.botlog   = self.get('channels', 'botlog')
-        self.guildlog = self.get('channels', 'guildlog')
-        self.vote     = self.get('channels', 'vote')
-        self.botspam  = self.get('channels', 'botspam')
+        self.channel_jail     = self.get('channels', 'jail')
+        self.channel_mods     = self.get('channels', 'mods')
+        self.channel_botdev   = self.get('channels', 'botdev')
+        self.channel_botlog   = self.get('channels', 'botlog')
+        self.channel_guildlog = self.get('channels', 'guildlog')
+        self.channel_vote     = self.get('channels', 'vote')
+        self.channel_botspam  = self.get('channels', 'botspam')
 
         self.bot_allowed = self.get('channels', 'bot allowed')
 
@@ -49,18 +49,19 @@ class Config:
         self.color_success = self.get('color', 'success')
         self.color_notify  = self.get('color', 'notify')
         self.color_error   = self.get('color', 'error')
+        self.colors = [self.color, self.color_success, self.color_notify, self.color_error]
 
         ##
         ## DELAY
-        self.embed  = self.get('delay', 'embed')
-        self.verify = self.get('delay', 'verify')
+        self.delay_embed  = self.get('delay', 'embed')
+        self.delay_verify = self.get('delay', 'verify')
 
         ##
         ## EMAIL
-        self.address     = self.get('email', 'address')
-        self.smtp_server = self.get('email', 'server')
-        self.smtp_port   = self.get('email', 'port')
-        self.password    = self.get('email', 'password')
+        self.mail_address     = self.get('email', 'address')
+        self.mail_smtp_server = self.get('email', 'server')
+        self.mail_smtp_port   = self.get('email', 'port')
+        self.mail_password    = self.get('email', 'password')
 
         ##
         ## ROLES
