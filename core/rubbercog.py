@@ -74,6 +74,7 @@ class Rubbercog (commands.Cog):
 
     def parseArg (self, arg: str = None):
         """Return true if supported argument is matched"""
+        #TODO Do this the proper way
         args = ["pin", "force"]
         return True if arg in args else False
 
@@ -122,7 +123,7 @@ class Rubbercog (commands.Cog):
         embed = self._getEmbed(ctx)
         embed.add_field(name="Nápověda", value=ctx.command.help)
 
-        if ctx.command.commands:
+        if isinstance(ctx.command, commands.Group) and ctx.command.commands:
             for opt in sorted(ctx.command.commands):
                 embed.add_field(name=opt.name, value=opt.short_doc, inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)

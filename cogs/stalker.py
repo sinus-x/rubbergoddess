@@ -1,29 +1,31 @@
-from sqlalchemy.orm.exc import NoResultFound
-
 import discord
 from discord.ext import commands
+from sqlalchemy.orm.exc import NoResultFound
 
-import utils
-from cogs import errors
+from core import utils
+from core.rubbercog import Rubbercog
 from repository import user_repo
-from repository.database import database, session
+from repository.database import database
+from repository.database import session
 from repository.database.verification import User
 
-from config.config import Config as config
-from config.messages import Messages as messages
+from config.config import config
 from config.emotes import Emotes as emote
+from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 
-class Stalker (commands.Cog):
+class Stalker (Rubbercog):
     """A cog for database lookups"""
 
-    def __init__ (self, bot):
-        self.bot = bot
-        self.errors = errors.Errors(bot)
+    def __init__ (self, bot: commands.Bot):
+        super().__init__(bot)
 
     async def is_in_modroom (ctx):
         return ctx.message.channel.id == config.channel_mods
+
+    async def is_admin (ctx):
+        return ctx.author.id == config.admin_id
 
     def dbobj2email (self, dbobj):
         if dbobj is not None:
@@ -46,12 +48,13 @@ class Stalker (commands.Cog):
         pin: A "pin" string that will prevent the embed from disappearing
         """
         if member is None:
-            await self.errors._getHelp(ctx)
+            await self.throwHelp(ctx)
+            await self.deleteCommand(ctx, now=True)
             return
 
         # define variables
         guild = ctx.guild
-        pin = self.errors._parsePin(pin)
+        pin = self.parseArg(pin)
         # get user from database
         try:
             dbobj = repository.get_users(discord_id=str(member.id))[0]
@@ -99,7 +102,7 @@ class Stalker (commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.errors._tryDelete(ctx, now=True)
+        await self.deleteCommand(ctx, now=True)
 
     @commands.guild_only()
     @commands.group(aliases=["db"])
@@ -107,7 +110,7 @@ class Stalker (commands.Cog):
     async def database (self, ctx: commands.Context):
         """Manage users"""
         if ctx.invoked_subcommand is None:
-            await self.errors._getOptions(ctx)
+            await self.throwOptions(ctx)
 
     @database.command(name="add")
     async def database_add (self, ctx: commands.Context,
@@ -120,7 +123,7 @@ class Stalker (commands.Cog):
         group: A role from `roles_native` or `roles_guest` in config file
         """
         if member is None or login is None or group is None:
-            await self.errors._getHelp(ctx)
+            await self.throwHelp(ctx)
             return
 
         # define variables
@@ -130,7 +133,7 @@ class Stalker (commands.Cog):
         # try to write to database
         try:
             result = repository.get_users(discord_id=str(member.id))[0]
-            await self.errors._getError(ctx, messages.stalker_err_new_entry_exists)
+            await self.throwError(ctx, messages.stalker_err_new_entry_exists)
             return
         except IndexError:
             # no result is good, we won't have collision
@@ -140,7 +143,7 @@ class Stalker (commands.Cog):
             repository.add_user(discord_id=str(member.id), login=login,
                             group=group.name, status="verified", code="MANUAL")
         except:
-            await self.errors._getError(ctx, messages.stalker_err_new_entry_write)
+            await self.throwError(ctx, messages.stalker_err_new_entry_write)
             return
 
         # assign roles, if neccesary
@@ -162,12 +165,12 @@ class Stalker (commands.Cog):
         force: "force" string. If omitted, show what will be deleted
         """
         if member is None:
-            await self.errors._getHelp(ctx)
+            await self.throwHelp(ctx)
             return
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
-        force = self.errors._parseForce(force)
+        force = self._parseForce(force)
 
         try:
             if force:
@@ -175,7 +178,7 @@ class Stalker (commands.Cog):
             else:
                 result = repository.get_users(discord_id=str(member.id))
         except:
-            await self.errors._getError(ctx, messages.stalker_err_read)
+            await self.throwError(ctx, messages.stalker_err_read)
             return
 
         #TODO make function for command title
@@ -186,7 +189,7 @@ class Stalker (commands.Cog):
             embed = discord.Embed(color=config.color_success, title=t, description=d)
             # delete
             if result is None or result < 1:
-                await self.errors._getError(ctx, messages.stalker_err_delete_not_found)
+                await self.throwError(ctx, messages.stalker_err_delete_not_found)
                 return
             embed.add_field(inline=False,
                 name="Success", value="Deleted {} entries".format(result))
@@ -202,14 +205,14 @@ class Stalker (commands.Cog):
                 embed.add_field(name="No entry", value="User is not in the database", inline=False)
         embed.set_footer(text=ctx.author)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.errors._tryDelete(ctx)
+        await self.deleteCommand(ctx)
 
 
     @database.group(name="update")
     async def database_update (self, ctx: commands.Context):
         """Set of functions to update database entries"""
         if ctx.invoked_subcommand is None:
-            await self.errors._getOptions(ctx)
+            await self.throwOptions(ctx)
 
     @database_update.command(name="login")
     async def database_update_login (self, ctx: commands.Context, member: discord.Member, login: str):
@@ -218,7 +221,7 @@ class Stalker (commands.Cog):
         member: A server member
         login: User's xlogin (FEKT, VUT) or e-mail
         """
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
         return
 
     @database_update.command(name="group")
@@ -228,7 +231,7 @@ class Stalker (commands.Cog):
         member: A server member
         group: A role from `roles_native` or `roles_guest` in config file
         """
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="status")
     async def database_update_status (self, ctx: commands.Context, member: discord.Member, status: str):
@@ -237,7 +240,7 @@ class Stalker (commands.Cog):
         member: A server member
         status: unknown, pending, verified, kicked, banned
         """
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="comment")
     async def database_update_comment (self, ctx: commands.Context, member: discord.Member, *args):
@@ -246,7 +249,7 @@ class Stalker (commands.Cog):
         member: A server member
         args: Commentary on user
         """
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="nickname")
     async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
@@ -255,7 +258,7 @@ class Stalker (commands.Cog):
         member: A server member
         args: A new nickname
         """
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database_update.command(name="tempnickname")
     async def database_update_nickname (self, ctx: commands.Context, member: discord.Member, *args):
@@ -264,43 +267,43 @@ class Stalker (commands.Cog):
         member: A server member
         args: A new temporary nickname. If empty, reset to default
         """
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.group(name="show")
     async def database_show (self, ctx: commands.Context):
         """Set of filter functions"""
         if ctx.invoked_subcommand is None:
-            await self.errors._getOptions(ctx)
+            await self.throwOptions(ctx)
 
     @database.command(name="unverified")
     async def database_show_unverified (self, ctx: commands.Context):
         """List users that have not yet requested verification code"""
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="pending")
     async def database_show_pending (self, ctx: commands.Context):
         """List users that have not yet submitted the verification code"""
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="kicked")
     async def database_show_kicked (self, ctx: commands.Context):
         """List users that have been kicked"""
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="banned")
     async def database_show_banned (self, ctx: commands.Context):
         """List users that have been banned"""
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="statistics", aliases=["stats"])
     async def database_statistics (self, ctx: commands.Context):
         """Display statistics about known users"""
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
     @database.command(name="today")
     async def database_today (self, ctx: commands.Context):
         """Display the count of users that joined/were verified today"""
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
 
     @commands.guild_only()
@@ -308,7 +311,7 @@ class Stalker (commands.Cog):
     async def guild (self, ctx: commands.Context):
         """Display general about guild"""
         #TODO users, channels, categories, owner, create date etc
-        await self.errors._getNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
 
 def setup(bot):
