@@ -1,5 +1,6 @@
 {
 	"bot": {
+		"debug": 0,
 		"key": "",
 		"admin id": 0,
 		"guild id": 0,
