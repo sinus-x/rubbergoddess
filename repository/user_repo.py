@@ -2,7 +2,7 @@ from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.verification import User
 
-from datetime import date
+from datetime import datetime
 
 class UserRepository(BaseRepository):
     # unknown - pending - verified - kicked - banned
@@ -13,7 +13,7 @@ class UserRepository(BaseRepository):
         """Add new user"""
         session.add(User(login=login, group=group, status=status,
             comment=comment, discord_id=discord_id, code=code,
-            changed=date.today().strftime("%Y%m%d")))
+            changed=datetime.today().strftime("%Y-%m-%d %H-%M-%S")))
         session.commit()
 
     def save_code(self, code: str, discord_id: str):
@@ -26,7 +26,7 @@ class UserRepository(BaseRepository):
         user.discord_id = discord_id
         user.status = "pending"
         user.comment = ""
-        user.changed = date.today().strftime("%Y%m%d")
+        user.changed = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
         session.commit()
 
     def save_verified(self, discord_id: str):
@@ -34,7 +34,7 @@ class UserRepository(BaseRepository):
         user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         user.status = "verified"
         user.comment = ""
-        user.changed = date.today().strftime("%Y%m%d")
+        user.changed = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
         session.commit()
 
     def update_status(self, discord_id: str, status: str, comment: str = ""):
@@ -42,14 +42,14 @@ class UserRepository(BaseRepository):
         user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         user.status = status
         user.comment = comment
-        user.changed = date.today().strftime("%Y%m%d")
+        user.changed = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
         session.commit()
 
     def update_comment(self, discord_id: str, comment: str):
         """Update comment"""
         user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         user.comment = comment
-        user.changed = date.today().strftime("%Y%m%d")
+        user.changed = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
         session.commit()
 
     def is_not_verified(self, discord_id: str):
