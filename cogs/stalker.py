@@ -170,7 +170,7 @@ class Stalker (Rubbercog):
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
-        force = self._parseForce(force)
+        force = self.parseArg(force)
 
         try:
             if force:
