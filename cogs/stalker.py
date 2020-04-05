@@ -75,10 +75,17 @@ class Stalker (Rubbercog):
         if dbobj is not None and ctx.channel.id == config.channel_mods:
             # private channel, found in database
             email = self.dbobj2email(dbobj)
+            if dbobj.changed and len(dbobj.changed) == 8:
+                d = dbobj.changed
+                date = d[:4] + "-" + d[4:6] + "-" + d[6:]
+            elif dbobj.changed:
+                date = dbobj.changed
+            else:
+                date = "_none_"
             embed.add_field(name="E-mail", value=email if email else "_none_", inline=False)
             embed.add_field(name="Verification code", value=dbobj.code if dbobj.code else "_none_")
             embed.add_field(name="Status", value=dbobj.status if dbobj.status else "_none_")
-            embed.add_field(name="Last changed", value=dbobj.changed if dbobj.changed else "_none_")
+            embed.add_field(name="Last changed", value=date)
             if dbobj.comment is not None and len(dbobj.comment) > 0:
                 embed.add_field(name="Comment", value=dbobj.comment, inline=False)
 
