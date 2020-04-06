@@ -211,7 +211,8 @@ class Messages:
     exc_no_command = "Takový příkaz neznám " + emote.sad
     exc_command_err = "Chyba v příkazu."
     exc_cooldown = "Tento příkaz nemůžeš zadávat tak často"
-    exc_extension_err = "Chyba rozšíření " + emote.ree
+    exc_extension_err = "Chyba role " + emote.ree
+    err_bad_argument = "Chyba v argumentu " + emote.sad
 
     # VERIFY
     verify_not_jail = "Verifikovat se jde jen v #jail."

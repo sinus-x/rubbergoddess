@@ -23,24 +23,27 @@ class Errors(Rubbercog):
         error = getattr(error, 'original', error)
 
         if isinstance(error, commands.MissingPermissions):
-            await self.throwNotification(ctx, messages.exc_no_permission)
+            await self.throwNotification(ctx, messages.err_no_permission)
             return
 
         if isinstance(error, commands.CommandOnCooldown):
-            await self.throwNotification(ctx, messages.exc_cooldown)
+            await self.throwNotification(ctx, messages.err_cooldown)
             return
 
         elif isinstance(error, commands.CheckFailure):
-            await self.throwNotification(ctx, messages.exc_no_requirements)
+            await self.throwNotification(ctx, messages.err_no_requirements)
             return
+
+        elif isinstance(error, commands.BadArgument):
+            await self.throwNotification(ctx, messages.err_bad_argument)
 
         elif isinstance(error, commands.CommandNotFound):
             if not ctx.message.content[0] in config.prefixes:
-                await self.throwNotification(ctx, messages.exc_no_command)
+                await self.throwNotification(ctx, messages.err_no_command)
             return
 
         elif isinstance(error, commands.ExtensionError):
-            await self.throwError(ctx, messages.exc_extension_err)
+            await self.throwError(ctx, messages.err_extension_err)
             return
 
         # display error message
