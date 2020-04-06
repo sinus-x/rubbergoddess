@@ -1,11 +1,14 @@
 {
+	"database": {
+		"states": ["unknown", "unverified", "pending", "verified", "kicked", "banned"],
+		"string": "postgres://postgres:postgres@db:5432/postgres"
+	},
 	"bot": {
 		"debug": 0,
 		"key": "",
 		"admin id": 0,
 		"guild id": 0,
 		"host": "",
-		"db string": "postgres://postgres:postgres@db:5432/postgres",
 		"prefixes": ["?", "!"],
 		"extensions": ["errors"]
 	},

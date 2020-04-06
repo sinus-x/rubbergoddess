@@ -5,10 +5,10 @@ c = json.load(open('config/config.json', 'r'))
 class Config:
 
     def get (self, group: str, key: str):
-        if key in c.get(group):
+        if group in c and key in c.get(group):
             v = c.get(group).get(key)
         elif key in d.get(group):
-            v = c.get(group).get(key)
+            v = d.get(group).get(key)
         else:
             v = None
 
@@ -17,6 +17,10 @@ class Config:
         raise AttributeError("Configuration file: key not found")
 
     def __init__ (self):
+        ##
+        ## DATABASE
+        self.db_states = self.get('database', 'states')
+        self.db_string = self.get('database', 'string')
 
         ##
         ## BOT
@@ -25,7 +29,6 @@ class Config:
         self.admin_id  = self.get('bot', 'admin id')
         self.guild_id  = self.get('bot', 'guild id')
         self.host      = self.get('bot', 'host')
-        self.db_string = self.get('bot', 'db string')
         self.prefixes  = self.get('bot', 'prefixes')
         self.prefix    = self.prefixes[0]
         
