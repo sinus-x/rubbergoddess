@@ -202,6 +202,7 @@ class Messages:
     # Core
     log_error = "Error in {channel} by {user}:\n> {command}"
     log_exception = "Exception in {channel} by {user}:\n> {command}\n{error}"
+    db_update_successful = "V pořádku {user}, změnu jsem si uložila."
 
     # ERRORS
     exc_not_implemented = "To ještě neumím... " + emote.sad
@@ -219,7 +220,6 @@ class Messages:
     meme_hug_not_found = "Nikoho takového nevidím " + emote.sad
 
     # STALKER
-    stalker_err_not_found = "There are no users with specified parameters."
     stalker_err_read = "Could not read from database."
     stalker_err_update = "Could not update user entry."
     stalker_err_new_entry_exists = "Given user ID is already present in the database."

@@ -4,8 +4,9 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from config.config import config
 from core import utils
+from config.config import config
+from config.emotes import Emotes as emote
 from features import presence
 from repository.database import database
 from repository.database import session
@@ -26,7 +27,7 @@ def load_subjects():
 @bot.event
 async def on_ready():
     """If Rubbergoddess is ready"""
-    print("Ready")
+    print("Jsem přihlášena.")
     channel = bot.get_channel(config.channel_botlog)
 
     embed = discord.Embed(title="Přihlášení", color=config.color_success)
@@ -35,7 +36,7 @@ async def on_ready():
             strftime("%Y-%m-%d %H:%M:%S")),
         value="Commit **{commit}**".format(commit=utils.git_hash()[:7]))
     embed.add_field(inline=True,
-        name="Server", value=config.host if config.host else "_unknown_")
+        name="Server", value=config.host if config.host else "???")
     embed.add_field(inline=False,
         name="Povolená rozšíření",
         value=", ".join(config.extensions))
@@ -58,9 +59,9 @@ async def pull(ctx):
     if ctx.author.id == config.admin_id:
         try:
             utils.git_pull()
-            await utils.notify(ctx, "Úspěšně dokončeno")
+            await ctx.send(f'Stažení aktualizace proběhlo úspěšně.')
         except Exception:
-            await utils.notify(ctx, "Došlo k chybě")
+            await ctx.send(f'Při stahování aktualizace došlo k chybě.')
             #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
@@ -72,9 +73,9 @@ async def load(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.load_extension(f'cogs.{extension}')
-            await utils.notify(ctx, f'Přidáno: {extension}')
+            await ctx.send(f'Načetla jsem roli **{extension}**.')
         except Exception:
-            await utils.notify(ctx, "Došlo k chybě")
+            await ctx.send(f'Načtení role **{extension}** se nepovedlo.')
             #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
@@ -85,9 +86,9 @@ async def unload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.unload_extension(f'cogs.{extension}')
-            await utils.notify(ctx, f'Odebráno: {extension}')
+            await ctx.send(f'Odebrala jsem roli **{extension}**.')
         except Exception:
-            await utils.notify(ctx, "Došlo k chybě")
+            await ctx.send(f'Odebrání role **{extension}** se nepovedlo.')
             #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
@@ -99,9 +100,9 @@ async def reload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.unload_extension(f'cogs.{extension}')
-            await utils.notify(ctx, f'Restartováno: {extension}')
+            await ctx.send(f'Aktualizovala jsem roli **{extension}**.')
         except Exception:
-            await utils.notify(ctx, "Došlo k chybě")
+            await ctx.send(f'Aktualizace role **{extension}** se nepovedla.')
             #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
@@ -113,7 +114,7 @@ async def reload(ctx, extension):
 @unload.error
 async def missing_arg_error(ctx, error):
     if isinstance(error, commands.errors.MissingRequiredArgument):
-        await utils.notify(ctx, "Nesprávný počet argumentů")
+       await ctx.send(f'Nesprávný počet argumentů' + emote.sad)
 
 #database.base.metadata.drop_all(database.db)
 database.base.metadata.create_all(database.db)
@@ -123,6 +124,6 @@ session.commit()  # Making sure
 
 for extension in config.extensions:
     bot.load_extension(f'cogs.{extension}')
-    print('{} cog loaded'.format(extension.upper()))
+    print('Role {} načtena.'.format(extension.upper()))
 
 bot.run(config.key)

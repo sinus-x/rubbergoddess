@@ -18,7 +18,7 @@ class Rubbercog (commands.Cog):
     ##
     def _getEmbedTitle (self, ctx: commands.Context):
         """Helper function assembling title for embeds"""
-        #TODO Make sure parents are in right order - `?update database login` occures.
+        #TODO Make sure parents are in right order - `?update database login` occurs
         if ctx.command is None:
             return "(no command)"
 

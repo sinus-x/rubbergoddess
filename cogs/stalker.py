@@ -39,6 +39,7 @@ class Stalker (Rubbercog):
             return email
         return
 
+
     @commands.guild_only()
     @commands.command(name="whois", aliases=["stalk"])
     async def whois (self, ctx: commands.Context, member: discord.Member = None, pin = None):
@@ -111,6 +112,7 @@ class Stalker (Rubbercog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
 
+
     @commands.guild_only()
     @commands.group(aliases=["db"])
     @commands.has_any_role('MOD', 'SUBMOD')
@@ -118,6 +120,7 @@ class Stalker (Rubbercog):
         """Manage users"""
         if ctx.invoked_subcommand is None:
             await self.throwHelp(ctx)
+
 
     @database.command(name="add")
     async def database_add (self, ctx: commands.Context,
@@ -188,9 +191,7 @@ class Stalker (Rubbercog):
             await self.throwError(ctx, messages.stalker_err_read)
             return
 
-        #TODO make function for command title
-        p = ' '.join((p.name) for p in ctx.command.parents) + " " if ctx.command.parents else ""
-        t = config.prefix + p + ctx.command.name
+        t = self._getEmbedTitle(ctx)
         d = "Result" if force else "Simulation, run with `force` to apply"
         if force:
             embed = discord.Embed(color=config.color_success, title=t, description=d)
@@ -221,6 +222,7 @@ class Stalker (Rubbercog):
         if ctx.invoked_subcommand is None:
             await self.throwHelp(ctx)
 
+
     @database_update.command(name="login")
     async def database_update_login (self, ctx: commands.Context,
                                      member: discord.Member = None,
@@ -232,14 +234,15 @@ class Stalker (Rubbercog):
         """
         if member is None or login is None:
             await self.throwHelp(ctx)
-            await self.deleteCommand(ctx)
             return
 
         try:
             repository.update_login(discord_id=member.id, login=login)
+            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
         except:
             await self.throwError(ctx, messages.stalker_err_update)
         await self.deleteCommand(ctx)
+
 
     @database_update.command(name="group")
     async def database_update_group (self, ctx: commands.Context,
@@ -252,14 +255,15 @@ class Stalker (Rubbercog):
         """
         if member is None or group is None:
             await self.throwHelp(ctx)
-            await self.deleteCommand(ctx)
             return
 
         try:
             repository.update_group(discord_id=member.id, group=group)
+            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
         except:
             await self.throwError(ctx, messages.stalker_err_update)
         await self.deleteCommand(ctx)
+
 
     @database_update.command(name="status")
     async def database_update_status (self, ctx: commands.Context,
@@ -272,14 +276,15 @@ class Stalker (Rubbercog):
         """
         if member is None or status is None:
             await self.throwHelp(ctx)
-            await self.deleteCommand(ctx)
             return
 
         try:
             repository.update_status(discord_id=member.id, status=status)
+            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
         except:
             await self.throwError(ctx, messages.stalker_err_update)
         await self.deleteCommand(ctx)
+
 
     @database_update.command(name="comment")
     async def database_update_comment (self, ctx: commands.Context,
@@ -291,16 +296,14 @@ class Stalker (Rubbercog):
         """
         if member is None:
             await self.throwHelp(ctx)
-            await self.deleteCommand(ctx)
             return
 
         comment = ' '.join(args) if args else ''
         try:
             repository.update_comment(discord_id=str(member.id), comment=comment)
-            await self.whois(ctx, member)
+            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
         except:
             await self.throwError(ctx, messages.stalker_err_update)
-        await self.deleteCommand(ctx)
 
 
     @database.group(name="show")
@@ -309,30 +312,36 @@ class Stalker (Rubbercog):
         if ctx.invoked_subcommand is None:
             await self.throwHelp(ctx)
 
+
     @database.command(name="unverified")
     async def database_show_unverified (self, ctx: commands.Context):
         """List users that have not yet requested verification code"""
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+
 
     @database.command(name="pending")
     async def database_show_pending (self, ctx: commands.Context):
         """List users that have not yet submitted the verification code"""
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
+
     @database.command(name="kicked")
     async def database_show_kicked (self, ctx: commands.Context):
         """List users that have been kicked"""
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+
 
     @database.command(name="banned")
     async def database_show_banned (self, ctx: commands.Context):
         """List users that have been banned"""
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
+
     @database.command(name="statistics", aliases=["stats"])
     async def database_statistics (self, ctx: commands.Context):
         """Display statistics about known users"""
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+
 
     @database.command(name="today")
     async def database_today (self, ctx: commands.Context):
