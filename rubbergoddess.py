@@ -124,6 +124,6 @@ session.commit()  # Making sure
 
 for extension in config.extensions:
     bot.load_extension(f'cogs.{extension}')
-    print('Role {} načtena.'.format(extension.upper()))
+    print('Načetla jsem roli {}.'.format(extension.upper()))
 
 bot.run(config.key)

@@ -22,7 +22,7 @@ class Rubbercog (commands.Cog):
         if ctx.command is None:
             return "(no command)"
 
-        path = ' '.join((p.name) for p in ctx.command.parents) + \
+        path = ' '.join((p.name) for p in ctx.command.parents[::-1]) + \
                ' ' if ctx.command.parents else ''
         return config.prefix + path + ctx.command.name
 

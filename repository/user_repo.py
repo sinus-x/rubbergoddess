@@ -81,3 +81,7 @@ class UserRepository(BaseRepository):
         users = session.query(User).filter(User.discord_id == discord_id).delete()
         session.commit()
         return users
+
+    def filter (self, status: str = None):
+        users = session.query(User).filter(User.status == status).all()
+        return users

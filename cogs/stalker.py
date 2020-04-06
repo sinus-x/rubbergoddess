@@ -7,7 +7,6 @@ from core.rubbercog import Rubbercog
 from repository import user_repo
 from repository.database import database
 from repository.database import session
-from repository.database.verification import User
 
 from config.config import config
 from config.emotes import Emotes as emote
@@ -237,11 +236,11 @@ class Stalker (Rubbercog):
             return
 
         try:
-            repository.update_login(discord_id=member.id, login=login)
+            repository.update_login(discord_id=str(member.id), login=login)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
-        except:
-            await self.throwError(ctx, messages.stalker_err_update)
-        await self.deleteCommand(ctx)
+            await self.deleteCommand(ctx)
+        except Exception as err:
+            await self.throwError(ctx, err)
 
 
     @database_update.command(name="group")
@@ -258,10 +257,10 @@ class Stalker (Rubbercog):
             return
 
         try:
-            repository.update_group(discord_id=member.id, group=group)
+            repository.update_group(discord_id=str(member.id), group=group)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
-        except:
-            await self.throwError(ctx, messages.stalker_err_update)
+        except Exception as err:
+            await self.throwError(ctx, err)
         await self.deleteCommand(ctx)
 
 
@@ -274,15 +273,15 @@ class Stalker (Rubbercog):
         member: A server member
         status: unknown, pending, verified, kicked, banned
         """
-        if member is None or status is None:
+        if member is None or status is None or status not in config.db_states:
             await self.throwHelp(ctx)
             return
 
         try:
-            repository.update_status(discord_id=member.id, status=status)
+            repository.update_status(discord_id=str(member.id), status=status)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
-        except:
-            await self.throwError(ctx, messages.stalker_err_update)
+        except Exception as err:
+            await self.throwError(ctx, err)
         await self.deleteCommand(ctx)
 
 
@@ -302,8 +301,8 @@ class Stalker (Rubbercog):
         try:
             repository.update_comment(discord_id=str(member.id), comment=comment)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
-        except:
-            await self.throwError(ctx, messages.stalker_err_update)
+        except Exception as err:
+            await self.throwError(ctx, err)
 
 
     @database.group(name="show")
@@ -313,32 +312,32 @@ class Stalker (Rubbercog):
             await self.throwHelp(ctx)
 
 
-    @database.command(name="unverified")
-    async def database_show_unverified (self, ctx: commands.Context):
+    @database_show.command(name="unverified")
+    async def database_show_unverified (self, ctx: commands.Context, pin=False):
         """List users that have not yet requested verification code"""
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self._database_show_filter(ctx, "unverified", pin)
 
 
-    @database.command(name="pending")
-    async def database_show_pending (self, ctx: commands.Context):
+    @database_show.command(name="pending")
+    async def database_show_pending (self, ctx: commands.Context, pin=False):
         """List users that have not yet submitted the verification code"""
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self._database_show_filter(ctx, "pending", pin)
 
 
-    @database.command(name="kicked")
-    async def database_show_kicked (self, ctx: commands.Context):
+    @database_show.command(name="kicked")
+    async def database_show_kicked (self, ctx: commands.Context, pin=False):
         """List users that have been kicked"""
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self._database_show_filter(ctx, "kicked", pin)
 
 
-    @database.command(name="banned")
-    async def database_show_banned (self, ctx: commands.Context):
+    @database_show.command(name="banned")
+    async def database_show_banned (self, ctx: commands.Context, pin=False):
         """List users that have been banned"""
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        await self._database_show_filter(ctx, "banned", pin)
 
 
     @database.command(name="statistics", aliases=["stats"])
-    async def database_statistics (self, ctx: commands.Context):
+    async def database_statistics (self, ctx: commands.Context, pin=False):
         """Display statistics about known users"""
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
@@ -355,6 +354,35 @@ class Stalker (Rubbercog):
         """Display general about guild"""
         #TODO users, channels, categories, owner, create date etc
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+
+
+
+    async def _database_show_filter (self, ctx: commands.Context, status: str = None, pin=False):
+        """Helper function for all databas_show_* functions"""
+        if status is None or status not in config.db_states:
+            self.throwHelp(ctx)
+            return
+
+        pin = self.parseArg(pin)
+        guild = self.bot.get_guild(config.guild_id)
+
+        users = repository.filter(status=status)
+        
+        embed = self._getEmbed(ctx, pin=pin)
+        embed.add_field(name="Result", value="{} users found".format(len(users)), inline=False)
+        if users:
+            embed.add_field(name="-"*60, value="LIST:", inline=False)
+        for user in users:
+            member = discord.utils.get(guild.members, id=int(user.discord_id))
+            name = "__{}__, {}, {}".format(member.name, self.dbobj2email(user), member.id)
+            d = user.changed
+            date = (d[:4] + "-" + d[4:6] + "-" + d[6:]) if (d and len(d) == 8) else "_(none)_"
+            embed.add_field(name=name, value="Last action on {}".format(date), inline=False)
+        if pin:
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await self.deleteCommand(ctx)
 
 
 def setup(bot):
