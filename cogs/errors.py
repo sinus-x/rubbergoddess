@@ -36,6 +36,7 @@ class Errors(Rubbercog):
 
         elif isinstance(error, commands.BadArgument):
             await self.throwNotification(ctx, messages.err_bad_argument)
+            return
 
         elif isinstance(error, commands.CommandNotFound):
             if not ctx.message.content[0] in config.prefixes:
