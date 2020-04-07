@@ -31,6 +31,10 @@ docker exec -it rubbergoddess_db_1 pg_dumpall -c -U postgres > dump_`date +%Y-%m
 
 ```bash
 cat dump.sql | docker exec -it rubbergoddess_db_1 psql -U postgres
+# or, more manually, to see if anything goes wrong
+docker cp dump.sql rubbergoddess_db_1:dump.sql
+docker exec -it rubbergoddess_db_1 bash
+cat dump.sql | psql -U postgres
 ```
 
 
