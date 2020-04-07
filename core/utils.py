@@ -64,7 +64,7 @@ def fill_message(message_name, *args, **kwargs):
 async def notify(ctx: commands.Context, msg: str):
     """Show an embed.
 
-    A skinny version of rubbercog.throwNotify()
+    A skinny version of rubbercog.throwNotification()
     """
     if ctx.message is None:
         return

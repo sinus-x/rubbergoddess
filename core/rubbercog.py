@@ -76,6 +76,7 @@ class Rubbercog (commands.Cog):
     def parseArg (self, arg: str = None):
         """Return true if supported argument is matched"""
         #TODO Do this the proper way
+        #TODO only privileged users can pin bot embeds
         args = ["pin", "force"]
         return True if arg in args else False
 
@@ -96,7 +97,7 @@ class Rubbercog (commands.Cog):
             await ctx.send(embed=embed)
         await self.deleteCommand(ctx, now=True)
 
-    async def throwNotify (self, ctx: commands.Context, msg: str,
+    async def throwNotification (self, ctx: commands.Context, msg: str,
                                  pin: bool = False):
         """Show an embed with a message."""
         embed = self._getEmbed(ctx, color=config.color_notify, pin=pin)

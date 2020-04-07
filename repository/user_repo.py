@@ -82,6 +82,14 @@ class UserRepository(BaseRepository):
         session.commit()
         return users
 
-    def filter (self, status: str = None):
-        users = session.query(User).filter(User.status == status).all()
-        return users
+    def filterStatus (self, status: str = None):
+        return session.query(User).filter(User.status == status).all()
+
+    def filterGroup (self, group: str = None):
+        return session.query(User).filter(User.group == group).all()
+
+    def countStatus (self, status: str = None):
+        return session.query(User).filter(User.status == status).count()
+
+    def countGroup (self, group: str = None):
+        return session.query(User).filter(User.group == group).count()

@@ -345,16 +345,29 @@ class Stalker (Rubbercog):
     @database.command(name="today")
     async def database_today (self, ctx: commands.Context):
         """Display the count of users that joined/were verified today"""
+        #TODO maybe read the audit log instead?
         await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
 
 
     @commands.guild_only()
     @commands.command(name="guild", aliases=["server"])
-    async def guild (self, ctx: commands.Context):
+    async def guild (self, ctx: commands.Context, pin=False):
         """Display general about guild"""
-        #TODO users, channels, categories, owner, create date etc
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
-
+        pin = self.parseArg(pin)
+        #TODO users, owner, create date etc
+        states = ', '.join("{}: **{}**".format(
+            state, repository.countStatus(state)) for state in config.db_states)
+        groups = ', '.join("{}: **{}**".format(group, repository.\
+            countGroup(group)) for group in (config.roles_native + config.roles_guest))
+        embed = self._getEmbed(ctx, pin=pin)
+        #TODO count guild users
+        embed.add_field(name="Verification states", value=states, inline=False)
+        embed.add_field(name="Role distribution", value=groups, inline=False)
+        if pin:
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await self.deleteCommand(ctx)
 
 
     async def _database_show_filter (self, ctx: commands.Context, status: str = None, pin=False):
@@ -366,18 +379,22 @@ class Stalker (Rubbercog):
         pin = self.parseArg(pin)
         guild = self.bot.get_guild(config.guild_id)
 
-        users = repository.filter(status=status)
+        users = repository.filterStatus(status=status)
         
         embed = self._getEmbed(ctx, pin=pin)
         embed.add_field(name="Result", value="{} users found".format(len(users)), inline=False)
         if users:
             embed.add_field(name="-"*60, value="LIST:", inline=False)
         for user in users:
-            member = discord.utils.get(guild.members, id=int(user.discord_id))
-            name = "__{}__, {}, {}".format(member.name, self.dbobj2email(user), member.id)
+            member = discord.utils.get(guild.members, id=user.discord_id)
+            if member:
+                name = "__{}__, {}".format(member.name, member.id)
+            else:
+                name = "{} _(not on server)_".format(user.discord_id, user.group)
             d = user.changed
             date = (d[:4] + "-" + d[4:6] + "-" + d[6:]) if (d and len(d) == 8) else "_(none)_"
-            embed.add_field(name=name, value="Last action on {}".format(date), inline=False)
+            embed.add_field(name=name, value="{}\nLast action on {}".format(
+                self.dbobj2email(user), date))
         if pin:
             await ctx.send(embed=embed)
         else:
