@@ -57,7 +57,7 @@ class Stalker (Rubbercog):
         pin = self.parseArg(pin)
         # get user from database
         try:
-            dbobj = repository.get_users(discord_id=str(member.id))[0]
+            dbobj = repository.get_users(discord_id=member.id)[0]
         except IndexError:
             dbobj = None
         
@@ -141,7 +141,7 @@ class Stalker (Rubbercog):
 
         # try to write to database
         try:
-            result = repository.get_users(discord_id=str(member.id))[0]
+            result = repository.get_users(discord_id=member.id)[0]
             await self.throwError(ctx, messages.stalker_err_new_entry_exists)
             return
         except IndexError:
@@ -149,7 +149,7 @@ class Stalker (Rubbercog):
             pass
 
         try:
-            repository.add_user(discord_id=str(member.id), login=login,
+            repository.add_user(discord_id=member.id, login=login,
                             group=group.name, status="verified", code="MANUAL")
         except:
             await self.throwError(ctx, messages.stalker_err_new_entry_write)
@@ -183,9 +183,9 @@ class Stalker (Rubbercog):
 
         try:
             if force:
-                result = repository.delete_users(discord_id=str(member.id))
+                result = repository.delete_users(discord_id=member.id)
             else:
-                result = repository.get_users(discord_id=str(member.id))
+                result = repository.get_users(discord_id=member.id)
         except:
             await self.throwError(ctx, messages.stalker_err_read)
             return
@@ -236,7 +236,7 @@ class Stalker (Rubbercog):
             return
 
         try:
-            repository.update_login(discord_id=str(member.id), login=login)
+            repository.update_login(discord_id=member.id, login=login)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
             await self.deleteCommand(ctx)
         except Exception as err:
@@ -257,7 +257,7 @@ class Stalker (Rubbercog):
             return
 
         try:
-            repository.update_group(discord_id=str(member.id), group=group)
+            repository.update_group(discord_id=member.id, group=group)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
         except Exception as err:
             await self.throwError(ctx, err)
@@ -278,7 +278,7 @@ class Stalker (Rubbercog):
             return
 
         try:
-            repository.update_status(discord_id=str(member.id), status=status)
+            repository.update_status(discord_id=member.id, status=status)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
         except Exception as err:
             await self.throwError(ctx, err)
@@ -299,7 +299,7 @@ class Stalker (Rubbercog):
 
         comment = ' '.join(args) if args else ''
         try:
-            repository.update_comment(discord_id=str(member.id), comment=comment)
+            repository.update_comment(discord_id=member.id, comment=comment)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
         except Exception as err:
             await self.throwError(ctx, err)
