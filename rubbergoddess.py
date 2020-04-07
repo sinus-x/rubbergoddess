@@ -36,8 +36,10 @@ async def on_error(event, *args, **kwargs):
     channel = bot.get_channel(config.channel_botdev)
     output = traceback.format_exc()
     print(output)
+    output = list(output[0+i:1960+i] for i in range(0, len(output), 1960))
     if channel is not None:
-        await channel.send("```\n" + output + "\n```")
+        for message in output:
+            await channel.send("```\n{}```".format(message))
 
 
 @bot.command()
