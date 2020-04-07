@@ -28,20 +28,6 @@ def load_subjects():
 async def on_ready():
     """If Rubbergoddess is ready"""
     print("Jsem přihlášena.")
-    channel = bot.get_channel(config.channel_botlog)
-
-    embed = discord.Embed(title="Přihlášení", color=config.color_success)
-    embed.add_field(inline=True,
-        name="{timestamp}".format(timestamp=datetime.now().
-            strftime("%Y-%m-%d %H:%M:%S")),
-        value="Commit **{commit}**".format(commit=utils.git_hash()[:7]))
-    embed.add_field(inline=True,
-        name="Server", value=config.host if config.host else "???")
-    embed.add_field(inline=False,
-        name="Povolená rozšíření",
-        value=", ".join(config.extensions))
-    await channel.send(embed=embed)
-
     await presence.set_presence()
 
 
