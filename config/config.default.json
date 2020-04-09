@@ -39,9 +39,9 @@
 		"password": ""
 	},
 	"roles": {
-		"verify": "VERIFY",
-		"mod": "MOD",
-		"elevated": ["MOD", "SUBMOD", "HELPER"],
+		"verify_id": 0,
+		"mod_id": 0,
+		"elevated_ids": [0, 0, 0],
 		"native": ["FEKT"],
 		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 	},

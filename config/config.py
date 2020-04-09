@@ -68,9 +68,9 @@ class Config:
 
         ##
         ## ROLES
-        self.role_verify    = self.get('roles', 'verify')
-        self.role_mod       = self.get('roles', 'mod')
-        self.roles_elevated = self.get('roles', 'elevated')
+        self.role_verify    = self.get('roles', 'verify_id')
+        self.role_mod       = self.get('roles', 'mod_id')
+        self.roles_elevated = self.get('roles', 'elevated_ids')
         self.roles_native   = self.get('roles', 'native')
         self.roles_guest    = self.get('roles', 'guests')
 

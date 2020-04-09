@@ -13,6 +13,32 @@ class Rubbercog (commands.Cog):
         super().__init__()
         self.bot = bot
 
+        self.guild = None
+        self.role_mod = None
+        self.role_verify = None
+        self.roles_elevated = None
+
+
+    ##
+    ## OBJECT GETTERS
+    ##
+    def getGuild(self):
+        if self.guild is None:
+            self.guild = self.bot.get_guild(config.guild_id)
+        return self.guild
+    def getModRole(self):
+        if self.role_mod is None:
+            self.role_mod = self.guild.get_role(config.role_mod)
+        return self.role_mod
+    def getVerifyRole(self):
+        if self.role_verify is None:
+            self.role_verify = self.guild.get_role(config.role_verify)
+        return self.role_verify
+    def getElevatedRoles(self):
+        return
+        #TODO
+
+
     ##
     ## Helper functions
     ##
@@ -66,7 +92,7 @@ class Rubbercog (commands.Cog):
             "log_error", channel=ctx.channel, user=ctx.author.id,
             command=ctx.message.content))
 
-    def logException (self, ctx:commands.Context, error):
+    def logException (self, ctx: commands.Context, error):
         """Save exception to the server log channel"""
         channel = self.bot.get_channel(config.guildlog)
         channel.send(utils.fill_message(
