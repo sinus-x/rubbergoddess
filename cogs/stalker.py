@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from sqlalchemy.orm.exc import NoResultFound
+from datetime import datetime
 
 from core import utils
 from core.rubbercog import Rubbercog
@@ -336,17 +337,51 @@ class Stalker (Rubbercog):
         await self._database_show_filter(ctx, "banned", pin)
 
 
-    @database.command(name="statistics", aliases=["stats"])
-    async def database_statistics (self, ctx: commands.Context, pin=False):
-        """Display statistics about known users"""
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
-
-
-    @database.command(name="today")
-    async def database_today (self, ctx: commands.Context):
+    @commands.guild_only()
+    @commands.command(name="today")
+    async def today (self, ctx: commands.Context, pin=False):
         """Display the count of users that joined/were verified today"""
-        #TODO maybe read the audit log instead?
-        await self.throwNotification(ctx, messages.exc_not_implemented, pin=False)
+        pin = self.parseArg(pin)
+
+        ctr_usr_ver = 0 #TODO count verified users with entry.roles
+        ctr_usr_kic = 0
+        ctr_usr_ban = 0
+        ctr_invites = 0
+        ctr_msg_pin = 0
+        try:
+            async for entry in self.getGuild().audit_logs(after=datetime.now()):
+                if entry.action == discord.AuditLogAction.kick:
+                    ctr_usr_kic += 1
+                elif entry.action == discord.AuditLogAction.ban:
+                    ctr_usr_ban += 1
+                elif entry.action == discord.AuditLogAction.invite_create:
+                    ctr_invites += 1
+                elif entry.action == discord.AuditLogAction.message_pin:
+                    ctr_msg_pin += 1
+        except discord.Forbidden as err:
+            await self.throwError(ctx, err)
+            await self.deleteCommand(ctx)
+            return
+        except discord.HTTPException as err:
+            #TODO log
+            await self.throwError(ctx, err)
+            await self.deleteCommand(ctx)
+            return
+
+        embed = self._getEmbed(ctx, pin=pin)
+        embed.add_field(name="Successful verifications", value="_(Not implemented)_")
+        if ctr_usr_kic > 0:
+            embed.add_field(name="Users kicked", value=ctr_usr_kic)
+        if ctr_usr_ban > 0:
+            embed.add_field(name="Users banned", value=ctr_usr_ban)
+        if ctr_invites > 0:
+            embed.add_field(name="Invites created", value=ctr_invites)
+        embed.add_field(name="Messages pinned", value=ctr_msg_pin)
+        if pin:
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await self.deleteCommand(ctx)
 
 
     @commands.guild_only()
