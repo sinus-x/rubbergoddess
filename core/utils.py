@@ -32,12 +32,16 @@ def str_emoji_id(emoji):
     return emoji if isinstance(emoji, str) else str(emoji.id)
 
 
-def has_role(user, role_name: str):
+def has_role(user, role):
     if type(user) != discord.Member:
         return None
 
-    return role_name.lower() in [x.name.lower() for x in user.roles]
-
+    try:
+        int(role)
+        return role in [u.id for u in user.roles]
+    except ValueError:
+        return role.lower() in [u.name.lower() for u in user.roles]
+    return
 
 def fill_message(message_name, *args, **kwargs):
     """Fills message template from messages by attempting to get the attr.

@@ -190,7 +190,7 @@ class Reaction(BaseFeature):
                         await message.edit(embed=embed)
             elif emoji in ["👍", "👎", "🛑"]:
                 review = review_r.get_subject_reviews(subject)[page - 1].Review
-                if str(member.id) != review.member_ID:
+                if str(member.id) != review.discord_id:
                     review_id = review.id
                     if emoji == "👍":
                         self.review.add_vote(review_id, True, str(member.id))

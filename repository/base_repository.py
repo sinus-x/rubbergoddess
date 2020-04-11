@@ -1,8 +1,9 @@
-from config import config, messages
+from config.config import config
+from config.messages import Messages
 
 
 class BaseRepository:
 
     def __init__(self):
-        self.config = config.config
-        self.messages = messages.Messages
+        self.config   = config
+        self.messages = Messages

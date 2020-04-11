@@ -337,7 +337,7 @@ class Karma(BaseFeature):
         guild = self.bot.get_guild(cfg.guild_id)
 
         for i, user in enumerate(board, start):
-            username = guild.get_member(int(user.member_ID))
+            username = guild.get_member(int(user.discord_id))
             if username is None:
                 continue
             username = discord.utils.escape_markdown(username.display_name)

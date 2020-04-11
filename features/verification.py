@@ -169,7 +169,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         group = "VŠB"
                     else:
                         group = "GUEST"
-                self.repo.add_user(discord_id=str(message.author.id), login=login,
+                self.repo.add_user(discord_id=message.author.id, login=login.lower(),
                                    group=group.upper(), status="pending")
                 await self.gen_code_and_send_mail(message, email, group=group)
 
@@ -277,7 +277,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         except AttributeError:
                             # DM
                             verify = discord.utils.get(guild.roles,
-                                name=config.verify)
+                                id=config.role_verify)
                             role = discord.utils.get(guild.roles, name=group)
                             if not message.author.id:
                                 return

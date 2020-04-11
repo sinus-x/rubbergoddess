@@ -27,7 +27,7 @@ class Review(BaseFeature):
             if review.anonym:
                 author = "Anonym"
             else:
-                author = guild.get_member(int(review.member_ID))
+                author = guild.get_member(int(review.discord_id))
             embed.add_field(name="Author", value=author)
             embed.add_field(name="Mark", value=review.tier)
             embed.add_field(name="Date", value=review.date)

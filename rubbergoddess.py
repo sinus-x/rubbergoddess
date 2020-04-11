@@ -10,6 +10,10 @@ from config.emotes import Emotes as emote
 from features import presence
 from repository.database import database
 from repository.database import session
+from repository.database.karma import Karma, Karma_emoji
+from repository.database.review import Review, ReviewRelevance, Subject
+from repository.database.verification import User
+from repository.review_repo import ReviewRepository
 
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or(*config.prefix),

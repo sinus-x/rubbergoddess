@@ -2,6 +2,7 @@ from sqlalchemy import (
     Column,
     String,
     Integer,
+    BigInteger,
     Boolean,
     Date,
     PrimaryKeyConstraint,
@@ -12,32 +13,32 @@ from repository.database import database
 
 
 class Review(database.base):
-    __tablename__ = 'bot_review'
+    __tablename__ = 'reviews'
 
-    id = Column(Integer, primary_key=True)
-    member_ID = Column(String)
-    anonym = Column(Boolean, default=True)
-    subject = Column(String, ForeignKey("bot_subjects.shortcut",
+    id          = Column(Integer, primary_key=True)
+    discord_id  = Column(BigInteger)
+    anonym      = Column(Boolean, default=True)
+    subject     = Column(String, ForeignKey("subjects.shortcut",
                      ondelete="CASCADE"))
-    tier = Column(Integer, default=0)
+    tier        = Column(Integer, default=0)
     text_review = Column(String, default=None)
-    date = Column(Date)
-    relevance = relationship('ReviewRelevance')
+    date        = Column(Date)
+    relevance   = relationship('ReviewRelevance')
 
 
 class ReviewRelevance(database.base):
-    __tablename__ = 'bot_review_relevance'
+    __tablename__ = 'review_relevance'
     __table_args__ = (
-        PrimaryKeyConstraint('review', 'member_ID', name='key'),
+        PrimaryKeyConstraint('review', 'discord_id', name='key'),
     )
 
-    member_ID = Column(String)
-    vote = Column(Boolean, default=False)
-    review = Column(Integer, ForeignKey('bot_review.id', ondelete="CASCADE"))
+    discord_id = Column(BigInteger)
+    vote       = Column(Boolean, default=False)
+    review     = Column(Integer, ForeignKey('reviews.id', ondelete="CASCADE"))
 
 
 class Subject(database.base):
-    __tablename__ = 'bot_subjects'
+    __tablename__ = 'subjects'
 
     shortcut = Column(String, primary_key=True)
     reviews = relationship('Review')

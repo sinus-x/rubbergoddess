@@ -26,7 +26,7 @@ class ReviewRepository(BaseRepository):
     def get_review_by_author_subject(self, author_id, subject):
         return session.query(Review).filter(
             Review.subject == subject,
-            Review.member_ID == str(author_id)
+            Review.discord_id == str(author_id)
         ).first()
 
     def update_review(self, id, tier, anonym: bool, text):
@@ -43,7 +43,7 @@ class ReviewRepository(BaseRepository):
     def add_review(self, author, subject, tier, anonym: bool, text):
         try:
             review = Review(
-                member_ID=str(author),
+                discord_id=str(author),
                 subject=subject,
                 tier=tier,
                 anonym=anonym,
@@ -68,12 +68,12 @@ class ReviewRepository(BaseRepository):
     def get_vote_by_author(self, review_id, author):
         return session.query(ReviewRelevance).filter(
             ReviewRelevance.review == review_id,
-            ReviewRelevance.member_ID == author
+            ReviewRelevance.discord_id == author
         ).first()
 
     def add_vote(self, review_id, vote: bool, author):
         relevance = ReviewRelevance(
-            member_ID=author,
+            discord_id=author,
             vote=vote,
             review=review_id
         )
@@ -83,7 +83,7 @@ class ReviewRepository(BaseRepository):
     def remove_vote(self, review_id, author):
         session.query(ReviewRelevance).filter(
             ReviewRelevance.review == review_id,
-            ReviewRelevance.member_ID == author
+            ReviewRelevance.discord_id == author
         ).delete()
 
     def get_subject(self, shortcut):

@@ -7,13 +7,13 @@ from repository.database.karma import Karma, Karma_emoji
 
 class Karma_row_data():
     def __init__(self, value, position):
-        self.value = value
+        self.value    = value
         self.position = position
 
 
 class Karma_data():
     def __init__(self, karma, positive, negative):
-        self.karma = karma
+        self.karma    = karma
         self.positive = positive
         self.negative = negative
 
@@ -70,7 +70,7 @@ class KarmaRepository(BaseRepository):
         if members_karma is not None:
             members_karma.karma += emoji_value
         else:
-            session.add(Karma(member_ID=member.id, karma=emoji_value))
+            session.add(Karma(discord_id=member.id, karma=emoji_value))
 
     def update_karma_give(self, giver, emoji_value, remove):
         if emoji_value > 0:
@@ -92,7 +92,7 @@ class KarmaRepository(BaseRepository):
             setattr(givers_karma, column,
                     getattr(givers_karma, column) + emoji_value)
         else:
-            new_giver = Karma(member_ID=giver.id)
+            new_giver = Karma(discord_id=giver.id)
             setattr(new_giver, column, emoji_value)
             session.add(new_giver)
 
@@ -106,12 +106,12 @@ class KarmaRepository(BaseRepository):
         if emoji_value:
             self.update_karma(member_id, giver, emoji_value * (-1), True)
 
-    def get_karma_object(self, member_id):
+    def get_karma_object(self, member_id = None):
         return session.query(Karma).\
-            filter(Karma.member_ID == str(member_id)).one_or_none()
+            filter(Karma.discord_id == str(member_id)).one_or_none()
 
     def get_karma_position(self, column, karma):
-        value = session.query(func.count(Karma.member_ID)).\
+        value = session.query(func.count(Karma.discord_id)).\
             filter(getattr(Karma, column) > karma).one()
         return value[0] + 1
 
