@@ -3,21 +3,19 @@ import datetime
 import discord
 from discord.ext import commands
 
-import utils
+from core import rubbercog, utils
 from config.config import config
 from config.messages import Messages as messages
 
-config = config.Config
-messages = messages.Messages
 
-
-class Kachna(commands.Cog):
+class Kachna(rubbercog.Rubbercog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command()
     async def kachna(self, ctx):
         await ctx.send(messages.kachna_grillbot)
+        await self.deleteCommand(ctx)
 
 
 def setup(bot):

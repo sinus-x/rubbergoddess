@@ -60,6 +60,8 @@ class Base (Rubbercog):
                 msg = await ctx.author.send(embed=embed)
                 await ctx.message.delete()
             except discord.errors.Forbidden:
+                await self.deleteCommand(ctx)
+                await self.throwNotification(ctx, "#bot-spam")
                 return
         else:
             msg = await ctx.send(embed=embed, delete_after=config.delay_embed)

@@ -1,14 +1,15 @@
 from discord.ext import commands
-from config.config import Config as config
+from config.config import config
 from config.messages import Messages as messages
 from cogs import errors
 from features import verification
 from repository import user_repo
 from core import utils
+from core import rubbercog
 
 repository = user_repo.UserRepository()
 
-class Verify(commands.Cog):
+class Verify(rubbercog.Rubbercog):
     def __init__(self, bot):
         self.bot = bot
         self.errors = errors.Errors(bot)
@@ -37,7 +38,7 @@ class Verify(commands.Cog):
     @verify.error
     async def verifyError (self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            await self.errors._getNotification(ctx, messages.verify_not_jail)
+            await self.throwNotification(ctx, messages.verify_not_jail)
             return
 
 def setup(bot):
