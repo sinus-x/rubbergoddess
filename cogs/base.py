@@ -66,33 +66,5 @@ class Base (commands.Cog):
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
 
-    @commands.command()
-    async def help (self, ctx, pin: str = None):
-        """Display information about bot functions (beta)
-
-        This should replace current `?god`/`?goddess` commands in the future
-        Instead of reading help from file it is taking dostrings inside the code
-        """
-        pin = self.errors._parsePin(pin)
-        t = self.errors._getEmbedTitle(ctx)
-        if pin is not None and pin:
-            t = "📌 " + t
-        embed = discord.Embed(color=config.color,
-            title=t, description=ctx.command.short_doc)
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-
-        cogs = self.bot.cogs
-        for cog in cogs:
-            cog = self.bot.get_cog(cog)
-            embed.add_field(
-                name=cog.qualified_name,
-                value=cog.description if cog.description else "_No description available_")
-
-
-        msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await msg.add_reaction("◀")
-        await msg.add_reaction("▶")
-        await self.errors._tryDelete(ctx, now=True)
-
 def setup(bot):
     bot.add_cog(Base(bot))
