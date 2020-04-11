@@ -35,7 +35,7 @@
 	"email": {
 		"address": "",
 		"server": "",
-		"port": 465,
+		"port": 587,
 		"password": ""
 	},
 	"roles": {
