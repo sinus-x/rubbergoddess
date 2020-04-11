@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from config.config import Config as config
+from config.config import config
 
 class Wormhole (commands.Cog):
     """Allow sending messages between two servers"""

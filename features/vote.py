@@ -8,7 +8,7 @@ from discord.ext.commands import Bot, Context
 from config import messages
 from features.base_feature import BaseFeature
 
-import utils
+from core import utils
 
 class MessageData:
     def __init__(self, question, options, date: datetime = None):

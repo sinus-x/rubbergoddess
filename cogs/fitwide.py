@@ -4,8 +4,9 @@ from sqlalchemy.orm.exc import NoResultFound
 import discord
 from discord.ext import commands
 
-import utils
-from config import config, messages
+from core import utils
+from config.config import config
+from config.messages import Messages as messages
 from config.emotes import Emotes as emote
 from logic import convert
 from features import verification
@@ -16,8 +17,6 @@ from repository.database.year_increment import User_backup
 
 user_r = user_repo.UserRepository()
 
-config = config.Config
-messages = messages.Messages
 convert = convert.Convert
 
 class FitWide(commands.Cog):

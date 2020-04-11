@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
 
-import utils
+from core import utils
 from cogs import errors
 
-from config.config import Config as config
+from config.config import config
 from config.messages import Messages as messages
 from config.emotes import Emotes as emote
 

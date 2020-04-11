@@ -4,7 +4,7 @@ from config.messages import Messages as messages
 from cogs import errors
 from features import verification
 from repository import user_repo
-import utils
+from core import utils
 
 repository = user_repo.UserRepository()
 

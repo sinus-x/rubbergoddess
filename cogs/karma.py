@@ -1,16 +1,15 @@
 import discord
 from discord.ext import commands
 
-import utils
-from config import messages, config
+from core import utils
+from config.config import config
+from config.messages import Messages as messages
 from features import karma, reaction
 from repository import karma_repo
 from cogs import room_check
 
 
 karma_r = karma_repo.KarmaRepository()
-config = config.Config
-messages = messages.Messages
 
 
 class Karma(commands.Cog):

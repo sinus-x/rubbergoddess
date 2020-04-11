@@ -1,13 +1,12 @@
 import discord
 from discord.ext import commands
 
-from config import config, messages
+from core import utils
+from config.config import config
+from config.messages import Messages as messages
 from features import review
 from repository import review_repo
-import utils
 
-config = config.Config
-messages = messages.Messages
 review_repo = review_repo.ReviewRepository()
 
 

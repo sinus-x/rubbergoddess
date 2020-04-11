@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-import utils
+from core import utils
 from cogs import room_check
 from logic import roll_dice, rng
 

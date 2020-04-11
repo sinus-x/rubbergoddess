@@ -4,10 +4,9 @@ from discord.ext.commands import Bot
 
 from features.base_feature import BaseFeature
 from repository import review_repo
-from config import config
+from config.config import config
 
 review_r = review_repo.ReviewRepository()
-config = config.Config
 
 
 class Review(BaseFeature):

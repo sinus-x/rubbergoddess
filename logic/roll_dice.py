@@ -1,9 +1,9 @@
 from random import randint
 from re import match
-import utils
+from core import utils
 
-from config.config import Config
-from config.messages import Messages
+from config.config import config
+from config.messages import Messages as messages
 
 """
 Syntax:
@@ -168,7 +168,7 @@ class Roll():
     def roll_dice(self, roll_string):
 
         if roll_string == "":
-            return Messages.rd_help
+            return messages.rd_help
 
         results = []
         dice_groups = roll_string.split('+')

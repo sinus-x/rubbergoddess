@@ -5,7 +5,7 @@ import discord
 from discord.ext.commands import Bot
 
 from core import utils
-from config.config import config
+from config.config import config as Config
 from config.messages import Messages
 from features.base_feature import BaseFeature
 from features.review import Review

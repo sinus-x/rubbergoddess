@@ -5,15 +5,13 @@ from discord import Emoji
 from discord.ext.commands import Bot
 from emoji import demojize
 
-import utils
-from config import config, messages
+from core import utils
+from config.config import config as cfg
+from config.messages import Messages as msg
 from config.emotes import Emotes as emotes
 from features.base_feature import BaseFeature
 from repository.karma_repo import KarmaRepository
 from repository.database.karma import Karma as Database_karma
-
-cfg = config.Config
-msg = messages.Messages
 
 
 def test_emoji(db_emoji: bytearray, server_emoji: Emoji):

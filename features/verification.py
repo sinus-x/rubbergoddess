@@ -8,8 +8,8 @@ import discord
 from discord import Member
 from discord.ext.commands import Bot
 
-import utils
-from config.config import Config as config
+from core import utils
+from config.config import config
 from config.messages import Messages as messages
 from config.emotes import Emotes as emote
 from features.base_feature import BaseFeature
