@@ -65,9 +65,9 @@ async def load(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.load_extension(f'cogs.{extension}')
-            await ctx.send(f'Načetla jsem roli **{extension}**.')
+            await ctx.send(f'Rozšíření **{extension}** načteno.')
         except Exception:
-            await ctx.send(f'Načtení role **{extension}** se nepovedlo.')
+            await ctx.send(f'Načtení rozšíření **{extension}** se nezdařilo.')
             #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
@@ -78,9 +78,9 @@ async def unload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.unload_extension(f'cogs.{extension}')
-            await ctx.send(f'Odebrala jsem roli **{extension}**.')
+            await ctx.send(f'Rozšíření **{extension}** odebráno.')
         except Exception:
-            await ctx.send(f'Odebrání role **{extension}** se nepovedlo.')
+            await ctx.send(f'Odebrání rozšíření **{extension}** se nezdařilo.')
             #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
@@ -92,9 +92,9 @@ async def reload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
             bot.unload_extension(f'cogs.{extension}')
-            await ctx.send(f'Aktualizovala jsem roli **{extension}**.')
+            await ctx.send(f'Rozšíření **{extension}** aktualizováno.')
         except Exception:
-            await ctx.send(f'Aktualizace role **{extension}** se nepovedla.')
+            await ctx.send(f'Aktualizace rozšíření **{extension}** se nepovedla.')
             #TODO log event
     else:
         await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
@@ -112,10 +112,10 @@ async def missing_arg_error(ctx, error):
 database.base.metadata.create_all(database.db)
 session.commit()  # Making sure
 
-#load_subjects()
+load_subjects()
 
 for extension in config.extensions:
     bot.load_extension(f'cogs.{extension}')
-    print('Načetla jsem roli {}.'.format(extension.upper()))
+    print('{} extension loaded.'.format(extension.upper()))
 
 bot.run(config.key)
