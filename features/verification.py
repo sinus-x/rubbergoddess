@@ -3,6 +3,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import string
+import re
 
 import discord
 from discord import Member
@@ -45,18 +46,23 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
 
         msg = MIMEMultipart('alternative')
-        #FIXME can this be abused?
+        #FIXME Can this be abused?
         msg['Subject'] = "VUT FEKT verify → {}".format(user_name)
-        msg['From'] = config.email_addr
+        msg['From'] = config.mail_address
         msg['To'] = receiver_email
-        msg['Bcc'] = config.email_addr
+        msg['Bcc'] = config.mail_address
         msg.attach(MIMEText(cleartext, 'plain'))
         msg.attach(MIMEText(richtext, 'html'))
 
-        with smtplib.SMTP(config.email_smtp_server, config.email_smtp_port) as server:
+        if config.debug:
+            print("Simulating verification mail: {} for {} ({})".\
+                format(code, user_name, receiver_email))
+            return
+
+        with smtplib.SMTP(config.mail_smtp_server, config.mail_smtp_port) as server:
             server.starttls()
             server.ehlo()
-            server.login(config.email_addr, config.email_pass)
+            server.login(config.mail_address, config.mail_password)
             server.send_message(msg)
 
     async def has_role(self, user, role_name):
@@ -73,7 +79,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         # send mail
         self.send_mail(message.author, email, code)
         # save the newly generated code into the database
-        self.repo.save_code(code=code, discord_id=str(message.author.id))
+        self.repo.save_code(code=code, discord_id=message.author.id)
         # print approving answer
         domain = email.split("@")[1]
         c = "?verify "
@@ -109,7 +115,8 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             return
 
         # check if the user doesn't have the verify role
-        if await self.has_role(message.author, config.verify):
+        if await self.has_role(message.author, config.role_verify):
+            #TODO Log as verify_log(channel,user,message)
             await message.channel.send(
                 utils.fill_message(
                     "verify_already_verified_role",
@@ -120,6 +127,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             jail_info = discord.utils.get(guild.channels, name="jail-info")
             errmsg = None
             if login == "e-mail" or login == "xlogin00":
+            if login == "e-mail" or login.startswith("xlogin"):
                 await message.channel.send(utils.fill_message("verify_wrong_arguments",
                     user=message.author.id,
                     login=login,
@@ -129,13 +137,14 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                 try:
                     await message.delete()
                 except discord.HTTPException:
+                    #TODO log
                     return
                 return
 
             # unknown - pending - verified - kicked - banned
             errmsg = None
             try:
-                u = self.repo.get_users(discord_id=str(message.author.id))[0]
+                u = self.repo.get_users(discord_id=message.author.id)[0]
             except IndexError:
                 u = None
 
@@ -190,13 +199,13 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
             elif u.status == "kicked":
                 # say that the user has been kicked before
-                errmsg = "Pokus o verify s *kicked* záznamem"
+                errmsg = "Pokus o verify s **kicked** záznamem!"
                 await message.channel.send(utils.fill_message(
                     "verify_send_kicked", user=message.author.id, admin=config.admin_id))
 
             elif u.status == "banned":
                 # say that the user has been banned before
-                errmsg = "Pokus o verify s *banned* záznamem"
+                errmsg = "Pokus o verify s **banned** záznamem!"
                 await message.channel.send(utils.fill_message(
                     "verify_send_banned", user=message.author.id, admin=config.admin_id))
 
@@ -227,7 +236,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         code = str(message.content).split(" ")[1]
 
         # only process users that are not verified
-        if not await self.has_role(message.author, config.verify):
+        if not await self.has_role(message.author, config.role_verify):
             guild = self.bot.get_guild(config.guild_id)
 
             # test for common errors
@@ -239,7 +248,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                 return
 
             try:
-                new_user = self.repo.get_users(discord_id=str(message.author.id))[0]
+                new_user = self.repo.get_users(discord_id=message.author.id)[0]
             except IndexError:
                 new_user = None
 
@@ -250,7 +259,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                     delete_after=config.delay_verify)
             else:
                 # check the verification code
-                if code.upper() != new_user.code:
+                if code.upper().replace("O","0") != new_user.code:
                     await message.channel.send(utils.fill_message(
                         "verify_verify_wrong_code", user=message.author.id),
                         delete_after=config.delay_verify)
@@ -266,10 +275,10 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         # add verify role
                         guild = self.bot.get_guild(config.guild_id)
                         try:
-                            verify = discord.utils.get(message.guild.roles,
-                                name=config.verify)
-                            role = discord.utils.get(message.guild.roles, name=group)
+                            verify = guild.get_role(config.role_verify)
+                            role = discord.utils.get(guild.roles, name=group)
                             member = message.author
+                            print("DEBUG verify {}, group {} for {}".format(verify,role,member))
                             await message.channel.send(utils.fill_message(
                                 "verify_verify_success_public", user=message.author.id,
                                 group=group),
@@ -286,7 +295,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                         await member.add_roles(role)
 
                         # save to database
-                        self.repo.save_verified(discord_id=str(message.author.id))
+                        self.repo.save_verified(discord_id=message.author.id)
 
                         # text user
                         await member.send(utils.fill_message(
