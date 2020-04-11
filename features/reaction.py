@@ -228,10 +228,10 @@ class Reaction(BaseFeature):
         elif member.id != message.author.id and\
                 guild.id == Config.guild_id and\
                 message.channel.id not in \
-                Config.karma_banned_channels and \
+                Config.karma_channels_ban and \
                 (isinstance(message.channel, discord.TextChannel) and \
                 message.channel.name not in Config.subjects) and \
-                Config.karma_ban_role_id not in map(lambda x: x.id, member.roles):
+                Config.karma_roles_ban not in map(lambda x: x.id, member.roles):
             if isinstance(emoji, str):
                 self.karma_repo.karma_emoji(message.author, member, emoji)
             else:
@@ -301,10 +301,10 @@ class Reaction(BaseFeature):
         elif member.id != message.author.id and \
                 guild.id == Config.guild_id and \
                 message.channel.id not in \
-                Config.karma_banned_channels and \
+                Config.karma_channels_ban and \
                 (isinstance(message.channel, discord.TextChannel) and \
                 message.channel.name not in Config.subjects) and \
-                Config.karma_ban_role_id not in map(lambda x: x.id, member.roles):
+                Config.karma_roles_ban not in map(lambda x: x.id, member.roles):
             if isinstance(emoji, str):
                 self.karma_repo.karma_emoji_remove(message.author, member, emoji)
             else:

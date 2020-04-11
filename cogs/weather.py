@@ -4,11 +4,9 @@ import json
 import discord
 from discord.ext import commands
 
-import utils
-from config import config, messages
-
-config = config.Config
-messages = messages.Messages
+from core import utils
+from config.config import config
+from config.messages import Messages as messages
 
 
 class weather(commands.Cog):

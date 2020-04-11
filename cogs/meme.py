@@ -28,7 +28,7 @@ class Meme(commands.Cog):
                 await message.channel.send(message.content)
             return
 
-        elif config.uhoh_string in message.content.lower():
+        elif config.meme_uhoh in message.content.lower():
             await message.channel.send("uh oh")
             uhoh_counter += 1
         elif message.content == "PR":
@@ -36,7 +36,7 @@ class Meme(commands.Cog):
         elif message.content == "🔧":
             await message.channel.send(messages.git_issues)
         elif message.content == "🔧👶" or message.content == "🔧 👶":
-            link = messages.git_issues.replace("issues", f"labels/good%20first%20issue")
+            link = messages.git_issues.replace("issues", f"labels/easy")
             await message.channel.send(link)
 
     @commands.command()
@@ -45,14 +45,14 @@ class Meme(commands.Cog):
         await ctx.send(utils.fill_message("uhoh_counter", uhohs=uhoh_counter))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
-    @commands.command(name='??', aliases=["???"])
+    @commands.command(name='??')
     async def question (self, ctx):
         """What?"""
         await ctx.send(choice(messages.question))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def hug (self, ctx, user: discord.Member = None, intensity: int = 0):
+    async def hug (self, ctx, user: discord.Member = None):
         """Hug someone!"""
         if user is None:
             user = ctx.author
@@ -60,13 +60,7 @@ class Meme(commands.Cog):
             await ctx.send(emote.hug_left)
             return
 
-        emojis = config.hug_emojis
-
-        user = discord.utils.escape_markdown(user.display_name)
-        if 0 <= intensity < len(emojis):
-            await ctx.send(emojis[intensity] + f" **{user}**")
-        else:
-            await ctx.send(choice(emojis) + f" **{user}**")
+        await ctx.send(emote.hug_right + f" **{user.nick}**")
 
     @hug.error
     async def hugError (self, ctx, error):

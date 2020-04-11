@@ -14,7 +14,7 @@ class Name_day(commands.Cog):
 
     @commands.command()
     async def svatek(self, ctx):
-        url = config.name_day_url_cz
+        url = config.nameday_cz
         res = requests.get(url).json()
         names = []
         for i in res:
@@ -23,7 +23,7 @@ class Name_day(commands.Cog):
 
     @commands.command()
     async def meniny(self, ctx):
-        url = config.name_day_url_sk
+        url = config.nameday_sk
         res = requests.get(url).json()
         names = []
         for i in res:

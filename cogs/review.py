@@ -93,7 +93,7 @@ class Review(commands.Cog):
                     if msg.embeds[0].fields[3].name == "Text page":
                         await msg.add_reaction("🔼")
                         await msg.add_reaction("🔽")
-                await ctx.message.delete(delay=config.delay_message)
+                await ctx.message.delete()
 
     @reviews.error
     async def review_error(self, ctx, error):
@@ -111,9 +111,11 @@ class Review(commands.Cog):
             if subcommand == "add":
                 self.rev.add_subject(subject)
                 await ctx.send(f'Zkratka {subject} byla přidána')
+                #TODO Add to config, too
             elif subcommand == "remove":
                 self.rev.remove_subject(subject)
                 await ctx.send(f'Zkratka {subject} byla odebrána')
+                #TODO Remove from config, too
             else:
                 await ctx.send(messages.review_wrong_subject)
         else:

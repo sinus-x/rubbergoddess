@@ -8,7 +8,7 @@ class RoomCheck():
 
     async def botroom_check(self, message):
         room = await self.get_room(message)
-        if room is not None and room.id not in config.bot_allowed_channels:
+        if room is not None and room.id not in config.bot_allowed:
             await message.channel.send(utils.fill_message("bot_room_redirect",
                                        user=message.author.id, bot_room=config.channel_botspam))
 
@@ -27,3 +27,4 @@ class RoomCheck():
             return message.channel.guild == guild
         except AttributeError:
             return False
+
