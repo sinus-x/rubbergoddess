@@ -216,6 +216,7 @@ class Messages:
 
     # VERIFY
     verify_not_jail = "Verifikovat se jde jen v #jail."
+    verify_log = "**VERIFY**: {user} in {channel}: {message}"
 
     # MEME
     meme_hug_not_found = "Nikoho takového nevidím " + emote.sad
