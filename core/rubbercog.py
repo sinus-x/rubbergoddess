@@ -75,8 +75,11 @@ class Rubbercog (commands.Cog):
         """Return a 'cog:command_name' string"""
         if not ctx.command:
             return 'UNKNOWN'
-        return "{}:{}".format(ctx.command.cog.lower(),
-            ctx.command.qualified_name.replace(" ", "_"))
+        name = ctx.command.qualified_name.replace(" ", "_")
+        if not ctx.command.cog:
+            return name
+        else:
+            return "{}:{}".format(ctx.command.cog.lower(), name)
 
     ##
     ## Utils

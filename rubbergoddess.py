@@ -4,7 +4,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import utils
+from core import utils, rubbercog
 from config.config import config
 from config.emotes import Emotes as emote
 from features import presence
@@ -20,6 +20,7 @@ bot = commands.Bot(
                    help_command=None, case_insensitive=True)
 
 presence = presence.Presence(bot)
+rubbercog = rubbercog.Rubbercog(bot)
 
 # fill DB with subjects shortcut, needed for reviews
 def load_subjects():
@@ -52,12 +53,11 @@ async def pull(ctx):
         try:
             utils.git_pull()
             await ctx.send(f'Stažení aktualizace proběhlo úspěšně.')
-        except Exception:
+        except Exception as e:
             await ctx.send(f'Při stahování aktualizace došlo k chybě.')
-            #TODO log event
+            await rubbercog.log(ctx, "git pull", error=e)
     else:
-        await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
-        #TODO log event
+        raise commands.NotOwner()
 
 
 @bot.command()
@@ -68,9 +68,9 @@ async def load(ctx, extension):
             await ctx.send(f'Rozšíření **{extension}** načteno.')
         except Exception:
             await ctx.send(f'Načtení rozšíření **{extension}** se nezdařilo.')
-            #TODO log event
+            await rubbercog.log(ctx, "Cog load", error=e)
     else:
-        await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
+        raise commands.NotOwner()
 
 
 @bot.command()
@@ -81,10 +81,9 @@ async def unload(ctx, extension):
             await ctx.send(f'Rozšíření **{extension}** odebráno.')
         except Exception:
             await ctx.send(f'Odebrání rozšíření **{extension}** se nezdařilo.')
-            #TODO log event
+            await rubbercog.log(ctx, "Cog unload", error=e)
     else:
-        await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
-        #TODO log event
+        raise commands.NotOwner()
 
 
 @bot.command()
@@ -95,10 +94,9 @@ async def reload(ctx, extension):
             await ctx.send(f'Rozšíření **{extension}** aktualizováno.')
         except Exception:
             await ctx.send(f'Aktualizace rozšíření **{extension}** se nepovedla.')
-            #TODO log event
+            await rubbercog.log(ctx, "Cog reload", error=e)
     else:
-        await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
-        #TODO log event
+        raise commands.NotOwner()
 
 
 @reload.error
