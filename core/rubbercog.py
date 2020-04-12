@@ -28,11 +28,11 @@ class Rubbercog (commands.Cog):
         return self.guild
     def getModRole(self):
         if self.role_mod is None:
-            self.role_mod = self.guild.get_role(config.role_mod)
+            self.role_mod = self.getGuild().get_role(config.role_mod)
         return self.role_mod
     def getVerifyRole(self):
         if self.role_verify is None:
-            self.role_verify = self.guild.get_role(config.role_verify)
+            self.role_verify = self.getGuild().get_role(config.role_verify)
         return self.role_verify
     def getElevatedRoles(self):
         return
@@ -85,12 +85,13 @@ class Rubbercog (commands.Cog):
         if error or quote:
             msg += ": "
         if error:
+            if len(error) > 1000:
+                error = error[:1000]
             msg += error
         if quote:
-            msg += "\n> {}".format(ctx.message.content)
+            msg += "\n> _{}_".format(ctx.message.content)
         await channel.send(msg)
-        #TODO Save to db
-
+        #TODO Save to log
 
     async def deleteCommand(self, ctx: commands.Context, now: bool = True):
         """Try to delete the context message.
@@ -155,7 +156,7 @@ class Rubbercog (commands.Cog):
         embed.add_field(name="Help", value=ctx.command.help)
 
         if isinstance(ctx.command, commands.Group) and ctx.command.commands:
-            embed.add_field(name="-"*60, value="SUBCOMMANDS:", inline=False)
+            embed.add_field(name="-"*60, value="**SUBCOMMANDS**:", inline=False)
             #TODO Sort by lambda or something
             for opt in ctx.command.commands:
                 embed.add_field(name=opt.name, value=opt.short_doc, inline=False)

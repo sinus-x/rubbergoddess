@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
 from core import utils
-from core.rubbercog import Rubbercog
+from core import rubbercog
 from repository import user_repo
 from repository.database import database
 from repository.database import session
@@ -15,7 +15,7 @@ from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 
-class Stalker (Rubbercog):
+class Stalker (rubbercog.Rubbercog):
     """A cog for database lookups"""
 
     def __init__ (self, bot: commands.Bot):
@@ -42,7 +42,8 @@ class Stalker (Rubbercog):
 
     @commands.guild_only()
     @commands.command(name="whois", aliases=["stalk"])
-    async def whois (self, ctx: commands.Context, member: discord.Member = None, pin = None):
+    async def whois (self, ctx: commands.Context, member: discord.Member = None, 
+                           pin = None, log: bool = True):
         """Get information about user
 
         member: A server member
@@ -110,7 +111,8 @@ class Stalker (Rubbercog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.log(ctx, "?whois", quote=False)
+        if log != False:
+            await self.log(ctx, "Database entry lookup", quote=True)
         await self.deleteCommand(ctx, now=True)
 
 
@@ -153,8 +155,9 @@ class Stalker (Rubbercog):
         try:
             repository.add_user(discord_id=member.id, login=login,
                             group=group.name, status="verified", code="MANUAL")
-        except:
+        except Exception as e:
             await self.throwError(ctx, messages.stalker_err_new_entry_write)
+            await self.log(ctx, "stalker:database_add", error=e)
             return
 
         # assign roles, if neccesary
@@ -164,7 +167,8 @@ class Stalker (Rubbercog):
             await member.add_roles(group)
 
         # display the result
-        await self.whois(ctx, member)
+        await self.log(ctx, "Database entry added", quote=True)
+        await self.whois(ctx, member, log=False)
         
 
     @database.command(name="remove", aliases=["delete"])
@@ -188,8 +192,9 @@ class Stalker (Rubbercog):
                 result = repository.delete_users(discord_id=member.id)
             else:
                 result = repository.get_users(discord_id=member.id)
-        except:
+        except Exception as e:
             await self.throwError(ctx, messages.stalker_err_read)
+            await self.log(ctx, "stalker:database_remove", error=e, quote=True)
             return
 
         t = self._getEmbedTitle(ctx)
@@ -199,9 +204,11 @@ class Stalker (Rubbercog):
             # delete
             if result is None or result < 1:
                 await self.throwError(ctx, messages.stalker_err_delete_not_found)
+                await self.log(ctx, "stalker:database_remove", error="No user found", quote=True)
                 return
             embed.add_field(inline=False,
                 name="Success", value="Deleted {} entries".format(result))
+            await self.log(ctx, "Database entry removed", quote=True)
             #TODO remove all roles
         else:
             # simulate
@@ -240,9 +247,11 @@ class Stalker (Rubbercog):
         try:
             repository.update_login(discord_id=member.id, login=login)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
+            await self.log(ctx, "?db update login", quote=True)
             await self.deleteCommand(ctx)
-        except Exception as err:
-            await self.throwError(ctx, err)
+        except Exception as e:
+            await self.log(ctx, "stalker:db_update_login", error=e, quote=True)
+            await self.throwError(ctx, e)
 
 
     @database_update.command(name="group")
@@ -261,8 +270,10 @@ class Stalker (Rubbercog):
         try:
             repository.update_group(discord_id=member.id, group=group)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
-        except Exception as err:
-            await self.throwError(ctx, err)
+            await self.log(ctx, "?db update group", quote=True)
+        except Exception as e:
+            await self.throwError(ctx, e)
+            await self.log(ctx, "stalker:db_update_group", error=e, quote=True)
         await self.deleteCommand(ctx)
 
 
@@ -282,8 +293,10 @@ class Stalker (Rubbercog):
         try:
             repository.update_status(discord_id=member.id, status=status)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
-        except Exception as err:
-            await self.throwError(ctx, err)
+            await self.log(ctx, "?db update status", quote=True)
+        except Exception as e:
+            await self.throwError(ctx, e)
+            await self.log(ctx, "stalker:db_update_status", error=e, quote=True)
         await self.deleteCommand(ctx)
 
 
@@ -303,8 +316,11 @@ class Stalker (Rubbercog):
         try:
             repository.update_comment(discord_id=member.id, comment=comment)
             await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
-        except Exception as err:
-            await self.throwError(ctx, err)
+            await self.log(ctx, "?db update comment", quote=True)
+        except Exception as e:
+            await self.throwError(ctx, e)
+            await self.log(ctx, "stalker:db_update_comment", error=e, quote=True)
+        await self.deleteCommand(ctx)
 
 
     @database.group(name="show")
@@ -360,11 +376,12 @@ class Stalker (Rubbercog):
                 elif entry.action == discord.AuditLogAction.message_pin:
                     ctr_msg_pin += 1
         except discord.Forbidden as err:
+            await self.log(ctx, "stalker:today", error=e, quote=True)
             await self.throwError(ctx, err)
             await self.deleteCommand(ctx)
             return
         except discord.HTTPException as err:
-            #TODO log
+            await self.log(ctx, "stalker:today", error=e, quote=True)
             await self.throwError(ctx, err)
             await self.deleteCommand(ctx)
             return
