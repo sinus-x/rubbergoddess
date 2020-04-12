@@ -32,7 +32,7 @@ def load_subjects():
 @bot.event
 async def on_ready():
     """If Rubbergoddess is ready"""
-    print("Jsem přihlášena.")
+    print("Logged in.")
     await presence.set_presence()
 
 

@@ -4,8 +4,7 @@ import traceback
 import discord
 from discord.ext import commands
 
-from core import utils
-from core.rubbercog import Rubbercog
+from core import utils, rubbercog
 from cogs import errors, room_check
 from config.config import config
 from config.messages import Messages as messages
@@ -15,12 +14,10 @@ from repository import karma_repo
 
 rng = rng.Rng()
 karma_r = karma_repo.KarmaRepository()
-
 boottime = datetime.datetime.now().replace(microsecond=0)
 
-
-class Base (Rubbercog):
-    """About-bot cog"""
+class Base (rubbercog.Rubbercog):
+    """About"""
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
         self.reaction = reaction.Reaction(bot, karma_r)
@@ -69,6 +66,7 @@ class Base (Rubbercog):
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
 
+    
     @commands.command()
     async def help (self, ctx, pin: str = None):
         """Display information about bot functions (beta)
@@ -76,6 +74,7 @@ class Base (Rubbercog):
         This should replace current `?god`/`?goddess` commands in the future
         Instead of reading help from file it is taking dostrings inside the code
         """
+        #TODO Add crolling
         pin = self.parseArg(pin)
         t = self._getEmbedTitle(ctx)
         if pin is not None and pin:
@@ -87,14 +86,14 @@ class Base (Rubbercog):
         cogs = self.bot.cogs
         for cog in cogs:
             cog = self.bot.get_cog(cog)
-            embed.add_field(
+            if not isinstance(cog, rubbercog.Rubbercog) or not cog.visible:
+                # Do not display hidden or non-Rubbercog objects
+                continue
+            embed.add_field(inline=False,
                 name=cog.qualified_name,
                 value=cog.description if cog.description else "_No description available_")
 
-
         msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await msg.add_reaction("◀")
-        await msg.add_reaction("▶")
         await self.deleteCommand(ctx, now=True)
 
 def setup(bot):
