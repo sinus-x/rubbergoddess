@@ -24,6 +24,7 @@ class Errors(Rubbercog):
 
         if isinstance(error, commands.MissingPermissions):
             await self.throwNotification(ctx, messages.err_no_permission)
+            await self.log(ctx, "Missing permissions", quote=True, error=error)
             return
 
         if isinstance(error, commands.CommandOnCooldown):
@@ -32,6 +33,7 @@ class Errors(Rubbercog):
 
         elif isinstance(error, commands.CheckFailure):
             await self.throwNotification(ctx, messages.err_no_requirements)
+            await self.log(ctx, "Check failure", quote=True, error=error)
             return
 
         elif isinstance(error, commands.BadArgument):
@@ -44,11 +46,13 @@ class Errors(Rubbercog):
             return
 
         elif isinstance(error, commands.ExtensionError):
-            await self.throwError(ctx, messages.err_extension_err)
+            await self.throwError(ctx, error)
+            await self.log(ctx, "Extension error", quote=True, error=error)
             return
 
         # display error message
-        await self.throwError(ctx, ctx.message.content)
+        await self.throwError(ctx, error)
+        await self.log(ctx, "on_command_error", quote=True, error=error)
 
         output = 'Ignoring exception in command {}: \n\n'.format(ctx.command)
         output += ''.join(traceback.format_exception(type(error), error, error.__traceback__))

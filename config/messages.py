@@ -205,13 +205,13 @@ class Messages:
     db_update_successful = "V pořádku {user}, změnu jsem si uložila."
 
     # ERRORS
-    exc_not_implemented = "To ještě neumím... " + emote.sad
-    exc_no_permission = "Na to nemáš dostatečnou roli."
-    exc_no_requirements = "Na to nemáš oprávnění."
-    exc_no_command = "Takový příkaz neznám " + emote.sad
-    exc_command_err = "Chyba v příkazu."
-    exc_cooldown = "Tento příkaz nemůžeš zadávat tak často"
-    exc_extension_err = "Chyba role " + emote.ree
+    err_not_implemented = "To ještě neumím... " + emote.sad
+    err_no_permission = "Na to nemáš dostatečnou roli."
+    err_no_requirements = "Na to nemáš oprávnění."
+    err_no_command = "Takový příkaz neznám " + emote.sad
+    err_command_err = "Chyba v příkazu."
+    err_cooldown = "Tento příkaz nemůžeš zadávat tak často"
+    err_extension_err = "Chyba rozšíření " + emote.ree
     err_bad_argument = "Chyba v parsování argumentu " + emote.sad
 
     # VERIFY
@@ -227,4 +227,4 @@ class Messages:
     stalker_err_new_entry_exists = "Given user ID is already present in the database."
     stalker_err_new_entry_write = "Could not write to the database."
     stalker_err_delete = "Could not delete user."
-    stalker_err_delete_not_found = "User could not be deleted because is not in the database."
+    stalker_err_delete_not_found = "User could not be deleted because they are not in the database."

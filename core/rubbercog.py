@@ -42,7 +42,7 @@ class Rubbercog (commands.Cog):
     ##
     ## Helper functions
     ##
-    def _getEmbedTitle (self, ctx: commands.Context):
+    def _getEmbedTitle(self, ctx: commands.Context):
         """Helper function assembling title for embeds"""
         #TODO Make sure parents are in right order - `?update database login` occurs
         if ctx.command is None:
@@ -71,6 +71,13 @@ class Rubbercog (commands.Cog):
             embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         return embed
 
+    def _getCommandSignature(self, ctx: commands.Context):
+        """Return a 'cog:command_name' string"""
+        if not ctx.command:
+            return 'UNKNOWN'
+        return "{}:{}".format(ctx.command.cog.lower(),
+            ctx.command.qualified_name.replace(" ", "_"))
+
     ##
     ## Utils
     ##
@@ -85,9 +92,7 @@ class Rubbercog (commands.Cog):
         if error or quote:
             msg += ": "
         if error:
-            if len(error) > 1000:
-                error = error[:1000]
-            msg += error
+            msg += type(error).__name__
         if quote:
             msg += "\n> _{}_".format(ctx.message.content)
         await channel.send(msg)
@@ -114,30 +119,41 @@ class Rubbercog (commands.Cog):
     ##
     ## Embeds
     ##
-    async def throwError (self, ctx: commands.Context, errmsg: str,
+    #TODO Make wrapper function for these two, they are quite similar
+    async def throwError (self, ctx: commands.Context, err,
                                 delete: bool = False, pin: bool = None):
         """Show an embed with thrown error."""
+        content = ctx.message.content
+        if len(str(content)) > 512:
+            content = str(content)[:512]
         embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
-        embed.add_field(name="An error occured", value=errmsg, inline=False)
-        embed.add_field(name="Command", value=ctx.message.content, inline=False)
+        e = type(err).__name__
+        embed.add_field(name="Error occured", value=e, inline=False)
+        embed.add_field(name="Command", value=content, inline=False)
         delete = False if pin else delete
         if delete:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         else:
             await ctx.send(embed=embed)
         await self.deleteCommand(ctx, now=True)
+        await self.log(ctx, self._getCommandSignature(ctx), quote=True, error=err)
+
 
     async def throwNotification (self, ctx: commands.Context, msg: str,
                                  pin: bool = False):
         """Show an embed with a message."""
+        content = ctx.message.content
+        if len(str(content)) > 512:
+            content = str(content)[:512]
         embed = self._getEmbed(ctx, color=config.color_notify, pin=pin)
         embed.add_field(name="Notification", value=msg, inline=False)
-        embed.add_field(name="Command", value=ctx.message.content, inline=False)
+        embed.add_field(name="Command", value=content, inline=False)
         if pin:
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
+
 
     async def throwDescription (self, ctx: commands.Context, pin: bool = False):
         """Show an embed with full docstring content."""
@@ -150,6 +166,7 @@ class Rubbercog (commands.Cog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
         
+
     async def throwHelp (self, ctx: commands.Context, pin: bool = False):
         """Show an embed with help. Show options for groups"""
         embed = self._getEmbed(ctx)
