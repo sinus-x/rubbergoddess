@@ -126,7 +126,6 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             guild = self.bot.get_guild(config.guild_id)
             jail_info = discord.utils.get(guild.channels, name="jail-info")
             errmsg = None
-            if login == "e-mail" or login == "xlogin00":
             if login == "e-mail" or login.startswith("xlogin"):
                 await message.channel.send(utils.fill_message("verify_wrong_arguments",
                     user=message.author.id,
