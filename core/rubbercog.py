@@ -71,6 +71,27 @@ class Rubbercog (commands.Cog):
             embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         return embed
 
+    ##
+    ## Utils
+    ##
+    async def log (self, ctx, action: str, quote: bool = True, error = None):
+        """Log event"""
+        channel = self.getGuild().get_channel(config.channel_guildlog)
+        if ctx.author.top_role.id in config.roles_elevated:
+            user = "{r} **{u}**".format(u=ctx.author.name, r=ctx.author.top_role.name.lower())
+        else:
+            user = ctx.author.mention
+        msg = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
+        if error or quote:
+            msg += ": "
+        if error:
+            msg += error
+        if quote:
+            msg += "\n> {}".format(ctx.message.content)
+        await channel.send(msg)
+        #TODO Save to db
+
+
     async def deleteCommand(self, ctx: commands.Context, now: bool = True):
         """Try to delete the context message.
 
@@ -82,27 +103,9 @@ class Rubbercog (commands.Cog):
             self.logException(ctx, err)
             pass
 
-    ##
-    ## Utils
-    ##
-    def logError (self, ctx: commands.Context):
-        """Save event into the server log channel"""
-        channel = self.bot.get_channel(config.guildlog)
-        channel.send(utils.fill_message(
-            "log_error", channel=ctx.channel, user=ctx.author.id,
-            command=ctx.message.content))
-
-    def logException (self, ctx: commands.Context, error):
-        """Save exception to the server log channel"""
-        channel = self.bot.get_channel(config.guildlog)
-        channel.send(utils.fill_message(
-            "log_exception", channel=ctx.channel, user=ctx.author.id,
-            command=ctx.message.content, error=error))
-
     def parseArg (self, arg: str = None):
         """Return true if supported argument is matched"""
         #TODO Do this the proper way
-        #TODO only privileged users can pin bot embeds
         args = ["pin", "force"]
         return True if arg in args else False
 

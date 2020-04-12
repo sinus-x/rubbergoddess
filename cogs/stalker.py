@@ -110,6 +110,7 @@ class Stalker (Rubbercog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await self.log(ctx, "?whois", quote=False)
         await self.deleteCommand(ctx, now=True)
 
 
