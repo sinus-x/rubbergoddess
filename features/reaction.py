@@ -85,6 +85,10 @@ class Reaction(BaseFeature):
                 not_channel = line[0][0] != "#" or \
                     discord.utils.get(guild.channels, name=line[0][1:].lower()) is None
             if not_role and not_channel and not message.author.bot:
+                #FIXME Do global check, not only this local one
+                # Do not allow messages over 2000 characters
+                if len(line[0]) > 100:
+                    line[0] = line[0][:100]
                 await message.channel.send(utils.fill_message("role_not_role",
                                            user=message.author.id, 
                                            not_role=discord.utils.escape_mentions(line[0])))
