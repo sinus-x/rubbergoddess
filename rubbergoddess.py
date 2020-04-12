@@ -55,7 +55,7 @@ async def pull(ctx):
             await ctx.send(f'Stažení aktualizace proběhlo úspěšně.')
         except Exception as e:
             await ctx.send(f'Při stahování aktualizace došlo k chybě.')
-            await rubbercog.log(ctx, "git pull", error=e)
+            await rubbercog.log(ctx, "Could not pull", error=e)
     else:
         raise commands.NotOwner()
 
@@ -66,9 +66,10 @@ async def load(ctx, extension):
         try:
             bot.load_extension(f'cogs.{extension}')
             await ctx.send(f'Rozšíření **{extension}** načteno.')
+            await rubbercog.log(ctx, f"Cog {extension} loaded")
         except Exception:
             await ctx.send(f'Načtení rozšíření **{extension}** se nezdařilo.')
-            await rubbercog.log(ctx, "Cog load", error=e)
+            await rubbercog.log(ctx, "Cog loading failed", error=e)
     else:
         raise commands.NotOwner()
 
@@ -79,9 +80,10 @@ async def unload(ctx, extension):
         try:
             bot.unload_extension(f'cogs.{extension}')
             await ctx.send(f'Rozšíření **{extension}** odebráno.')
+            await rubbercog.log(ctx, f"Cog {extension} unloaded")
         except Exception:
             await ctx.send(f'Odebrání rozšíření **{extension}** se nezdařilo.')
-            await rubbercog.log(ctx, "Cog unload", error=e)
+            await rubbercog.log(ctx, "Cog unloading failed", error=e)
     else:
         raise commands.NotOwner()
 
@@ -92,9 +94,10 @@ async def reload(ctx, extension):
         try:
             bot.unload_extension(f'cogs.{extension}')
             await ctx.send(f'Rozšíření **{extension}** aktualizováno.')
+            await rubbercog.log(ctx, f"Cog {extension} reloaded")
         except Exception:
             await ctx.send(f'Aktualizace rozšíření **{extension}** se nepovedla.')
-            await rubbercog.log(ctx, "Cog reload", error=e)
+            await rubbercog.log(ctx, "Cog reloading failed", error=e)
     else:
         raise commands.NotOwner()
 
