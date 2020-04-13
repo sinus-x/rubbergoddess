@@ -22,7 +22,7 @@ class Messages:
     
     rolehoarders_none = "Žádné jsem nenašla."
 
-    karma = "{user} Karma uzivatele `{target}` je: **{karma}** " \
+    karma = "{user} Karma uživatele `{target}` je **{karma}** " \
             "(**{order}.**)\nA rozdal:\n" \
             "**{karma_pos}** pozitivní karmy " \
             "(**{karma_pos_order}.**)\n" \
@@ -107,9 +107,11 @@ class Messages:
     verify_verify_success_public = emote.welcome + " Nový uživatel {user} byl úspěšně přidán s rolí **{group}**. "
     verify_congrats_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
                            "V <#692084608778633217> získáš další role pro zájmy\n" \
-                           "Obecné informace jsou v <#692084651849678938>."
+                           "Obecné informace jsou v <#692084651849678938>.\n\n" \
+                           "Neboj se na cokoliv zeptat nebo někomu odpovědět. Jsme tu kvůli škole A zábavě, nikdo se ti za nic smát nebude."
     verify_congrats_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
-                            "Obecné informace jsou v <#692084651849678938>."
+                            "Obecné informace jsou v <#692084651849678938>.\n\n" \
+                            "Nemusíš se bát někomu odpovědět, formality zahoď. FEKT tě vítá."
     verify_verify_format = "{user}, pro verifikaci použij: `" + prefix + "submit kód`"
 
     verify_wrong_channel = "To zde použít nejde, {user}"
