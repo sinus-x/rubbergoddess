@@ -24,6 +24,7 @@
 	"__comment": "Special channels",
 	"channels": {
 		"jail": 0,
+		"jail-info": 0,
 		"mods": 0,
 		"botdev": 0,
 		"botlog": 0,

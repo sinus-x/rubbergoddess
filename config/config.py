@@ -37,6 +37,7 @@ class Config:
         ##
         ## CHANNELS
         self.channel_jail     = self.get('channels', 'jail')
+        self.channel_jailinfo = self.get('channels', 'jail-info')
         self.channel_mods     = self.get('channels', 'mods')
         self.channel_botdev   = self.get('channels', 'botdev')
         self.channel_botlog   = self.get('channels', 'botlog')
