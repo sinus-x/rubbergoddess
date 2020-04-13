@@ -73,12 +73,12 @@ try:
 	await self.log(ctx, "?function", quote=False)
 except Exception as e:
 	# Log that an error occured
-	await self.throwError(ctx, e)
 	await self.log(ctx, "cog:function_name", error=e, quote=True)
 	return
 ```
 
-These messages will be sent to the guild log channel.
+These messages will be sent to the guild log channel.  
+**Note**: `throwError` already logs the event.
 
 ---
 
