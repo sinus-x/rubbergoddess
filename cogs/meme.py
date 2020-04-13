@@ -3,17 +3,18 @@ from random import choice
 import discord
 from discord.ext import commands
 
-from core import utils
+from core import rubbercog, utils
 from config.config import config
 from config.messages import Messages as messages
 from config.emotes import Emotes as emote
 
 uhoh_counter = 0
 
-class Meme(commands.Cog):
+class Meme(rubbercog.Rubbercog):
     """Interact with users"""
     def __init__(self, bot):
         self.bot = bot
+        self.visible = True
 
     @commands.Cog.listener()
     async def on_message (self, message):
@@ -41,7 +42,7 @@ class Meme(commands.Cog):
 
     @commands.command()
     async def uhoh (self, ctx):
-        """Something is wrong. Say 'uh oh' too"""
+        """Say how many 'uh oh's have been said since last boot"""
         await ctx.send(utils.fill_message("uhoh_counter", uhohs=uhoh_counter))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -53,7 +54,9 @@ class Meme(commands.Cog):
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def hug (self, ctx, user: discord.Member = None):
-        """Hug someone!"""
+        """Hug someone!
+
+        user: Discord user. If none, the bot will hug yourself."""
         if user is None:
             user = ctx.author
         elif user == self.bot.user:
