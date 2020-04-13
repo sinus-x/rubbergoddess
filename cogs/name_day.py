@@ -3,16 +3,18 @@ import requests
 import discord
 from discord.ext import commands
 
-from core import utils
+from core import rubbercog, utils
 from config.config import config
 from config.messages import Messages as messages
 
 
-class Name_day(commands.Cog):
+class Name_day(rubbercog.Rubbercog):
+    """See today's nameday for czech and slovak calendars"""
     def __init__(self, bot):
         self.bot = bot
+        self.visible = True
 
-    @commands.command()
+    @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
         url = config.nameday_cz
         res = requests.get(url).json()
