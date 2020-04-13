@@ -22,6 +22,10 @@ class Errors(Rubbercog):
             return
         error = getattr(error, 'original', error)
 
+        if config.debug == 2:
+            print(traceback.format_exception(type(error), error, error.__traceback__))
+            return
+
         if isinstance(error, commands.MissingPermissions):
             await self.throwNotification(ctx, messages.err_no_permission)
             await self.log(ctx, "Missing permissions", quote=True, error=error)

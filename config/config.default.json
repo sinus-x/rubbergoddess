@@ -8,7 +8,8 @@
 		"string": "postgres://postgres:postgres@db:5432/postgres"
 	},
 	"bot": {
-		"__comment": "0 for production, 1 for development behavior",
+		"__comment": "0 for production, 1 to print debugging information,",
+		"__comment": "2 to disable error catching and safety mechanisms",
 		"debug": 0,
 		"__comment": "Bot key from https://discordapp.com/developers",
 		"key": "",
