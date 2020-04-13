@@ -8,7 +8,7 @@ from config.config import config
 from config.messages import Messages as messages
 
 
-class Name_day(rubbercog.Rubbercog):
+class Nameday(rubbercog.Rubbercog):
     """See today's nameday for czech and slovak calendars"""
     def __init__(self, bot):
         self.bot = bot
@@ -34,4 +34,4 @@ class Name_day(rubbercog.Rubbercog):
 
 
 def setup(bot):
-    bot.add_cog(Name_day(bot))
+    bot.add_cog(Nameday(bot))
