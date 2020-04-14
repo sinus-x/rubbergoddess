@@ -51,7 +51,11 @@ class Errors(Rubbercog):
 
         elif isinstance(error, commands.ExtensionError):
             await self.throwError(ctx, error)
-            await self.log(ctx, "Extension error", quote=True, error=error)
+            return
+
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await self.throwNotification(ctx, error)
+            await self.log(ctx, "Missing argument", quote=True, error=error)
             return
 
         # display error message
