@@ -11,7 +11,7 @@ repository = user_repo.UserRepository()
 
 class Verify(rubbercog.Rubbercog):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.errors = errors.Errors(bot)
         self.verification = verification.Verification(bot, repository)
 

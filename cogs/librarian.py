@@ -9,9 +9,9 @@ from config.config import config
 from config.messages import Messages as messages
 
 class Librarian(rubbercog.Rubbercog):
-    """Set of knowledge- and informatin based commands"""
+    """Set of knowledge- and information based commands"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.visible = True
 
     @commands.command(aliases=["svátek"])

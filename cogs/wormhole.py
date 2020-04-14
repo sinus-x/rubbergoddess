@@ -1,12 +1,14 @@
 import discord
 from discord.ext import commands
 
+from core import rubbergod
 from config.config import config
 
-class Wormhole (commands.Cog):
+class Wormhole (rubbergod.Rubbergod):
     """Allow sending messages between two servers"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
+        self.visible = False
         self.warp_orange = self.bot.get_channel(config.wormhole_source_channel)
         self.warp_blue = self.bot.get_channel(config.wormhole_target_channel)
 

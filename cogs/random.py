@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import utils
+from core import rubbercog, utils
 from cogs import room_check
 from logic import roll_dice, rng
 
@@ -10,10 +10,10 @@ roll_dice = roll_dice.Roll()
 rng = rng.Rng()
 
 
-class Random(commands.Cog):
-
+class Random(rubbercog.Rubbercog):
+    
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.check = room_check.RoomCheck(bot)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)

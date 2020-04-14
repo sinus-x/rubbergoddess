@@ -10,7 +10,7 @@ from config.messages import Messages as messages
 
 class Kachna(rubbercog.Rubbercog):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.command()
     async def kachna(self, ctx):

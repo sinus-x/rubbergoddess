@@ -13,7 +13,7 @@ uhoh_counter = 0
 class Meme(rubbercog.Rubbercog):
     """Interact with users"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.visible = True
 
     @commands.Cog.listener()
