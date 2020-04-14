@@ -108,7 +108,7 @@ class Messages:
     verify_congrats_fekt = "Obor si zapiš v <#692086702382121010>\n\n" \
                            "V <#692084608778633217> získáš další role pro zájmy\n" \
                            "Obecné informace jsou v <#692084651849678938>.\n\n" \
-                           "Neboj se na cokoliv zeptat nebo někomu odpovědět. Jsme tu kvůli škole A zábavě, nikdo se ti za nic smát nebude."
+                           "Neboj se na cokoliv zeptat nebo někomu odpovědět, zahoď formality. FEKT tě vítá."
     verify_congrats_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
                             "Obecné informace jsou v <#692084651849678938>.\n\n" \
                             "Nemusíš se bát někomu odpovědět, formality zahoď. FEKT tě vítá."
