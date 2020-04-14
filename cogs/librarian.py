@@ -1,17 +1,36 @@
-import requests
 import json
+import requests
 
 import discord
 from discord.ext import commands
 
-from core import utils
+from core import rubbercog, utils
 from config.config import config
 from config.messages import Messages as messages
 
-
-class weather(commands.Cog):
+class Librarian(rubbercog.Rubbercog):
+    """Set of knowledge- and informatin based commands"""
     def __init__(self, bot):
         self.bot = bot
+        self.visible = True
+
+    @commands.command(aliases=["svátek"])
+    async def svatek(self, ctx):
+        url = config.nameday_cz
+        res = requests.get(url).json()
+        names = []
+        for i in res:
+            names.append(i["name"])
+        await ctx.send(messages.name_day_cz.format(name=", ".join(names)))
+
+    @commands.command()
+    async def meniny(self, ctx):
+        url = config.nameday_sk
+        res = requests.get(url).json()
+        names = []
+        for i in res:
+            names.append(i["name"])
+        await ctx.send(messages.name_day_sk.format(name=", ".join(names)))
 
     @commands.command(aliases=['pocasi', 'pocasie'])
     async def weather(self, ctx, *args):
@@ -27,7 +46,7 @@ class weather(commands.Cog):
             embed=discord.Embed(title="Počasí", description=description)
             image = "http://openweathermap.org/img/w/" + res["weather"][0]["icon"] + ".png"
             embed.set_thumbnail(url=image)
-            weather = res["weather"][0]["main"] + " ( " + res["weather"][0]["description"] + " ) "
+            weather = res["weather"][0]["main"] + " (" + res["weather"][0]["description"] + ")"
             temp = str(res["main"]["temp"]) + "°C"
             feels_temp = str(res["main"]["feels_like"]) + "°C"
             humidity = str(res["main"]["humidity"]) + "%"
@@ -49,5 +68,7 @@ class weather(commands.Cog):
         else:
             await ctx.send("Město nenalezeno! " + emote.panic + " (" + res["message"] + ")")
 
+
+
 def setup(bot):
-    bot.add_cog(weather(bot))
+    bot.add_cog(Librarian(bot))
