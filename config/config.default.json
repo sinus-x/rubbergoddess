@@ -22,6 +22,10 @@
 		"__comment": "machine name for development purposes",
 		"host": "",
 
+		"__comment": "How is the bot hosted? This is needed in some Admin cog commands.",
+		"__comment": "Supported options: standalone, docker, systemd, systemd+docker",
+		"loader": "systemd+docker",
+
 		"prefixes": ["?", "!"],
 
 		"__comment": "cogs to load by default",
