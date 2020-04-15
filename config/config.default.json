@@ -11,14 +11,19 @@
 		"__comment": "0 for production, 1 to print debugging information,",
 		"__comment": "2 to disable error catching and safety mechanisms",
 		"debug": 0,
+
 		"__comment": "Bot key from https://discordapp.com/developers",
 		"key": "",
+
 		"__comment": "IDs for bot admin and main guild",
 		"admin id": 0,
 		"guild id": 0,
+
 		"__comment": "machine name for development purposes",
 		"host": "",
+
 		"prefixes": ["?", "!"],
+
 		"__comment": "cogs to load by default",
 		"extensions": ["errors"]
 	},
@@ -34,12 +39,12 @@
 		"botspam": 0,
 		"bot allowed": ["mods", "botdev", "botspam"]
 	},
-	"__comment": "Colors for embeds (mostly).",
+	"__comment": "Colors for embeds. They are standard hex RGB values in base 10",
 	"color": {
-		"main": 5518687,
-		"success": 2015049,
-		"notify": 15042615,
-		"error": 14166812
+		"main":     5518687,
+		"success":  2015049,
+		"notify":  15042615,
+		"error":   14166812
 	},
 	"__comment": "Timers for automatic deletion of bot's messages",
 	"delay": {
@@ -56,8 +61,10 @@
 		"verify_id": 0,
 		"mod_id": 0,
 		"elevated_ids": [0, 0, 0],
+
 		"__comment": "Which roles are considered fully local",
 		"native": ["FEKT"],
+
 		"__comment": "Which roles are considered as visiting",
 		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 	},
@@ -70,8 +77,10 @@
 	"karma cog": {
 		"__comment": "IDs for roles that shouldn't have karma",
 		"banned roles": [],
+
 		"__comment": "IDs for channels that shouldn't have karma effects",
 		"banned channels": [],
+
 		"vote limit": 5,
 		"vote time": 120
 	},
@@ -89,6 +98,7 @@
 		"__comment": "Channel IDs for message tracking",
 		"local channel": 0,
 		"distant channel": 0,
+
 		"__comment": "IDs for bots. React to those in shared wormhole channel",
 		"bots": [0]
 	},
