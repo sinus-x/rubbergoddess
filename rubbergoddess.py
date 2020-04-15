@@ -48,19 +48,6 @@ async def on_error(event, *args, **kwargs):
 
 
 @bot.command()
-async def pull(ctx):
-    if ctx.author.id == config.admin_id:
-        try:
-            utils.git_pull()
-            await ctx.send(f'Stažení aktualizace proběhlo úspěšně.')
-        except Exception as e:
-            await ctx.send(f'Při stahování aktualizace došlo k chybě.')
-            await rubbercog.log(ctx, "Could not pull", msg=e)
-    else:
-        raise commands.NotOwner()
-
-
-@bot.command()
 async def load(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
