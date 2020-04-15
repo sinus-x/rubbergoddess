@@ -59,7 +59,7 @@ class Stalker (rubbercog.Rubbercog):
         pin = self.parseArg(pin)
         # get user from database
         try:
-            dbobj = repository.get_users(discord_id=member.id)[0]
+            dbobj = repository.filterId (discord_id=member.id)[0]
         except IndexError:
             dbobj = None
         
@@ -145,7 +145,7 @@ class Stalker (rubbercog.Rubbercog):
 
         # try to write to database
         try:
-            result = repository.get_users(discord_id=member.id)[0]
+            result = repository.filterId (discord_id=member.id)[0]
             await self.throwError(ctx, messages.stalker_err_new_entry_exists)
             return
         except IndexError:
@@ -188,9 +188,9 @@ class Stalker (rubbercog.Rubbercog):
 
         try:
             if force:
-                result = repository.delete_users(discord_id=member.id)
+                result = repository.deleteId (discord_id=member.id)
             else:
-                result = repository.get_users(discord_id=member.id)
+                result = repository.filterId (discord_id=member.id)
         except Exception as e:
             await self.throwError(ctx, messages.stalker_err_read)
             return

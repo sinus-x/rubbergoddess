@@ -85,6 +85,7 @@ class Messages:
     verify_no_login = "__Tvůj__ xlogin, {user} ({channel} {emote})"
     verify_wrong_arguments = "> ?verify **{login}**\n" + \
                              "{user}, podívej se do {channel} na příklad. {emote}"
+    verify_login_exists = "{user}, něco se pokazilo. Napiš DM {admin}"
 
     verify_already_sent = "{user}, e-mail už jsem ti jednou poslala (kdyžtak napiš DM {admin})"
     verify_already_verified_role = "{user}, tebe už znám... {admin}?"

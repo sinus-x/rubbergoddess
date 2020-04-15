@@ -72,15 +72,18 @@ class UserRepository(BaseRepository):
             User.discord_id == discord_id, User.status == "pending").all()
         return len(unknown) > 0 or len(pending) > 0
 
-    def get_users (self, discord_id: int = None):
+    def filterId (self, discord_id: int = None):
         """Find user in database"""
         users = session.query(User).filter(User.discord_id == discord_id).all()
         return users
 
-    def delete_users (self, discord_id: int = None):
+    def deleteId (self, discord_id: int = None):
         users = session.query(User).filter(User.discord_id == discord_id).delete()
         session.commit()
         return users
+    
+    def filterLogin (self, login: str = None):
+        return session.query(User).filter(User.login == login).all()
 
     def filterStatus (self, status: str = None):
         return session.query(User).filter(User.status == status).all()

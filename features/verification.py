@@ -162,40 +162,49 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             # unknown - pending - verified - kicked - banned
             errmsg = None
             try:
-                u = self.repo.get_users(discord_id=message.author.id)[0]
+                u = self.repo.filterId (discord_id=message.author.id)[0]
             except IndexError:
                 u = None
+            try:
+                l = self.repo.filterLogin (login)[0]
+            except IndexError:
+                l = None
 
             if u is None or u and u.status == "unknown":
-                # send verify message
-                if group and group.upper() == "FEKT":
-                    email = "{}@stud.feec.vutbr.cz".format(login)
-                elif group and group.upper() == "VUT":
-                    email = "{}@vutbr.cz".format(login)
-                else:
-                    if "@" not in login:
-                        await message.channel.send(utils.fill_message("verify_wrong_arguments",
-                            user=message.author.id, emote=emote.facepalm, 
-                            channel=jail_info.mention, login="**[redacted]]**"))
-                        return
-                    elif login.endswith("muni.cz"):
-                        email = login
-                        group = "MUNI"
-                    elif login.endswith("cuni.cz"):
-                        email = login
-                        group = "CUNI"
-                    elif login.endswith("cvut.cz"):
-                        email = login
-                        group = "ČVUT"
-                    elif login.endswith("vsb.cz"):
-                        email = login
-                        group = "VŠB"
+                if l is None:
+                    # send verify message
+                    if group and group.upper() == "FEKT":
+                        email = "{}@stud.feec.vutbr.cz".format(login)
+                    elif group and group.upper() == "VUT":
+                        email = "{}@vutbr.cz".format(login)
                     else:
-                        email = login
-                        group = "GUEST"
-                self.repo.add_user(discord_id=message.author.id, login=login,
+                        if "@" not in login:
+                            await message.channel.send(utils.fill_message("verify_wrong_arguments",
+                                user=message.author.id, emote=emote.facepalm, 
+                                channel=jail_info.mention, login="**[redacted]]**"))
+                            return
+                        elif login.endswith("muni.cz"):
+                            email = login
+                            group = "MUNI"
+                        elif login.endswith("cuni.cz"):
+                            email = login
+                            group = "CUNI"
+                        elif login.endswith("cvut.cz"):
+                            email = login
+                            group = "ČVUT"
+                        elif login.endswith("vsb.cz"):
+                            email = login
+                            group = "VŠB"
+                        else:
+                            email = login
+                            group = "GUEST"
+                    self.repo.add_user(discord_id=message.author.id, login=login,
                                    group=group.upper(), status="pending")
-                await self.gen_code_and_send_mail(message, email, group=group)
+                    await self.gen_code_and_send_mail(message, email, group=group)
+                else:
+                    errmsg = "Login už v db existuje!"
+                    await message.channel.send(utils.fill_message(
+                        "verify_login_exists", user=message.author.id, admin=config.admin_id))
 
             elif u.status == "pending":
                 # say that message has been sent
@@ -287,7 +296,7 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
                 return
 
             try:
-                new_user = self.repo.get_users(discord_id=message.author.id)[0]
+                new_user = self.repo.filterId (discord_id=message.author.id)[0]
             except IndexError:
                 new_user = None
 
