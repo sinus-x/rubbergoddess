@@ -107,20 +107,19 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
     async def send_code(self, message):
         # get variables
         args = tuple(re.split(r'\s+', str(message.content).strip("\r\n\t")))
-        print(args)
         login = None
         group = None
         if len(args) == 2 and "@" in args[1]:
             login = args[1].lower()
             if args[1].endswith("stud.feec.vutbr.cz"):
                 group = "FEKT"
-                login = await self.login_check(args[1])
+                login = await self.login_check(login)
             elif args[1].endswith("@feec.vutbr.cz"):
                 group = "FEKT"
-                login = await self.login_check(args[1])
+                login = await self.login_check(login)
             elif args[1].endswith("vutbr.cz"):
                 group = "VUT"
-                login = await self.login_check(args[1])
+                login = await self.login_check(login)
         elif len(args) == 3:
             group = args[1].upper()
             login = await self.login_check(args[2].lower())
@@ -246,10 +245,20 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
     async def verify (self, message):
         """Verify user entry in database"""
         # get variables
-        if len(str(message.content).split(" ")) != 2:
-            await message.channel.send(messages.verify_verify_format)
+        args = tuple(re.split(r'\s+', str(message.content).strip("\r\n\t")))
+        
+        if len(args) != 2:
+            await message.channel.send(utils.fill_message("verify_verify_format", user=message.author.id),
+                        delete_after=config.delay_verify)
+            try:
+                await message.delete()
+            except discord.HTTPException:
+                return
             return
-        code = str(message.content).split(" ")[1]
+        code_regex = re.compile(r'[A-Z0-9]{8}')
+        code = code_regex.match(args[1].upper())
+        if code is not None:
+            code = code.group()
 
         # only process users that are not verified
         if not await self.has_role(message.author, config.role_verify):
@@ -257,10 +266,24 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
 
             # test for common errors
             errmsg = None
-            if code == "kód" or code == "kod":
+            if args[1] == "kód" or args[1] == "kod":
                 await message.channel.send(utils.fill_message("verify_verify_no_code",
                     user=message.author.id, emote=emote.facepalm),
                     delete_after=config.delay_verify)
+                try:
+                    await message.delete()
+                except discord.HTTPException:
+                    return
+                return
+            
+            elif code is None:
+                await message.channel.send(utils.fill_message("verify_verify_bad_input",
+                    user=message.author.id, emote=emote.facepalm),
+                    delete_after=config.delay_verify)
+                try:
+                    await message.delete()
+                except discord.HTTPException:
+                    return
                 return
 
             try:
