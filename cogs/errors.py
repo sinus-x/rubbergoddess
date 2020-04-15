@@ -23,7 +23,7 @@ class Errors(Rubbercog):
         error = getattr(error, 'original', error)
 
         if config.debug == 2:
-            print(traceback.format_exception(type(error), error, error.__traceback__))
+            print("\n".join(traceback.format_exception(type(error), error, error.__traceback__)))
             return
 
         if isinstance(error, commands.MissingPermissions):
