@@ -84,7 +84,7 @@ class Rubbercog (commands.Cog):
     ##
     ## Utils
     ##
-    async def log (self, ctx, action: str, quote: bool = True, error = None):
+    async def log (self, ctx, action: str, quote: bool = True, msg = None):
         """Log event"""
         channel = self.getGuild().get_channel(config.channel_guildlog)
         if ctx.author.top_role.id in config.roles_elevated:
@@ -92,10 +92,10 @@ class Rubbercog (commands.Cog):
         else:
             user = ctx.author.mention
         msg = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
-        if error or quote:
+        if msg or quote:
             msg += ": "
-        if error:
-            msg += type(error).__name__
+        if msg:
+            msg += type(msg).__name__
         if quote:
             msg += "\n> _{}_".format(ctx.message.content)
         await channel.send(msg)
@@ -139,7 +139,7 @@ class Rubbercog (commands.Cog):
         else:
             await ctx.send(embed=embed)
         await self.deleteCommand(ctx, now=True)
-        await self.log(ctx, self._getCommandSignature(ctx), quote=True, error=err)
+        await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=err)
 
 
     async def throwNotification (self, ctx: commands.Context, msg: str,

@@ -155,7 +155,7 @@ class Stalker (rubbercog.Rubbercog):
         try:
             repository.add_user(discord_id=member.id, login=login,
                             group=group.name, status="verified", code="MANUAL")
-        except Exception as e:
+        except Exception:
             await self.throwError(ctx, messages.stalker_err_new_entry_write)
             return
 
