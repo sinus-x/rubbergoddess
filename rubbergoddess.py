@@ -13,7 +13,7 @@ import discord
 from datetime import datetime
 
 bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or(*config.prefix),
+    command_prefix=commands.when_mentioned_or(*config.prefixes),
                    help_command=None, case_insensitive=True)
 
 presence = presence.Presence(bot)
