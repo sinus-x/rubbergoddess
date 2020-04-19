@@ -47,15 +47,8 @@ class Admin(rubbercog.Rubbercog):
         return
 
         """
-        Behavior depends on value of `loader` key in config:
-        - standalone
-            Restarting not supported.
-        - docker
-            Should work out of the box.
-        - systemd
-            Requires setup described in MAINTENANCE.md (SYSTEMD section).
-        - systemd+docker
-            Requires setup described in MAINTENANCE.md (SYSTEMD section).
+        standalone systemd docker systemd+docker
+        YES        YES     DOCKER DOCKER
         """
 
     @commands.command(name="log")
@@ -65,38 +58,52 @@ class Admin(rubbercog.Rubbercog):
 
         target: service (systemd), bot (python), cron (database backups); none ~ service+bot
         """
+        # loader = [ standalone, docker, systemd, systemd+docker ]
+        # target = [ service+bot, service, bot, cron ]
         if target not in ["service", "bot", "cron"]:
             target = "service+bot"
+        cmd = ""
 
-        if target.startswith("service") and config.loader == "systemd":
-            cmd = "sudo journalctl -u rubbergoddess"
-            try:
-                stdout = subprocess.check_output(cmd, shell=True).decode("utf-8")
-            except subprocess.CalledProcessError as e:
-                await ctx.send(e)
-                print(e)
-                return
-            output = list(stdout[0+i:1960+i] for i in range(0, len(stdout), 1960))
-            for o in output:
-                await ctx.send("```{}```".format(o))
-                await self.deleteCommand(ctx)
-
-        else:
-            self.throwNotification(ctx, messages.err_not_implemented)
+        if config.loader is "docker":
+            await self.throwNotification(ctx, messages.err_not_supported)
             return
+        
+        elif config.loader is "systemd+docker":
+            if target is "bot":
+                await self.throwNotification(ctx, messages.err_not_implemented)
+                return
+            else:
+                await self.throwNotification(ctx, messages.err_not_supported)
+                return
+
+        elif config.loader is "standalone":
+            if "service" in target:
+                await self.throwNotification(ctx, messages.err_not_supported)
+                return
+            else:
+                await self.throwNotification(ctx, messages.err_not_implemented)
+                return
+
+        elif config.loader is "systemd":
+            cmd = "sudo journalctl -u rubbergoddess"
+
+        try:
+            stdout = subprocess.check_output(cmd, shell=True).decode("utf-8")
+        except subprocess.CalledProcessError as e:
+            await ctx.send(e)
+            print(e)
+            return
+        output = list(stdout[0+i:1960+i] for i in range(0, len(stdout), 1960))
+        for o in output:
+            await ctx.send("```{}```".format(o))
+        await self.deleteCommand(ctx)
 
 
-        """
-        Behavior depends on value of `loader` key in config:
-        - standalone
-            Not supported.
-        - docker
-            Not supported.
-        - systemd
-            Requires setup described in MAINTENANCE.md (SYSTEMD section).
-        - systemd+docker
-            Requires setup described in MAINTENANCE.md (SYSTEMD section).
-        """
+        """         standalone systemd docker systemd+docker
+        service+bot NO         YES     NO     NO
+        service     NO         YES     NO     NO
+        bot         YES        YES     NO     MAYBE
+        cron        YES        YES     NO     NO             """
 
 
 def setup(bot):
