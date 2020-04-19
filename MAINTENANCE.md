@@ -36,9 +36,11 @@ cat dump.sql | psql -U postgres
 
 You can setup `cron` to execute the backup the database command every day:
 
-_TODO_
+```
+0 5 * * * bash ~/rubbergoddess/resources/backup.sh >> ~/backup.log 2>&1
+```
 
-**Note**: The database contains sensitive information (e-mails) and IS NOT encrypted. It is up to 
+**Note**: The database contains sensitive information (e-mails) and **IS NOT** encrypted. It is up to 
 you to comply with the GDPR rules: limiting access to the server and/or encrypting.
 
 
@@ -56,13 +58,13 @@ cp rubbergoddess-standalone.service /etc/systemd/system/rubbergoddess.service
 systemctl start rubbergoddess
 ```
 
-You may want to grant `rubbergoddess` account as little permissions as possible. 
+You may want to grant `rubbergoddess` user as little permissions as possible. 
 Run `visudo` and add the following to the end of file:
 
 ```
-Cmnd_Alias RGS = /bin/systemctl start rubbergoddess, /bin/systemctl stop rubbergoddess, /bin/systemctl restart rubbergoddess, /bin/journalctl -u rubbergoddess
-rubbergoddess ALL=(ALL) NOPASSWD: RGS
+Cmnd_Alias RGS_CONTROL = /bin/systemctl start rubbergoddess, /bin/systemctl stop rubbergoddess, /bin/systemctl restart rubbergoddess
+Cmnd_Alias RGS_LOG = /bin/journalctl -u rubbergoddess
+rubbergoddess ALL=(ALL) NOPASSWD: RGS_CONTROl, RGS_LOG
 ```
 
-`RGS` will be the only privileged commands the unprivileged `rubbergoddess` account can run.
-
+`RGS_*` will be the only privileged commands the unprivileged user `rubbergoddess` can run.

@@ -1,5 +1,7 @@
 # Rubbergoddess
 
+**This document needs updating before it is declared as master!**
+
 ![Rubbergoddess](https://repository-images.githubusercontent.com/238499660/ec829180-4868-11ea-948c-199e65da1347)
 
 ## About
@@ -75,7 +77,7 @@ database on their server.
 
 ## Authors
 
-Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x).
+Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x) and [Czechbol](https://github.com/Czechbol).
 
 Original authors include [Toaster](https://github.com/toaster192), 
 [Matthew](https://github.com/matejsoroka), [Fpmk](https://github.com/TheGreatfpmK), 
