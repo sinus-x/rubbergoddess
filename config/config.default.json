@@ -5,6 +5,9 @@
 	"database": {
 		"__comment": "States user can have in database. No need to change this.",
 		"states": ["unknown", "unverified", "pending", "verified", "kicked", "banned"],
+
+		"__comment": "Docker:     postgres://postgres:postgres@db:5432/postgres",
+		"__comment": "Standalone: postgres://rubbergoddess:rubbergoddess@localhost/rubbergoddess",
 		"string": "postgres://postgres:postgres@db:5432/postgres"
 	},
 	"bot": {

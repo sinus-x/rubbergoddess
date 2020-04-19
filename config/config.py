@@ -25,6 +25,7 @@ class Config:
         ##
         ## BOT
         self.debug     = self.get('bot', 'debug')
+        self.loader    = self.get('bot', 'loader')
         self.key       = self.get('bot', 'key')
         self.admin_id  = self.get('bot', 'admin id')
         self.guild_id  = self.get('bot', 'guild id')
