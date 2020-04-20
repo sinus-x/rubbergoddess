@@ -49,15 +49,16 @@ class Admin(rubbercog.Rubbercog):
         if target is not "docker":
             target = None
 
+        cmd = ""
+        stdout = None
         """
         Current state:
         standalone systemd docker systemd+docker
         YES        YES     DOCKER DOCKER
         """
-        cmd = ""
 
         if config.loader is "standalone":
-            await self.throwNotification(ctx, messages.err_not_supported)
+            await self.throwNotification(ctx, messages.err_not_supported + " (nohup)")
             return
 
         elif config.loader in ["docker", "systemd+docker"]:
@@ -67,7 +68,7 @@ class Admin(rubbercog.Rubbercog):
                 await ctx.send("Za chvíli budu zpátky. Restartuji Docker kontejner :wave:")
                 cmd = "docker restart rubbergoddess_bot_1"
             else:
-                await self.throwNotification(ctx, messages.err_not_implemented)
+                await self.throwNotification(ctx, messages.err_not_implemented + " (systemd+docker)")
                 return
 
         elif config.loader is "systemd":
@@ -101,48 +102,52 @@ class Admin(rubbercog.Rubbercog):
 
         target: Optional. [ bot (default) | cron ]
         """
-        target = "cron" if target is "cron" else "bot"
+        target = "cron" if target == "cron" else "bot"
         cmd = None
+        file = None
+        stdout = None
         """
                 standalone systemd docker systemd+docker
         bot     YES        YES     YES    MIRROR
         cron    YES        YES     MIRROR MIRROR         """
 
-        if config.loader is "standalone":
-            if target is "bot":
-                file = self._readFile("rubbergoddess.log", docker=False)
-            elif target is "cron":
-                file = self._readFile("journalctl.log",    docker=False)
+        if config.loader == "standalone":
+            if target == "bot":
+                file = await self._readFile(ctx, "rubbergoddess.log", docker=False)
+            elif target == "cron":
+                file = await self._readFile(ctx, "journalctl.log",    docker=False)
 
-        elif config.loader is "systemd":
-            elif target is "bot":
+        elif config.loader == "systemd":
+            if target == "bot":
                 cmd = "sudo journalctl -u rubbergoddess"
-            if target is "cron":
-                file = self._readFile("journalctl.log",    docker=False)
+            elif target == "cron":
+                file = await self._readFile(ctx, "journalctl.log",    docker=False)
 
-        elif config.loader is "docker":
-            if target is "bot":
+        elif config.loader == "docker":
+            if target == "bot":
                 cmd = "docker logs rubbergoddess_bot_1"
-            elif target is "cron":
-                file = self._readFile("rubbergoddess.log", docker=True)
+            elif target == "cron":
+                file = await self._readFile(ctx, "rubbergoddess.log", docker=True)
 
-        elif config.loader is "systemd+docker":
-            if target is "bot":
-                file = self._readFile("journalctl.log",    docker=True)
-            elif target is "cron":
-                file = self._readFile("rubbergoddess.log", docker=True)
+        elif config.loader == "systemd+docker":
+            if target == "bot":
+                file = await self._readFile(ctx, "journalctl.log",    docker=True)
+            elif target == "cron":
+                file = await self._readFile(ctx, "rubbergoddess.log", docker=True)
+
+        else:
+            await self.throwError(ctx, "Unsupported value for 'loader' config key")
+            return
 
         if cmd:
             try:
                 stdout = subprocess.check_output(cmd, shell=True).decode("utf-8")
             except subprocess.CalledProcessError as e:
-                print(e)
                 await self.throwError(ctx, e)
                 return
-        elif file:
+        elif file is not None:
             stdout = file
-        else:
-            self.throwError(ctx, "Missing file or Log reading error", pin=True)
+        elif file is None:
             return
 
         output = list(stdout[0+i:1960+i] for i in range(0, len(stdout), 1960))
@@ -150,7 +155,7 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send("```{}```".format(o))
         await self.deleteCommand(ctx)
 
-    def _readFile(self, file: str, docker: bool):
+    async def _readFile(self, ctx: commands.Context, file: str, docker: bool):
         """Read file
         
         file: path to file
@@ -160,11 +165,13 @@ class Admin(rubbercog.Rubbercog):
             path = '/rubbergoddess/' + file
         else:
             path = file
+
         try:
             with open(path, 'r') as f:
                 lines = f.readlines()
         except FileNotFoundError as e:
-            self.log(ctx, "Log not found", msg=path)
+            await self.throwNotification(ctx, "Log file not found")
+            await self.log(ctx, "Log not found", msg=path)
             return None
 
         data = ""

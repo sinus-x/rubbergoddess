@@ -1,4 +1,5 @@
 import datetime
+import traceback
 
 import discord
 from discord.ext import commands
@@ -81,7 +82,7 @@ class Rubbercog (commands.Cog):
         if not ctx.command.cog:
             return name
         else:
-            return "{}:{}".format(ctx.command.cog.lower(), name)
+            return "{}:{}".format(ctx.command.cog.qualified_name.lower(), name)
 
     ##
     ## Utils
@@ -94,10 +95,10 @@ class Rubbercog (commands.Cog):
         else:
             user = ctx.author.mention
         message = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
-        if msg or quote:
-            msg += ": "
-        if msg:
-            if type(msg).__name__ is "str":
+        if msg != None or quote != None:
+            message += ": "
+        if msg != None:
+            if type(msg).__name__ == "str":
                 message += msg
             else:
                 message += type(msg).__name__
@@ -135,11 +136,17 @@ class Rubbercog (commands.Cog):
     async def throwError (self, ctx: commands.Context, err,
                                 delete: bool = False, pin: bool = None):
         """Show an embed with thrown error."""
+        if config.debug >= 1:
+            print(ctx.message.content)
+            traceback.print_stack()
+
         content = ctx.message.content
         if len(str(content)) > 512:
             content = str(content)[:512]
         embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
-        e = type(err).__name__
+        #TODO Detect error types properly with isinstance()
+        if type(err).__name__ is not "str":
+            e = type(err).__name__
         embed.add_field(name="Error occured", value=e, inline=False)
         embed.add_field(name="Command", value=content, inline=False)
         delete = False if pin else delete
