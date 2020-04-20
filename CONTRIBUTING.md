@@ -88,3 +88,5 @@ Usually, when the bot sends an embed, it deletes the original message:
 await self.deleteCommand(ctx)
 ```
 
+Run it only if your code created the embed. Thrown errors/notifications/... 
+already do this.
