@@ -51,10 +51,16 @@ _This next part assumes you have special user account `rubbergoddess`._
 Use the part that applies to your setup:
 ```bash
 # Docker
-cp rubbergoddess-docker.service /etc/systemd/system/rubbergoddess.service
+cp systemd.docker.service        /etc/systemd/system/rubbergoddess.service
+cp systemd.docker-bot.service    /etc/systemd/system/rubbergoddess-bot.service
+cp systemd.docker-mirror.service /etc/systemd/system/rubbergoddess-mirror.service
+systemctl daemon-reload
+systemctl enable rubbergoddess rubbergoddess-bot rubbergoddess-mirror
 systemctl start rubbergoddess
 # Standalone
-cp rubbergoddess-standalone.service /etc/systemd/system/rubbergoddess.service
+cp systemd.standalone.service /etc/systemd/system/rubbergoddess.service
+systemctl daemon-reload
+systemctl enable rubbergoddess
 systemctl start rubbergoddess
 ```
 

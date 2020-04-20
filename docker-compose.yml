@@ -11,6 +11,8 @@ services:
         command: ["postgres", "-c", "log_min_messages=fatal"]
     bot:
         build: .
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
         command: python rubbergoddess.py
         depends_on:
             - db

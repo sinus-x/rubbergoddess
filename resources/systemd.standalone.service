@@ -1,5 +1,5 @@
 [Unit]
-Description=Rubbergoddess Discord bot service
+Description=Rubbergoddess Discord bot
 Requires=postgresql.service
 After=postgresql.service
 
@@ -13,4 +13,3 @@ ExecStart=python3 rubbergoddess.py
 
 [Install]
 WantedBy=multi-user.target
-

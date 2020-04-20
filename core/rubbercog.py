@@ -1,3 +1,5 @@
+import datetime
+
 import discord
 from discord.ext import commands
 
@@ -91,14 +93,17 @@ class Rubbercog (commands.Cog):
             user = "{r} **{u}**".format(u=ctx.author.name, r=ctx.author.top_role.name.lower())
         else:
             user = ctx.author.mention
-        msg = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
+        message = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
         if msg or quote:
             msg += ": "
         if msg:
-            msg += type(msg).__name__
+            if type(msg).__name__ is "str":
+                message += msg
+            else:
+                message += type(msg).__name__
         if quote:
-            msg += "\n> _{}_".format(ctx.message.content)
-        await channel.send(msg)
+            message += "\n> _{}_".format(ctx.message.content)
+        await channel.send(message)
         #TODO Save to log
 
     async def deleteCommand(self, ctx: commands.Context, now: bool = True):
@@ -112,11 +117,15 @@ class Rubbercog (commands.Cog):
             self.logException(ctx, err)
             pass
 
-    def parseArg (self, arg: str = None):
+    def parseArg(self, arg: str = None):
         """Return true if supported argument is matched"""
         #TODO Do this the proper way
         args = ["pin", "force"]
         return True if arg in args else False
+
+    def getTimestamp(self):
+        """Get yyyy-mm-dd HH:MM:SS string"""
+        return datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
 
     ##

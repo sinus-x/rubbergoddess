@@ -41,70 +41,136 @@ class Admin(rubbercog.Rubbercog):
 
     @commands.command(name="restart")
     @commands.has_permissions(administrator=True)
-    async def restart(self, ctx: commands.Context):
-        """Restart Rubbergoddess"""
-        self.throwNotification(messages.err_not_implemented)
-        return
+    async def restart(self, ctx: commands.Context, target: str = None):
+        """Restart Rubbergoddess
+
+        target: Optional. [ all (default) | docker ]
+        """
+        if target is not "docker":
+            target = None
 
         """
+        Current state:
         standalone systemd docker systemd+docker
         YES        YES     DOCKER DOCKER
         """
-
-    @commands.command(name="log")
-    @commands.has_permissions(administrator=True)
-    async def log(self, ctx: commands.Context, target: str = None):
-        """See bot logs
-
-        target: service (systemd), bot (python), cron (database backups); none ~ service+bot
-        """
-        # loader = [ standalone, docker, systemd, systemd+docker ]
-        # target = [ service+bot, service, bot, cron ]
-        if target not in ["service", "bot", "cron"]:
-            target = "service+bot"
         cmd = ""
 
-        if config.loader is "docker":
+        if config.loader is "standalone":
             await self.throwNotification(ctx, messages.err_not_supported)
             return
-        
-        elif config.loader is "systemd+docker":
-            if target is "bot":
-                await self.throwNotification(ctx, messages.err_not_implemented)
-                return
-            else:
-                await self.throwNotification(ctx, messages.err_not_supported)
-                return
 
-        elif config.loader is "standalone":
-            if "service" in target:
-                await self.throwNotification(ctx, messages.err_not_supported)
-                return
+        elif config.loader in ["docker", "systemd+docker"]:
+            if target is "docker":
+                #FIXME Can this help with anything? It doesn't even reload 
+                #      the changes in the code.
+                await ctx.send("Za chvíli budu zpátky. Restartuji Docker kontejner :wave:")
+                cmd = "docker restart rubbergoddess_bot_1"
             else:
                 await self.throwNotification(ctx, messages.err_not_implemented)
                 return
 
         elif config.loader is "systemd":
-            cmd = "sudo journalctl -u rubbergoddess"
+            await ctx.send("Za chvíli budou zpátky. Restartuji systemd službu :wave:")
+            cmd = "sudo systemctl restart rubbergoddess"
 
+        else:
+            await self.throwError(ctx, "Invalid config.loader option")
+            return
+
+        await self.log(ctx, "Restart", msg=config.loader)
         try:
+            print("Restarting (" + config.loader + "): " + self.getTimestamp())
             stdout = subprocess.check_output(cmd, shell=True).decode("utf-8")
         except subprocess.CalledProcessError as e:
-            await ctx.send(e)
             print(e)
+            await self.throwError(ctx, e)
             return
+
+        # If we run the following, an error occured, because the bot did not halt.
+        # Probably. There may be some delay I assume.
+        if len(stdout) > 1900:
+            stdout = stdout[:1900]
+        await self.throwError(ctx, "Restarting error", msg="\n"+stdout)
+
+
+    @commands.command(name="log")
+    @commands.has_permissions(administrator=True)
+    async def getLog(self, ctx: commands.Context, target: str = None):
+        """See bot logs
+
+        target: Optional. [ bot (default) | cron ]
+        """
+        target = "cron" if target is "cron" else "bot"
+        cmd = None
+        """
+                standalone systemd docker systemd+docker
+        bot     YES        YES     YES    MIRROR
+        cron    YES        YES     MIRROR MIRROR         """
+
+        if config.loader is "standalone":
+            if target is "bot":
+                file = self._readFile("rubbergoddess.log", docker=False)
+            elif target is "cron":
+                file = self._readFile("journalctl.log",    docker=False)
+
+        elif config.loader is "systemd":
+            elif target is "bot":
+                cmd = "sudo journalctl -u rubbergoddess"
+            if target is "cron":
+                file = self._readFile("journalctl.log",    docker=False)
+
+        elif config.loader is "docker":
+            if target is "bot":
+                cmd = "docker logs rubbergoddess_bot_1"
+            elif target is "cron":
+                file = self._readFile("rubbergoddess.log", docker=True)
+
+        elif config.loader is "systemd+docker":
+            if target is "bot":
+                file = self._readFile("journalctl.log",    docker=True)
+            elif target is "cron":
+                file = self._readFile("rubbergoddess.log", docker=True)
+
+        if cmd:
+            try:
+                stdout = subprocess.check_output(cmd, shell=True).decode("utf-8")
+            except subprocess.CalledProcessError as e:
+                print(e)
+                await self.throwError(ctx, e)
+                return
+        elif file:
+            stdout = file
+        else:
+            self.throwError(ctx, "Missing file or Log reading error", pin=True)
+            return
+
         output = list(stdout[0+i:1960+i] for i in range(0, len(stdout), 1960))
         for o in output:
             await ctx.send("```{}```".format(o))
         await self.deleteCommand(ctx)
 
+    def _readFile(self, file: str, docker: bool):
+        """Read file
+        
+        file: path to file
+        docker: [ True | False ] Read from docker filesystem?
+        """
+        if docker:
+            path = '/rubbergoddess/' + file
+        else:
+            path = file
+        try:
+            with open(path, 'r') as f:
+                lines = f.readlines()
+        except FileNotFoundError as e:
+            self.log(ctx, "Log not found", msg=path)
+            return None
 
-        """         standalone systemd docker systemd+docker
-        service+bot NO         YES     NO     NO
-        service     NO         YES     NO     NO
-        bot         YES        YES     NO     MAYBE
-        cron        YES        YES     NO     NO             """
-
+        data = ""
+        for line in lines:
+            data += line
+        return data
 
 def setup(bot):
     bot.add_cog(Admin(bot))

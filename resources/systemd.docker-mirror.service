@@ -1,0 +1,16 @@
+[Unit]
+Description = Rubbergoddess: Log mirror
+PartOf      = rubbergoddess.service
+After       = rubbergoddess.service
+After       = rubbergoddess-bot.service
+
+[Service]
+Restart          = always
+User             = rubbergoddess
+WorkingDirectory = /home/rubbergoddess/rubbergoddess
+StandardOutput   = journal+console
+
+ExecStart        = /bin/bash resources/mirror.sh
+
+[Install]
+WantedBy = rubbergoddess.service

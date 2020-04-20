@@ -1,0 +1,12 @@
+[Unit]
+Description  = Rubbergoddess Discord bot
+Requires     = docker.service
+After        = docker.service
+
+[Service]
+Type            = oneshot
+ExecStart       = /bin/true
+RemainAfterExit = yes
+
+[Install]
+WantedBy = multi-user.target

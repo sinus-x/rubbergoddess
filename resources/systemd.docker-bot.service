@@ -1,0 +1,16 @@
+[Unit]
+Description = Rubbergoddess: Bot
+PartOf      = rubbergoddess.service
+After       = rubbergoddess.service
+
+[Service]
+Restart          = always
+User             = rubbergoddess
+WorkingDirectory = /home/rubbergoddess/rubbergoddess
+StandardOutput   = journal+console
+
+ExecStart        = /usr/bin/docker-compose up --build
+ExecStop         = /usr/bin/docker-compose down
+
+[Install]
+WantedBy = rubbergoddess.service
