@@ -141,7 +141,7 @@ class Admin(rubbercog.Rubbercog):
 
         if cmd:
             try:
-                stdout = subprocess.check_output(cmd, shell=True).decode("utf-8")
+                stdout = subprocess.check_output(cmd + " | tail -n 40", shell=True).decode("utf-8")
             except subprocess.CalledProcessError as e:
                 await self.throwError(ctx, e)
                 return
