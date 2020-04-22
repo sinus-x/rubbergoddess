@@ -1,5 +1,5 @@
 class Emotes:
-	happy =  '<:code:000'
+	happy =  '<:code:000>'
 	love =   '<:code:000>'
 	sad =    '<:code:000>'
 	angry =  '<:code:000>'

@@ -3,7 +3,7 @@ from discord.ext import commands
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
-from core import core, rubbercog, utils
+from core import check, rubbercog, utils
 from repository import user_repo
 from repository.database import database
 from repository.database import session
