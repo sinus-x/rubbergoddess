@@ -6,6 +6,7 @@ from discord.ext import commands
 from core import rubbercog
 from config.config import config
 from config.messages import Messages as messages
+from config.emotes import Emotes as emote
 
 class Admin(rubbercog.Rubbercog):
     """Rubbergoddess administration"""
@@ -46,7 +47,7 @@ class Admin(rubbercog.Rubbercog):
 
         target: Optional. [ all (default) | docker ]
         """
-        if target is not "docker":
+        if target != "docker":
             target = None
 
         cmd = ""
@@ -57,21 +58,22 @@ class Admin(rubbercog.Rubbercog):
         YES        YES     DOCKER DOCKER
         """
 
-        if config.loader is "standalone":
+        if config.loader == "standalone":
             await self.throwNotification(ctx, messages.err_not_supported + " (nohup)")
             return
 
         elif config.loader in ["docker", "systemd+docker"]:
-            if target is "docker":
+            if target == "docker":
                 #FIXME Can this help with anything? It doesn't even reload 
                 #      the changes in the code.
                 await ctx.send("Za chvíli budu zpátky. Restartuji Docker kontejner :wave:")
                 cmd = "docker restart rubbergoddess_bot_1"
             else:
-                await self.throwNotification(ctx, messages.err_not_implemented + " (systemd+docker)")
+                await self.throwNotification(ctx, 
+                    "Jsem zavřená v Dockeru a ještě se neumím dostat ven" + emote.sad)
                 return
 
-        elif config.loader is "systemd":
+        elif config.loader == "systemd":
             await ctx.send("Za chvíli budou zpátky. Restartuji systemd službu :wave:")
             cmd = "sudo systemctl restart rubbergoddess"
 
@@ -92,7 +94,26 @@ class Admin(rubbercog.Rubbercog):
         # Probably. There may be some delay I assume.
         if len(stdout) > 1900:
             stdout = stdout[:1900]
-        await self.throwError(ctx, "Restarting error", msg="\n"+stdout)
+        await self.throwError(ctx, "Restarting error", "\n"+stdout)
+
+    @commands.command(name="status")
+    @commands.has_permissions(administrator=True)
+    async def status(self, ctx: commands.Context):
+        """Display systemd status"""
+        if config.loader != "systemd":
+            await ctx.send("Neběžím přímo v systemd, tak to neumím " + emote.sad)
+            await self.deleteCommand(ctx)
+            return
+
+        stdout = None
+        try:
+            stdout = subprocess.check_output(
+                "sudo systemctl status rubbergoddess", shell=True).decode("utf-8")
+        except subprocess. CalledProcessError as e:
+            await self.throwError(ctx, e)
+            return
+
+        await ctx.send("```\n{}\n```".format(stdout))
 
 
     @commands.command(name="log")

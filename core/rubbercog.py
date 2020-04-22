@@ -38,8 +38,9 @@ class Rubbercog (commands.Cog):
             self.role_verify = self.getGuild().get_role(config.role_verify)
         return self.role_verify
     def getElevatedRoles(self):
-        return
-        #TODO
+        if self.roles_elevated is None:
+            self.roles_elevated = [self.getGuild().get_role(x) for x in self.roles_elevated]
+        return self.roles_elevated
 
 
     ##
