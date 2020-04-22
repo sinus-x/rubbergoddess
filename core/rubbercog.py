@@ -133,38 +133,62 @@ class Rubbercog (commands.Cog):
     ##
     ## Embeds
     ##
-    #TODO Make wrapper function for these two, they are quite similar
+#TODO Create RubbergoddessException class
     async def throwError (self, ctx: commands.Context, err,
-                                delete: bool = False, pin: bool = None):
-        """Show an embed with thrown error."""
-        if config.debug >= 1:
-            print(ctx.message.content)
-            traceback.print_stack()
+                                delete: bool = False, pin: bool = False):
+        """Show an embed and log the error"""
+        # Get error information
+        err_desc = err if type(err) == "str" else str(err)
+        if isinstance(err, Exception):
+            err_type = type(err).__name__
+            err_trace = ''.join(traceback
+                .format_exception(type(Error), error, error.__traceback__))
+        else:
+            err_type = "RubbergoddessException"
+            err_trace = None
+        err_title = "{}: {}".format(ctx.author, ctx.message.content)
 
+        # Do the debug
+        if config.debug >= 1:
+            print(err_title)
+            print(err_trace)
+        if config.debug >= 2:
+            await self.sendLong(ctx, err_title + "\n" + err_trace)
+
+        # Clean the input
         content = ctx.message.content
-        if len(str(content)) > 512:
-            content = str(content)[:512]
-        embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
-        #TODO Detect error types properly with isinstance()
-        if type(err).__name__ is not "str":
-            e = type(err).__name__
-        embed.add_field(name="Error occured", value=e, inline=False)
-        embed.add_field(name="Command", value=content, inline=False)
+        content = content if len(content) < 512 else content[:512]
         delete = False if pin else delete
+
+        # Construct the error embed
+        embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
+        embed.add_field(name="Command", value=content, inline=False)
         if delete:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         else:
             await ctx.send(embed=embed)
         await self.deleteCommand(ctx, now=True)
-        await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=err)
+        await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=err_type)
 
 
     async def throwNotification (self, ctx: commands.Context, msg: str,
                                  pin: bool = False):
         """Show an embed with a message."""
+        # Do the debug
+        title = "{}: {}".format(ctx.author, ctx.message.content)
+        if config.debug >= 1:
+            print(title)
+            print(msg)
+        if config.debug >= 2:
+            await self.sendLong(ctx, title + "\n" + msg)
+
+        # Clean the input
         content = ctx.message.content
         if len(str(content)) > 512:
             content = str(content)[:512]
+        content = content if len(content) < 512 else content[:512]
+
+        # Construct the notification embed
         embed = self._getEmbed(ctx, color=config.color_notify, pin=pin)
         embed.add_field(name="Notification", value=msg, inline=False)
         embed.add_field(name="Command", value=content, inline=False)
@@ -173,6 +197,7 @@ class Rubbercog (commands.Cog):
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
+        #TODO Should we log this?
 
 
     async def throwDescription (self, ctx: commands.Context, pin: bool = False):
@@ -188,7 +213,7 @@ class Rubbercog (commands.Cog):
         
 
     async def throwHelp (self, ctx: commands.Context, pin: bool = False):
-        """Show an embed with help. Show options for groups"""
+        """Show help for command groups"""
         embed = self._getEmbed(ctx)
         embed.add_field(name="Help", value=ctx.command.help)
 
@@ -199,3 +224,21 @@ class Rubbercog (commands.Cog):
                 embed.add_field(name=opt.name, value=opt.short_doc, inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
+
+
+
+    #TODO Move helper functions here
+    ##
+    ## HELPER FUNCTIONS
+    ##
+    async def sendLong(self, ctx: commands.Context, message: str, code: bool = False):
+        """Send messages that may exceed the 2000-char limit
+        message: The text to be sent
+        code: Whether to format the output as a code
+        """
+        message = list(message[0+i:1960+i] for i in range(0, len(message), 1960))
+        for m in message:
+            if code:
+                await ctx.send("```\n{}```".format(m))
+            else:
+                await ctx.send(m)
