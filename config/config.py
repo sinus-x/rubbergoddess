@@ -45,6 +45,8 @@ class Config:
         self.channel_guildlog = self.get('channels', 'guildlog')
         self.channel_vote     = self.get('channels', 'vote')
         self.channel_botspam  = self.get('channels', 'botspam')
+        self.channel_voices   = self.get('channels', 'voice group')
+        self.channel_nomic    = self.get('channels', 'voice no mic')
 
         self.bot_allowed = self.get('channels', 'bot allowed')
 

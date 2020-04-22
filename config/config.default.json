@@ -44,7 +44,13 @@
 		"guildlog": 0,
 		"vote": 0,
 		"botspam": 0,
-		"bot allowed": ["mods", "botdev", "botspam"]
+		"__comment": "Where NOT to print '👉 #bot-room' message",
+		"bot allowed": [0, 0, 0],
+
+		"__comment": "ID for voice channels group",
+		"voice group": 0,
+		"__comment": "Channel for voice commands & chat with people without mic",
+		"voice no mic": 0
 	},
 	"__comment": "Colors for embeds. They are standard hex RGB values in base 10",
 	"color": {
