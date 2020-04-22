@@ -24,11 +24,11 @@ class Errors(Rubbercog):
 
         if config.debug == 2:
             print("\n".join(traceback.format_exception(type(error), error, error.__traceback__)))
-            return
+            printed = True
 
         if isinstance(error, commands.MissingPermissions):
             await self.throwNotification(ctx, messages.err_no_permission)
-            await self.log(ctx, "Missing permissions", quote=True, msg=error)
+            await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)
             return
 
         if isinstance(error, commands.CommandOnCooldown):
@@ -37,7 +37,7 @@ class Errors(Rubbercog):
 
         elif isinstance(error, commands.CheckFailure):
             await self.throwNotification(ctx, messages.err_no_requirements)
-            await self.log(ctx, "Check failure", quote=True, msg=error)
+            await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)
             return
 
         elif isinstance(error, commands.BadArgument):
@@ -65,7 +65,8 @@ class Errors(Rubbercog):
         output = 'Ignoring exception in command {}: \n\n'.format(ctx.command)
         output += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
         # print traceback to stdout
-        print(output)
+        if not printed:
+            print(output)
         # send traceback to dedicated channel
         channel = self.bot.get_channel(config.channel_botdev)
         output = list(output[0+i:1960+i] for i in range(0, len(output), 1960))

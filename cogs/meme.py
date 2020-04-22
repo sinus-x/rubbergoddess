@@ -63,7 +63,8 @@ class Meme(rubbercog.Rubbercog):
             await ctx.send(emote.hug_left)
             return
 
-        await ctx.send(emote.hug_right + f" **{user.nick}**")
+        name = user.nick if user.nick else user.name
+        await ctx.send(emote.hug_right + f" **{name}**")
 
     @hug.error
     async def hugError (self, ctx, error):

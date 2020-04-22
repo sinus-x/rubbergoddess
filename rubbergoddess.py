@@ -32,7 +32,11 @@ def load_subjects():
 @bot.event
 async def on_ready():
     """If Rubbergoddess is ready"""
-    print("Logged in: " + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+    if config.debug < 1:
+        login = "Logged in: "
+    else:
+        login = "Logged with debug(" + str(config.debug) + "): "
+    print(login + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
     await presence.set_presence()
 
 

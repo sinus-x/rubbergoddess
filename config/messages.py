@@ -212,7 +212,7 @@ class Messages:
     err_not_implemented = "To ještě neumím... " + emote.sad
     err_not_supported = "To nejde."
     err_no_permission = "Na to nemáš dostatečnou roli."
-    err_no_requirements = "Na to nemáš oprávnění."
+    err_no_requirements = "Nesplnili jste podmínky příkazu."
     err_no_command = "Takový příkaz neznám " + emote.sad
     err_command_err = "Chyba v příkazu."
     err_cooldown = "Tento příkaz nemůžeš zadávat tak často"
