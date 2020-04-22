@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import rubbercog, utils
-
+from core import check, rubbercog, utils
 from config.config import config
 from config.messages import Messages as messages
 from config.emotes import Emotes as emote
@@ -14,7 +13,7 @@ class Warden (rubbercog.Rubbercog):
         self.visible = False
 
     @commands.command()
-    @commands.is_owner()
+    @commands.check(check.is_bot_owner)
     async def leaveAllGuilds (self, ctx: commands.Context):
     	"""Leave all guilds"""
     	guilds = self.bot.guilds

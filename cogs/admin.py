@@ -3,7 +3,7 @@ import subprocess
 import discord
 from discord.ext import commands
 
-from core import rubbercog
+from core import rubbercog, check
 from config.config import config
 from config.messages import Messages as messages
 from config.emotes import Emotes as emote
@@ -15,7 +15,8 @@ class Admin(rubbercog.Rubbercog):
         self.visible = False
 
     @commands.group(name="config")
-    @commands.has_permissions(administrator=True)
+    @commands.check(check.is_bot_owner)
+    @commands.check(check.is_in_modroom)
     async def config(self, ctx: commands.Context):
         """Edit bot configuration"""
         if ctx.invoked_subcommand is None:
@@ -40,8 +41,9 @@ class Admin(rubbercog.Rubbercog):
         self.throwNotification(messages.err_not_implemented)
         return
 
-    @commands.command(name="restart")
-    @commands.has_permissions(administrator=True)
+    @commands.command(name="restart", aliases=["reboot"])
+    @commands.check(check.is_bot_owner)
+    @commands.check(check.is_in_modroom)
     async def restart(self, ctx: commands.Context, target: str = None):
         """Restart Rubbergoddess
 
@@ -70,7 +72,7 @@ class Admin(rubbercog.Rubbercog):
                 cmd = "docker restart rubbergoddess_bot_1"
             else:
                 await self.throwNotification(ctx, 
-                    "Jsem zavřená v Dockeru a ještě se neumím dostat ven" + emote.sad)
+                    "Jsem zavřená v Dockeru a ještě se neumím dostat ven " + emote.sad)
                 return
 
         elif config.loader == "systemd":
@@ -97,7 +99,8 @@ class Admin(rubbercog.Rubbercog):
         await self.throwError(ctx, "Restarting error", "\n"+stdout)
 
     @commands.command(name="status")
-    @commands.has_permissions(administrator=True)
+    @commands.check(check.is_mod)
+    @commands.check(check.is_in_modroom)
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
@@ -117,7 +120,8 @@ class Admin(rubbercog.Rubbercog):
 
 
     @commands.command(name="log")
-    @commands.has_permissions(administrator=True)
+    @commands.check(check.is_mod)
+    @commands.check(check.is_in_modroom)
     async def getLog(self, ctx: commands.Context, target: str = None):
         """See bot logs
 

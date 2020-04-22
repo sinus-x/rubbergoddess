@@ -3,7 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 
-from core import rubbercog, utils
+from core import check, rubbercog, utils
 from config.config import config
 from config.messages import Messages as messages
 from config.emotes import Emotes as emote
@@ -14,12 +14,9 @@ class FitWide(rubbercog.Rubbercog):
         super().__init__(bot)
         self.visible = False
 
-    def is_in_modroom(ctx):
-        return ctx.message.channel.id == config.channel_mods
-
     #TODO Adapt to FEKT roles
-    @commands.has_permissions(administrator=True)
-    @commands.check(is_in_modroom)
+    @commands.check(check.is_mod)
+    @commands.check(check.is_in_modroom)
     @commands.command()
     async def offer_subjects(self, ctx, group = None):
         add_subjects = discord.utils.get(self.getGuild().channels, name="add-subjects")
@@ -74,7 +71,7 @@ class FitWide(rubbercog.Rubbercog):
         return
 
     #TODO Rewrite
-    @commands.has_permissions(administrator=True)
+    @commands.check(check.is_elevated)
     @commands.command()
     async def purge(self, ctx, channel, limit = None, pinMode = "pinSkip"):
         #TODO Add user argument

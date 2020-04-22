@@ -3,8 +3,7 @@ from discord.ext import commands
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
-from core import utils
-from core import rubbercog
+from core import core, rubbercog, utils
 from repository import user_repo
 from repository.database import database
 from repository.database import session
@@ -21,12 +20,6 @@ class Stalker (rubbercog.Rubbercog):
     def __init__ (self, bot: commands.Bot):
         super().__init__(bot)
 
-    async def is_in_modroom (ctx):
-        return ctx.message.channel.id == config.channel_mods
-
-    async def is_admin (ctx):
-        return ctx.author.id == config.admin_id
-
     def dbobj2email (self, dbobj):
         if dbobj is not None:
             if dbobj.group == "FEKT":
@@ -40,7 +33,7 @@ class Stalker (rubbercog.Rubbercog):
         return
 
 
-    @commands.guild_only()
+    @commands.check(check.is_verified)
     @commands.command(name="whois", aliases=["stalk"])
     async def whois (self, ctx: commands.Context, member: discord.Member = None, 
                            pin = None, log: bool = True):
@@ -118,7 +111,7 @@ class Stalker (rubbercog.Rubbercog):
 
     @commands.guild_only()
     @commands.group(aliases=["db"])
-    @commands.has_any_role('MOD', 'SUBMOD')
+    @commands.check(check.is_mod)
     async def database (self, ctx: commands.Context):
         """Manage users"""
         if ctx.invoked_subcommand is None:

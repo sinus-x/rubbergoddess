@@ -3,13 +3,12 @@ import traceback
 import discord
 from discord.ext import commands
 
-from core import utils
-from core.rubbercog import Rubbercog
+from core import rubbercog, utils
 from config.config import config
 from config.emotes import Emotes as emote
 from config.messages import Messages as messages
 
-class Errors(Rubbercog):
+class Errors(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
         self.visible = False
