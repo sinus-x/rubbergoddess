@@ -4,7 +4,7 @@ import traceback
 import discord
 from discord.ext import commands
 
-from core import utils
+from core import check, utils
 from config.config import config
 from config.messages import Messages as messages
 
@@ -39,8 +39,12 @@ class Rubbercog (commands.Cog):
         return self.role_verify
     def getElevatedRoles(self):
         if self.roles_elevated is None:
-            self.roles_elevated = [self.getGuild().get_role(x) for x in self.roles_elevated]
+            self.roles_elevated = [self.getGuild().get_role(x) for x in config.roles_elevated]
         return self.roles_elevated
+    def getNativeRoles(self):
+        if self.roles_native is None:
+            self.roles_native = [self.getGuild().get_role(x) for x in config.roles_native]
+        return self.roles_native
 
 
     ##
@@ -153,8 +157,7 @@ class Rubbercog (commands.Cog):
             print(err_title)
             print(err_trace)
         if config.debug >= 2:
-            await self.sendLong(ctx, err_title + "\n" + err_trace)
-
+            await self.sendLong(ctx, "[debug=2] Error: " + err_title + "\n" + err_trace, code=True)
         # Clean the input
         content = ctx.message.content
         content = content if len(content) < 512 else content[:512]
@@ -180,7 +183,7 @@ class Rubbercog (commands.Cog):
             print(title)
             print(msg)
         if config.debug >= 2:
-            await self.sendLong(ctx, title + "\n" + msg)
+            await self.sendLong(ctx, "[debug=2] Notification: " + title + "\n" + msg, code=True)
 
         # Clean the input
         content = ctx.message.content
