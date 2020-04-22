@@ -146,10 +146,10 @@ class Rubbercog (commands.Cog):
         if isinstance(err, Exception):
             err_type = type(err).__name__
             err_trace = ''.join(traceback
-                .format_exception(type(Error), error, error.__traceback__))
+                .format_exception(type(err), err, err.__traceback__))
         else:
             err_type = "RubbergoddessException"
-            err_trace = None
+            err_trace = "No traceback\n**{}**".format(err)
         err_title = "{}: {}".format(ctx.author, ctx.message.content)
 
         # Do the debug
@@ -163,8 +163,11 @@ class Rubbercog (commands.Cog):
         content = content if len(content) < 512 else content[:512]
         delete = False if pin else delete
 
+        if len(err_trace) > 512:
+            err_trace = err_trace[-512:]
         # Construct the error embed
         embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
+        embed.add_field(name=err_type, value=err_trace, inline=False)
         embed.add_field(name="Command", value=content, inline=False)
         if delete:
             await ctx.send(embed=embed, delete_after=config.delay_embed)

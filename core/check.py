@@ -27,7 +27,7 @@ def is_native(ctx: commands.Context):
 
 def is_verified(ctx: commands.Context):
     for role in ctx.author.roles:
-        if role.id in config.role_verify:
+        if role.id == config.role_verify:
             return True
     return False
 
