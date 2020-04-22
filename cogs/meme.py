@@ -23,6 +23,7 @@ class Meme(rubbercog.Rubbercog):
         if message.author.bot:
             if self.bot.user.id is not None and \
                message.author.id != self.bot.user.id and \
+               message.author.id not in config.wormhole_bots and \
                message.content.startswith("<:") and \
                message.content.endswith(">"):
                 # if another bot has an emoji trigger, say it too
