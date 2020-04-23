@@ -1,3 +1,4 @@
+import re
 import datetime
 
 import discord
@@ -13,6 +14,45 @@ class FitWide(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
         self.visible = False
+
+    async def is_in_modroom(ctx):
+        return ctx.message.channel.id == config.channel_mods
+
+    @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
+    @commands.check(is_in_modroom)	
+    @commands.has_permissions(administrator=True)	
+    @commands.command()	
+    async def hoarders(self, ctx: commands.Context):
+        message = tuple(re.split(r'\s+', str(ctx.message.content).strip("\r\n\t")))
+        guild = self.bot.get_guild(config.guild_id)
+        members = guild.members
+
+        hoarders = []
+        for member in members:	
+            prog_count = 0	
+            for role in member.roles:	
+                if role < discord.utils.get(guild.roles, name='---FEKT') and role > discord.utils.get(guild.roles, name='---'):	
+                    prog_count += 1	
+            if prog_count > 1:	
+                hoarders.append((member, prog_count))
+
+        msg = ""	
+
+        if len(hoarders) == 0:	
+            msg = messages.hoarders_none	
+        else:	
+            for member, role_count in hoarders:	
+                line = "{id} - {name} (Počet ročníků: {num})\n".format(id=member.id, name=member.name, num=role_count)
+                if len(message) == 2 and message[1] == "warn":
+                    await member.send(utils.fill_message(
+                            "hoarders_warn", user=member.id))
+                if len(line) + len(msg) >= 2000:	
+                    await ctx.send(msg)	
+                    msg = line	
+                else:	
+                    msg += line	
+
+        await ctx.send(msg)
 
     #TODO Adapt to FEKT roles
     @commands.check(check.is_mod)
@@ -80,7 +120,6 @@ class FitWide(rubbercog.Rubbercog):
             channel = ch.name
         else:            
             ch = discord.utils.get(self.getGuild().text_channels, name=channel.replace("#", ""))
-        deleted = 0
 
         if limit:
             try:
