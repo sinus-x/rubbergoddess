@@ -22,7 +22,7 @@ class Errors(rubbercog.Rubbercog):
         error = getattr(error, 'original', error)
 
         if config.debug == 2:
-            print("\n".join(traceback.format_exception(type(error), error, error.__traceback__)))
+            print(''.join(traceback.format_exception(type(error), error, error.__traceback__)))
             printed = True
 
         if isinstance(error, commands.MissingPermissions):
@@ -35,6 +35,7 @@ class Errors(rubbercog.Rubbercog):
             return
 
         elif isinstance(error, commands.CheckFailure):
+            #TODO Extract requirements and add them to the embed
             await self.throwNotification(ctx, messages.err_no_requirements)
             await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)
             return

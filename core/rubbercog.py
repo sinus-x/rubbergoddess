@@ -144,6 +144,7 @@ class Rubbercog (commands.Cog):
         # Get error information
         err_desc = err if type(err) == "str" else str(err)
         if isinstance(err, Exception):
+            err = getattr(err, 'original', err)
             err_type = type(err).__name__
             err_trace = ''.join(traceback
                 .format_exception(type(err), err, err.__traceback__))
@@ -154,8 +155,8 @@ class Rubbercog (commands.Cog):
 
         # Do the debug
         if config.debug >= 1:
-            print(err_title)
-            print(err_trace)
+            print("ERROR OCCURED: " + err_title)
+            print("ERROR TRACE: " + err_trace)
         if config.debug >= 2:
             await self.sendLong(ctx, "[debug=2] Error: " + err_title + "\n" + err_trace, code=True)
         # Clean the input
@@ -183,8 +184,8 @@ class Rubbercog (commands.Cog):
         # Do the debug
         title = "{}: {}".format(ctx.author, ctx.message.content)
         if config.debug >= 1:
-            print(title)
-            print(msg)
+            print("NOTIFICATION: " + title)
+            print("NOTIFY TRACE: " + msg)
         if config.debug >= 2:
             await self.sendLong(ctx, "[debug=2] Notification: " + title + "\n" + msg, code=True)
 

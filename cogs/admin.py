@@ -20,25 +20,25 @@ class Admin(rubbercog.Rubbercog):
     async def config(self, ctx: commands.Context):
         """Edit bot configuration"""
         if ctx.invoked_subcommand is None:
-            self.throwHelp(ctx)
+            await self.throwHelp(ctx)
             return
 
     @config.command(name="set")
     async def config_set(self, ctx: commands.Command, key: str, value: str):
         """Set config key"""
-        self.throwNotification(messages.err_not_implemented)
+        await self.throwNotification(messages.err_not_implemented)
         return
 
     @config.command(name="discard")
     async def config_discard(self, ctx: commands.Command, key: str):
         """Discard config change"""
-        self.throwNotification(messages.err_not_implemented)
+        await self.throwNotification(messages.err_not_implemented)
         return
 
     @config.command(name="save")
     async def config_save(self, ctx: commands.Context):
         """Save edited config file"""
-        self.throwNotification(messages.err_not_implemented)
+        await self.throwNotification(messages.err_not_implemented)
         return
 
     @commands.command(name="restart", aliases=["reboot"])
