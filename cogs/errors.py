@@ -30,6 +30,11 @@ class Errors(rubbercog.Rubbercog):
             await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)
             return
 
+        if isinstance(error, commands.BotMissingPermissions):
+            await self.throwNotification(ctx, messages.err_no_permission_bot)
+            await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)
+            return
+
         if isinstance(error, commands.CommandOnCooldown):
             await self.throwNotification(ctx, messages.err_cooldown)
             return

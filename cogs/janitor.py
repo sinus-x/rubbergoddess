@@ -16,6 +16,7 @@ class Janitor(rubbercog.Rubbercog):
         self.locked = []
 
     @commands.check(check.is_mod)
+    @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
     async def purge(self, ctx: commands.Context, channel: discord.TextChannel = None, *params):
         """Delete messages from channel
@@ -65,6 +66,7 @@ class Janitor(rubbercog.Rubbercog):
 
 
     @commands.check(check.is_in_voice)
+    @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
     @commands.group(name="voice")
     async def voice(self, ctx: commands.Context):
         """Manage your voice channel"""
