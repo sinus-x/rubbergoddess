@@ -96,6 +96,7 @@ class Janitor(rubbercog.Rubbercog):
         before = beforeState.channel
         after  = afterState.channel
         voices = self.getGuild().get_channel(config.channel_voices)
+        nomic  = self.getGuild().get_channel(config.channel_nomic)
 
         # Do not act if no one has joined or left
         if before == after or (before is None and after is None):
@@ -107,6 +108,8 @@ class Janitor(rubbercog.Rubbercog):
                 # create another empty channel
                 ch = await self.getGuild().create_voice_channel(".", category=voices)
                 await self.setVoiceName(ch)
+            # show them "no mic" channel
+            await nomic.set_permissions(user, read_messages=True)
 
         elif after is None: # user left
             if len(before.members) == 0 and len(self.getGuild().voice_channels) > 1:
@@ -114,6 +117,7 @@ class Janitor(rubbercog.Rubbercog):
             else:
                 await self.setVoiceName(before)
             await self.voiceCleanup()
+            await nomic.set_permissions(user, read_messages=None)
         else:
             await self.setVoiceName(before)
             await self.setVoiceName(after)
