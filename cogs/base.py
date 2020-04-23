@@ -39,12 +39,6 @@ class Base (rubbercog.Rubbercog):
         await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
 
-    @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.command()
-    async def week(self, ctx):
-        """See if the current week is odd or even"""
-        await ctx.send(rng.week())
-
     @commands.cooldown (rate=2, per=60.0, type=commands.BucketType.user)
     @commands.command(aliases=["goddess"])
     async def god(self, ctx):

@@ -1,5 +1,6 @@
 import json
 import requests
+from datetime import date
 
 import discord
 from discord.ext import commands
@@ -31,6 +32,23 @@ class Librarian(rubbercog.Rubbercog):
         for i in res:
             names.append(i["name"])
         await ctx.send(messages.name_day_sk.format(name=", ".join(names)))
+
+    @commands.command(aliases=["tyden", "týden", "tyzden", "týždeň"])
+    async def week(self, ctx: commands.Context):
+        """See if the current week is odd or even"""
+        starting_week = config.starting_week
+        cal_week = date.today().isocalendar()[1]
+        stud_week = cal_week - starting_week
+        even, odd = "sudý", "lichý"
+        cal_type  = even if  cal_week % 2 == 0 else odd
+        stud_type = even if stud_week % 2 == 0 else odd
+
+        embed = self._getEmbed(ctx)
+        embed.add_field(name="Studijní", value="{} ({})".format(stud_type, stud_week))
+        embed.add_field(name="Kalendářní", value="{} ({})".format(cal_type, cal_week))
+        await ctx.send(embed=embed)
+        await self.deleteCommand(ctx)
+
 
     @commands.command(aliases=['pocasi', 'pocasie'])
     async def weather(self, ctx, *args):

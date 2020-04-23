@@ -103,6 +103,9 @@
 		"uhoh": "uh oh"
 	},
 	"librarian cog": {
+		"__comment": "Week the current semester started",
+		"starting week": 0,
+
 		"nameday cz": "http://svatky.adresa.info/json",
 		"nameday sk": "http://svatky.adresa.info/json?lang=sk",
 		"weather token": "678a5932f6dd92ac668b20e9f89c0318"

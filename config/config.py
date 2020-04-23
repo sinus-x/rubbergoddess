@@ -99,6 +99,7 @@ class Config:
 
         ##
         ## LIBRARIAN COG
+        self.starting_week = self.get('librarian cog', 'starting week')
         self.nameday_cz    = self.get('librarian cog', 'nameday cz')
         self.nameday_sk    = self.get('librarian cog', 'nameday sk')
         self.weather_token = self.get('librarian cog', 'weather token')
