@@ -27,34 +27,26 @@ class Verification(BaseFeature):
 
     async def send_mail(self, author, receiver_email, code):
         user_name = author.name
-        bot_img = await Asset.read(self.bot.user.avatar_url_as(static_format='png', size=128))
-        user_img = await Asset.read(author.avatar_url_as(static_format='png', size=32))
+        bot_img = self.bot.user.avatar_url_as(static_format='png', size=128)
+        user_img = author.avatar_url_as(static_format='png', size=32)
         h = utils.git_hash()[:7]
         cleartext = """\
-Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
-- Rubbergoddess (hash {h})
-""".format(code=code, h=h)
+            Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
+            - Rubbergoddess (hash {h})
+            """.format(code=code, h=h)
         richtext = """\
-<body style="background-color:#54355F;margin:0;text-align:center;">
-<div style="background-color:#54355F;margin:0;padding:20px;text-align:center;">
-    <img src="cid:botImg" alt="Rubbergoddess" style="margin:0 auto;border-radius:100%;border:5px solid white;">
-    <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;font-size:24px;">
-        <img src="cid:userImg" alt="" style="height:20px;width:20px;top:4px;margin-right:6px;border-radius:100%;border:2px solid white;display:inline;position:relative;"><span>{user_name}</span>
-    </p>
-    <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;">Tvůj verifikační kód pro <span style="font-weight:bold;">VUT FEKT</span> Discord server:</p>
-    <p style="color:#45355F;font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">{code}</p>
-    <p style="color:white;font-family:Arial,Verdana,sans-serif;margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:#45355F;padding:5px 10px;font-family:monospace;background-color:white;border-radius:2px;">?submit {code}</span></p>
-    <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
-</div>
-</body>""".format(code=code, h=h, user_name=user_name)
-        
-        botImg = MIMEImage(bot_img, 'png')
-        botImg.add_header('Content-ID', '<botImg>')
-        botImg.add_header('Content-Disposition', 'inline', filename="rubbergoddess.png")
-
-        userImg = MIMEImage(user_img, 'png')
-        userImg.add_header('Content-ID', '<userImg>')
-        userImg.add_header('Content-Disposition', 'inline', filename="rubbergoddess.png")
+            <body style="background-color:#54355F;margin:0;text-align:center;">
+            <div style="background-color:#54355F;margin:0;padding:20px;text-align:center;">
+                <img src="{bot_img}" alt="Rubbergoddess" style="margin:0 auto;border-radius:100%;border:5px solid white;">
+                <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;font-size:24px;">
+                    <img src="{user_img}" alt="" style="height:20px;width:20px;top:4px;margin-right:6px;border-radius:100%;border:2px solid white;display:inline;position:relative;"><span>{user_name}</span>
+                </p>
+                <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;">Tvůj verifikační kód pro <span style="font-weight:bold;">VUT FEKT</span> Discord server:</p>
+                <p style="color:#45355F;font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">{code}</p>
+                <p style="color:white;font-family:Arial,Verdana,sans-serif;margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:#45355F;padding:5px 10px;font-family:monospace;background-color:white;border-radius:2px;">?submit {code}</span></p>
+                <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
+            </div>
+            </body>""".format(code=code, h=h, bot_img=bot_img, user_img=user_img, user_name=user_name)
 
         msg = MIMEMultipart('alternative')
         #FIXME Can this be abused?
@@ -64,8 +56,6 @@ Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
         msg['Bcc'] = config.mail_address
         msg.attach(MIMEText(cleartext, 'plain'))
         msg.attach(MIMEText(richtext, 'html'))
-        msg.attach(botImg)
-        msg.attach(userImg)
 
         if config.debug:
             print("Simulating verification mail: {} for {} ({})".\
