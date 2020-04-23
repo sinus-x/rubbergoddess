@@ -22,7 +22,7 @@ class Actor(rubbercog.Rubbercog):
             return
 
     @send.command(name="text")
-    async def send_text(self, ctx: commands.Context, channel: discord.TextChannel = None, *args):
+    async def send_text(self, ctx: commands.Context, channel: discord.TextChannel, *args):
         """Send a text message as a bot
 
         channel: Target text channel
@@ -37,7 +37,7 @@ class Actor(rubbercog.Rubbercog):
         await self.deleteCommand(ctx)
 
     @send.command(name="image")
-    async def send_image(self, ctx: commands.Context, channel: discord.TextChannel = None, url):
+    async def send_image(self, ctx: commands.Context, channel: discord.TextChannel, url):
         """Send an image as a bot
 
         channel: Target text channel
@@ -90,13 +90,13 @@ class Actor(rubbercog.Rubbercog):
             await self.deleteCommand(ctx)
             return
 
-    @actor_add.command(name="text")
+    @actor_remove.command(name="text")
     async def actor_remove_text(self, ctx: commands.Context):
         """Add text reaction"""
         await self.throwNotification(ctx, messages.err_not_implemented)
         await self.deleteCommand(ctx)
 
-    @actor_add.command(name="image")
+    @actor_remove.command(name="image")
     async def actor_remove_image(self, ctx: commands.Context):
         """Add text reaction"""
         await self.throwNotification(ctx, messages.err_not_implemented)
@@ -104,22 +104,22 @@ class Actor(rubbercog.Rubbercog):
 
 
     @commands.check(check.is_bot_owner)
-    @commands.group(name="bot")
-    async def self(self, ctx: commands.Context, type: str, *args):
+    @commands.group(name="change")
+    async def change(self, ctx: commands.Context, type: str, *args):
         """Change the bot"""
         if ctx.invoked_subcommand is None:
             await self.throwHelp(ctx)
             await self.deleteCommand(ctx)
             return
 
-    @bot.command(name="avatar")
-    async def self_avatar(self, ctx: commands.Context, path: str):
+    @change.command(name="avatar")
+    async def change_avatar(self, ctx: commands.Context, path: str):
         """Change bot's avatar"""
         await self.throwNotification(ctx, messages.err_not_implemented)
         await self.deleteCommand(ctx)
 
-    @bot.command(name="name")
-    async def self_name(self, ctx: commands.Context, *args):
+    @change.command(name="name")
+    async def change_name(self, ctx: commands.Context, *args):
         """Change bot's name
 
         name: New name
@@ -127,8 +127,8 @@ class Actor(rubbercog.Rubbercog):
         await self.throwNotification(ctx, messages.err_not_implemented)
         await self.deleteCommand(ctx)
 
-    @bot.command(name="activity")
-    async def self_activity(self, ctx: commands.Context, type: str, name: str):
+    @change.command(name="activity")
+    async def change_activity(self, ctx: commands.Context, type: str, name: str):
         """Change bot's activity
 
         type: streaming, playing, listening
