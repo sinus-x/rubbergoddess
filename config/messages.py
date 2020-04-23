@@ -20,7 +20,11 @@ class Messages:
 
     kachna_grillbot = emote.wtf + " Tady kachna není, běž na FIT: " + config.meme_kachna
     
-    rolehoarders_none = "Žádné jsem nenašla."
+    hoarders_none = "Žádné jsem nenašla."
+    hoarders_warn = "Ahoj {user}, všimla jsem si, že máš přidaný na FEKT serveru více než 1 ročník.\n"\
+                    "Aby byl celý server přehlednější, byli bychom rádi, kdyby sis nechal/a jen ten, který studuješ. "\
+                    "Nemusíš se bát, že přijdeš o ostatní předměty, můžeš si je přidat v <#692626097669406720>.\n"\
+                    "Díky a jestli máš nějaké dotazy, zeptej se někoho z MODs (Jsem robot)."
 
     karma = "{user} Karma uživatele `{target}` je **{karma}** " \
             "(**{order}.**)\nA rozdal:\n" \
