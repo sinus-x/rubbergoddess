@@ -57,10 +57,9 @@ class Janitor(rubbercog.Rubbercog):
                     self.throwHelp(ctx)
                     return
 
-        #TODO Decide what to do depending on pins|users state
-        #     On pinStop, we have to go message-by-message, otherwise the
-        #     .purge() can be used.
-
+        #TODO Try to do purge()
+        #     Then check how many messages were deleted. On pinSkip() and pinStop()
+        #     we have to go one-by-one.
         #TODO generate report
 
 
@@ -68,7 +67,10 @@ class Janitor(rubbercog.Rubbercog):
     @commands.check(check.is_in_voice)
     @commands.group(name="voice")
     async def voice(self, ctx: commands.Context):
-        pass
+        """Manage your voice channel"""
+        if ctx.invoked_subcommand is None:
+            await self.throwHelp(ctx)
+            return
 
     @voice.command(name="lock")
     async def voice_lock(self, ctx: commands.Context):
@@ -79,12 +81,6 @@ class Janitor(rubbercog.Rubbercog):
     @voice.command(name="unlock")
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
-        return
-
-    @voice.command(name="link")
-    async def voice_link(self, ctx: commands.Context):
-        """Send URL, so users can easily join videochat"""
         await self.throwNotification(ctx, messages.err_not_implemented)
         return
 
@@ -112,12 +108,12 @@ class Janitor(rubbercog.Rubbercog):
             await nomic.set_permissions(user, read_messages=True)
 
         elif after is None: # user left
-            if len(before.members) == 0 and len(self.getGuild().voice_channels) > 1:
+            if len(before.members) == 0 and len(voices.voice_channels) > 1:
                 await before.delete()
             else:
                 await self.setVoiceName(before)
             await self.voiceCleanup()
-            await nomic.set_permissions(user, read_messages=None)
+            await nomic.set_permissions(user, overwrite=None)
         else:
             await self.setVoiceName(before)
             await self.setVoiceName(after)

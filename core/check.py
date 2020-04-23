@@ -50,5 +50,5 @@ def is_in_jail_or_dm(ctx: commands.Context):
     or isinstance(ctx.message.channel, discord.DMChannel)
 
 def is_in_voice(ctx: commands.Context):
-    return ctx.channel.category_id == config.channel_voice \
+    return ctx.channel.id == config.channel_nomic \
     and ctx.author.voice.channel is not None
