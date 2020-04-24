@@ -391,16 +391,29 @@ class Stalker (rubbercog.Rubbercog):
     async def guild (self, ctx: commands.Context, pin=False):
         """Display general about guild"""
         pin = self.parseArg(pin)
-        #TODO users, owner, create date etc
-        states = ', '.join("{}: **{}**".format(
-            state, repository.countStatus(state)) for state in config.db_states)
-        groups = ', '.join("{}: **{}**".format(group, repository.\
-            countGroup(group)) for group in (config.roles_native + config.roles_guest))
         embed = self._getEmbed(ctx, pin=pin)
-        #TODO Count guild users
-        #TODO Count channel groups, text channels, voice channels
+        g = self.getGuild()
+
+        # guild
+        desc = "Created {}, {} boosters"
+        embed.add_field(name=f"Guild **{g.name}**", inline=False,
+            value=f"Created {g.created_at.strftime('%Y-%m-%d')},"
+            f" owned by **{g.owner.mention}**")
+        # verification
+        states = ', '.join("**{}** {}".format(
+            repository.countStatus(state), state) for state in config.db_states)
         embed.add_field(name="Verification states", value=states, inline=False)
-        embed.add_field(name="Role distribution", value=groups, inline=False)
+        # roles
+        groups = ', '.join("**{}** {}".format(group, repository.countGroup(group)) \
+            for group in (config.roles_native + config.roles_guest))
+        embed.add_field(name="Roles", value=f"Total count {len(g.roles)}\n{groups}", inline=False)
+        # channels
+        embed.add_field(name=f"{len(g.categories)} categories",
+            value=f"{len(g.text_channels)} text channels, {len(g.voice_channels)} voice channels")
+        # users
+        embed.add_field(name="Users",
+            value=f"Total count **{g.member_count}**, {g.premium_subscription_count} boosters")
+
         if pin:
             await ctx.send(embed=embed)
         else:
