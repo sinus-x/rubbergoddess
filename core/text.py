@@ -59,7 +59,7 @@ class Text:
         if isinstance(user, discord.Member):
             return user.mention
         if isinstance(user, int):
-            return f"<@{user}>"
+            return f"<@!{user}>"
         return str(user)
 
     def _mention_channel(self, channel):

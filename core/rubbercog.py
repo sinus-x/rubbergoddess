@@ -52,7 +52,6 @@ class Rubbercog (commands.Cog):
     ##
     def _getEmbedTitle(self, ctx: commands.Context):
         """Helper function assembling title for embeds"""
-        #TODO Make sure parents are in right order - `?update database login` occurs
         if ctx.command is None:
             return "(no command)"
 
@@ -95,11 +94,15 @@ class Rubbercog (commands.Cog):
     async def log (self, ctx, action: str, quote: bool = True, msg = None):
         """Log event"""
         channel = self.getGuild().get_channel(config.channel_guildlog)
-        if ctx.author.top_role.id in config.roles_elevated:
-            user = "{r} **{u}**".format(u=ctx.author.name, r=ctx.author.top_role.name.lower())
+        author = self.getGuild().get_member(ctx.author.id)
+        if author.top_role.id in config.roles_elevated:
+            user = "{r} **{u}**".format(u=author.name, r=author.top_role.name.lower())
         else:
             user = ctx.author.mention
         message = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
+        if ctx.guild.id != config.guild_id:
+            message += " (**{}**/{})".format(ctx.guild.name, ctx.guild.id)
+
         if msg != None or quote != None:
             message += ": "
         if msg != None:
