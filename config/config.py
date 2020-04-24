@@ -1,22 +1,30 @@
 import json
-d = json.load(open('config/config.default.json', 'r'))
-c = json.load(open('config/config.json', 'r'))
+import os
 
 class Config:
 
     def get (self, group: str, key: str):
-        if group in c and key in c.get(group):
-            v = c.get(group).get(key)
-        elif key in d.get(group):
-            v = d.get(group).get(key)
+        if group in self.c and key in self.c.get(group):
+            v = self.c.get(group).get(key)
+        elif key in self.d.get(group):
+            v = self.d.get(group).get(key)
         else:
             v = None
 
         if v is not None:
             return v
+
         raise AttributeError("Configuration file: key not found")
 
     def __init__ (self):
+        try:
+            self.d = json.load(open('config/config.default.json', 'r'))
+            self.c = json.load(open('config/config.json', 'r'))
+        except FileNotFoundError:
+            print("Error loading config files.")
+            os.exit(1)
+
+
         ##
         ## DATABASE
         self.db_states = self.get('database', 'states')

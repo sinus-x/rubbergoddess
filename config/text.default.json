@@ -1,0 +1,128 @@
+{
+	"error": {
+		"not implemented": "To ještě neumím... {emote.sad}",
+		"not supported":    "To nejde.",
+
+		"no user permission": "Na to nemáš oprávnění.",
+		"no bot permission":  "Na to nemám oprávnění",
+
+		"no command":      "Takový příkaz neznám {emote.sad}",
+		"no requirements": "Nesplnili jste podmínky příkazu.",
+		"no user":         "Nikoho takového jsem nenašla {emote.sad}",
+
+		"command":   "Chyba v příkazu",
+		"cooldown":  "Ten příkaz nemůžeš používat tak často.",
+		"extension": "Chyba v rozšíření {emote.ree}",
+		"argument":  "Chyba v argumentu {emote.sad}"
+	},
+	"db": {
+		"read":      "Nepodařilo se mi načíst databázi",
+		"write":     "Zápis do databáze se nepodařil",
+		"update":    "Aktualizace záznamu v databázi se mi nepovedla",
+		"delete":    "Smazání uživatele z databáze se nezdařilo",
+		"not found": "Nikoho takového jsem v databázi nenašla",
+		"duplicate": "Takové ID už v databázi existuje"
+	},
+
+	"server": {
+		"guild only":       "Tohle funguje jenom na VUT FEKT serveru",
+		"channel only":     "Tohle funguje jenom v {channel}",
+		"botroom redirect": "{user} {emote.sad} 👉 {channel}"
+	},
+
+	"meme": {
+		"kachna":  "{emote.wtf} Tady kachna není, běž na FIT: {text}",
+		"git url": "https://github.com/sinus-x/rubbergoddess/",
+		"uh oh":   "uh oh"
+	},
+	"karma": {
+		"karma get missing": "{admin}, srovnala jsem karma hodnoty emotes",
+
+		"vote help":    "Žádný argument neočekávám. Prostě jen `{prefix}karma vote`",
+		"revote help":  "Čekám formát: `{prefix}krama revote [emote]`",
+		"vote message": "Hlasování o hodnotě {emote}",
+		"vote process": "Hlasování skončí za **{delay}** minut, minimální počet hlasů je **{count}**.",
+		"vote result":  "Výsledná hodnota pro {emote} je {value}",
+		"vote failed":  "Hlasování o hodnotě {emote} neprošlo.",
+		"all rated":    "Všechny guild emotes už mají hodnotu",
+
+		"emote not found": "Takový emote jsem na serveru nenašla.",
+		"emote not voted": "Emote není ohodnocen",
+
+		"user karma":      "Karma uživatele {user} je **{karma}** ({order} nejvyšší).\nRozdal **{pos}** pozitivní ({pos_order}.) a **{neg}** ({neg_order}.) karmy.",
+
+		"get help":           "`{prefix}karma get`: Vypíše všechny emotes s hodnotou\n`{prefix}karma get [emote]`: Vypíše hodnotu daného emotu.",
+		"give help":          "Správný formát je `{prefix}karma give [number] [user(s)]`",
+		"give success given": "Karmu jsem úspěšně přidala.",
+		"give success taken": "Karmu jsem úspěšně odebrala.",
+
+		"message help":       "`{prefix}karma message [url|id]",
+		"leaderboard offset": "Špatný offset, {user}, zadej kladné číslo."
+	},
+	"roles": {
+		"role add denied":       "{user}, na přidání role {role} nemáš právo.",
+		"role remove denied":    "{user}, na odebrání role {role} nemáš právo.",
+		"subject add denied":    "{user}, předměty si mohou přidávat jen studenti VUT.",
+		"subject remove denied": "{user}, předměty si mohou odebrat jen student VUT.",
+		"not subject":           "{user}, to funguje jen u předmětů",
+
+		"role wrong line": "{user}, řádek `{line}` je neplatný.",
+		"not on server":   "Budu předpokládat, že myslíš role na VUT FEKT serveru.",
+		"not role":        "{user}, {not_role} není role.",
+		"invalid emote":   "{user}, {not_emote} pro roli {role} není emote."
+	},
+	"random": {
+		"roll help":         "`{prefix}roll x [y]`; x, y jsou celočíselná rozmezí.",
+		"roll error":        "{user}, zadej dvě celá čísla.",
+		"dice group error":  "Moc kostek v jedné skupině, maximum je {max}.",
+		"dice side error":   "Moc stěn na kostkách, maximum je {max}.",
+		"dice groups error": "Moc skupin kostek, maximum je {max}.",
+		"wrong syntax":      "Chybná syntax hodu ve skupině {group}.",
+		"help":              "Formát naleznete na https://wiki.roll20.net/Dice_Reference#Drop.2FKeep"
+	},
+	"verify": {
+		"verify format":         "Pro získání kódu použij příkaz podle toho, kam patříš:```\n{prefix}verify FEKT xlogin00\n{prefix}verify FUT xlogin00\n{prefix}verify e-mail (ideálně školní)```",
+		"mail sent success":     "> {command}\nV pořádku, {user}, poslala jsem ti ověřovací kód. Pro verifikaci použij: `{prefix}submit kód`.",
+
+		"no email":              "**Tvůj** e-mail, {user} ({channel} {emote})",
+		"login only":            "{user} Napiš jestli jsi přímo z FEKTu, nebo z VUT. ({channel} {emote})",
+		"wrong arguments":       "> **{login}**\n{user}, podívej se do {channel} na příklad. {emote}",
+		"login exists":          "{user}, něco se pokazilo. Napiš DM někomu z {role}.",
+		"mail already sent":     "{user}, e-mail jsem ti už jenou poslala. Kdyžtak napiš DM někomu z {role}.",
+		"already verified role": "{user}, tebe už znám... {role}?",
+		"already verified db":   "{user} už tu z záznamech mám... {role}?",
+		"kicked":                "{role}, {user} jsme vykopli a snaží se verifikovat.",
+		"banned":                "{role}, {user} jsme zabanovali a snaží se verifikovat.",
+
+		"submit format":     "{user}, pro verifikaci použij: `{prefix}submit kód`",
+		"no code":           "{user}, ten kód, který jsem ti poslala na e-mail {emote}",
+		"wrong code":        "{user}, zkontroluj si kód, nebyl správně napsaný {emote}",
+		"no code requested": "{user}, nemám tě v databázi, musíš si zažádat o verifikační kód.",
+		"verify manual":     "{role}, {user} asi nemá skupinu.",
+
+		"sucess public":         "{emote.welcome} Nový uživatel {user} byl úspěšně přidán s rolí **{group}**.",
+		"success private fekt":  "Gratuluji k verifikaci! Obor si zapiš v {programmes}.\n\nV {roles} získáš další role pro zájmy,\nobecné informace jsou v {info}.\n\nNeboj se na cokoliv zeptat nebo někomu odpovědět. FEKT tě vítá.",
+		"success private guest": "Gratuluji k verifikaci!\n\nV {roles} získáš role pro zájmy,\nobecné informace jsou v {info}.\n\nFEKT tě vítá."
+	},
+	"review": {
+		"no permission": "{user}, nemáš právo hodnotit předměty.",
+		"added":         "Hodnocení předmětu bylo úspěšně přidáno.",
+		"update":        "Pro aktualizaci zavolej reviews znovu.",
+		"removed":       "Hodnocení bylo odebráno.",
+		"not found":     "Takové hodnocení tu nemám.",
+
+		"add help": "```{prefix}reviews add <zkratka> <známka 1-5> <Text recenze>```\nPříklad:\n```{prefix}reviews add bpc-kom 2 Text recenze```\nPro vytvoření anonymní recenze mi zprávu zašli do DM.",
+
+		"no subject":       "Takový předmět neznám",
+		"wrong tier value": "Číselné hodnocení je známka z rozsahu 1-5",
+		"text too long":    "Maximální počet znaků je 1024",
+	},
+	"librarian": {
+		"nameday cz": "Dnes má svátek {name} {emote.happy}",
+		"nameday sk": "Dnes má svátek {name} {emote.happy}"
+	},
+	"warden": {
+		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
+		"hoarding warning": "Ahoj. Všimla jsem si, že máš na FEKT serveru víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ - potřebné předměty si můžeš přidat v {channel}."
+	}
+}
