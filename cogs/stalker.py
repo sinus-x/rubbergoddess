@@ -397,7 +397,8 @@ class Stalker (rubbercog.Rubbercog):
         groups = ', '.join("{}: **{}**".format(group, repository.\
             countGroup(group)) for group in (config.roles_native + config.roles_guest))
         embed = self._getEmbed(ctx, pin=pin)
-        #TODO count guild users
+        #TODO Count guild users
+        #TODO Count channel groups, text channels, voice channels
         embed.add_field(name="Verification states", value=states, inline=False)
         embed.add_field(name="Role distribution", value=groups, inline=False)
         if pin:

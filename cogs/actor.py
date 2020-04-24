@@ -13,7 +13,7 @@ class Actor(rubbercog.Rubbercog):
         self.visible = False
 
     @commands.group(name="send")
-    @commands.check(check.is_mod)
+    @commands.check(check.is_bot_owner)
     async def send(self, ctx: commands.Context):
         """Send post to a channel"""
         if ctx.invoked_subcommand is None:
@@ -42,6 +42,18 @@ class Actor(rubbercog.Rubbercog):
 
         channel: Target text channel
         message: Path to an image or a url
+        """
+        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.deleteCommand(ctx)
+
+    @send.command(name="emote")
+    async def send_emote(self, ctx: commands.Context, channel: discord.TextChannel, *args):
+        """Send an emote as a bot
+
+        This allows you to use emotes from other guilds
+
+        channel: Target text channel
+        emotes: Space separated IDs or names
         """
         await self.throwNotification(ctx, messages.err_not_implemented)
         await self.deleteCommand(ctx)
