@@ -37,6 +37,7 @@ class Config:
         self.key       = self.get('bot', 'key')
         self.admin_id  = self.get('bot', 'admin id')
         self.guild_id  = self.get('bot', 'guild id')
+        self.slave_id  = self.get('bot', 'slave guild id')
         self.host      = self.get('bot', 'host')
         self.prefixes  = self.get('bot', 'prefixes')
         self.prefix    = self.prefixes[0]

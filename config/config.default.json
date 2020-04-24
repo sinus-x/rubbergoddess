@@ -22,6 +22,10 @@
 		"admin id": 0,
 		"guild id": 0,
 
+		"__comment": "If you have too much subjects, that they exceed the 500 channel limit,",
+		"__comment": "you can set up second server. The bot will deal with role sync.",
+		"slave guild id": 0,
+
 		"__comment": "machine name for development purposes",
 		"host": "",
 
