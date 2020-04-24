@@ -1,4 +1,5 @@
 import datetime
+import re
 import traceback
 
 import discord
@@ -212,7 +213,6 @@ class Rubbercog (commands.Cog):
 
     async def throwDescription (self, ctx: commands.Context, pin: bool = False):
         """Show an embed with full docstring content."""
-        #TODO Make first line and parameters bold
         embed = self._getEmbed(ctx)
         embed.add_field(name="About", value=ctx.command.short_doc)
         if pin:
@@ -225,7 +225,7 @@ class Rubbercog (commands.Cog):
     async def throwHelp (self, ctx: commands.Context, pin: bool = False):
         """Show help for command groups"""
         embed = self._getEmbed(ctx)
-        embed.add_field(name="Help", value=ctx.command.help)
+        embed.add_field(name="Help", value=self.__formatHelp(ctx.command.help))
 
         if isinstance(ctx.command, commands.Group) and ctx.command.commands:
             embed.add_field(name="-"*60, value="**SUBCOMMANDS**:", inline=False)
@@ -243,6 +243,7 @@ class Rubbercog (commands.Cog):
     ##
     async def sendLong(self, ctx: commands.Context, message: str, code: bool = False):
         """Send messages that may exceed the 2000-char limit
+
         message: The text to be sent
         code: Whether to format the output as a code
         """
@@ -252,3 +253,11 @@ class Rubbercog (commands.Cog):
                 await ctx.send("```\n{}```".format(m))
             else:
                 await ctx.send(m)
+
+    def __formatHelp(self, text: str):
+        text = text.split("\n")
+        text[0] = f"**{text[0]}**"
+        for i in range(2, len(text)):
+            match = re.findall(r"([a-zA-Z]+)(:)", text[i])[0][0]
+            text[i] = text[i].replace(match, f"**{match}**", 1)
+        return "\n".join(text)
