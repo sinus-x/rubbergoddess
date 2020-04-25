@@ -4,6 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
 from core import check, rubbercog, utils
+from core.text import text
 from repository import user_repo
 from repository.database import database
 from repository.database import session
@@ -139,7 +140,7 @@ class Stalker (rubbercog.Rubbercog):
         # try to write to database
         try:
             result = repository.filterId (discord_id=member.id)[0]
-            await self.throwError(ctx, messages.stalker_err_new_entry_exists)
+            await self.throwError(ctx, text.get("db", "duplicate"))
             return
         except IndexError:
             # no result is good, we won't have collision
@@ -149,7 +150,7 @@ class Stalker (rubbercog.Rubbercog):
             repository.add_user(discord_id=member.id, login=login,
                             group=group.name, status="verified", code="MANUAL")
         except Exception:
-            await self.throwError(ctx, messages.stalker_err_new_entry_write)
+            await self.throwError(ctx, text.get("db", "write"))
             return
 
         # assign roles, if neccesary
@@ -181,11 +182,11 @@ class Stalker (rubbercog.Rubbercog):
 
         try:
             if force:
-                result = repository.deleteId (discord_id=member.id)
+                result = repository.deleteId(discord_id=member.id)
             else:
-                result = repository.filterId (discord_id=member.id)
+                result = repository.filterId(discord_id=member.id)
         except Exception as e:
-            await self.throwError(ctx, messages.stalker_err_read)
+            await self.throwError(ctx, text.get("db", "read"))
             return
 
         t = self._getEmbedTitle(ctx)
@@ -194,10 +195,11 @@ class Stalker (rubbercog.Rubbercog):
             embed = discord.Embed(color=config.color_success, title=t, description=d)
             # delete
             if result is None or result < 1:
-                await self.throwError(ctx, messages.stalker_err_delete_not_found)
+                await self.throwError(ctx, text.get("db", "delete error"))
                 return
             embed.add_field(inline=False,
-                name="Success", value="Deleted {} entries".format(result))
+                name="Success", value=text.fill("db", "delete success", num=result))
+            embed.add_field(name="Warning", value="Roles and channel access haven't been removed")
             await self.log(ctx, "Database entry removed", quote=True)
             #TODO remove all roles
         else:
@@ -208,7 +210,7 @@ class Stalker (rubbercog.Rubbercog):
                     name=self.dbobj2email(r),
                     value=discord.utils.get(guild.members, id=int(r.discord_id)).mention)
             if len(result) < 1:
-                embed.add_field(name="No entry", value="User is not in the database", inline=False)
+                embed.add_field(name="No entry", value=text.get("db", "not found"), inline=False)
         embed.set_footer(text=ctx.author)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx)
@@ -236,7 +238,7 @@ class Stalker (rubbercog.Rubbercog):
 
         try:
             repository.update_login(discord_id=member.id, login=login)
-            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
+            await ctx.send(text.get("db", "update success"))
             await self.log(ctx, "Database entry updated (login)", quote=True)
             await self.deleteCommand(ctx)
         except Exception as e:
@@ -258,7 +260,7 @@ class Stalker (rubbercog.Rubbercog):
 
         try:
             repository.update_group(discord_id=member.id, group=group)
-            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
+            await ctx.send(text.get("db", "update success"))
             await self.log(ctx, "Database entry updated (group)", quote=True)
         except Exception as e:
             await self.throwError(ctx, e)
@@ -280,7 +282,7 @@ class Stalker (rubbercog.Rubbercog):
 
         try:
             repository.update_status(discord_id=member.id, status=status)
-            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
+            await ctx.send(text.get("db", "update success"))
             await self.log(ctx, "Database entry updated (status)", quote=True)
         except Exception as e:
             await self.throwError(ctx, e)
@@ -302,7 +304,7 @@ class Stalker (rubbercog.Rubbercog):
         comment = ' '.join(args) if args else ''
         try:
             repository.update_comment(discord_id=member.id, comment=comment)
-            await ctx.send(utils.fill_message("db_update_successful", user=ctx.author.id))
+            await ctx.send(text.get("db", "update success"))
             await self.log(ctx, "Database entry updated (comment)", quote=True)
         except Exception as e:
             await self.throwError(ctx, e)

@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from core import rubbercog, utils
+from core.text import text
 from config.config import config
 from config.messages import Messages as messages
 from config.emotes import Emotes as emote
@@ -70,7 +71,7 @@ class Meme(rubbercog.Rubbercog):
     @hug.error
     async def hugError (self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            await ctx.send(utils.fill_message("meme_hug_not_found", user=ctx.author.id))
+            await ctx.send(text.get("error", "no user"))
 
 
 def setup(bot):

@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 
 from core import rubbercog, utils
+from core.text import text
 from config.config import config
 from config.messages import Messages as messages
 
@@ -22,7 +23,7 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(messages.name_day_cz.format(name=", ".join(names)))
+        await ctx.send(text.fill("librarian", "nameday cz", name=', '.join(names)))
 
     @commands.command()
     async def meniny(self, ctx):
@@ -31,7 +32,7 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(messages.name_day_sk.format(name=", ".join(names)))
+        await ctx.send(text.fill("librarian", "nameday sk", name=', '.join(names)))
 
     @commands.command(aliases=["tyden", "týden", "tyzden", "týždeň"])
     async def week(self, ctx: commands.Context):
@@ -85,7 +86,7 @@ class Librarian(rubbercog.Rubbercog):
             await ctx.send("Rip token")
         else:
             await ctx.send("Město nenalezeno! " + emote.panic + " (" + res["message"] + ")")
-
+        self.deleteCommand(ctx)
 
 
 def setup(bot):

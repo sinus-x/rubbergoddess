@@ -16,12 +16,16 @@
 		"argument":  "Chyba v argumentu {emote.sad}"
 	},
 	"db": {
-		"read":      "Nepodařilo se mi načíst databázi",
-		"write":     "Zápis do databáze se nepodařil",
-		"update":    "Aktualizace záznamu v databázi se mi nepovedla",
-		"delete":    "Smazání uživatele z databáze se nezdařilo",
-		"not found": "Nikoho takového jsem v databázi nenašla",
-		"duplicate": "Takové ID už v databázi existuje"
+		"read success":   "Záznam nalezen",
+		"read error":     "Nepodařilo se mi načíst databázi",
+		"write success":  "Zápis do databáze proběhl v pořádku",
+		"write error":    "Zápis do databáze se nepodařil",
+		"update success": "Aktualizace záznamu proběhla v pořádku",
+		"update error":   "Aktualizace záznamu v databázi se mi nepovedla",
+		"delete success": "Uživatele ({num}) jsem z databáze smazala",
+		"delete error":   "Smazání uživatele z databáze se nezdařilo",
+		"not found":      "Nikoho takového jsem v databázi nenašla",
+		"duplicate":      "Takové ID už v databázi existuje"
 	},
 
 	"server": {
@@ -31,7 +35,7 @@
 	},
 
 	"meme": {
-		"kachna":  "{emote.wtf} Tady kachna není, běž na FIT: {text}",
+		"kachna":  "{emote.wtf} Tady kachna není, běž na FIT: {url}",
 		"git url": "https://github.com/sinus-x/rubbergoddess/",
 		"uh oh":   "uh oh"
 	},

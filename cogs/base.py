@@ -5,12 +5,9 @@ from discord.ext import commands
 
 from core import rubbercog
 from config.config import config
-from config.messages import Messages as messages
 from features import reaction
-from logic import rng
 from repository import karma_repo
 
-rng = rng.Rng()
 karma_r = karma_repo.KarmaRepository()
 boottime = datetime.datetime.now().replace(microsecond=0)
 

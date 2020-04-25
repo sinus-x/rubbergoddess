@@ -4,8 +4,8 @@ import discord
 from discord.ext import commands
 
 from core import check, rubbercog, utils
+from core.text import text
 from config.config import config
-from config.messages import Messages as messages
 
 class Janitor(rubbercog.Rubbercog):
     """Manage channels"""
@@ -26,7 +26,7 @@ class Janitor(rubbercog.Rubbercog):
         users: Optional. Only selected user IDs.
         pins: Optional. How to treat pinned posts. 'skip' (default), 'stop', 'ignore'
         """
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         return
 
         if channel is None:
@@ -77,13 +77,13 @@ class Janitor(rubbercog.Rubbercog):
     @voice.command(name="lock")
     async def voice_lock(self, ctx: commands.Context):
         """Make current voice channel invisible"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         return
 
     @voice.command(name="unlock")
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         return
 
     @commands.Cog.listener()
