@@ -53,11 +53,5 @@ class Wormhole(rubbercog.Rubbercog):
         """Wormhole statistics"""
         await ctx.send(text.fill("wormhole", "statistics", sent=self.sent, received=self.received))
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error):
-        if isinstance(error.original, discord.Forbidden):
-            # the bot is read-only on distant servers
-            return
-
 def setup(bot):
     bot.add_cog(Wormhole(bot))

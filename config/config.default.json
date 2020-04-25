@@ -115,12 +115,9 @@
 		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
 	},
 	"wormhole cog": {
-		"__comment": "Channel IDs for message tracking",
-		"local channel": 0,
-		"distant channel": 0,
-
-		"__comment": "IDs for bots. React to those in shared wormhole channel",
-		"bots": [0]
+		"local": 0,
+		"distant": [0, 0, 0],
+		"anonymise": false
 	},
 	"warden cog": {
 		"rolehoarders": 10
