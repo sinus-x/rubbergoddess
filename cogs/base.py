@@ -19,7 +19,6 @@ class Base (rubbercog.Rubbercog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
         self.reaction = reaction.Reaction(bot, karma_r)
-        await self.roomCheck(ctx)
 
     @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
     @commands.command()

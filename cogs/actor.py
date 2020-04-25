@@ -46,19 +46,6 @@ class Actor(rubbercog.Rubbercog):
         await self.throwNotification(ctx, messages.err_not_implemented)
         await self.deleteCommand(ctx)
 
-    @send.command(name="emote")
-    async def send_emote(self, ctx: commands.Context, channel: discord.TextChannel, *args):
-        """Send an emote as a bot
-
-        This allows you to use emotes from other guilds
-
-        channel: Target text channel
-        emotes: Space separated IDs or names
-        """
-        await self.throwNotification(ctx, messages.err_not_implemented)
-        await self.deleteCommand(ctx)
-
-
     @commands.group(name="actor")
     @commands.check(check.is_bot_owner)
     async def actor(self, ctx: commands.Context):
