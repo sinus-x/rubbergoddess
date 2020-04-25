@@ -115,9 +115,9 @@ class Config:
 
         ##
         ## WORMHOLE cog
-        self.wormhole_local   = self.get('wormhole cog', 'local channel')
-        self.wormhole_distant = self.get('wormhole cog', 'distant channel')
-        self.wormhole_bots    = self.get('wormhole cog', 'bots')
+        self.wormhole_local     = self.get('wormhole cog', 'local')
+        self.wormhole_distant   = self.get('wormhole cog', 'distant')
+        self.wormhole_anonymise = self.get('wormhole cog', 'anonymise')
 
         ##
         ## WARDEN COG
