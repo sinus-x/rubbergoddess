@@ -16,14 +16,20 @@ class Errors(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_command_error (self, ctx: commands.Context, error):
         """Handle errors"""
-        if hasattr(ctx.command, 'on_error') or \
-           hasattr(ctx.command, 'on_command_error'):
+        if hasattr(ctx.command, 'on_error') \
+        or hasattr(ctx.command, 'on_command_error'):
             return
         error = getattr(error, 'original', error)
-
+        
         if config.debug == 2:
             print(''.join(traceback.format_exception(type(error), error, error.__traceback__)))
             printed = True
+
+        if isinstance(error, discord.Forbidden):
+            if ctx.channel.id in config.wormhole_distant:
+                #TODO Remove this when Errors is not a cog
+                # Ignore if the bot does not have permission in remote wormholes
+                return
 
         if isinstance(error, commands.MissingPermissions):
             await self.throwNotification(ctx, messages.err_no_permission)

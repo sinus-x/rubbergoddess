@@ -115,7 +115,7 @@
 
 		"no subject":       "Takový předmět neznám",
 		"wrong tier value": "Číselné hodnocení je známka z rozsahu 1-5",
-		"text too long":    "Maximální počet znaků je 1024",
+		"text too long":    "Maximální počet znaků je 1024"
 	},
 	"librarian": {
 		"nameday cz": "Dnes má svátek {name} {emote.happy}",
@@ -124,5 +124,8 @@
 	"warden": {
 		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
 		"hoarding warning": "Ahoj. Všimla jsem si, že máš na FEKT serveru víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ - potřebné předměty si můžeš přidat v {channel}."
+	},
+	"wormhole": {
+		"statistics": "Od posledního spuštění jsem poslala **{sent}** a přijala **{received}** zpráv."
 	}
 }

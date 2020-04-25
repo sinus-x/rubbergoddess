@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from core import rubbercog
+from core.text import text
 from config.config import config
 
 class Wormhole(rubbercog.Rubbercog):
@@ -13,6 +14,9 @@ class Wormhole(rubbercog.Rubbercog):
         self.visible = False
         self.wormhole = None
 
+        self.received = 0
+        self.sent = 0
+
     @commands.Cog.listener()
     async def on_message (self, message):
         # do not act if not in wormhole
@@ -20,6 +24,7 @@ class Wormhole(rubbercog.Rubbercog):
             return
         # do not act if author is bot
         if message.author.bot:
+            self.sent += 1
             return
 
         # check availability of local wormhole channel
@@ -34,15 +39,25 @@ class Wormhole(rubbercog.Rubbercog):
                 content = "> " + message.content
             else:
                 content = f"**{discord.utils.escape_mentions(message.author.name)}**: {message.content}"
-
         if message.attachments:
             for f in message.attachments:
                 fp = BytesIO()
                 await f.save(fp)
                 files.append(discord.File(fp, filename=f.filename, spoiler=f.is_spoiler()))
-        
+        # send the message
+        self.received += 1
         await self.wormhole.send(content=content, files=files)
 
+    @commands.command()
+    async def wormhole(self, ctx: commands.Context):
+        """Wormhole statistics"""
+        await ctx.send(text.fill("wormhole", "statistics", sent=self.sent, received=self.received))
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx: commands.Context, error):
+        if isinstance(error.original, discord.Forbidden):
+            # the bot is read-only on distant servers
+            return
 
 def setup(bot):
     bot.add_cog(Wormhole(bot))

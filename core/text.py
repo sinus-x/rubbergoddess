@@ -2,7 +2,7 @@ import json, re
 
 import discord
 
-from config.emote import emote
+from core.emote import emote
 from config.config import config
 
 class Text:
@@ -40,7 +40,7 @@ class Text:
 
         for key in kwargs:
             if "{"+key+"}" in string:
-                string = string.replace("{"+key+"}", kwargs[key])
+                string = string.replace("{"+key+"}", str(kwargs[key]))
         return string
 
 
