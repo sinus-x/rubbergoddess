@@ -116,10 +116,18 @@ class Rubbercog (commands.Cog):
         await channel.send(message)
         #TODO Save to log
 
+    async def roomCheck(self, ctx: commands.Context):
+        """Send an message to prevent bot spamming"""
+        botspam = self.getGuild().get_channel(config.channel_botspam)
+        if ctx.channel.id not in config.bot_allowed:
+            await ctx.send(text.fill("server", "botroom redirect",
+                user=ctx.author, channel=botspam))
+
     async def deleteCommand(self, ctx: commands.Context, now: bool = True):
         """Try to delete the context message.
 
-        now: Do not wait for message delay"""
+        now: Do not wait for message delay
+        """
         delay = 0.0 if now else config.delay_embed
         try:
             await ctx.message.delete(delay=delay)
@@ -141,7 +149,7 @@ class Rubbercog (commands.Cog):
     ##
     ## Embeds
     ##
-#TODO Create RubbergoddessException class
+    #TODO Create RubbergoddessException class
     async def throwError (self, ctx: commands.Context, err,
                                 delete: bool = False, pin: bool = False):
         """Show an embed and log the error"""

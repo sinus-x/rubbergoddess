@@ -1,11 +1,9 @@
 import datetime
-import traceback
 
 import discord
 from discord.ext import commands
 
-from core import utils, rubbercog
-from cogs import errors, room_check
+from core import rubbercog
 from config.config import config
 from config.messages import Messages as messages
 from features import reaction
@@ -21,8 +19,7 @@ class Base (rubbercog.Rubbercog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
         self.reaction = reaction.Reaction(bot, karma_r)
-        self.check = room_check.RoomCheck(bot)
-        self.errors = errors.Errors(bot)
+        await self.roomCheck(ctx)
 
     @commands.cooldown (rate=2, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -31,9 +28,7 @@ class Base (rubbercog.Rubbercog):
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - boottime
 
-        t = self.errors._getEmbedTitle(ctx)
-        embed = discord.Embed(color=config.color, title=t, description=ctx.command.short_doc)
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        embed = self._getEmbed(ctx)
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)

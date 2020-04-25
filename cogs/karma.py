@@ -6,18 +6,14 @@ from config.config import config
 from config.messages import Messages as messages
 from features import karma, reaction
 from repository import karma_repo
-from cogs import room_check
-
 
 karma_r = karma_repo.KarmaRepository()
-
 
 class Karma(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         self.karma = karma.Karma(bot, karma_r)
-        self.check = room_check.RoomCheck(bot)
         self.reaction = reaction.Reaction(bot, karma_r)
 
     @commands.Cog.listener()
@@ -57,7 +53,7 @@ class Karma(commands.Cog):
         karma = self.karma
         if len(args) == 0:
             await ctx.send(karma.karma_get(ctx.author))
-            await self.check.botroom_check(ctx.message)
+            await self.roomCheck(ctx)
 
         elif args[0] == "stalk":
             try:
@@ -69,7 +65,7 @@ class Karma(commands.Cog):
                 return
 
             await ctx.send(karma.karma_get(ctx.author, target_member))
-            await self.check.botroom_check(ctx.message)
+            await self.roomCheck(ctx)
 
         elif args[0] == "get":
             if not await self.check.guild_check(ctx.message):
@@ -77,7 +73,7 @@ class Karma(commands.Cog):
             else:
                 try:
                     await karma.emoji_get_value(ctx.message)
-                    await self.check.botroom_check(ctx.message)
+                    await self.roomCheck(ctx)
                 except discord.errors.Forbidden:
                     return
 
@@ -138,7 +134,7 @@ class Karma(commands.Cog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, 'get', 'DESC', start)
-        await self.check.botroom_check(ctx.message)
+        await self.roomCheck(ctx)
 
     @commands.cooldown(rate=2, per=30.0, type=commands.BucketType.user)
     @commands.command()
@@ -149,7 +145,7 @@ class Karma(commands.Cog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, 'get', 'ASC', start)
-        await self.check.botroom_check(ctx.message)
+        await self.roomCheck(ctx)
 
     @commands.cooldown(rate=2, per=30.0, type=commands.BucketType.user)
     @commands.command()
@@ -160,7 +156,7 @@ class Karma(commands.Cog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, 'give', 'DESC', start)
-        await self.check.botroom_check(ctx.message)
+        await self.roomCheck(ctx)
 
     @commands.cooldown(rate=2, per=30.0, type=commands.BucketType.user)
     @commands.command()
@@ -171,7 +167,7 @@ class Karma(commands.Cog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, 'give', 'ASC', start)
-        await self.check.botroom_check(ctx.message)
+        await self.roomCheck(ctx)
 
     @leaderboard.error
     @bajkarboard.error
