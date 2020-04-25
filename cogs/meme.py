@@ -53,6 +53,11 @@ class Meme(rubbercog.Rubbercog):
         """What?"""
         await ctx.send(choice(messages.question))
 
+    @commands.command()
+    async def kachna(self, ctx):
+        """Quack"""
+        await ctx.send(text.fill("meme", "kachna", url=config.meme_kachna))
+
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def hug (self, ctx, user: discord.Member = None):
