@@ -35,19 +35,8 @@ class Base (rubbercog.Rubbercog):
     async def god(self, ctx):
         """Display information about bot functions"""
         embed = self.reaction.make_embed(1)
-
-        channel = await self.check.get_room(ctx.message)
-        if channel is not None and channel.id != config.channel_botspam:
-            try:
-                msg = await ctx.author.send(embed=embed)
-                await ctx.message.delete()
-            except discord.errors.Forbidden:
-                await self.deleteCommand(ctx)
-                await self.throwNotification(ctx, "#bot-spam")
-                return
-        else:
-            msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
-            await self.deleteCommand(ctx)
+        msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await self.deleteCommand(ctx)
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
 
