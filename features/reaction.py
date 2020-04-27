@@ -229,16 +229,29 @@ class Reaction(BaseFeature):
                 await message.remove_reaction(emoji, member)
             except Exception:
                 pass  # in DM
-        elif member.id != message.author.id and\
-                guild.id == Config.guild_id and\
-                message.channel.id not in \
-                Config.karma_channels_ban and \
-                (isinstance(message.channel, discord.TextChannel) and \
-                message.channel.name not in Config.subjects) and \
-                Config.karma_roles_ban not in map(lambda x: x.id, member.roles):
-            if isinstance(emoji, str):
+        else:
+            count = True
+            # do not count author's emotes
+            if member.id == message.author.id:
+                count = False
+            # count master and slave guilds
+            elif guild.id != Config.guild_id or guild.id != Config.slave_id:
+                count = False
+            # do not count banned channels
+            elif message.channel.id in Config.karma_channels_ban:
+                count = False
+            # do not count banned roles
+            elif Config.karma_roles_ban in map(lambda x: x.id, member.roles):
+                count = False
+            # optionally, do not count subjects
+            elif not Config.karma_subjects:
+                if isinstance(message.channel, discord.TextChannel) and \
+                message.channel.name in Config.subjects:
+                    count = False
+
+            if count and isinstance(emoji, str):
                 self.karma_repo.karma_emoji(message.author, member, emoji)
-            else:
+            elif count:
                 self.karma_repo.karma_emoji(message.author, member, emoji.id)
 
         # if the message has X or more 'pin' emojis pin the message
@@ -302,18 +315,30 @@ class Reaction(BaseFeature):
                     await self.remove_role_on_reaction(
                         line[0], member, message.channel, guild)
                     break
-        elif member.id != message.author.id and \
-                guild.id == Config.guild_id and \
-                message.channel.id not in \
-                Config.karma_channels_ban and \
-                (isinstance(message.channel, discord.TextChannel) and \
-                message.channel.name not in Config.subjects) and \
-                Config.karma_roles_ban not in map(lambda x: x.id, member.roles):
-            if isinstance(emoji, str):
+        else:
+            count = True
+            # do not count author's emotes
+            if member.id == message.author.id:
+                count = False
+            # count master and slave guilds
+            elif guild.id != Config.guild_id or guild.id != Config.slave_id:
+                count = False
+            # do not count banned channels
+            elif message.channel.id in Config.karma_channels_ban:
+                count = False
+            # do not count banned roles
+            elif Config.karma_roles_ban in map(lambda x: x.id, member.roles):
+                count = False
+            # optionally, do not count subjects
+            elif not Config.karma_subjects:
+                if isinstance(message.channel, discord.TextChannel) and \
+                message.channel.name in Config.subjects:
+                    count = False
+
+            if count and isinstance(emoji, str):
                 self.karma_repo.karma_emoji_remove(message.author, member, emoji)
-            else:
-                self.karma_repo.karma_emoji_remove(
-                    message.author, member, emoji.id)
+            elif count:
+                self.karma_repo.karma_emoji_remove(message.author, member, emoji.id)
 
     # Adds a role for user based on reaction
     async def add_role_on_reaction(self, target, member, channel, guild):

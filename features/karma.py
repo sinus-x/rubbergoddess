@@ -259,8 +259,9 @@ class Karma(BaseFeature):
         colour = cfg.color
         output = {'-1': [], '1': [], '0': []}
         karma = 0
+        #TODO ignore if user has banned role
         if msg.channel in cfg.karma_channels_ban or \
-           msg.channel.name in cfg.subjects:
+           (msg.channel.name in cfg.subjects and not cfg.karma_subjects):
             return karma
         for react in reactions:
             emoji = react.emoji

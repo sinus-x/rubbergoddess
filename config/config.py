@@ -97,6 +97,7 @@ class Config:
         ## KARMA COG
         self.karma_roles_ban    = self.get('karma cog', 'banned roles')
         self.karma_channels_ban = self.get('karma cog', 'banned channels')
+        self.karma_subjects     = self.get('karma cog', 'count subjects')
         self.karma_vote_limit   = self.get('karma cog', 'vote limit')
         self.karma_vote_time    = self.get('karma cog', 'vote time')
 

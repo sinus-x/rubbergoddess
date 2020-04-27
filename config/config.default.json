@@ -97,6 +97,7 @@
 
 		"__comment": "IDs for channels that shouldn't have karma effects",
 		"banned channels": [],
+		"count subjects": true,
 
 		"vote limit": 5,
 		"vote time": 120
