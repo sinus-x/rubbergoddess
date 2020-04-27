@@ -1,4 +1,5 @@
 import subprocess
+import asyncio
 
 import discord
 from discord.ext import commands
@@ -49,6 +50,9 @@ class Admin(rubbercog.Rubbercog):
 
         target: Optional. [ all (default) | docker ]
         """
+        await self.throwNotification(messages.err_not_implemented)
+        return
+
         if target != "docker":
             target = None
 
@@ -92,8 +96,7 @@ class Admin(rubbercog.Rubbercog):
             await self.throwError(ctx, e)
             return
 
-        # If we run the following, an error occured, because the bot did not halt.
-        # Probably. There may be some delay I assume.
+        asyncio.sleep(4)
         if len(stdout) > 1900:
             stdout = stdout[:1900]
         await self.throwError(ctx, "Restarting error", "\n"+stdout)
@@ -119,10 +122,10 @@ class Admin(rubbercog.Rubbercog):
         await ctx.send("```\n{}\n```".format(stdout))
 
 
-    @commands.command(name="log")
+    @commands.command(name="systemctl")
     @commands.check(check.is_mod)
     @commands.check(check.is_in_modroom)
-    async def getLog(self, ctx: commands.Context, target: str = None):
+    async def systemctl(self, ctx: commands.Context, target: str = None):
         """See bot logs
 
         target: Optional. [ bot (default) | cron ]
