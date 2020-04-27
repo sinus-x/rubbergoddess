@@ -102,20 +102,23 @@ class Actor(rubbercog.Rubbercog):
         await self.deleteCommand(ctx)
 
 
+    @commands.cooldown(rate=1, per=600.0, type=commands.BucketType.default)
     @commands.check(check.is_bot_owner)
+    @commands.check(check.is_in_modroom)
     @commands.group(name="change")
-    async def change(self, ctx: commands.Context, type: str, *args):
+    async def change(self, ctx: commands.Context):
         """Change the bot"""
         if ctx.invoked_subcommand is None:
             await self.throwHelp(ctx)
-            await self.deleteCommand(ctx)
-            return
 
     @change.command(name="avatar")
     async def change_avatar(self, ctx: commands.Context, path: str):
         """Change bot's avatar"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
-        await self.deleteCommand(ctx)
+        path = f"images/{path}"
+        with open(path, 'rb') as img:
+            avatar = img.read()
+            await self.bot.user.edit(avatar=avatar)
+            await ctx.send(content="Dobře, takhle teď budu vypadat:", file=discord.File(path))
 
     @change.command(name="name")
     async def change_name(self, ctx: commands.Context, *args):
@@ -123,8 +126,9 @@ class Actor(rubbercog.Rubbercog):
 
         name: New name
         """
-        await self.throwNotification(ctx, messages.err_not_implemented)
-        await self.deleteCommand(ctx)
+        name = ' '.join(args)
+        await self.bot.user.edit(username=name)
+        await ctx.send(f"Dobře, od teď jsem **{name}**")
 
     @change.command(name="activity")
     async def change_activity(self, ctx: commands.Context, type: str, name: str):

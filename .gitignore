@@ -4,5 +4,10 @@ config/emotes.py
 __pycache__
 .idea
 .venv/
+# Bot data
+images/*
+!images/*/
+# Development
+cogs/test.py
 # Sourcetrail
 *.srctrl*
