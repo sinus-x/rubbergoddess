@@ -83,12 +83,13 @@
 		"native": ["FEKT"],
 
 		"__comment": "Which roles are considered as visiting",
-		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
+		"guests": ["VUT", "TEACHER", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 	},
 
 	"reaction cog": {
 		"trigger": "Role\n",
-		"channels": ["add-programme", "add-subjects", "add-roles"],
+		"__comment": "Some channels are dedicated to the react-to-role",
+		"channels": [0, 0, 0],
 		"pin limit": 5
 	},
 	"karma cog": {
