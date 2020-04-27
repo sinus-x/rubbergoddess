@@ -115,6 +115,10 @@ class Messages:
                            "V <#692084608778633217> získáš další role pro zájmy\n" \
                            "Obecné informace jsou v <#692084651849678938>.\n\n" \
                            "Neboj se na cokoliv zeptat nebo někomu odpovědět, zahoď formality. FEKT tě vítá."
+    verify_congrats_teacher = "Obecné informace jsou v <#692084651849678938>; <#692084608778633217> slouží ke přidání různých zájmových místností. \n\n" \
+                            "Celý server je ale neformální, proto zvažte, do kterých konverzací se zapojíte. " \
+                            "Jaký režim si nastavíte v předmětové místnosti se svými studenty je ale na vás.\n"\
+                            "Jestli máte nějaké dotazy, stačí napsat zprávu někomu z MODs"
     verify_congrats_guest = "V <#692084608778633217> získáš role pro zájmy\n" \
                             "Obecné informace jsou v <#692084651849678938>.\n\n" \
                             "Nemusíš se bát někomu odpovědět, formality zahoď. FEKT tě vítá."
