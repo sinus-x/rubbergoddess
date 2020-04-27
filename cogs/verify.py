@@ -84,7 +84,7 @@ class Verify(rubbercog.Rubbercog):
         if type(user) == Member:
             return utils.has_role(user, role_name)
         else:
-            guild = await self.bot.fetch_guild(config.guild_id)
+            guild = self.getGuild()
             member = await guild.fetch_member(user.id)
             return utils.has_role(member, role_name)
 
@@ -151,7 +151,7 @@ class Verify(rubbercog.Rubbercog):
 
         # only process users that are not verified
         if not await self.has_role(message.author, config.role_verify):
-            guild = self.bot.get_guild(config.guild_id)
+            guild = self.getGuild()
             code = await self.code_check(args[1].upper())
 
             # test for common errors
@@ -202,7 +202,7 @@ class Verify(rubbercog.Rubbercog):
                         errmsg = "Neúspěšný pokus o verifikaci kódem (chybí skupina)"
                     else:
                         # add verify role
-                        guild = self.bot.get_guild(config.guild_id)
+                        guild = self.getGuild()
                         try:
                             verify = guild.get_role(config.role_verify)
                             role = discord.utils.get(guild.roles, name=group)
@@ -232,6 +232,13 @@ class Verify(rubbercog.Rubbercog):
                             "verify_verify_success_private", user=message.author.id))
                         if role.name == "FEKT":
                             await member.send(messages.verify_congrats_fekt)
+                        elif role.name == "TEACHER":
+                            await member.send(messages.verify_congrats_teacher)
+                            
+                            embed = discord.Embed(title="New teacher verification", color=config.color)
+                            embed.add_field(name="User", value=member.mention)
+                            channel = self.bot.get_channel(config.channel_guildlog)
+                            await channel.send(embed=embed)
                         else:
                             await member.send(messages.verify_congrats_guest)
             if errmsg:
@@ -269,7 +276,13 @@ class Verify(rubbercog.Rubbercog):
                 login = await self.login_check(login)
         elif len(args) == 3:
             group = args[1].upper()
-            login = await self.login_check(args[2].lower())
+            if group == "TEACHER":
+                if args[2].lower().endswith("@vutbr.cz") or args[2].lower().endswith("@feec.vutbr.cz") or args[2].lower().endswith("@stud.feec.vutbr.cz"):
+                    login = args[2].lower()
+                else:
+                    login = ' '
+            else:
+                login = await self.login_check(args[2].lower())
         else:
             await message.channel.send(
                 messages.verify_send_format,
@@ -330,6 +343,8 @@ class Verify(rubbercog.Rubbercog):
                                                                           user=message.author.id, emote=emote.facepalm,
                                                                           channel=jail_info.mention, login="**[redacted]]**"))
                             return
+                        elif group and group.upper() == "TEACHER":
+                            email = login
                         elif login.endswith("muni.cz"):
                             email = login
                             group = "MUNI"

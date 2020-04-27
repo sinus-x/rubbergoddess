@@ -16,7 +16,7 @@ class Rubbercog (commands.Cog):
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
-
+        self.slave = None
         self.guild = None
         self.role_mod = None
         self.role_verify = None
@@ -29,6 +29,10 @@ class Rubbercog (commands.Cog):
     def getGuild(self):
         if self.guild is None:
             self.guild = self.bot.get_guild(config.guild_id)
+        return self.guild
+    def getSlave(self):
+        if self.slave is None:
+            self.slave = self.bot.get_guild(config.slave_id)
         return self.guild
     def getModRole(self):
         if self.role_mod is None:
