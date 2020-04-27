@@ -21,6 +21,7 @@ class Errors(rubbercog.Rubbercog):
             return
         error = getattr(error, 'original', error)
         
+        printed = False
         if config.debug == 2:
             print(''.join(traceback.format_exception(type(error), error, error.__traceback__)))
             printed = True
