@@ -48,10 +48,7 @@ class Base (rubbercog.Rubbercog):
         This should replace current `?god`/`?goddess` commands in the future
         arguments: cog > command > subcommand
         """
-        pin = self.parseArg(pin)
         t = self._getEmbedTitle(ctx)
-        if pin is not None and pin:
-            t = "📌 " + t
         embed = discord.Embed(color=config.color,
             title=t, description=ctx.command.short_doc)
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
