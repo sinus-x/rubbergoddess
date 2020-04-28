@@ -311,23 +311,19 @@ class Karma(BaseFeature):
             if order == "DESC":
                 column = 'positive'
                 attribute = Database_karma.positive.desc()
-                emote = emotes.love
-                output += emote + "KARMA GIVINGBOARD " + emote + "\n"
+                output += emote.love + "KARMA GIVINGBOARD " + emote.love + "\n"
             else:
                 column = 'negative'
                 attribute = Database_karma.negative.desc()
-                emote = emotes.ree
-                output += emote + " KARMA ISHABOARD " + emote + "\n"
+                output += emote.ree + " KARMA ISHABOARD " + emote.ree + "\n"
         elif action == 'get':
             column = 'karma'
             if order == "DESC":
                 attribute = Database_karma.karma.desc()
-                emote = ":trophy:"
-                output += emote + " KARMA LEADERBOARD " + emote + "\n"
+                output += ":tryphy:" + " KARMA LEADERBOARD " + ":tryphy:" + "\n"
             else:
                 attribute = Database_karma.karma
-                emote = emotes.facepalm
-                output += emote + " KARMA BAJKARBOARD " + emote + "\n"
+                output += emote.facepalm + " KARMA BAJKARBOARD " + emote.facepalm + "\n"
         else:
             raise Exception('Action neni get/give')
         output += "> =======================\n"
