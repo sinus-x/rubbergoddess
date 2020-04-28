@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import config, utils
+from core import config, rubbercog, utils
 from config.messages import Messages as messages
 from features import review
 from repository import review_repo
@@ -9,10 +9,10 @@ from repository import review_repo
 review_repo = review_repo.ReviewRepository()
 
 
-class Review(commands.Cog):
-
+class Review(rubbercog.Rubbercog):
+    """Subject reviews"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.rev = review.Review(bot)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)

@@ -1,17 +1,17 @@
 import discord
 from discord.ext import commands
 
-from core import config, utils
+from core import config, rubbercog, utils
 from config.messages import Messages as messages
 from features import karma, reaction
 from repository import karma_repo
 
 karma_r = karma_repo.KarmaRepository()
 
-class Karma(commands.Cog):
-
+class Karma(rubbercog.Rubbercog):
+    """User karma commands"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.karma = karma.Karma(bot, karma_r)
         self.reaction = reaction.Reaction(bot, karma_r)
 

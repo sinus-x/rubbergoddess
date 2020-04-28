@@ -9,7 +9,7 @@ from core import config, rubbercog, text, utils
 from config.messages import Messages as messages
 
 class Librarian(rubbercog.Rubbercog):
-    """Set of knowledge- and information based commands"""
+    """Knowledge and information based commands"""
     def __init__(self, bot):
         super().__init__(bot)
         self.visible = True

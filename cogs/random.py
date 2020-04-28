@@ -10,7 +10,7 @@ rng = rng.Rng()
 
 
 class Random(rubbercog.Rubbercog):
-    
+    """Pick, flip, roll dice"""
     def __init__(self, bot):
         super().__init__(bot)
 
