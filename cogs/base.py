@@ -41,13 +41,12 @@ class Base (rubbercog.Rubbercog):
 
     
     @commands.command()
-    async def help (self, ctx, pin: str = None):
-        """Display information about bot functions (beta)
+    async def help (self, ctx, *args):
+        """Display information about bot functions
 
         This should replace current `?god`/`?goddess` commands in the future
-        Instead of reading help from file it is taking dostrings inside the code
+        arguments: cog > command > subcommand
         """
-        #TODO Add crolling
         pin = self.parseArg(pin)
         t = self._getEmbedTitle(ctx)
         if pin is not None and pin:
@@ -56,15 +55,19 @@ class Base (rubbercog.Rubbercog):
             title=t, description=ctx.command.short_doc)
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
 
-        cogs = self.bot.cogs
-        for cog in cogs:
-            cog = self.bot.get_cog(cog)
-            if not isinstance(cog, rubbercog.Rubbercog) or not cog.visible:
-                # Do not display hidden or non-Rubbercog objects
-                continue
-            embed.add_field(inline=False,
-                name=cog.qualified_name,
-                value=cog.description if cog.description else "_No description available_")
+        if args is None:
+            cogs = self.bot.cogs
+            for cog in cogs:
+                cog = self.bot.get_cog(cog)
+                if not isinstance(cog, rubbercog.Rubbercog) or not cog.visible:
+                    # Do not display hidden or non-Rubbercog objects
+                    continue
+                embed.add_field(inline=False,
+                    name=cog.qualified_name,
+                    value=cog.description if cog.description else "_No description available_")
+        elif:
+            #TODO Display help for cog
+            pass
 
         msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
