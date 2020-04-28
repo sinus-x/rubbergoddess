@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import config
+from core.config import config
 
  
 def is_bot_owner(ctx: commands.Context):

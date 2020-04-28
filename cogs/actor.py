@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 
-from core import config, emote, check, rubbercog
+from core import check, rubbercog
+from core.config import config
+from core.emote import emote
 from config.messages import Messages as messages
 
 class Actor(rubbercog.Rubbercog):

@@ -176,3 +176,4 @@ class Config:
         "xpc-mw2", "xpc-mw3", "xpc-mw4"
     ]
 
+config = Config()

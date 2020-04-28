@@ -2,7 +2,7 @@ import discord
 from datetime import datetime
 from discord.ext.commands import Bot
 
-from core import config
+from core.config import config
 from features.base_feature import BaseFeature
 from repository import review_repo
 

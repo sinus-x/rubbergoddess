@@ -5,7 +5,9 @@ import traceback
 import discord
 from discord.ext import commands
 
-from core import config, check, utils
+from core.config import config
+from core.text import text
+from core import check, utils
 from config.messages import Messages as messages
 
 class Rubbercog (commands.Cog):
@@ -103,8 +105,12 @@ class Rubbercog (commands.Cog):
             user = "{r} **{u}**".format(u=author.name, r=author.top_role.name.lower())
         else:
             user = ctx.author.mention
-        message = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
-        if ctx.guild.id != config.guild_id:
+        if isinstance(ctx.channel, discord.DMChannel):
+            message = "**{}** by {} in DM".format(action, user)
+        else:
+            message = "**{}** by {} in {}".format(action, user, ctx.channel.mention)
+        
+        if ctx.guild and ctx.guild.id != config.guild_id:
             message += " (**{}**/{})".format(ctx.guild.name, ctx.guild.id)
 
         if msg != None or quote != None:

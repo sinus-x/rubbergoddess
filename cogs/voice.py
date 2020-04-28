@@ -3,7 +3,9 @@ import random
 import discord
 from discord.ext import commands
 
-from core import check, config, rubbercog, text, utils
+from core.config import config
+from core.text import text
+from core import check, rubbercog, utils
 
 class Voice(rubbercog.Rubbercog):
     """Manage channels"""

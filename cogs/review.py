@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 
-from core import config, rubbercog, utils
+from core.config import config
+from core import rubbercog, utils
 from config.messages import Messages as messages
 from features import review
 from repository import review_repo

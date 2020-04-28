@@ -4,7 +4,9 @@ import datetime
 import discord
 from discord.ext import commands
 
-from core import config, check, emote, rubbercog, utils
+from core.config import config
+from core.emote import emote
+from core import check, rubbercog, utils
 from config.messages import Messages as messages
 from logic.convert import Convert as convert
 

@@ -2,7 +2,8 @@ import json, re
 
 import discord
 
-from core import config, emote
+from core.config import config
+from core.emote import emote
 
 class Text:
     """Manage string values"""
@@ -75,3 +76,5 @@ class Text:
         if isinstance(role, int):
             return f"<@&{discord_id}>"
         return str(role)
+
+text = Text()

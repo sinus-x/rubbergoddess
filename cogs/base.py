@@ -3,7 +3,8 @@ import datetime
 import discord
 from discord.ext import commands
 
-from core import config, rubbercog
+from core import rubbercog
+from core.config import config
 from features import reaction
 from repository import karma_repo
 
@@ -65,7 +66,7 @@ class Base (rubbercog.Rubbercog):
                 embed.add_field(inline=False,
                     name=cog.qualified_name,
                     value=cog.description if cog.description else "_No description available_")
-        elif:
+        else:
             #TODO Display help for cog
             pass
 

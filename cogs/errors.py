@@ -3,7 +3,9 @@ import traceback
 import discord
 from discord.ext import commands
 
-from core import config, emote, rubbercog, utils
+from core.config import config
+from core.emote import emote
+from core import rubbercog, utils
 from config.messages import Messages as messages
 
 class Errors(rubbercog.Rubbercog):

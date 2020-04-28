@@ -1,7 +1,8 @@
 from random import randint
 from re import match
 
-from core import config, utils
+from core.config import config
+from core import utils
 from config.messages import Messages as messages
 
 """

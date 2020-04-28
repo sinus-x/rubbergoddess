@@ -4,7 +4,8 @@ import re
 import discord
 from discord.ext.commands import Bot
 
-from core import config, utils
+from core.config import config
+from core import utils
 from config.messages import Messages
 from features.base_feature import BaseFeature
 from features.review import Review
@@ -21,8 +22,8 @@ class Reaction(BaseFeature):
         self.review = Review(bot)
 
     def make_embed(self, page):
-        embed = discord.Embed(title="Rubbergoddess", description="Rubbergod? Tss.", color=Config.color)
-        prefix = Config.prefix
+        embed = discord.Embed(title="Rubbergoddess", description="Rubbergod? Tss.", color=config.color)
+        prefix = config.prefix
         embed.add_field(name="Autor", value="Cauchy#5244")
         embed.add_field(name="Počet serverů s touto instancí bota", value=f"{len(self.bot.guilds)}")
         embed.add_field(name="\u200b", value="Příkazy:", inline=False)
@@ -39,7 +40,7 @@ class Reaction(BaseFeature):
         input_string = message.content
         input_string = input_string.replace("**", "")
         try:
-            if input_string.startswith(Config.role_string):
+            if input_string.startswith(config.role_string):
                 input_string = input_string[input_string.index('\n') + 1:]
             input_string = input_string.rstrip().split('\n')
         except ValueError:
@@ -52,7 +53,7 @@ class Reaction(BaseFeature):
                 out = [out[1], out[0]]
                 output.append(out)
             except Exception:
-                if message.channel.id not in Config.role_channels:
+                if message.channel.id not in config.role_channels:
                     await message.channel.send(utils.fill_message("role_invalid_line",
                                                user=message.author.id,
                                                line=discord.utils.escape_mentions(line)))
@@ -63,7 +64,7 @@ class Reaction(BaseFeature):
                 try:
                     line[0] = int(line[0])
                 except Exception:
-                    if message.channel.id not in Config.role_channels:
+                    if message.channel.id not in config.role_channels:
                         await message.channel.send(utils.fill_message("role_invalid_line",
                                                    user=message.author.id,
                                                    line=discord.utils.escape_mentions(line[0])))
@@ -73,7 +74,7 @@ class Reaction(BaseFeature):
     async def message_role_reactions(self, message, data):
         if message.channel.type is not discord.ChannelType.text:
             await message.channel.send(Messages.role_not_on_server)
-            guild = self.bot.get_guild(Config.guild_id)
+            guild = self.bot.get_guild(config.guild_id)
         else:
             guild = message.guild
         for line in data:
@@ -108,7 +109,7 @@ class Reaction(BaseFeature):
         if channel.type is discord.ChannelType.text:
             guild = channel.guild
         else:
-            guild = self.bot.get_guild(Config.guild_id)
+            guild = self.bot.get_guild(config.guild_id)
             if guild is None:
                 raise Exception("Nemuzu najit guildu podle config.guild_id")
         member = guild.get_member(payload.user_id)
@@ -127,8 +128,8 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if message.content.startswith(Config.role_string) or \
-           channel.id in Config.role_channels:
+        if message.content.startswith(config.role_string) or \
+           channel.id in config.role_channels:
             role_data = await self.get_join_role_data(message)
             for line in role_data:
                 if str(emoji) == line[1]:
@@ -234,18 +235,18 @@ class Reaction(BaseFeature):
             if member.id == message.author.id:
                 count = False
             # count master and slave guilds
-            elif guild.id != Config.guild_id or guild.id != Config.slave_id:
+            elif guild.id != config.guild_id or guild.id != config.slave_id:
                 count = False
             # do not count banned channels
-            elif message.channel.id in Config.karma_channels_ban:
+            elif message.channel.id in config.karma_channels_ban:
                 count = False
             # do not count banned roles
-            elif Config.karma_roles_ban in map(lambda x: x.id, member.roles):
+            elif config.karma_roles_ban in map(lambda x: x.id, member.roles):
                 count = False
             # optionally, do not count subjects
-            elif not Config.karma_subjects:
+            elif not config.karma_subjects:
                 if isinstance(message.channel, discord.TextChannel) and \
-                message.channel.name in Config.subjects:
+                message.channel.name in config.subjects:
                     count = False
 
             if count and isinstance(emoji, str):
@@ -257,10 +258,10 @@ class Reaction(BaseFeature):
         if emoji == '📌':
             for reaction in message.reactions:
                 if reaction.emoji == '📌' and \
-                   reaction.count >= Config.pin_count and \
+                   reaction.count >= config.pin_count and \
                    not message.pinned:
                     embed = discord.Embed(title="📌 Auto pin message log",
-                                          color=Config.color)
+                                          color=config.color)
                     users = await reaction.users().flatten()
                     user_names = ', '.join([user.name for user in users])
                     message_link = Messages.message_link_prefix +\
@@ -273,7 +274,7 @@ class Reaction(BaseFeature):
                     embed.set_footer(
                         text=datetime.datetime.now().replace(microsecond=0)
                     )
-                    channel = self.bot.get_channel(Config.channel_log)
+                    channel = self.bot.get_channel(config.channel_log)
                     await channel.send(embed=embed)
                     try:
                         await message.pin()
@@ -287,7 +288,7 @@ class Reaction(BaseFeature):
         if channel.type is discord.ChannelType.text:
             guild = channel.guild
         else:
-            guild = self.bot.get_guild(Config.guild_id)
+            guild = self.bot.get_guild(config.guild_id)
             if guild is None:
                 raise Exception("Nemuzu najit guildu podle config.guild_id")
         member = guild.get_member(payload.user_id)
@@ -306,8 +307,8 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if message.content.startswith(Config.role_string) or\
-           channel.id in Config.role_channels:
+        if message.content.startswith(config.role_string) or\
+           channel.id in config.role_channels:
             role_data = await self.get_join_role_data(message)
             for line in role_data:
                 if str(emoji) == line[1]:
@@ -320,18 +321,18 @@ class Reaction(BaseFeature):
             if member.id == message.author.id:
                 count = False
             # count master and slave guilds
-            elif guild.id != Config.guild_id or guild.id != Config.slave_id:
+            elif guild.id != config.guild_id or guild.id != config.slave_id:
                 count = False
             # do not count banned channels
-            elif message.channel.id in Config.karma_channels_ban:
+            elif message.channel.id in config.karma_channels_ban:
                 count = False
             # do not count banned roles
-            elif Config.karma_roles_ban in map(lambda x: x.id, member.roles):
+            elif config.karma_roles_ban in map(lambda x: x.id, member.roles):
                 count = False
             # optionally, do not count subjects
-            elif not Config.karma_subjects:
+            elif not config.karma_subjects:
                 if isinstance(message.channel, discord.TextChannel) and \
-                message.channel.name in Config.subjects:
+                message.channel.name in config.subjects:
                     count = False
 
             if count and isinstance(emoji, str):
@@ -353,7 +354,7 @@ class Reaction(BaseFeature):
                 await member.add_roles(role)
                 return True
             else:
-                bot_room = self.bot.get_channel(Config.channel_botspam)
+                bot_room = self.bot.get_channel(config.channel_botspam)
                 await bot_room.send(utils.fill_message(
                     "role_add_denied", user=member.id, role=role.name))
                 return False
@@ -368,7 +369,7 @@ class Reaction(BaseFeature):
                 return
 
             errmsg = ""
-            if channel.name in Config.subjects:
+            if channel.name in config.subjects:
                 if member.bot:
                     return
                 if fekt in member.roles or vut in member.roles:
@@ -379,7 +380,7 @@ class Reaction(BaseFeature):
             else:
                 errmsg = "subject_add_denied_notsubject"
 
-            bot_room = self.bot.get_channel(Config.channel_botspam)
+            bot_room = self.bot.get_channel(config.channel_botspam)
             await bot_room.send(utils.fill_message(
                 errmsg, user=member.id, role=channel.name))
 
@@ -394,7 +395,7 @@ class Reaction(BaseFeature):
                 await member.remove_roles(role)
                 return True
             else:
-                bot_room = self.bot.get_channel(Config.channel_botspam)
+                bot_room = self.bot.get_channel(config.channel_botspam)
                 await bot_room.send(utils.fill_message(
                     "role_remove_denied", user=member.id, role=role.name))
                 return False
@@ -408,7 +409,7 @@ class Reaction(BaseFeature):
                 channel = discord.utils.get(guild.channels, name=target[1:].lower())
             if channel is None:
                 return
-            if channel.name in Config.subjects:
+            if channel.name in config.subjects:
                 await channel.set_permissions(member, overwrite=None)
                 return
             # While sending a permission error is supported, there is no need 
@@ -419,7 +420,7 @@ class Reaction(BaseFeature):
             # access, so they are un-clicking it back.
             # - subject_remove_denied_guest
             # - subject_remove_denied_notsubject
-#            bot_room = self.bot.get_channel(Config.channel_botspam)
+#            bot_room = self.bot.get_channel(config.channel_botspam)
 #            await bot_room.send(utils.fill_message(
 #                errmsg, user=member.id, role=channel.name))
 

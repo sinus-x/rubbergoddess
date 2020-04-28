@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 
-from core import config, rubbercog, utils
+from core import rubbercog, utils
+from core.config import config
+from core.text import text
 from config.messages import Messages as messages
 from features import karma, reaction
 from repository import karma_repo
@@ -67,44 +69,35 @@ class Karma(rubbercog.Rubbercog):
             await self.roomCheck(ctx)
 
         elif args[0] == "get":
-            if not await self.check.guild_check(ctx.message):
-                await ctx.send(messages.server_warning)
-            else:
-                try:
-                    await karma.emoji_get_value(ctx.message)
-                    await self.roomCheck(ctx)
-                except discord.errors.Forbidden:
-                    return
+            try:
+                await karma.emoji_get_value(ctx.message)
+                await self.roomCheck(ctx)
+            except discord.errors.Forbidden:
+                return
 
         elif args[0] == "revote":
-            if not await self.check.guild_check(ctx.message):
-                await ctx.send(messages.server_warning)
+            if ctx.message.channel.id == config.channel_vote or \
+               ctx.author.id == config.admin_id:
+                try:
+                    await ctx.message.delete()
+                    await karma.emoji_revote_value(ctx.message)
+                except discord.errors.Forbidden:
+                    return
             else:
-                if ctx.message.channel.id == config.channel_vote or \
-                   ctx.author.id == config.admin_id:
-                    try:
-                        await ctx.message.delete()
-                        await karma.emoji_revote_value(ctx.message)
-                    except discord.errors.Forbidden:
-                        return
-                else:
-                    await ctx.send(utils.fill_message("vote_room_only",
-                                   room=discord.utils.get(ctx.guild.channels, id=config.channel_vote)))
+                await ctx.send(utils.fill_message("vote_room_only",
+                               room=discord.utils.get(ctx.guild.channels, id=config.channel_vote)))
 
         elif args[0] == "vote":
-            if not await self.check.guild_check(ctx.message):
-                await ctx.send(messages.server_warning)
+            if ctx.message.channel.id == config.channel_vote or \
+               ctx.author.id == config.admin_id:
+                try:
+                    await ctx.message.delete()
+                    await karma.emoji_vote_value(ctx.message)
+                except discord.errors.Forbidden:
+                    return
             else:
-                if ctx.message.channel.id == config.channel_vote or \
-                   ctx.author.id == config.admin_id:
-                    try:
-                        await ctx.message.delete()
-                        await karma.emoji_vote_value(ctx.message)
-                    except discord.errors.Forbidden:
-                        return
-                else:
-                    await ctx.send(utils.fill_message("vote_room_only", 
-                                   room=discord.utils.get(ctx.guild.channels, id=config.channel_vote)))
+                await ctx.send(utils.fill_message("vote_room_only", 
+                               room=discord.utils.get(ctx.guild.channels, id=config.channel_vote)))
 
         elif args[0] == "give":
             if ctx.author.id == config.admin_id:

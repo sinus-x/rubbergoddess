@@ -3,7 +3,8 @@ import datetime
 import discord
 from discord.ext.commands import Bot
 
-from core import config, utils
+from core.config import config
+from core import utils
 from features.base_feature import BaseFeature
 
 

@@ -5,7 +5,9 @@ from datetime import date
 import discord
 from discord.ext import commands
 
-from core import config, rubbercog, text, utils
+from core.config import config
+from core.text import text
+from core import rubbercog, utils
 from config.messages import Messages as messages
 
 class Librarian(rubbercog.Rubbercog):

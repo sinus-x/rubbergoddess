@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 
-from core import config, emote, check, rubbercog, utils
+from core.config import config
+from core.emote import emote
+from core import check, rubbercog, utils
 
 class Warden (rubbercog.Rubbercog):
     """A cog for database lookups"""
