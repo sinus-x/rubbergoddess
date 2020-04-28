@@ -3,11 +3,8 @@ from random import choice
 import discord
 from discord.ext import commands
 
-from core import rubbercog, utils
-from core.text import text
-from config.config import config
+from core import config, emote, rubbercog, text, utils
 from config.messages import Messages as messages
-from config.emotes import Emotes as emote
 
 uhoh_counter = 0
 

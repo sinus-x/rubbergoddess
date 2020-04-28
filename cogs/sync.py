@@ -1,10 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import rubbercog, check
-from core.text import text
-from config.config import config
-
+from core import config, check, text, rubbercog
 
 class Sync(rubbercog.Rubbercog):
     """Maste-Slave server synchronization"""

@@ -1,10 +1,8 @@
 import discord
 from discord.ext import commands
 
-from core import rubbercog, check
-from config import config
+from core import config, emote, check, rubbercog
 from config.messages import Messages as messages
-from config.emotes import Emotes as emote
 
 class Actor(rubbercog.Rubbercog):
     """Be a human"""

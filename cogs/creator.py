@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog
-from config.config import config
+from core import config, check, rubbercog
 from config.messages import Messages as messages
 
 class Creator(rubbercog.Rubbercog):

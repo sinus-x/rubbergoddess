@@ -3,8 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 
-from core import rubbercog
-from config.config import config
+from core import config, rubbercog
 from features import reaction
 from repository import karma_repo
 

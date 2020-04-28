@@ -5,8 +5,7 @@ import traceback
 import discord
 from discord.ext import commands
 
-from core import check, utils
-from config.config import config
+from core import config, check, utils
 from config.messages import Messages as messages
 
 class Rubbercog (commands.Cog):

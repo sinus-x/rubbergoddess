@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import utils
-from config.config import config
+from core import config, utils
 from config.messages import Messages as messages
 from features import review
 from repository import review_repo

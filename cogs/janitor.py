@@ -3,9 +3,7 @@ import random
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog, utils
-from core.text import text
-from config.config import config
+from core import check, config, rubbercog, text, utils
 
 class Janitor(rubbercog.Rubbercog):
     """Manage channels"""

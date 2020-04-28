@@ -4,10 +4,8 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from core import rubbercog, check
-from config.config import config
+from core import config, check, emote, rubbercog
 from config.messages import Messages as messages
-from config.emotes import Emotes as emote
 
 class Admin(rubbercog.Rubbercog):
     """Rubbergoddess administration"""

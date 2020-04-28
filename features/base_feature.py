@@ -1,7 +1,6 @@
 from discord.ext.commands import Bot
 
-from config import config
-
+from core import config
 
 class BaseFeature:
     def __init__(self, bot: Bot):

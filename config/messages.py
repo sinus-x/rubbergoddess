@@ -1,5 +1,4 @@
-from config.config import config
-from config.emotes import Emotes as emote
+from core import config, emote
 
 class Messages:
     prefix = config.prefix

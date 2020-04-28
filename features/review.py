@@ -2,9 +2,9 @@ import discord
 from datetime import datetime
 from discord.ext.commands import Bot
 
+from core import config
 from features.base_feature import BaseFeature
 from repository import review_repo
-from config.config import config
 
 review_r = review_repo.ReviewRepository()
 

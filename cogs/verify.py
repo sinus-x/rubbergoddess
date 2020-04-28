@@ -14,9 +14,7 @@ from discord.ext.commands import Bot
 
 from cogs import errors
 from repository import user_repo
-from config.config import config
-from core import utils, rubbercog
-from config.emotes import Emotes as emote
+from core import config, emote, rubbercog, utils
 from config.messages import Messages as messages
 
 

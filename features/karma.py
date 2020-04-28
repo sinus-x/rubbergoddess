@@ -5,10 +5,8 @@ from discord import Emoji
 from discord.ext.commands import Bot
 from emoji import demojize
 
-from core import utils
-from config.config import config as cfg
+from core import config, emote, utils
 from config.messages import Messages as msg
-from config.emotes import Emotes as emotes
 from features.base_feature import BaseFeature
 from repository.karma_repo import KarmaRepository
 from repository.database.karma import Karma as Database_karma

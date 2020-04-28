@@ -4,8 +4,7 @@ import re
 import discord
 from discord.ext.commands import Bot
 
-from core import utils
-from config.config import config as Config
+from core import config, utils
 from config.messages import Messages
 from features.base_feature import BaseFeature
 from features.review import Review

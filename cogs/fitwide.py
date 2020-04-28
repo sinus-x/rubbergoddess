@@ -4,10 +4,8 @@ import datetime
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog, utils
-from config.config import config
+from core import config, check, emote, rubbercog, utils
 from config.messages import Messages as messages
-from config.emotes import Emotes as emote
 from logic.convert import Convert as convert
 
 class FitWide(rubbercog.Rubbercog):

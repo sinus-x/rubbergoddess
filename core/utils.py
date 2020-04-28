@@ -2,8 +2,8 @@ import git
 import discord
 from discord.ext import commands
 
+from core import config
 from config.messages import Messages
-from config.config import config
 
 def generate_mention(user_id):
     return '<@' + str(user_id) + '>'

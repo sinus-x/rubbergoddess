@@ -3,9 +3,7 @@ from io import BytesIO
 import discord
 from discord.ext import commands
 
-from core import rubbercog
-from core.text import text
-from config.config import config
+from core import config, rubbercog, text
 
 class Wormhole(rubbercog.Rubbercog):
     """Allow sending messages between servers"""

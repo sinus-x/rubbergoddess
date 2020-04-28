@@ -3,15 +3,10 @@ from discord.ext import commands
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
-from core import check, rubbercog, utils
-from core.text import text
+from core import config, emote, check, rubbercog, text, utils
 from repository import user_repo
 from repository.database import database
 from repository.database import session
-
-from config.config import config
-from config.emotes import Emotes as emote
-from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 

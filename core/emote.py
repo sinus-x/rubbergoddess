@@ -37,5 +37,3 @@ class Emote:
         self.yes =       self.get('yes')
         self.no =        self.get('no')
         self.welcome =   self.get('welcome')
-
-emote = Emote()
