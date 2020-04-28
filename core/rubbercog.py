@@ -127,6 +127,8 @@ class Rubbercog (commands.Cog):
 
     async def roomCheck(self, ctx: commands.Context):
         """Send an message to prevent bot spamming"""
+        if isinstance(ctx.channel, discord.DMChannel):
+            return
         botspam = self.getGuild().get_channel(config.channel_botspam)
         if ctx.channel.id not in config.bot_allowed:
             await ctx.send(text.fill("server", "botroom redirect",
