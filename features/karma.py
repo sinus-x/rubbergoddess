@@ -320,7 +320,7 @@ class Karma(BaseFeature):
             column = 'karma'
             if order == "DESC":
                 attribute = Database_karma.karma.desc()
-                output += ":tryphy:" + " KARMA LEADERBOARD " + ":tryphy:" + "\n"
+                output += ":trophy:" + " KARMA LEADERBOARD " + ":trophy:" + "\n"
             else:
                 attribute = Database_karma.karma
                 output += emote.facepalm + " KARMA BAJKARBOARD " + emote.facepalm + "\n"
