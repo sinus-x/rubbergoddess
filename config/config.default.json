@@ -83,7 +83,7 @@
 		"native": ["FEKT"],
 
 		"__comment": "Which roles are considered as visiting",
-		"guests": ["VUT", "TEACHER", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
+		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 	},
 
 	"reaction cog": {
