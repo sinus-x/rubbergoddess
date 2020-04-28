@@ -37,10 +37,10 @@ class Karma(BaseFeature):
         self.repo = karma_repository
 
     async def emoji_process_vote(self, channel, emoji):
-        delay = cfg.karma_vote_time * 60
+        delay = config.karma_vote_time * 60
         message = utils.fill_message("karma_vote_message", emote=str(emoji))
         message += '\n'
-        message += utils.fill_message("karma_vote_info", delay=str(delay//60), minimum=str(cfg.karma_vote_limit))
+        message += utils.fill_message("karma_vote_info", delay=str(delay//60), minimum=str(config.karma_vote_limit))
         message = await channel.send(message)
         await message.add_reaction("☑️")
         await message.add_reaction("0⃣")
@@ -61,7 +61,7 @@ class Karma(BaseFeature):
             elif reaction.emoji == "0⃣":
                 neutral = reaction.count - 1
 
-        if plus + minus + neutral < cfg.karma_vote_limit:
+        if plus + minus + neutral < config.karma_vote_limit:
             return None
 
         if plus > minus + neutral:
@@ -94,7 +94,7 @@ class Karma(BaseFeature):
         if vote_value is None:
             self.repo.remove_emoji(emoji)
             await message.channel.send(utils.fill_message(
-                "karma_vote_notpassed", emote=str(emoji), minimum=str(cfg.karma_vote_limit)))
+                "karma_vote_notpassed", emote=str(emoji), minimum=str(config.karma_vote_limit)))
         else:
             self.repo.set_emoji_value(emoji, vote_value)
             await message.channel.send(utils.fill_message(
@@ -126,7 +126,7 @@ class Karma(BaseFeature):
                                        emote=str(emoji), result=str(vote_value)))
         else:
             await message.channel.send(utils.fill_message("karma_vote_notpassed",
-                                       emote=str(emoji), minimum=str(cfg.karma_vote_limit)))
+                                       emote=str(emoji), minimum=str(config.karma_vote_limit)))
 
     async def emoji_get_value(self, message):
         content = message.content.split()
@@ -214,7 +214,7 @@ class Karma(BaseFeature):
                 pass  # TODO: error handling?
 
         if error:
-            channel = await self.bot.fetch_channel(cfg.channel_botdev)
+            channel = await self.bot.fetch_channel(config.channel_botdev)
             await channel.send(msg.karma_get_missing)
 
     async def karma_give(self, message):
@@ -256,12 +256,12 @@ class Karma(BaseFeature):
     async def message_karma(self, channel_out, msg):
         author = channel_out.author
         reactions = msg.reactions
-        colour = cfg.color
+        colour = config.color
         output = {'-1': [], '1': [], '0': []}
         karma = 0
         #TODO ignore if user has banned role
-        if msg.channel in cfg.karma_channels_ban or \
-           (msg.channel.name in cfg.subjects and not cfg.karma_subjects):
+        if msg.channel in config.karma_channels_ban or \
+           (msg.channel.name in config.subjects and not config.karma_subjects):
             return karma
         for react in reactions:
             emoji = react.emoji
@@ -333,7 +333,7 @@ class Karma(BaseFeature):
         output += "> =======================\n"
 
         board = self.repo.get_leaderboard(attribute, start-1)
-        guild = self.bot.get_guild(cfg.guild_id)
+        guild = self.bot.get_guild(config.guild_id)
 
         for i, user in enumerate(board, start):
             username = guild.get_member(int(user.discord_id))
