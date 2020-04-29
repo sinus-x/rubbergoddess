@@ -124,6 +124,10 @@ class Config:
         ## WARDEN COG
         self.rolehoarders = self.get('warden cog', 'rolehoarders')
 
+        ##
+        ## COMPATIBILITY
+        self.noimitation = self.get('compatibility', 'ignored imitation channels')
+
     ##
     ## LONG LISTS
     ##
