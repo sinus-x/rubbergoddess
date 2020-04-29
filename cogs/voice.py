@@ -16,6 +16,8 @@ class Voice(rubbercog.Rubbercog):
         self.lock = '🔒'
         self.locked = []
 
+    #TODO Move strings to text.default.json
+
     def getVoiceChannel(self, ctx: commands.Context):
         return ctx.author.voice.channel
 
@@ -31,6 +33,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="lock", aliases=["close"])
     async def voice_lock(self, ctx: commands.Context):
         """Make current voice channel invisible"""
+        await self.deleteCommand(ctx)
         v = self.getVoiceChannel(ctx)
         if v.id in self.locked:
             await ctx.send("The channel is already locked.")
@@ -42,6 +45,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="unlock", aliases=["open"])
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
+        await self.deleteCommand(ctx)
         v = self.getVoiceChannel(ctx)
         if v.id not in self.locked:
             await ctx.send("The channel is not locked.")
@@ -53,6 +57,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="rename")
     async def voice_rename(self, ctx: commands.Context, *args):
         """Rename current voice channel"""
+        await self.deleteCommand(ctx)
         name = ' '.join(args)
         if len(name) < 0:
             await ctx.send("Enter at least one valid character.")
@@ -87,9 +92,16 @@ class Voice(rubbercog.Rubbercog):
         if before is None:
             await after.set_permissions(user, view_channel=True)
             await nomic.set_permissions(user, read_messages=True)
+
+            s = "**" + discord.utils.escape_markdown(user.display_name) + "**" + \
+                ", když budete všichni, kanál si můžete přejmenovat nebo zamknout. " + \
+                "Příkaz pro tuto místnost je `{}voice`".format(config.prefix)
+            await nomic.send(s, delete_after=config.delay_embed)
+
         elif after is None:
             await before.set_permissions(user, overwrite=None)
             await nomic.set_permissions(user, overwrite=None)
+
         else:
             await before.set_permissions(user, overwrite=None)
             await after.set_permissions(user, view_channel=True)

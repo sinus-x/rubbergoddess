@@ -29,6 +29,7 @@ class Text:
     def fill(self, group: str, key: str, **kwargs):
         string = self.get(group, key)
 
+        #TODO Add support to print escaped name only
         if 'user' in kwargs:
             kwargs['user'] = self._mention_user(kwargs['user'])
         if 'admin' in kwargs:
