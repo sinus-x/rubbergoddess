@@ -12,8 +12,10 @@ class Voice(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
         self.visible = True
-        self.channels = {}
         self.locked = []
+
+    def getVoiceChannel(self, ctx: commands.Context):
+        return ctx.author.voice.channel
 
     @commands.check(check.is_in_voice)
     @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
@@ -24,17 +26,31 @@ class Voice(rubbercog.Rubbercog):
             await self.throwHelp(ctx)
             return
 
-    @voice.command(name="lock")
+    @voice.command(name="lock", aliases=["close"])
     async def voice_lock(self, ctx: commands.Context):
         """Make current voice channel invisible"""
         await self.throwNotification(ctx, text.get("error", "not implemented"))
         return
 
-    @voice.command(name="unlock")
+    @voice.command(name="unlock", aliases=["open"])
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
         await self.throwNotification(ctx, text.get("error", "not implemented"))
         return
+
+    @voice.command(name="rename")
+    async def voice_rename(self, ctx: commands.Context, *args):
+        """Rename current voice channel"""
+        name = ' '.join(args)
+        if len(name) < 0:
+            await ctx.send("Enter at least one valid character.")
+            return
+        if len(name) > 24:
+            await ctx.send("Name too long.")
+            return
+
+        channel = self.getVoiceChannel(ctx)
+        await channel.edit(name=name)
 
     @commands.Cog.listener()
     async def on_voice_state_update (self, user: discord.Member, beforeState: discord.VoiceState,
@@ -56,6 +72,7 @@ class Voice(rubbercog.Rubbercog):
                 # create another empty channel
                 ch = await self.getGuild().create_voice_channel(".", category=voices)
                 await self.setVoiceName(ch)
+                ch.set_permissions(self.getVerifyRole(), view_channel=True)
             # show them "no mic" channel
             await nomic.set_permissions(user, read_messages=True)
 
@@ -66,9 +83,6 @@ class Voice(rubbercog.Rubbercog):
                 await self.setVoiceName(before)
             await self.voiceCleanup()
             await nomic.set_permissions(user, overwrite=None)
-        else:
-            await self.setVoiceName(before)
-            await self.setVoiceName(after)
 
 
     async def setVoiceName(self, channel: discord.VoiceChannel):
@@ -77,12 +91,12 @@ class Voice(rubbercog.Rubbercog):
             await channel.edit(name="Empty")
             return
 
-        size = ["Big", "Small", "Tiny", "Huge"]
-        color = ["red", "green", "blue", "black", "white", "pink", "orange"]
-        noun = ["cat", "dog", "elephant", "horse", "mouse"]
+        color = ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]
+        noun = ["cat", "dog", "elephant", "horse", "mouse", "fish",
+                "octopus", "cockroach", "butterfly", "owl", "fox", "tiger",
+                "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
 
-        name = "{} {} {}".format(
-            random.choice(size), random.choice(color), random.choice(noun))
+        name = "{} {}".format(random.choice(color), random.choice(noun))
         await channel.edit(name=name)
 
     async def voiceCleanup(self):
