@@ -1,3 +1,5 @@
+import re
+
 import discord
 from discord.ext import commands
 
@@ -10,6 +12,54 @@ class Janitor(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
         self.visible = False
+
+    async def is_in_modroom(ctx):
+        return ctx.message.channel.id == config.channel_mods
+
+    @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
+    @commands.check(is_in_modroom)	
+    @commands.has_permissions(administrator=True)	
+    @commands.command()	
+    async def hoarders(self, ctx: commands.Context):
+        message = tuple(re.split(r'\s+', str(ctx.message.content).strip("\r\n\t")))
+        guild = self.bot.get_guild(config.guild_id)
+        members = guild.members
+        channel = ctx.channel
+        if len(message) == 2 and message[1] == "warn":
+            warn = True
+        else:
+            warn = False
+
+        hoarders = []
+        for member in members:	
+            prog =[]
+            for role in member.roles:	
+                if role < discord.utils.get(guild.roles, name='---FEKT') and role > discord.utils.get(guild.roles, name='---'):	
+                    prog.append(role.name)
+            if len(prog) > 1:	
+                hoarders.append([member, prog])
+
+        if len(hoarders) == 0:	
+            await ctx.send(text.get("warden","no hoarders"))	
+        else:
+            all = len(hoarders)
+            currnum = 1
+            if warn:
+                mess = await ctx.send("Odesílání zprávy {curnum}/{all}.".format(curnum=currnum, all=all))
+            embed = discord.Embed(title="Programme hoarders", color=config.color)	
+            for member, programmes in hoarders:
+                embed.add_field(name="User", value=member.mention, inline = True)
+                embed.add_field(name="Status", value=member.status, inline = True)
+                embed.add_field(name="Programmes", value=', '.join(programmes), inline = True)
+                if warn:
+                    if currnum %5:
+                        await mess.edit(content="Odesílání zprávy {curnum}/{all}.".format(curnum=currnum, all=all))
+                    await member.send(utils.fill_message("hoarders_warn", user=member.id))
+                currnum += 1
+            if warn:
+                currnum -= 1
+                await mess.edit(content="Odesílání zprávy {curnum}/{all}.".format(curnum=currnum, all=all))
+            await channel.send(embed=embed)
 
     @commands.check(check.is_mod)
     @commands.bot_has_permissions(manage_messages=True)
