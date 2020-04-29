@@ -70,14 +70,12 @@ class Meme(rubbercog.Rubbercog):
             await ctx.send(emote.hug_left)
             return
 
-        name = user.nick if user.nick else user.name
-        await ctx.send(emote.hug_right + f" **{name}**")
+        await ctx.send(emote.hug_right + f" **{discord.utils.escape_markdown(user.display_name)}**")
 
     @hug.error
     async def hugError (self, ctx, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(text.get("error", "no user"))
-
 
 def setup(bot):
     bot.add_cog(Meme(bot))
