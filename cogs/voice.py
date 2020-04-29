@@ -69,35 +69,13 @@ class Voice(rubbercog.Rubbercog):
         voices = self.getGuild().get_channel(config.channel_voices)
         nomic  = self.getGuild().get_channel(config.channel_nomic)
 
-        # user joined
+        # alter access to the nomic text channel
         if before is None:
-            # show the 'no mic' channel
             await nomic.set_permissions(user, read_messages=True)
-            # user is first in channel
-            if len(after.members) == 1:
-                # set channel name
-                await self.setVoiceName(after)
-                # create another empty voice channel
-                ch = await self.getGuild().create_voice_channel('Empty', category=voices)
-                await ch.set_permissions(self.getVerifyRole(), view_channel=True)
-
-        # user left
         elif after is None:
-            # hide the 'no mic' channel
             await nomic.set_permissions(user, overwrite=None)
-            # remove the channel, if they were the last and it's not the last
-            if len(before.members) == 0 and len(voices.voice_channels) > 1:
-                await before.delete()
-            # clear no-voice if no one's left
-            await asyncio.sleep(1)
-            if len(voices.voice_channels) == 1:
-                await self.voiceCleanup()
 
-        else:
-            if len(before.members) == 0:
-                await self.setVoiceName(before)
-            if len(after.members) == 0:
-                await self.setVoiceName(after)
+        await self.voiceCleanup()
 
     async def setVoiceName(self, channel: discord.VoiceChannel):
         """Set voice channel name"""
@@ -118,15 +96,28 @@ class Voice(rubbercog.Rubbercog):
         voices = self.getGuild().get_channel(config.channel_voices)
         nomic = self.getGuild().get_channel(config.channel_nomic)
 
-        empty = True
-        for voice in voices.voice_channels:
-            if len(voice.members) > 0:
-                empty = False
-                break
+        empty = None
+        # Rename populated 'Empty' channels. Get last empty channel
+        for v in voices.voice_channels:
+            if len(v.members) == 0:
+                empty = v
+            elif len(v.members) > 0 and v.name == 'Empty':
+                await self.setVoiceName(v)
 
+        # Remove all previous 'Empty' channels
+        for v in voices.voice_channels:
+            if len(v.members) == 0 and v is not empty:
+                await v.delete()
+
+        # Move 'Empty' to end
         if empty:
-            await nomic.purge()
+            await empty.edit(name='Empty', position=len(voices.channels))
+        else:
+            await self.getGuild().create_voice_channel(name='Empty', category=voices)
 
+        # Clear nomic if no one is left
+        if len(voices.voice_channels) == 1:
+            await nomic.purge()
 
 def setup(bot):
     bot.add_cog(Voice(bot))
