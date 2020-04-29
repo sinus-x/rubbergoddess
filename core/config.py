@@ -1,5 +1,5 @@
 import json
-import os
+import sys
 
 class Config:
 
@@ -22,7 +22,7 @@ class Config:
             self.c = json.load(open('config/config.json', 'r'))
         except FileNotFoundError:
             print("Error loading config files.")
-            os.exit(1)
+            sys.exit(1)
 
 
         ##
@@ -113,12 +113,6 @@ class Config:
         self.nameday_cz    = self.get('librarian cog', 'nameday cz')
         self.nameday_sk    = self.get('librarian cog', 'nameday sk')
         self.weather_token = self.get('librarian cog', 'weather token')
-
-        ##
-        ## WORMHOLE cog
-        self.wormhole_local     = self.get('wormhole cog', 'local')
-        self.wormhole_distant   = self.get('wormhole cog', 'distant')
-        self.wormhole_anonymise = self.get('wormhole cog', 'anonymise')
 
         ##
         ## WARDEN COG

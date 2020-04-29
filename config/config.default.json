@@ -36,7 +36,8 @@
 		"prefixes": ["?", "!"],
 
 		"__comment": "cogs to load by default",
-		"extensions": ["errors"]
+		"extensions": ["errors", "base", "meme", "karma", "librarian", "random",
+					   "review", "stalker", "verify", "voice"]
 	},
 	"__comment": "Special channels",
 	"channels": {
@@ -116,15 +117,10 @@
 		"nameday sk": "http://svatky.adresa.info/json?lang=sk",
 		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
 	},
-	"wormhole cog": {
-		"local": 0,
-		"distant": [0, 0, 0],
-		"anonymise": false
-	},
 	"warden cog": {
 		"rolehoarders": 10
 	},
-	"compatiblity": {
+	"compatibility": {
 		"__comment": "Do not send the same emote as other bot here",
 		"ignored imitation channels": []
 	}

@@ -25,8 +25,6 @@ class Meme(rubbercog.Rubbercog):
             if self.bot.user.id is not None and \
                message.author.id != self.bot.user.id and \
                message.channel.id not in config.noimitation and \
-               # deprecated:
-               message.channel.id not in config.wormhole_distant and \
                message.content.startswith("<:") and \
                message.content.endswith(">"):
                 # if another bot has an emoji trigger, say it too

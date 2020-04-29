@@ -1,4 +1,4 @@
-from core import config
+from core.config import config
 from config.messages import Messages
 
 

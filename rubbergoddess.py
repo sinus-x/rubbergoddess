@@ -4,7 +4,9 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import config, emote, utils, rubbercog
+from core import utils, rubbercog
+from core.config import config
+from core.emote import emote
 from features import presence
 from repository.database import database
 from repository.database import session
