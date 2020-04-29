@@ -51,8 +51,8 @@ def is_in_jail_or_dm(ctx: commands.Context):
 
 def is_in_voice(ctx: commands.Context):
     return ctx.channel.id == config.channel_nomic \
+    and ctx.author.voice is not None \
     and ctx.author.voice.channel is not None
-
 
 def __getAuthor(ctx: commands.Context):
     if ctx.guild.id == config.guild_id:

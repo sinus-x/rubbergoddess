@@ -9,10 +9,11 @@ from core.text import text
 from core import check, rubbercog, utils
 
 class Voice(rubbercog.Rubbercog):
-    """Manage channels"""
+    """Manage voice channels"""
     def __init__(self, bot):
         super().__init__(bot)
         self.visible = True
+        self.lock = '🔒'
         self.locked = []
 
     def getVoiceChannel(self, ctx: commands.Context):
@@ -30,14 +31,24 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="lock", aliases=["close"])
     async def voice_lock(self, ctx: commands.Context):
         """Make current voice channel invisible"""
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
-        return
+        v = self.getVoiceChannel(ctx)
+        if v.id in self.locked:
+            await ctx.send("The channel is already locked.")
+            return
+        await v.set_permissions(self.getVerifyRole(), overwrite=None)
+        await v.edit(name=v.name + ' ' + self.lock)
+        self.locked.append(v.id)
 
     @voice.command(name="unlock", aliases=["open"])
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
-        return
+        v = self.getVoiceChannel(ctx)
+        if v.id not in self.locked:
+            await ctx.send("The channel is not locked.")
+            return
+        await v.set_permissions(self.getVerifyRole(), view_channel=True)
+        await v.edit(name=v.name.replace(' ' + self.lock, ''))
+        self.locked.remove(v.id)
 
     @voice.command(name="rename")
     async def voice_rename(self, ctx: commands.Context, *args):
@@ -46,12 +57,15 @@ class Voice(rubbercog.Rubbercog):
         if len(name) < 0:
             await ctx.send("Enter at least one valid character.")
             return
-        if len(name) > 24:
+        if len(name) > 25:
             await ctx.send("Name too long.")
             return
 
-        channel = self.getVoiceChannel(ctx)
-        await channel.edit(name=name)
+        v = self.getVoiceChannel(ctx)
+        name = name.replace(' ' + self.lock, '').replace(self.lock, '')
+        if v.id in self.locked:
+            name = name + ' ' + self.lock
+        await v.edit(name=name)
 
     @commands.Cog.listener()
     async def on_voice_state_update (self, user: discord.Member, beforeState: discord.VoiceState,
@@ -69,11 +83,16 @@ class Voice(rubbercog.Rubbercog):
         voices = self.getGuild().get_channel(config.channel_voices)
         nomic  = self.getGuild().get_channel(config.channel_nomic)
 
-        # alter access to the nomic text channel
+        # alter access to the channels
         if before is None:
+            await after.set_permissions(user, view_channel=True)
             await nomic.set_permissions(user, read_messages=True)
         elif after is None:
+            await before.set_permissions(user, overwrite=None)
             await nomic.set_permissions(user, overwrite=None)
+        else:
+            await before.set_permissions(user, overwrite=None)
+            await after.set_permissions(user, view_channel=True)
 
         await self.voiceCleanup()
 
