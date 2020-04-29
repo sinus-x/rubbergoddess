@@ -2,6 +2,7 @@ import re
 
 import discord
 from discord.ext import commands
+import asyncio
 
 from core.config import config
 from core.text import text
@@ -22,7 +23,7 @@ class Janitor(rubbercog.Rubbercog):
     @commands.command()	
     async def hoarders(self, ctx: commands.Context):
         message = tuple(re.split(r'\s+', str(ctx.message.content).strip("\r\n\t")))
-        guild = self.bot.get_guild(config.guild_id)
+        guild = self.getGuild()
         members = guild.members
         channel = ctx.channel
         if len(message) == 2 and message[1] == "warn":
@@ -43,22 +44,22 @@ class Janitor(rubbercog.Rubbercog):
             await ctx.send(text.get("warden","no hoarders"))	
         else:
             all = len(hoarders)
-            currnum = 1
             if warn:
-                mess = await ctx.send("Odesílání zprávy {curnum}/{all}.".format(curnum=currnum, all=all))
+                mess = await ctx.send("Odesílání zprávy 1/{all}.".format(all=all))
             embed = discord.Embed(title="Programme hoarders", color=config.color)	
-            for member, programmes in hoarders:
-                embed.add_field(name="User", value=member.mention, inline = True)
-                embed.add_field(name="Status", value=member.status, inline = True)
-                embed.add_field(name="Programmes", value=', '.join(programmes), inline = True)
+            for num, (hoarder, progs) in enumerate(hoarders, start=1):
+                embed.add_field(name="User", value=hoarder.mention, inline = True)
+                embed.add_field(name="Status", value=hoarder.status, inline = True)
+                embed.add_field(name="Programmes", value=', '.join(progs), inline = True)
                 if warn:
-                    if currnum %5:
-                        await mess.edit(content="Odesílání zprávy {curnum}/{all}.".format(curnum=currnum, all=all))
-                    await member.send(utils.fill_message("hoarders_warn", user=member.id))
-                currnum += 1
-            if warn:
-                currnum -= 1
-                await mess.edit(content="Odesílání zprávy {curnum}/{all}.".format(curnum=currnum, all=all))
+                    if num %5 == 0: #Don't want to stress the API too much
+                        await mess.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
+                    await hoarder.send(utils.fill_message("hoarders_warn", user=hoarder.id))
+                if num % 8 == 0: #Can't have more than 25 fields in an embed
+                    await channel.send(embed=embed)
+                    embed = discord.Embed(title="Programme hoarders", color=config.color)
+            if warn and num % 5 != 0:
+                await mess.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
             await channel.send(embed=embed)
 
     @commands.check(check.is_mod)
