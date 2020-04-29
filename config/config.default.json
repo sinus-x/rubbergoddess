@@ -123,5 +123,9 @@
 	},
 	"warden cog": {
 		"rolehoarders": 10
+	},
+	"compatiblity": {
+		"__comment": "Do not send the same emote as other bot here",
+		"ignored imitation channels": []
 	}
 }
