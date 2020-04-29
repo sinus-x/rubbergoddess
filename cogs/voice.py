@@ -1,4 +1,5 @@
 import random
+import asyncio
 
 import discord
 from discord.ext import commands
@@ -59,31 +60,44 @@ class Voice(rubbercog.Rubbercog):
         # Get voice objects
         before = beforeState.channel
         after  = afterState.channel
+
+        # Do not act if no one has joined or left, or the action is on another server
+        if before == after or (before is None and after is None) \
+        or before not in self.getGuild().channels and after not in self.getGuild().channels:
+            return
+
         voices = self.getGuild().get_channel(config.channel_voices)
         nomic  = self.getGuild().get_channel(config.channel_nomic)
 
-        # Do not act if no one has joined or left
-        if before == after or (before is None and after is None):
-            return
-
-        if before is None: # user joined
-            await self.setVoiceName(after)
-            if len(after.members) == 1:
-                # create another empty channel
-                ch = await self.getGuild().create_voice_channel(".", category=voices)
-                await self.setVoiceName(ch)
-                ch.set_permissions(self.getVerifyRole(), view_channel=True)
-            # show them "no mic" channel
+        # user joined
+        if before is None:
+            # show the 'no mic' channel
             await nomic.set_permissions(user, read_messages=True)
+            # user is first in channel
+            if len(after.members) == 1:
+                # set channel name
+                await self.setVoiceName(after)
+                # create another empty voice channel
+                ch = await self.getGuild().create_voice_channel('Empty', category=voices)
+                await ch.set_permissions(self.getVerifyRole(), view_channel=True)
 
-        elif after is None: # user left
+        # user left
+        elif after is None:
+            # hide the 'no mic' channel
+            await nomic.set_permissions(user, overwrite=None)
+            # remove the channel, if they were the last and it's not the last
             if len(before.members) == 0 and len(voices.voice_channels) > 1:
                 await before.delete()
-            else:
-                await self.setVoiceName(before)
-            await self.voiceCleanup()
-            await nomic.set_permissions(user, overwrite=None)
+            # clear no-voice if no one's left
+            await asyncio.sleep(1)
+            if len(voices.voice_channels) == 1:
+                await self.voiceCleanup()
 
+        else:
+            if len(before.members) == 0:
+                await self.setVoiceName(before)
+            if len(after.members) == 0:
+                await self.setVoiceName(after)
 
     async def setVoiceName(self, channel: discord.VoiceChannel):
         """Set voice channel name"""
