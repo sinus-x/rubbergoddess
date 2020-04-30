@@ -140,7 +140,7 @@ class Stalker (rubbercog.Rubbercog):
         t = 'Whois lookup'
         if pin:
             t = '📌 ' + t
-        embed = discord.Embed(color=config.error, title=t)
+        embed = discord.Embed(color=config.color, title=t)
         embed.add_field(name="Action unsuccessful",
             value="No user **{}** found.".format(login))
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
