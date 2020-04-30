@@ -48,7 +48,7 @@ class Voice(rubbercog.Rubbercog):
         await self.deleteCommand(ctx)
         v = self.getVoiceChannel(ctx)
         if v.id not in self.locked:
-            await ctx.send("The channel is not locked.")
+            await ctx.send("The channel is not locked.", delete_after=config.delay_embed)
             return
         await v.set_permissions(self.getVerifyRole(), view_channel=True)
         await v.edit(name=v.name.replace(' ' + self.lock, ''))
@@ -60,10 +60,10 @@ class Voice(rubbercog.Rubbercog):
         await self.deleteCommand(ctx)
         name = ' '.join(args)
         if len(name) < 0:
-            await ctx.send("Enter at least one valid character.")
+            await ctx.send("Enter at least one valid character.", delete_after=config.delay_embed)
             return
         if len(name) > 25:
-            await ctx.send("Name too long.")
+            await ctx.send("Name too long.", delete_after=config.delay_embed)
             return
 
         v = self.getVoiceChannel(ctx)
