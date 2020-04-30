@@ -14,13 +14,13 @@ class Janitor(rubbercog.Rubbercog):
         super().__init__(bot)
         self.visible = False
 
-    async def is_in_modroom(ctx):
-        return ctx.message.channel.id == config.channel_mods
-
+    #TODO Add docstring
+    #TODO Use parameter to get 'warn'
+    #TODO Add autoremove
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(is_in_modroom)	
-    @commands.has_permissions(administrator=True)	
-    @commands.command()	
+    @commands.check(check.is_in_modroom)
+    @commands.has_permissions(administrator=True)
+    @commands.command()
     async def hoarders(self, ctx: commands.Context):
         message = tuple(re.split(r'\s+', str(ctx.message.content).strip("\r\n\t")))
         guild = self.getGuild()
@@ -32,21 +32,22 @@ class Janitor(rubbercog.Rubbercog):
             warn = False
 
         hoarders = []
-        for member in members:	
+        for member in members:
             prog =[]
-            for role in member.roles:	
-                if role < discord.utils.get(guild.roles, name='---FEKT') and role > discord.utils.get(guild.roles, name='---'):	
+            for role in member.roles:
+                if role < discord.utils.get(guild.roles, name='---FEKT') \
+                and role > discord.utils.get(guild.roles, name='---'):
                     prog.append(role.name)
-            if len(prog) > 1:	
+            if len(prog) > 1:
                 hoarders.append([member, prog])
 
-        if len(hoarders) == 0:	
-            await ctx.send(text.get("warden","no hoarders"))	
+        if len(hoarders) == 0:
+            await ctx.send(text.get("warden","no hoarders"))
         else:
             all = len(hoarders)
             if warn:
                 mess = await ctx.send("Odesílání zprávy 1/{all}.".format(all=all))
-            embed = discord.Embed(title="Programme hoarders", color=config.color)	
+            embed = discord.Embed(title="Programme hoarders", color=config.color)
             for num, (hoarder, progs) in enumerate(hoarders, start=1):
                 embed.add_field(name="User", value=hoarder.mention, inline = True)
                 embed.add_field(name="Status", value=hoarder.status, inline = True)
@@ -67,6 +68,8 @@ class Janitor(rubbercog.Rubbercog):
     @commands.command()
     async def purge(self, ctx: commands.Context, channel: discord.TextChannel = None, *params):
         """Delete messages from channel
+
+        Note that you have to specify options with 'limit=XX users=AAA,BBB,CCC'
 
         channel: A text channel
         limit: Optional. How many messages to delete. If not present, delete all
@@ -104,6 +107,11 @@ class Janitor(rubbercog.Rubbercog):
                 except ValueError:
                     self.throwHelp(ctx)
                     return
+
+        if pins == 'ignore':
+            # we can use batch deletion
+            msgs = await channel.purge()
+
 
         #TODO Try to do purge()
         #     Then check how many messages were deleted. On pinSkip() and pinStop()
