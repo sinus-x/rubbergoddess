@@ -13,10 +13,8 @@ class Voice(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
         self.visible = True
-        self.lock = '🔒'
+        self.lock = text.get('voice', 'lock')
         self.locked = []
-
-    #TODO Move strings to text.default.json
 
     def getVoiceChannel(self, ctx: commands.Context):
         return ctx.author.voice.channel
@@ -36,7 +34,8 @@ class Voice(rubbercog.Rubbercog):
         await self.deleteCommand(ctx)
         v = self.getVoiceChannel(ctx)
         if v.id in self.locked:
-            await ctx.send("The channel is already locked.")
+            await ctx.send(delete_after=config.delay_embed,
+                content=text.fill('voice', 'lock error', user=ctx.author))
             return
         await v.set_permissions(self.getVerifyRole(), overwrite=None)
         await v.edit(name=v.name + ' ' + self.lock)
@@ -48,7 +47,8 @@ class Voice(rubbercog.Rubbercog):
         await self.deleteCommand(ctx)
         v = self.getVoiceChannel(ctx)
         if v.id not in self.locked:
-            await ctx.send("The channel is not locked.", delete_after=config.delay_embed)
+            await ctx.send(delete_after=config.delay_embed,
+                content=text.fill('voice', 'unlock error', user=ctx.author))
             return
         await v.set_permissions(self.getVerifyRole(), view_channel=True)
         await v.edit(name=v.name.replace(' ' + self.lock, ''))
@@ -59,11 +59,13 @@ class Voice(rubbercog.Rubbercog):
         """Rename current voice channel"""
         await self.deleteCommand(ctx)
         name = ' '.join(args)
-        if len(name) < 0:
-            await ctx.send("Enter at least one valid character.", delete_after=config.delay_embed)
+        if len(name) <= 0:
+            await ctx.send(delete_after=config.delay_embed,
+                content=text.fill('voice', 'rename empty', user=ctx.author))
             return
         if len(name) > 25:
-            await ctx.send("Name too long.", delete_after=config.delay_embed)
+            await ctx.send(delete_after=config.delay_embed,
+                content=text.fill('voice', 'rename long', user=ctx.author))
             return
 
         v = self.getVoiceChannel(ctx)
@@ -93,10 +95,8 @@ class Voice(rubbercog.Rubbercog):
             await after.set_permissions(user, view_channel=True)
             await nomic.set_permissions(user, read_messages=True)
 
-            s = "**" + discord.utils.escape_markdown(user.display_name) + "**" + \
-                ", když budete všichni, kanál si můžete přejmenovat nebo zamknout. " + \
-                "Příkaz pro tuto místnost je `{}voice`".format(config.prefix)
-            await nomic.send(s, delete_after=config.delay_embed)
+            await nomic.send(delete_after=config.delay_embed,
+                content=text.fill('voice', 'welcome', nickname=user))
 
         elif after is None:
             await before.set_permissions(user, overwrite=None)
@@ -114,16 +114,13 @@ class Voice(rubbercog.Rubbercog):
             await channel.edit(name="Empty")
             return
 
-        color = ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]
-        noun = ["cat", "dog", "elephant", "horse", "mouse", "fish",
-                "octopus", "cockroach", "butterfly", "owl", "fox", "tiger",
-                "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
-
-        name = "{} {}".format(random.choice(color), random.choice(noun))
+        adjs = config.get('voice cog', 'adjectives')
+        nouns = config.get('voice cog', 'nouns')
+        name = "{} {}".format(random.choice(adjs), random.choice(nouns))
         await channel.edit(name=name)
 
     async def voiceCleanup(self):
-        """Clear nomic"""
+        """Clear nomic, rename channels"""
         voices = self.getGuild().get_channel(config.channel_voices)
         nomic = self.getGuild().get_channel(config.channel_nomic)
 

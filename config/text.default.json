@@ -125,6 +125,15 @@
 		"nameday cz": "Dnes má svátek {name} {emote.happy}",
 		"nameday sk": "Dnes má svátek {name} {emote.happy}"
 	},
+	"voice": {
+		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
+
+		"lock": "🔒",
+		"lock error": "{user}, aktuální kanál už je uzamklý.",
+		"unlock error": "{user}, aktuální kanál není uzamklý.",
+		"rename empty": "{user}, zadej alespoň jeden platný znak.",
+		"rename long": "{user}, takové jméno je moc dlouhé."
+	},
 	"warden": {
 		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
 		"hoarding warning": "Ahoj. Všimla jsem si, že máš na FEKT serveru víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ - potřebné předměty si můžeš přidat v {channel}."
