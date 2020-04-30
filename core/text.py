@@ -29,7 +29,8 @@ class Text:
     def fill(self, group: str, key: str, **kwargs):
         string = self.get(group, key)
 
-        #TODO Add support to print escaped name only
+        if 'nickname' in kwargs:
+            kwargs['nickname'] = self._escape_user(kwargs['nickname'])
         if 'user' in kwargs:
             kwargs['user'] = self._mention_user(kwargs['user'])
         if 'admin' in kwargs:
@@ -55,6 +56,11 @@ class Text:
         string = string.replace("{prefix}", config.prefix)
 
         return string
+
+    def _escape_user(self, user):
+        if isinstance(user, discord.Member):
+            user = user.display_name
+        return discord.utils.escape_markdown(str(user))
 
     def _mention_user(self, user):
         if isinstance(user, discord.Member):
