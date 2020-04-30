@@ -184,14 +184,14 @@ class Rubbercog (commands.Cog):
             await self.sendLong(ctx, "[debug=2] Error: " + err_title + "\n" + err_trace, code=True)
         # Clean the input
         content = ctx.message.content
-        content = content if len(content) < 512 else content[:512]
+        content = content if len(content) < 600 else content[:600]
         delete = False if pin else delete
 
-        if len(err_trace) > 512:
-            err_trace = err_trace[-512:]
+        if len(err_trace) > 600:
+            err_trace = err_trace[-600:]
         # Construct the error embed
         embed = self._getEmbed(ctx, color=config.color_error, pin=pin)
-        embed.add_field(name=err_type, value=err_trace, inline=False)
+        embed.add_field(name=err_type, value=f"```{err_trace}```", inline=False)
         embed.add_field(name="Command", value=content, inline=False)
         if delete:
             await ctx.send(embed=embed, delete_after=config.delay_embed)

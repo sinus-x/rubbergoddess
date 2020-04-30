@@ -33,34 +33,39 @@ class Stalker (rubbercog.Rubbercog):
 
 
     @commands.check(check.is_verified)
-    @commands.command(name="whois", aliases=["stalk"])
-    async def whois (self, ctx: commands.Context, member: discord.Member = None, 
-                           pin = None, log: bool = True):
-        """Get information about user
+    @commands.group(name="whois")
+    async def whois(self, ctx: commands.Context):
+        """Get information about user"""
+        if ctx.invoked_subcommand is None:
+            await self.throwHelp(ctx)
 
-        member: A server member
+    @whois.command(name="member", aliases=["tag", "user", "id"])
+    async def whois_member(self, ctx: commands.Context, member: discord.Member = None, 
+                           pin = None, log: bool = True):
+        """Get information about guild member
+
+        member: A guild member
         pin: A "pin" string that will prevent the embed from disappearing
         """
         if member is None:
             await self.throwHelp(ctx)
-            await self.deleteCommand(ctx, now=True)
             return
 
         # define variables
-        guild = ctx.guild
         pin = self.parseArg(pin)
         # get user from database
         try:
-            dbobj = repository.filterId (discord_id=member.id)[0]
+            dbobj = repository.filterId(discord_id=member.id)[0]
         except IndexError:
             dbobj = None
-        
+
         t = "📌 " if pin else ""
-        t += config.prefix + ctx.command.name
+        t += 'Whois lookup'
         embed = discord.Embed(color=config.color,
             title=t, description=member.mention)
-        n = "**{} ({})**".format(member.nick, member.name) \
-            if member.nick is not None else "**{}**".format(member.name)
+        ni = discord.utils.escape_markdown(member.nick) if member.nick else None
+        na = discord.utils.escape_markdown(member.name)
+        n = f"**{na}** (nick **{ni}**)" if ni else f"**{na}**"
         embed.add_field(name="Discord user data",
             value="{name}\n{d_id}\nMember since {date}".format(
                 name=n, d_id=member.id, date=member.joined_at.strftime("%Y-%m-%d")))
@@ -107,6 +112,45 @@ class Stalker (rubbercog.Rubbercog):
             await self.log(ctx, "Database entry lookup", quote=True)
         await self.deleteCommand(ctx, now=True)
 
+    @whois.command(name="login", aliases=["xlogin", "vutlogin"])
+    async def whois_login(self, ctx: commands.Context, login: str = None,
+                           pin = None, log: bool = True):
+        """Get information about xlogin
+
+        login: A xlogin
+        pin: Optional. Pin if 'pin'
+        """
+        if login is None:
+            await self.throwHelp(ctx)
+            return
+
+        # define variables
+        pin = self.parseArg(pin)
+        # get user from database
+        try:
+            dbobj = repository.filterLogin(login=login)[0]
+            member = self.getGuild().get_member(dbobj.discord_id)
+        except IndexError:
+            member = None
+
+        if member:
+            await self.whois_member(ctx, member, pin=pin, log=True)
+            return
+
+        t = 'Whois lookup'
+        if pin:
+            t = '📌 ' + t
+        embed = discord.Embed(color=config.error, title=t)
+        embed.add_field(name="Action unsuccessful",
+            value="No user **{}** found.".format(login))
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        if pin:
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(embed=embed, delete_after=config.delay_embed)
+        if log != False:
+            await self.log(ctx, "No xlogin found", quote=True)
+        await self.deleteCommand(ctx, now=True)
 
     @commands.guild_only()
     @commands.group(aliases=["db"])
@@ -159,7 +203,7 @@ class Stalker (rubbercog.Rubbercog):
 
         # display the result
         await self.log(ctx, "Database entry added", quote=True)
-        await self.whois(ctx, member, log=False)
+        await self.whois_member(ctx, member, log=False)
         
 
     @database.command(name="remove", aliases=["delete"])
