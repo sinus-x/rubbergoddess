@@ -274,7 +274,7 @@ class Reaction(BaseFeature):
                     embed.set_footer(
                         text=datetime.datetime.now().replace(microsecond=0)
                     )
-                    channel = self.bot.get_channel(config.channel_log)
+                    channel = self.bot.get_channel(config.channel_botlog)
                     await channel.send(embed=embed)
                     try:
                         await message.pin()
