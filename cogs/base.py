@@ -30,6 +30,11 @@ class Base (rubbercog.Rubbercog):
         await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
 
+    @commands.command()
+    async def ping(self, ctx):
+        """Bot latency"""
+        await ctx.send("pong: **{:.2f} s**".format(self.bot.latency))
+
     @commands.cooldown (rate=2, per=60.0, type=commands.BucketType.user)
     @commands.command(aliases=["goddess"])
     async def god(self, ctx):
