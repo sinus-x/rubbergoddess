@@ -125,7 +125,10 @@
                 "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
 	},
 	"warden cog": {
-		"rolehoarders": 10
+		"rolehoarders": 10,
+
+		"__comment": "Where the images should be checked for duplicities. (memes etc)",
+		"deduplication channels": []
 	},
 	"compatibility": {
 		"__comment": "Do not send the same emote as other bot here",

@@ -11,21 +11,32 @@ class Warden (rubbercog.Rubbercog):
         super().__init__(bot)
         self.visible = False
 
-    @commands.command()
-    @commands.check(check.is_bot_owner)
-    async def leaveAllGuilds (self, ctx: commands.Context):
-    	"""Leave all guilds"""
-    	guilds = self.bot.guilds
-    	if guilds is not None and len(guilds) > 0:
-	    	for g in guilds:
-	    		if g.id != config.guild_id and \
-	    		   g.id != 637724748960235540: # wormhole
-	    			await g.leave()
-	    			await ctx.send("Left **{}** (id {})".format(g.name, g.id))
-	    			return
-	    		else:
-	    			await ctx.send("Staying in **{}**".format(g.name))
-    	await ctx.send(f":ok_hand:")
+    # apt install libopenjp2-7 libtiff
+    # pip3 install pillow dhash
+
+    @commands.Cog.listener()
+    async def on_message (self, message: discord.Message):
+        if message.channel.id in config.get('warden cog', 'deduplication channels') \
+        and message.files is not None:
+            await self.checkDuplicate(message)
+
+
+    async def checkDuplicate(self, message: discord.Message):
+        """Check if uploaded files are known"""
+        # get file hashes
+
+        # try to search them directly
+
+        # extract last 1000 items and iterate
+
+
+    async def announceDuplicate(self, message: discord.Message, match: str):
+        """Send message that a post is a duplicate
+
+        match: [full|almost|possible]
+        """
+
+
 
 def setup(bot):
     bot.add_cog(Warden(bot))
