@@ -19,6 +19,10 @@ class Warden (rubbercog.Rubbercog):
         super().__init__(bot)
         self.visible = False
 
+        self.limit_full = 3
+        self.limit_hard = 30
+        self.limit_soft = 70
+
     # apt install libopenjp2-7 libtiff5
     # pip3 install pillow dhash
 
@@ -31,59 +35,55 @@ class Warden (rubbercog.Rubbercog):
 
     async def checkDuplicate(self, message: discord.Message):
         """Check if uploaded files are known"""
-        
-        # get file hash and save it
         hashes = []
         for f in message.attachments:
             fp = BytesIO()
             await f.save(fp)
             h = dhash.dhash_int(Image.open(fp))
-            h = str(hex(h))
             hashes.append(h)
+            h_ = str(hex(h))
             repository.add_image(
                 channel_id=message.channel.id,
                 message_id=message.id,
                 attachment_id=f.id,
-                dhash=h
+                dhash=h_
             )
 
-
-        duplicates = {}
-        
-        # try to search duplicates directly
+        duplicate = None
+        hamming_min = 128
         for h in hashes:
-            match = repository.getHash(h)
-            if match:
-                if not isinstance(match, list) or len(match) == 1:
-                    # this means that single object was returned:
-                    # the currently checked post
-                    return
-                for m in match[:-1]:
-                    # 100 %, as they match fully
-                    duplicates[m] = 1
+            limit = None
+            posts = repository.getLast(1000)
+            for post in posts[:-1]:
+                post_hash = int(post.dhash, 16)
+                hamming = dhash.get_num_bits_different(h, post_hash)
+                if hamming < hamming_min:
+                    duplicate = post
+                    hamming_min = hamming
 
-            if len(duplicates) > 0:
-                await self._announceDuplicate(message, duplicates)
-                return
+        if hamming_min <= self.limit_soft:
+            await self._announceDuplicate(message, duplicate, hamming_min)
 
-        # extract last X items and iterate
-        
-
-
-    async def _announceDuplicate(self, message: discord.Message, duplicates: dict):
+    async def _announceDuplicate(self, message: discord.Message, duplicate: object, hamming: int):
         """Send message that a post is a duplicate
 
-        url: link to duplicate image
-        duplicate: dictionary {object: probability}
+        limit: Achieved limit. [full|hard|soft]
+        duplicate: object
         """
-        embed = discord.Embed(title="**:recycle: To je repost!**", color=config.color)
-        guild_id = self.getGuild().id
-        for d in duplicates:
-            timestamp = d.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-            link = 'https://discordapp.com/channels/{}/{}/{}'.format(
-                guild_id, d.channel_id, d.message_id)
-            embed.add_field(name=timestamp, value=link)
+        if hamming <= self.limit_full:
+            t = "**:recycle: To je repost!**"
+        elif hamming <= self.limit_hard:
+            t = "**:recycle: To je asi repost**"
+        else:
+            t = "To je možná repost"
+        prob = "{:.1f} %".format((1 - hamming / 128) * 100)
+        timestamp = duplicate.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        link = 'https://discordapp.com/channels/{}/{}/{}'.format(
+            self.getGuild().id, duplicate.channel_id, duplicate.message_id)
 
+        embed = discord.Embed(title=t, color=config.color)
+        embed.add_field(name=timestamp, value=prob + '\n' + link)
+        embed.set_footer(text=message.author, icon_url=message.author.avatar_url)
         await message.channel.send(embed=embed)
 
 def setup(bot):
