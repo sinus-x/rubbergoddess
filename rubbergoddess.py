@@ -13,6 +13,7 @@ from repository.database import session
 from repository.database.karma import Karma, Karma_emoji
 from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.verification import User
+from repository.database.image import Image
 from repository.review_repo import ReviewRepository
 
 bot = commands.Bot(
