@@ -235,7 +235,7 @@ class Reaction(BaseFeature):
             if member.id == message.author.id:
                 count = False
             # count master and slave guilds
-            elif guild.id != config.guild_id or guild.id != config.slave_id:
+            elif guild.id != config.guild_id and guild.id != config.slave_id:
                 count = False
             # do not count banned channels
             elif message.channel.id in config.karma_channels_ban:
