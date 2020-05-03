@@ -128,7 +128,8 @@
 		"rolehoarders": 10,
 
 		"__comment": "Where the images should be checked for duplicities. (memes etc)",
-		"deduplication channels": []
+		"deduplication channels": [],
+		"not duplicate limit": 5
 	},
 	"compatibility": {
 		"__comment": "Do not send the same emote as other bot here",
