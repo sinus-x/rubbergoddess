@@ -357,6 +357,9 @@ class Verify(rubbercog.Rubbercog):
                         elif login.endswith("vsb.cz"):
                             email = login
                             group = "VŠB"
+                        elif login.endswith("zcu.cz"):
+                            email = login
+                            group = "ZČU"
                         else:
                             email = login
                             group = "GUEST"
