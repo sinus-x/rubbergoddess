@@ -112,7 +112,7 @@ class Verify(rubbercog.Rubbercog):
 
     async def login_check(self, string):
         # regex matches uppercase or lowercase VUT login, not if it contains "login"
-        logex = re.compile(r'([x](?![l][o][g][i][n])[a-z]{5}\d{2})')
+        logex = re.compile(r'([x](?![l][o][g][i][n])[a-z]{5}\d[a-z0-9])')
         login = logex.match(string)
         if login is not None:
             login = login.group()
