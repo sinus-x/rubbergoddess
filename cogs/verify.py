@@ -207,8 +207,6 @@ class Verify(rubbercog.Rubbercog):
                             verify = guild.get_role(config.role_verify)
                             role = discord.utils.get(guild.roles, name=group)
                             member = message.author
-                            print("DEBUG verify {}, group {} for {}".format(
-                                verify, role, member))
                             await message.channel.send(utils.fill_message(
                                 "verify_verify_success_public", user=message.author.id,
                                 group=group),
