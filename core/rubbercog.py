@@ -34,7 +34,7 @@ class Rubbercog (commands.Cog):
     def getSlave(self):
         if self.slave is None:
             self.slave = self.bot.get_guild(config.slave_id)
-        return self.guild
+        return self.slave
     def getModRole(self):
         if self.role_mod is None:
             self.role_mod = self.getGuild().get_role(config.role_mod)
