@@ -203,22 +203,19 @@ class Verify(rubbercog.Rubbercog):
                     else:
                         # add verify role
                         guild = self.getGuild()
-                        try:
-                            verify = guild.get_role(config.role_verify)
-                            role = discord.utils.get(guild.roles, name=group)
+                        verify = guild.get_role(config.role_verify)
+                        role = discord.utils.get(guild.roles, name=group)
+                        if isinstance(ctx.channel, discord.channel.DMChannel):
+                            member = guild.get_member(message.author.id)
+                            await message.channel.send(utils.fill_message(
+                                "verify_verify_success_public", user=message.author.id,
+                                 group=group))
+                        else:
                             member = message.author
                             await message.channel.send(utils.fill_message(
                                 "verify_verify_success_public", user=message.author.id,
-                                group=group),
-                                delete_after=config.delay_verify)
-                        except AttributeError:
-                            # DM
-                            verify = discord.utils.get(guild.roles,
-                                                       id=config.role_verify)
-                            role = discord.utils.get(guild.roles, name=group)
-                            if not message.author.id:
-                                return
-                            member = guild.get_member(message.author.id)
+                                 group=group),delete_after=config.delay_verify)
+                            
                         await member.add_roles(verify)
                         await member.add_roles(role)
 
