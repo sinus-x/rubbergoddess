@@ -84,7 +84,7 @@ async def unload(ctx, extension):
 async def reload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
-            bot.unload_extension(f'cogs.{extension}')
+            bot.reload_extension(f'cogs.{extension}')
             await ctx.send(f'Rozšíření **{extension}** aktualizováno.')
             await rubbercog.log(ctx, f"Cog {extension} reloaded")
             if "docker" in config.loader:
