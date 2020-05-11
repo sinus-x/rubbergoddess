@@ -204,6 +204,7 @@ class Rubbercog (commands.Cog):
     async def throwNotification (self, ctx: commands.Context, msg: str,
                                  pin: bool = False):
         """Show an embed with a message."""
+        msg = str(msg)
         # Do the debug
         title = "{}: {}".format(ctx.author, ctx.message.content)
         if config.debug >= 1:
@@ -274,6 +275,8 @@ class Rubbercog (commands.Cog):
                 await ctx.send(m)
 
     def __formatHelp(self, text: str):
+        if not text:
+            return "_(No help available)_"
         text = text.split("\n")
         text[0] = f"**{text[0]}**"
         for i in range(2, len(text)):
