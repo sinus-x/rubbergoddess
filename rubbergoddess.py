@@ -4,7 +4,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import utils, rubbercog
+from core import help, utils, rubbercog
 from core.config import config
 from core.emote import emote
 from features import presence
@@ -18,7 +18,7 @@ from repository.review_repo import ReviewRepository
 
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or(*config.prefixes),
-                   help_command=None, case_insensitive=True)
+    help_command=help.Help())
 
 presence = presence.Presence(bot)
 rubbercog = rubbercog.Rubbercog(bot)

@@ -45,35 +45,5 @@ class Base (rubbercog.Rubbercog):
         await msg.add_reaction("◀")
         await msg.add_reaction("▶")
 
-    
-    @commands.command()
-    async def help (self, ctx, *args):
-        """Display information about bot functions
-
-        This should replace current `?god`/`?goddess` commands in the future
-        arguments: cog > command > subcommand
-        """
-        t = self._getEmbedTitle(ctx)
-        embed = discord.Embed(color=config.color,
-            title=t, description=ctx.command.short_doc)
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-
-        if args is None:
-            cogs = self.bot.cogs
-            for cog in cogs:
-                cog = self.bot.get_cog(cog)
-                if not isinstance(cog, rubbercog.Rubbercog) or not cog.visible:
-                    # Do not display hidden or non-Rubbercog objects
-                    continue
-                embed.add_field(inline=False,
-                    name=cog.qualified_name,
-                    value=cog.description if cog.description else "_No description available_")
-        else:
-            #TODO Display help for cog
-            pass
-
-        msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx, now=True)
-
 def setup(bot):
     bot.add_cog(Base(bot))
