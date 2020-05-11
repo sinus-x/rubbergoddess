@@ -16,33 +16,6 @@ class Admin(rubbercog.Rubbercog):
         super().__init__(bot)
         self.visible = False
 
-    @commands.group(name="config")
-    @commands.check(check.is_bot_owner)
-    @commands.check(check.is_in_modroom)
-    async def config(self, ctx: commands.Context):
-        """Edit bot configuration"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
-            return
-
-    @config.command(name="set")
-    async def config_set(self, ctx: commands.Command, key: str, value: str):
-        """Set config key"""
-        await self.throwNotification(messages.err_not_implemented)
-        return
-
-    @config.command(name="discard")
-    async def config_discard(self, ctx: commands.Command, key: str):
-        """Discard config change"""
-        await self.throwNotification(messages.err_not_implemented)
-        return
-
-    @config.command(name="save")
-    async def config_save(self, ctx: commands.Context):
-        """Save edited config file"""
-        await self.throwNotification(messages.err_not_implemented)
-        return
-
     @commands.command(name="restart", aliases=["reboot"])
     @commands.check(check.is_bot_owner)
     @commands.check(check.is_in_modroom)
