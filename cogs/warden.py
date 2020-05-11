@@ -48,7 +48,7 @@ class Warden (rubbercog.Rubbercog):
             return await self.checkDuplicate(message)
 
         # gif check
-        if "https://giphy.com/" in message.content or "https://tenor.com/" in message.content:
+        if "giphy.com/" in message.content or "tenor.com/" in message.content or "imgur.com/" in message.content:
             await message.channel.send(
                 f"{message.author.mention}, Giphy ani Tenor tu nemáme rádi. Odebrala jsem ti pět karma bodů.")
             repo_k.update_karma_get(message.author, -5)
