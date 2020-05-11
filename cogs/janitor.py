@@ -67,33 +67,28 @@ class Janitor(rubbercog.Rubbercog):
     @commands.check(check.is_elevated)
     @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
-    async def purge(self, ctx, channel: discord.TextChannel = None, limit = None, pinMode = "pinSkip"):
-        """Delete messages
+    async def purge(self, ctx, limit = None, pinMode = "pinSkip"):
+        """Delete messages from current text channel
 
-        channel: A text channel. Use `.` to pick current text channel
         limit: how many messages should be deleted
         mode: pinSkip (default) | pinStop | pinIgnore
         """
-        #TODO Add user argument
-        if not channel:
+        channel = ctx.channel
+        if not isinstance(channel, discord.TextChannel):
             return await self.throwHelp(ctx)
 
-        if channel == ".":
-            ch = ctx.channel
-            channel = ch.name
-        else:            
-            ch = discord.utils.get(self.getGuild().text_channels, name=channel.replace("#", ""))
-
-        if limit:
+        if limit is None:
+            return await self.throwHelp(ctx)
+        else:
             try:
                 limit = int(limit) + 1
             except ValueError:
                 self.throwHelp(ctx)
 
         if limit:
-            msgs = ch.history(limit=limit)
+            msgs = channel.history(limit=limit)
         else:
-            msgs = ch.history()
+            msgs = channel.history()
         ctr_del = 0
         ctr_skip = 0
         ctr_pin = 0
