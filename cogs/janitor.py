@@ -63,60 +63,56 @@ class Janitor(rubbercog.Rubbercog):
                 await mess.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
             await channel.send(embed=embed)
 
-    @commands.check(check.is_mod)
+
+    @commands.check(check.is_elevated)
     @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
-    async def purge(self, ctx: commands.Context, channel: discord.TextChannel = None, *params):
-        """Delete messages from channel
+    async def purge(self, ctx, channel, limit = None, pinMode = "pinSkip"):
+        #TODO Add user argument
+        if channel == ".":
+            ch = ctx.channel
+            channel = ch.name
+        else:            
+            ch = discord.utils.get(self.getGuild().text_channels, name=channel.replace("#", ""))
 
-        Note that you have to specify options with 'limit=XX users=AAA,BBB,CCC'
+        if limit:
+            try:
+                limit = int(limit) + 1
+            except ValueError:
+                self.purgeHelp()
 
-        channel: A text channel
-        limit: Optional. How many messages to delete. If not present, delete all
-        users: Optional. Only selected user IDs.
-        pins: Optional. How to treat pinned posts. 'skip' (default), 'stop', 'ignore'
-        """
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
-        return
+        if limit:
+            msgs = ch.history(limit=limit)
+        else:
+            msgs = ch.history()
+        ctr_del = 0
+        ctr_skip = 0
+        ctr_pin = 0
+        ctr_err = 0
+        async for m in msgs:
+            if m.pinned and pinMode == "pinStop":
+                break
+            elif m.pinned and pinMode == "pinSkip":
+                ctr_skip += 1
+                continue
+            elif m.pinned and pinMode == "pinIgnore":
+                ctr_pin += 1
+            try:
+                await m.delete()
+                ctr_del += 1
+            except discord.HTTPException:
+                ctr_err += 1
 
-        if channel is None:
-            await self.throwHelp(ctx)
-            return
-
-        # get parameters
-        #FIXME Can this be done in a cleaner way? 
-        limit = None
-        pins = "skip"
-        users = None
-        for param in params:
-            if param.startswith("limit="):
-                try:
-                    limit = int(param.replace("limit=",""))
-                except ValueError:
-                    self.throwHelp(ctx)
-                    return
-            elif param.startswith("pins="):
-                if value.replace("pins=", "") in ["stop", "ignore"]:
-                    pins = value.replace("pins=","")
-                else:
-                    self.throwHelp(ctx)
-                    return
-            elif param.startswith("users="):
-                try:
-                    users = [int(x) for x in param.replace("users=","").split(",")]
-                except ValueError:
-                    self.throwHelp(ctx)
-                    return
-
-        if pins == 'ignore':
-            # we can use batch deletion
-            msgs = await channel.purge()
-
-
-        #TODO Try to do purge()
-        #     Then check how many messages were deleted. On pinSkip() and pinStop()
-        #     we have to go one-by-one.
-        #TODO generate report
+        embed = discord.Embed(title="?purge", color=config.color)
+        embed.add_field(name="Settings", value="Channel **{}**, limit **{}**, pinMode **{}**".
+            format(channel, limit-1 if limit else "none", pinMode if pinMode else "ignore"))
+        embed.add_field(name="Result",
+            value="**{deleted}** removed (**{pinned}** were pinned), **{skipped}** skipped.\n" \
+                "**{err}** errors occured.".format(
+                deleted=ctr_del-1 + ctr_pin, skipped=ctr_skip, pinned=ctr_pin, err=ctr_err))
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        channel = self.getGuild().get_channel(config.channel_botlog)
+        await channel.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Janitor(bot))
