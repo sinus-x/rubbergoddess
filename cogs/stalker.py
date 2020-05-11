@@ -442,7 +442,7 @@ class Stalker (rubbercog.Rubbercog):
         desc = "Created {}, {} boosters"
         embed.add_field(name=f"Guild **{g.name}**", inline=False,
             value=f"Created {g.created_at.strftime('%Y-%m-%d')},"
-            f" owned by **{g.owner.mention}**")
+            f" owned by **{g.owner.name}**")
         # verification
         states = ', '.join("**{}** {}".format(
             repository.countStatus(state), state) for state in config.db_states)
