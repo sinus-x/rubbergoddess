@@ -86,7 +86,7 @@ class Librarian(rubbercog.Rubbercog):
             await ctx.send("Rip token")
         else:
             await ctx.send("Město nenalezeno! " + emote.panic + " (" + res["message"] + ")")
-        self.deleteCommand(ctx)
+        await self.deleteCommand(ctx)
 
 
 def setup(bot):
