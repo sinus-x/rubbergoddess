@@ -20,6 +20,12 @@ class Warden (rubbercog.Rubbercog):
     #TODO Implement ?deepscan to test against all database hashes
     #TODO Switch generic check boxes for custom guild emotes
     #TODO Remove reactions from trigger image on embed deletion
+    #TODO If the check is clicked by author, remove trigger message, too
+    #TODO Move fetch_message to checkDuplicate()
+    #TODO  Remove deleted messages (404s) from database
+    #TODO Send full list of matches to _announceDuplicate()
+
+    #TODO Use strings from text.json
 
     def __init__ (self, bot):
         super().__init__(bot)
