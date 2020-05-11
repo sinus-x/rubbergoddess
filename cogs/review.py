@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from core.config import config
-from core import rubbercog, utils
+from core import check, rubbercog, utils
 from config.messages import Messages as messages
 from features import review
 from repository import review_repo
@@ -101,26 +101,23 @@ class Review(rubbercog.Rubbercog):
             await ctx.send(messages.review_add_format)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.check(check.is_mod)
     @commands.command()
     async def subject(self, ctx, subcommand=None, subject=None):
-        if ctx.author.id == config.admin_id:
-            if not subcommand or not subject:
-                await ctx.send(messages.subject_format)
-                return
-            subject = subject.lower()
-            if subcommand == "add":
-                self.rev.add_subject(subject)
-                await ctx.send(f'Zkratka {subject} byla přidána')
-                #TODO Add to config, too
-            elif subcommand == "remove":
-                self.rev.remove_subject(subject)
-                await ctx.send(f'Zkratka {subject} byla odebrána')
-                #TODO Remove from config, too
-            else:
-                await ctx.send(messages.review_wrong_subject)
+        if not subcommand or not subject:
+            await ctx.send(messages.subject_format)
+            return
+        subject = subject.lower()
+        if subcommand == "add":
+            self.rev.add_subject(subject)
+            await ctx.send(f'Zkratka {subject} byla přidána')
+            #TODO Add to config, too
+        elif subcommand == "remove":
+            self.rev.remove_subject(subject)
+            await ctx.send(f'Zkratka {subject} byla odebrána')
+            #TODO Remove from config, too
         else:
-            await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
-
+            await ctx.send(messages.review_wrong_subject)
 
 def setup(bot):
     bot.add_cog(Review(bot))
