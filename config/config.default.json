@@ -36,7 +36,7 @@
 		"prefixes": ["?", "!"],
 
 		"__comment": "cogs to load by default",
-		"extensions": ["errors", "base", "meme", "karma", "librarian", "random",
+		"extensions": ["base", "meme", "karma", "librarian", "random",
 					   "review", "stalker", "verify", "voice"]
 	},
 	"__comment": "Special channels",
