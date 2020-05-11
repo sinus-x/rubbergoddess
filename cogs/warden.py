@@ -8,10 +8,11 @@ from PIL import Image
 from core.config import config
 from core.emote import emote
 from core import check, rubbercog, utils
-from repository import image_repo
+from repository import image_repo, karma_repo
 
 dhash.force_pil()
 repository = image_repo.ImageRepository()
+repo_k = karma_repo.KarmaRepository()
 
 class Warden (rubbercog.Rubbercog):
     """A cog for database lookups"""
@@ -40,10 +41,18 @@ class Warden (rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        # repost check
         if message.channel.id in config.get('warden cog', 'deduplication channels') \
         and message.attachments is not None and len(message.attachments) > 0 \
         and not message.author.bot:
-            await self.checkDuplicate(message)
+            return await self.checkDuplicate(message)
+
+        # gif check
+        if "https://giphy.com/" in message.content or "https://tenor.com/" in message.content:
+            await message.channel.send(
+                f"{message.author.mention}, Giphy ani Tenor tu nemáme rádi. Odebrala jsem ti pět karma bodů.")
+            repo_k.update_karma_get(message.author, -5)
+            await self.deleteCommand(message)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):

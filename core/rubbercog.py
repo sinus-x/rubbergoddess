@@ -134,16 +134,18 @@ class Rubbercog (commands.Cog):
             await ctx.send(text.fill("server", "botroom redirect",
                 user=ctx.author, channel=botspam))
 
-    async def deleteCommand(self, ctx: commands.Context, now: bool = True):
+    async def deleteCommand(self, message, now: bool = True):
         """Try to delete the context message.
 
         now: Do not wait for message delay
         """
         delay = 0.0 if now else config.delay_embed
         try:
-            await ctx.message.delete(delay=delay)
+            if not isinstance(message, discord.Message):
+                message = message.message
+            await message.delete(delay=delay)
         except discord.HTTPException as err:
-            self.logException(ctx, err)
+            self.logException(message, err)
             pass
 
     def parseArg(self, arg: str = None):
