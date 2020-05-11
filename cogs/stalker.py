@@ -33,7 +33,7 @@ class Stalker (rubbercog.Rubbercog):
 
 
     @commands.check(check.is_verified)
-    @commands.group(name="whois")
+    @commands.group(name="whois", aliases=["gdo"])
     async def whois(self, ctx: commands.Context):
         """Get information about user"""
         if ctx.invoked_subcommand is None:
