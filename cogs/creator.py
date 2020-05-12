@@ -94,7 +94,45 @@ class Creator(rubbercog.Rubbercog):
         else:
             await channel.send('Na tomto serveru není možné provést tuto akci')
 
+    async def create_channel(self, ctx, guild, channel_type, name, **kwargs):
+        """channel_type can be: category / text / voice"""
+        if guild == self.getGuild() or guild == self.getSlave():
+            position = None
 
+            if config.debug:
+                print("Creating channel {} in server {}".format(name, guild.name))
+            if channel_type == "category":
+                try:
+                    await guild.create_category(name, **kwargs)
+                except Exception as e:
+                    await ctx.channel.send("create_category() {name} encountered Error: {error}".format(name=name, error=e))
+            elif channel_type == "text":
+                try:
+                    await guild.create_text_channel(name, **kwargs)
+                except Exception as e:
+                    await ctx.channel.send("create_text_channel() {name} encountered Error: {error}".format(name=name, error=e))
+            elif channel_type == "voice":
+                try:
+                    await guild.create_voice_channel(name, **kwargs)
+                except Exception as e:
+                    await ctx.channel.send("create_voice_channel() {name} encountered Error: {error}".format(name=name, error=e))
+
+        else:
+            await ctx.channel.send('Na tomto serveru není možné provést tuto akci')
+        return
+
+    async def edit_channel(self, ctx, guild, channel, kwargs):
+        if guild == self.getGuild() or guild == self.getSlave():
+            if config.debug:
+                print("Editing channel {} in server {}".format(channel.name, guild.name))
+            try:
+                await channel.edit(**kwargs)
+            except Exception as e:
+                await ctx.channel.send("channel.edit() {name} encountered Error: {error}".format(name=channel.name, error=e))
+
+        else:
+            await ctx.channel.send('Na tomto serveru není možné provést tuto akci')
+        return
 
     @commands.group("create")
     @commands.check(check.is_mod)
