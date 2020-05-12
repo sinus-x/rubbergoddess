@@ -10,7 +10,6 @@ class Actor(rubbercog.Rubbercog):
     """Be a human"""
     def __init__(self, bot):
         super().__init__(bot)
-        self.visible = False
 
     @commands.group(name="send")
     @commands.check(check.is_bot_owner)

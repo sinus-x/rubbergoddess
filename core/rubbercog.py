@@ -12,7 +12,6 @@ from config.messages import Messages as messages
 
 class Rubbercog (commands.Cog):
     """Main cog class"""
-    visible = True
 
     def __init__(self, bot):
         super().__init__()

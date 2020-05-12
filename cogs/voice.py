@@ -12,7 +12,6 @@ class Voice(rubbercog.Rubbercog):
     """Manage voice channels"""
     def __init__(self, bot):
         super().__init__(bot)
-        self.visible = True
         self.lock = text.get('voice', 'lock')
         self.locked = []
 

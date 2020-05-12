@@ -11,7 +11,6 @@ from config.messages import Messages as messages
 class Errors(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
-        self.visible = False
 
     @commands.Cog.listener()
     async def on_command_error (self, ctx: commands.Context, error):

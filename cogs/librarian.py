@@ -14,7 +14,6 @@ class Librarian(rubbercog.Rubbercog):
     """Knowledge and information based commands"""
     def __init__(self, bot):
         super().__init__(bot)
-        self.visible = True
 
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):

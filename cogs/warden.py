@@ -30,7 +30,6 @@ class Warden (rubbercog.Rubbercog):
 
     def __init__ (self, bot):
         super().__init__(bot)
-        self.visible = False
 
         self.limit_full = 3
         self.limit_hard = 7

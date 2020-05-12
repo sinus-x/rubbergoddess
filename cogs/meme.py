@@ -15,7 +15,6 @@ class Meme(rubbercog.Rubbercog):
     """Interact with users"""
     def __init__(self, bot):
         super().__init__(bot)
-        self.visible = True
 
     @commands.Cog.listener()
     async def on_message (self, message):

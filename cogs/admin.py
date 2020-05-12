@@ -14,7 +14,6 @@ class Admin(rubbercog.Rubbercog):
     """Rubbergoddess administration"""
     def __init__(self, bot):
         super().__init__(bot)
-        self.visible = False
 
     @commands.command(name="restart", aliases=["reboot"])
     @commands.check(check.is_bot_owner)
