@@ -23,3 +23,7 @@ class ImageRepository(BaseRepository):
 
 	def getLast(self, num: int):
 		return session.query(Image)[:num]
+
+	def deleteByMessage(self, message_id: int):
+		session.query(Image).filter(Image.message_id == message_id).delete()
+		session.commit()

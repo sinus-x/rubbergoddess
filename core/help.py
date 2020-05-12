@@ -13,7 +13,7 @@ class Help(commands.MinimalHelpCommand):
     def __init__(self, **options):
         self.paginator = Paginator()
 
-        super().__init__(no_category="\nNezařazeno", commands_heading="Rubbergoddess")
+        super().__init__(no_category="\nNezařazeno", commands_heading="commands")
 
     def command_not_found(self, string):
         return f"Žádný příkaz jako `{string}` neexistuje."
