@@ -4,7 +4,7 @@ from discord.ext import commands
 from core import check, rubbercog
 from core.config import config
 from core.emote import emote
-from config.messages import Messages as messages
+from core.text import text
 
 class Actor(rubbercog.Rubbercog):
     """Be a human"""
@@ -17,7 +17,7 @@ class Actor(rubbercog.Rubbercog):
     async def send(self, ctx: commands.Context):
         """Send post to a channel"""
         if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+            await ctx.send_help(ctx.invoked_with)
             await self.deleteCommand(ctx)
             return
 
@@ -30,7 +30,8 @@ class Actor(rubbercog.Rubbercog):
         """
         text = ' '.join(args) if args else None
         if channel is None or text is None:
-            await self.throwHelp(ctx)
+            await self.deleteCommand(ctx)
+            await ctx.send_help(ctx.invoked_with)
             return
 
         await channel.send(text)
@@ -43,7 +44,7 @@ class Actor(rubbercog.Rubbercog):
         channel: Target text channel
         message: Path to an image or a url
         """
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
     @commands.group(name="actor")
@@ -51,54 +52,54 @@ class Actor(rubbercog.Rubbercog):
     async def actor(self, ctx: commands.Context):
         """Send post to a text channel"""
         if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+            await ctx.send_help(ctx.invoked_with)
             await self.deleteCommand(ctx)
             return
 
     @actor.command(name="list")
     async def actor_list(self, ctx: commands.Context):
         """See current reactions"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
     @actor.group(name="add")
     async def actor_add(self, ctx: commands.Context):
         """Add reaction"""
         if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+            await ctx.send_help(ctx.invoked_with)
             await self.deleteCommand(ctx)
             return
 
     @actor_add.command(name="text")
     async def actor_add_text(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
     @actor_add.command(name="image")
     async def actor_add_image(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
     @actor.group(name="remove")
     async def actor_remove(self, ctx: commands.Context):
         """Add reaction"""
         if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+            await ctx.send_help(ctx.invoked_with)
             await self.deleteCommand(ctx)
             return
 
     @actor_remove.command(name="text")
     async def actor_remove_text(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
     @actor_remove.command(name="image")
     async def actor_remove_image(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
 
@@ -109,7 +110,7 @@ class Actor(rubbercog.Rubbercog):
     async def change(self, ctx: commands.Context):
         """Change the bot"""
         if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+            return await ctx.send_help(ctx.invoked_with)
 
     @change.command(name="avatar")
     async def change_avatar(self, ctx: commands.Context, path: str):
@@ -137,7 +138,7 @@ class Actor(rubbercog.Rubbercog):
         type: streaming, playing, listening
         name: The activity name
         """
-        await self.throwNotification(ctx, messages.err_not_implemented)
+        await self.throwNotification(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
 
