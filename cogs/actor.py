@@ -21,13 +21,12 @@ class Actor(rubbercog.Rubbercog):
             return
 
     @send.command(name="text")
-    async def send_text(self, ctx: commands.Context, channel: discord.TextChannel, *args):
+    async def send_text(self, ctx: commands.Context, channel: discord.TextChannel, *, text: str):
         """Send a text message as a bot
 
         channel: Target text channel
         message: Text
         """
-        text = ' '.join(args) if args else None
         if channel is None or text is None:
             await self.deleteCommand(ctx)
             await ctx.send_help(ctx.invoked_with)
@@ -41,9 +40,9 @@ class Actor(rubbercog.Rubbercog):
         """Send an image as a bot
 
         channel: Target text channel
-        message: Path to an image or a url
+        message: A path or an url to an image
         """
-        await self.throwNotification(ctx, text.get('error', 'not implemented'))
+        await self.output.info(ctx, text.get('error', 'not implemented'))
         await self.deleteCommand(ctx)
 
     @commands.group(name="actor")

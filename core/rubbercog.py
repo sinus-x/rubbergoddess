@@ -5,9 +5,9 @@ import traceback
 import discord
 from discord.ext import commands
 
+from core import check, utils, output
 from core.config import config
 from core.text import text
-from core import check, utils
 from config.messages import Messages as messages
 
 class Rubbercog (commands.Cog):
@@ -22,6 +22,8 @@ class Rubbercog (commands.Cog):
         self.role_verify = None
         self.roles_elevated = None
 
+        self.output = output.Output(self.bot)
+        self.console = output.Console(self.bot)
 
     ##
     ## OBJECT GETTERS

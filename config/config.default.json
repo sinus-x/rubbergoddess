@@ -15,6 +15,9 @@
 		"__comment": "2 to disable error catching and safety mechanisms",
 		"debug": 0,
 
+		"__comment": "DEBUG | INFO | WARNING | ERROR | CRITICAL",
+		"logging": "INFO",
+
 		"__comment": "Bot key from https://discordapp.com/developers",
 		"key": "",
 
