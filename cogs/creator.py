@@ -29,6 +29,9 @@ class Creator(rubbercog.Rubbercog):
         self.rubbercog = rubbercog.Rubbercog(bot)
         self.creator_running = False
         #self.visible = False
+    
+    def isRunning(self):
+        return self.creator_running
 
     async def edit_role(self, ctx, guild, role, **kwargs):
         if ctx is not None:
@@ -223,33 +226,6 @@ class Creator(rubbercog.Rubbercog):
         else:
             await channel.send("Conditions weren't met or wrong arguments were used")
             return
-
-    @creator.command(name="sync")
-    async def creator_sync(self, ctx: commands.Context):
-        """Synchronize roles from master to slave."""
-        if (ctx.message.guild == self.getGuild()):
-            guild = self.getGuild()
-            slave = self.getSlave()
-            channel = ctx.message.channel
-            master_roles = await guild.fetch_roles()
-
-            for role in master_roles:
-                slave_role = discord.utils.get(slave.roles, name=role.name)
-                if slave_role is not None:
-                    r = [role.position, role.hoist, role.mentionable,
-                         role.permissions, role.colour]
-                    a = [slave_role.position, slave_role.hoist, slave_role.mentionable,
-                         slave_role.permissions, slave_role.colour]
-                    if a != r:
-                        await asyncio.sleep(0.5)
-                        await self.edit_role(ctx, slave, slave_role, position=role.position, hoist=role.hoist, mentionable=role.mentionable,
-                                             permissions=role.permissions, color=role.colour)
-                else:
-                    await asyncio.sleep(0.5)
-                    await self.create_role(ctx, slave, name=role.name, hoist=role.hoist, mentionable=role.mentionable, permissions=role.permissions, color=role.colour)
-                    # API is not a fan of creation and quick edit of roles (can't create one at a position tho)
-        await channel.send('Synchronizování rolí dokončeno.')
-        return
 
     @creator.command(name="rolebackup")
     async def creator_role_backup(self, ctx: commands.Context):

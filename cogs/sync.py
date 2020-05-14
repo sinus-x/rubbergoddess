@@ -21,7 +21,6 @@ from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 
-
 class Sync(rubbercog.Rubbercog):
     """Master-Slave server synchronization"""
 
@@ -29,22 +28,57 @@ class Sync(rubbercog.Rubbercog):
         super().__init__(bot)
         self.errors = errors.Errors(bot)
         self.rubbercog = rubbercog.Rubbercog(bot)
+        self.creator = creator.Creator(bot)
         self.visible = False
 
-    @commands.command()
+    @commands.group("sync")
     @commands.check(check.is_mod)
     @commands.check(check.is_in_modroom)
     async def sync(self, ctx: commands.Context):
-        """Sync roles with slave.
+        """Synchronization cog"""
+        if ctx.invoked_subcommand is None:
+            await self.throwHelp(ctx)
+            return
+
+
+    @sync.command(name="roles")
+    async def sync_roles(self, ctx:commands.Context):
+        """Synchronize roles from master to slave."""
+        if (ctx.message.guild == self.getGuild()):
+            guild = self.getGuild()
+            slave = self.getSlave()
+            channel = ctx.message.channel
+            master_roles = await guild.fetch_roles()
+
+            for role in master_roles:
+                slave_role = discord.utils.get(slave.roles, name=role.name)
+                if slave_role is not None:
+                    r = [role.position, role.hoist, role.mentionable,
+                         role.permissions, role.colour]
+                    a = [slave_role.position, slave_role.hoist, slave_role.mentionable,
+                         slave_role.permissions, slave_role.colour]
+                    if a != r:
+                        await asyncio.sleep(0.5)
+                        await self.creator.edit_role(ctx, slave, slave_role, position=role.position, hoist=role.hoist, mentionable=role.mentionable,
+                                             permissions=role.permissions, color=role.colour)
+                else:
+                    await asyncio.sleep(0.5)
+                    await self.creator.create_role(ctx, slave, name=role.name, hoist=role.hoist, mentionable=role.mentionable, permissions=role.permissions, color=role.colour)
+                    # API is not a fan of creation and quick edit of roles (can't create one at a position tho)
+        await channel.send('Synchronizování rolí dokončeno.')
+        return
+
+    @sync.command(name="members")
+    async def sync_members(self, ctx:commands.Context):
+        """Synchronize member roles from master to slave.
         Only use for first time, automatic synchronization is used when cog loaded.
         Potentially slow depending on the number of users in slave."""
         slave = self.getSlave()
         guild = self.getGuild()
+        channel = ctx.message.channel
         members = await slave.fetch_members().flatten()
-        print("starting")
 
         for member in members:
-            print("member")
             main_member = discord.utils.get(guild.members, id=member.id)
             if member is not None:
                 after_roles = []
@@ -95,6 +129,7 @@ class Sync(rubbercog.Rubbercog):
         
         if config.debug:
             print("Role sync finished")
+        await channel.send('Synchronizování rolí uživatelů dokončeno.')
         return
 
     @commands.Cog.listener()
@@ -109,36 +144,46 @@ class Sync(rubbercog.Rubbercog):
 
         r = discord.utils.get(guild.roles, name=role.name)
         if r is None:
-            await creator.create_role(None, guild, name=role.name, hoist=role.hoist, mentionable=role.mentionable, permissions=role.permissions, color=role.colour)
+            await self.creator.create_role(None, guild, name=role.name, hoist=role.hoist, mentionable=role.mentionable, permissions=role.permissions, color=role.colour)
         return
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before, after):
-        if creator.creator_running == False:
+        if self.creator.isRunning() == False:
             server = before.guild
             # DO NOT allow changes from more than 1 server, just stick to master-slaves relationship and save your sanity
             if server == self.getGuild() and self.getSlave() != 0:
                 guild = self.getSlave()
             else:
                 return
+            
+            slave_role = discord.utils.get(guild.roles, name=before.name)
 
-            role = None
-            now = time.time()
-            timeout = 10
-            await asyncio.sleep(2)
-            while role is None:
-                if time.time() > now + timeout:
-                    break
-                role = discord.utils.get(guild.roles, name=before.name)
-            r = [role.name, role.hoist, role.mentionable,
-                 role.permissions, role.colour]
-            a = [after.name, after.hoist, after.mentionable,
-                 after.permissions, after.colour]
-
-            # ignoring positional changes of 1 (otherwise brace for a storm)
-            if abs(int(before.position) - int(after.position)) > 1 or a != r:
-                await creator.edit_role(None, guild, role, name=after.name, position=after.position,
-                                        hoist=after.hoist, mentionable=after.mentionable, permissions=after.permissions, color=after.colour)
+            if slave_role is not None:
+                role = None
+                now = time.time()
+                timeout = 10
+                await asyncio.sleep(2)
+                while role is None:
+                    if time.time() > now + timeout:
+                        break
+                    role = discord.utils.get(guild.roles, name=before.name)
+                r = [role.name, role.hoist, role.mentionable,
+                     role.permissions, role.colour]
+                a = [after.name, after.hoist, after.mentionable,
+                     after.permissions, after.colour]
+    
+                # ignoring positional changes of 1 (otherwise brace for a storm)
+                if abs(int(before.position) - int(after.position)) > 1 or a != r:
+                    await self.creator.edit_role(None, guild, role, name=after.name, position=after.position,
+                                            hoist=after.hoist, mentionable=after.mentionable, permissions=after.permissions, color=after.colour)
+            else:
+                embed = discord.Embed(title="Role does not exist",
+                                      description="role update failed", color=config.color_error)
+                embed.add_field(name="Role", value="Before name: {} After name: {}".format(before.name, after.name))
+                embed.add_field(name="Advice", value="Manual role sync recommended")
+                channel = self.bot.get_channel(config.channel_guildlog)
+                await channel.send(embed=embed)
 
         return
 
@@ -153,7 +198,8 @@ class Sync(rubbercog.Rubbercog):
         await asyncio.sleep(1)
         role = discord.utils.get(guild.roles, name=role.name)
         if role is not None:
-            print("Deleting role {} at {}".format(role.name, guild.name))
+            if config.debug:
+                print("Deleting role {} at {}".format(role.name, guild.name))
 
             try:
                 await role.delete()
@@ -198,7 +244,12 @@ class Sync(rubbercog.Rubbercog):
                                 await channel.send(embed=embed)
 
                     else:
-                        await config.channel_botlog.send("Role neexistuje")
+                        embed = discord.Embed(title="Role does not exist",
+                                      description="Adding role on slave failed", color=config.color_error)
+                        embed.add_field(name="Role", value="Role name: {}".format(role.name))
+                        embed.add_field(name="Advice", value="Manual role sync recommended")
+                        channel = self.bot.get_channel(config.channel_guildlog)
+                        await channel.send(embed=embed)
         return
 
     @commands.Cog.listener()
@@ -326,7 +377,12 @@ class Sync(rubbercog.Rubbercog):
                             await channel.send(embed=embed)
 
                 else:
-                    await config.channel_botlog.send("Role neexistuje")
+                    embed = discord.Embed(title="Role does not exist",
+                                  description="Adding role on slave failed", color=config.color_error)
+                    embed.add_field(name="Role", value="Role name: {}".format(role.name))
+                    embed.add_field(name="Advice", value="Manual role sync recommended")
+                    channel = self.bot.get_channel(config.channel_guildlog)
+                    await channel.send(embed=embed)
 
             for name in member_roles:
                 if name not in after_roles:
