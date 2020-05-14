@@ -21,10 +21,6 @@ class Warden (rubbercog.Rubbercog):
     #TODO Implement template matching to prevent false positives
     #TODO Implement ?deepscan to test against all database hashes
 
-    #TODO Multi-post detections behave weirdly (detecting itself)
-    #TODO On deletion, check last hundred bot messages for repost embed
-
-
     def __init__ (self, bot):
         super().__init__(bot)
 

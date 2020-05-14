@@ -132,10 +132,15 @@
 
 		"__comment": "Where the images should be checked for duplicities. (memes etc)",
 		"deduplication channels": [],
+
+		"__comment": "How many people have to react to embed for it to dissapear",
 		"not duplicate limit": 5
 	},
 	"compatibility": {
 		"__comment": "Do not send the same emote as other bot here",
-		"ignored imitation channels": []
+		"ignored imitation channels": [],
+
+		"__comment": "Where the bot should ignore deleted messages",
+		"ignored message log channels": []
 	}
 }
