@@ -25,5 +25,6 @@ class ImageRepository(BaseRepository):
 		return session.query(Image)[:num]
 
 	def deleteByMessage(self, message_id: int):
-		session.query(Image).filter(Image.message_id == message_id).delete()
+		i = session.query(Image).filter(Image.message_id == message_id).delete()
 		session.commit()
+		return i

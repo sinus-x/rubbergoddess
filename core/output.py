@@ -38,8 +38,10 @@ class Output:
 
     async def send(self, msgbl: discord.abc.Messageable, level: str, msg: str, error = None, delete_after = None):
         result = f">>> **{level}**"
-        if msgbl.command is not None:
+        try:
             result += f" (`{config.prefix}{msgbl.command.qualified_name}`)"
+        except:
+            pass
         result += f":\n{discord.utils.escape_mentions(msg)}"
 
         if error is not None:
@@ -60,23 +62,72 @@ class Console:
     def bot(self, bot: discord.ext.commands.Bot):
         self.bot = bot
 
-    async def debug(self, msg):
+    def debug(self, src, msg, error = None):
+        """Send output to console
+
+        src: commands.Command invoked from context or string
+        """
+        try:
+            src = src.command.qualified_name
+        except:
+            src = str(src)
         if self.level <= logging.DEBUG:
-            print(f"{getTimestamp()} DEB: {msg}")
+            print(f"{getTimestamp()} DEB [{src}]: {msg}")
+            self.printTraceback(error)
 
-    async def info(self, msg):
+    def info(self, src, msg, error = None):
+        """Send output to console
+
+        src: commands.Command invoked from context or string
+        """
+        try:
+            src = src.command.qualified_name
+        except:
+            src = str(src)
         if self.level <= logging.INFO:
-            print(f"{getTimestamp()} INF: {msg}")
+            print(f"{getTimestamp()} INF [{src}]: {msg}")
+            self.printTraceback(error)
 
-    async def warning(self, msg):
+    def warning(self, src, msg, error = None):
+        """Send output to console
+
+        src: commands.Command invoked from context or string
+        """
+        try:
+            src = src.command.qualified_name
+        except:
+            src = str(src)
         if self.level <= logging.WARNING:
-            print(f"{getTimestamp()} WAR: {msg}")
+            print(f"{getTimestamp()} WAR [{src}]: {msg}")
+            self.printTraceback(error)
 
-    async def error(self, msg):
+    def error(self, src, msg, error = None):
+        """Send output to console
+
+        src: commands.Command invoked from context or string
+        """
+        try:
+            src = src.command.qualified_name
+        except:
+            src = str(src)
         if self.level <= logging.ERROR:
-            print(f"{getTimestamp()} ERR: {msg}")
+            print(f"{getTimestamp()} ERR [{src}]: {msg}")
+            self.printTraceback(error)
 
-    async def critical(self, msg):
+    def critical(self, src, msg, error = None):
+        """Send output to console
+
+        src: commands.Command invoked from context or string
+        """
+        try:
+            src = src.command.qualified_name
+        except:
+            src = str(src)
         if self.level <= logging.CRITICAL:
-            print(f"{getTimestamp()} CRT: {msg}")
+            print(f"{getTimestamp()} CRI [{src}]: {msg}")
+            self.printTraceback(error)
 
+    def printTraceback(self, error):
+        if error is not None:
+            tr = ''.join(traceback.format_exception(type(error), error, error.__traceback__))
+            print(tr)

@@ -40,7 +40,7 @@
 		"uh oh":   "uh oh"
 	},
 	"karma": {
-		"karma get missing": "{admin}, srovnala jsem karma hodnoty emotes",
+		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 
 		"vote help":    "Žádný argument neočekávám. Prostě jen `{prefix}karma vote`",
 		"revote help":  "Čekám formát: `{prefix}krama revote [emote]`",
@@ -140,6 +140,7 @@
 
 		"gif warning": "{user}, Giphy nebo Tenor tu nemáme rádi. Odebrala jsem ti pět karma bodů.",
 		"repost title": "Nápověda",
+		"repost description": "{name}, shoda **{value}**!",
 		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže."
 	},
 	"wormhole": {

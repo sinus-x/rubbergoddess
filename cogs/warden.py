@@ -32,13 +32,16 @@ class Warden (rubbercog.Rubbercog):
         self.limit_hard = 7
         self.limit_soft = 14
 
+    def doCheckRepost(self, message: discord.Message):
+        return message.channel.id in config.get('warden cog', 'deduplication channels') \
+        and message.attachments is not None and len(message.attachments) > 0 \
+        and not message.author.bot
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         # repost check
-        if message.channel.id in config.get('warden cog', 'deduplication channels') \
-        and message.attachments is not None and len(message.attachments) > 0 \
-        and not message.author.bot:
-            return await self.checkDuplicate(message)
+        if self.doCheckRepost(message):
+            await self.checkDuplicate(message)
 
         # gif check
         if "giphy.com/" in message.content or "tenor.com/" in message.content or "imgur.com/" in message.content:
@@ -48,8 +51,20 @@ class Warden (rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
-        if message.attachments is not None:
-            repo_i.deleteByMessage(message.id)
+        if self.doCheckRepost(message):
+            i = repo_i.deleteByMessage(message.id)
+            self.console.debug("Warden:on_message_delete", f"Removed {i} dhash(es) from database")
+
+            # try to detect repost embed
+            messages = await message.channel.history(after=message, limit=10, oldest_first=True).flatten()
+            for m in messages:
+                if not m.author.bot:
+                    continue
+                try:
+                    if str(message.id) == m.embeds[0].footer.text:
+                        await m.delete()
+                except:
+                    continue
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
@@ -58,7 +73,11 @@ class Warden (rubbercog.Rubbercog):
             return
         if payload.member.bot:
             return
-        message = await self.getGuild().get_channel(payload.channel_id).fetch_message(payload.message_id)
+        try:
+            message = await self.getGuild().get_channel(payload.channel_id).fetch_message(payload.message_id)
+        except Exception as e:
+            self.console.debug("Warden:on_raw_reaction_add", "Message not found", e)
+            return
         if not message or not message.author.bot:
             return
 
@@ -69,7 +88,7 @@ class Warden (rubbercog.Rubbercog):
                     orig = await message.channel.fetch_message(int(orig))
                     await orig.remove_reaction('♻️', self.bot.user)
                 except Exception as e:
-                    #TODO Log unaccesable message
+                    self.console.debug("Warden:on_raw_reaction_add", "Could not remove ♻️", e)
                     return
                 await message.delete()
 
@@ -105,7 +124,11 @@ class Warden (rubbercog.Rubbercog):
             hamming_min = 128
             duplicate = None
             limit = None
-            for post in posts[:-1]:
+            for post in posts:
+                # skip current message
+                if post.message_id == message.id:
+                    continue
+                # do the comparison
                 post_hash = int(post.dhash, 16)
                 hamming = dhash.get_num_bits_different(h, post_hash)
                 if hamming < hamming_min:
@@ -114,9 +137,8 @@ class Warden (rubbercog.Rubbercog):
 
             duplicates[duplicate] = hamming_min
 
-            if config.debug >= 2:
-                await message.channel.send(
-                    "```DEBUG 2:\nClosest hamming distance: {} (out of 128 bits)```".format(hamming_min))
+            await self.output.debug(message.channel, f"Closest Hamming distance: {hamming_min}/128 bits")
+            self.console.debug("Warden:checkDuplicate", f"Closest Hamming distance: {hamming_min}/128 bits")
 
         for d, h in duplicates.items():
             if h <= self.limit_soft:
@@ -141,16 +163,15 @@ class Warden (rubbercog.Rubbercog):
         timestamp = original.timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
         src_chan = self.getGuild().get_channel(original.channel_id)
-        src_post = await src_chan.fetch_message(original.message_id)
-        if src_post is not None:
+        try:
+            src_post = await src_chan.fetch_message(original.message_id)
             link = src_post.jump_url
             author = discord.utils.escape_markdown(src_post.author.display_name)
-        else:
+        except:
             link = "404 " + emote.sad
             author = "_??? (404)_"
 
-        d = "{}, shoda **{}**!".format(discord.utils.escape_markdown(message.author.display_name), prob)
-
+        d = text.fill('warden', 'repost description', name=discord.utils.escape_markdown(message.author.display_name), value=prob)
         embed = discord.Embed(title=t, color=config.color, description=d, url=message.jump_url)
         embed.add_field(name=f"**{author}**, {timestamp}", value=link, inline=False)
 
