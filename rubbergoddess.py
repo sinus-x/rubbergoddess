@@ -51,6 +51,8 @@ async def on_error(event, *args, **kwargs):
         for message in output:
             await channel.send("```\n{}```".format(message))
 
+#TODO Do not display those on ?help if user does not have permission
+#     Add library permission check or hide the command
 
 @bot.command()
 async def load(ctx, extension):

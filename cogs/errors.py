@@ -72,6 +72,9 @@ class Errors(rubbercog.Rubbercog):
             await self.log(ctx, "Missing argument", quote=True, msg=error)
             return
 
+        elif isinstance(error, commands.CommandError):
+            return await self.throwNotification(ctx, error)
+
         # display error message
         await self.throwError(ctx, error)
         await self.log(ctx, "on_command_error", quote=True, msg=error)

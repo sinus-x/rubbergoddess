@@ -55,7 +55,7 @@ def is_in_voice(ctx: commands.Context):
     and ctx.author.voice.channel is not None
 
 def __getAuthor(ctx: commands.Context):
-    if ctx.guild.id == config.guild_id:
-        return ctx.author
-    return ctx.bot.get_guild(config.guild_id).get_member(ctx.author.id)
-    #TODO Create an RGs error NotInMasterGuild
+    u = ctx.bot.get_guild(config.guild_id).get_member(ctx.author.id)
+    if u is not None:
+        return u
+    raise commands.CommandError("Not in master guild.")
