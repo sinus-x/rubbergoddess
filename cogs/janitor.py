@@ -15,12 +15,13 @@ class Janitor(rubbercog.Rubbercog):
 
     #TODO Add docstring
     #TODO Use parameter to get 'warn'
-    #TODO Add autoremove
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(check.is_in_modroom)
     @commands.has_permissions(administrator=True)
     @commands.command()
     async def hoarders(self, ctx: commands.Context):
+        """Check for users with multiple programme roles"""
+        """Use 'warn' argument to send each hoarder a warning message."""
         message = tuple(re.split(r'\s+', str(ctx.message.content).strip("\r\n\t")))
         guild = self.getGuild()
         members = guild.members
@@ -29,6 +30,11 @@ class Janitor(rubbercog.Rubbercog):
             warn = True
         else:
             warn = False
+
+        try:
+            await ctx.message.delete()
+        except discord.HTTPException:
+            pass
 
         hoarders = []
         for member in members:
@@ -48,7 +54,7 @@ class Janitor(rubbercog.Rubbercog):
                 mess = await ctx.send("Odesílání zprávy 1/{all}.".format(all=all))
             embed = discord.Embed(title="Programme hoarders", color=config.color)
             for num, (hoarder, progs) in enumerate(hoarders, start=1):
-                embed.add_field(name="User", value=hoarder.mention, inline = True)
+                embed.add_field(name="User", value="{}#{}".format(hoarder.name,hoarder.discriminator), inline = True)
                 embed.add_field(name="Status", value=hoarder.status, inline = True)
                 embed.add_field(name="Programmes", value=', '.join(progs), inline = True)
                 if warn:
@@ -56,11 +62,11 @@ class Janitor(rubbercog.Rubbercog):
                         await mess.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
                     await hoarder.send(utils.fill_message("hoarders_warn", user=hoarder.id))
                 if num % 8 == 0: #Can't have more than 25 fields in an embed
-                    await channel.send(embed=embed)
+                    await channel.send(embed=embed, delete_after=config.delay_embed)
                     embed = discord.Embed(title="Programme hoarders", color=config.color)
             if warn and num % 5 != 0:
                 await mess.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
-            await channel.send(embed=embed)
+            await channel.send(embed=embed, delete_after=config.delay_embed)
 
 
     @commands.check(check.is_elevated)
