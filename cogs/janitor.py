@@ -13,60 +13,54 @@ class Janitor(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
-    #TODO Add docstring
-    #TODO Use parameter to get 'warn'
+
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(check.is_in_modroom)
     @commands.has_permissions(administrator=True)
     @commands.command()
-    async def hoarders(self, ctx: commands.Context):
-        """Check for users with multiple programme roles"""
-        """Use 'warn' argument to send each hoarder a warning message."""
-        message = tuple(re.split(r'\s+', str(ctx.message.content).strip("\r\n\t")))
-        guild = self.getGuild()
-        members = guild.members
-        channel = ctx.channel
-        if len(message) == 2 and message[1] == "warn":
+    async def hoarders(self, ctx: commands.Context, warn: str = None):
+        """Check for users with multiple programme roles
+
+        warn: Optional. Use "warn" string to send warnings, else just list the users
+        """
+        if warn == "warn":
             warn = True
         else:
             warn = False
 
-        try:
-            await ctx.message.delete()
-        except discord.HTTPException:
-            pass
-
         hoarders = []
-        for member in members:
+        for member in self.getGuild().members:
             prog =[]
             for role in member.roles:
-                if role < discord.utils.get(guild.roles, name='---FEKT') \
-                and role > discord.utils.get(guild.roles, name='---'):
+                if role < discord.utils.get(self.getGuild().roles, name='---FEKT') \
+                and role > discord.utils.get(self.getGuild().roles, name='---'):
                     prog.append(role.name)
             if len(prog) > 1:
                 hoarders.append([member, prog])
 
         if len(hoarders) == 0:
-            await ctx.send(text.get("warden","no hoarders"))
+            await ctx.send(text.get("janitor","no hoarders"))
         else:
             all = len(hoarders)
             if warn:
-                mess = await ctx.send("Odesílání zprávy 1/{all}.".format(all=all))
+                msg = await ctx.send("Odesílání zprávy 1/{all}.".format(all=all))
             embed = discord.Embed(title="Programme hoarders", color=config.color)
             for num, (hoarder, progs) in enumerate(hoarders, start=1):
-                embed.add_field(name="User", value="{}#{}".format(hoarder.name,hoarder.discriminator), inline = True)
-                embed.add_field(name="Status", value=hoarder.status, inline = True)
-                embed.add_field(name="Programmes", value=', '.join(progs), inline = True)
+                embed.add_field(name="User", value=f"**{discord.utils.escape_markdown(hoarder.name)}** ({hoarder.id})")
+                embed.add_field(name="Status", value=hoarder.status)
+                embed.add_field(name="Programmes", value=', '.join(progs), inline = False)
                 if warn:
-                    if num %5 == 0: #Don't want to stress the API too much
-                        await mess.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
-                    await hoarder.send(utils.fill_message("hoarders_warn", user=hoarder.id))
-                if num % 8 == 0: #Can't have more than 25 fields in an embed
-                    await channel.send(embed=embed, delete_after=config.delay_embed)
+                    if num %5 == 0: # Do not stress the API too much
+                        await msg.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
+                    await hoarder.send(text.fill("janitor", "hoarding warning", guild=self.getGuild().name))
+                if num % 8 == 0: # Can't have more than 25 fields in an embed
+                    await ctx.channel.send(embed=embed, delete_after=config.delay_embed)
                     embed = discord.Embed(title="Programme hoarders", color=config.color)
             if warn and num % 5 != 0:
-                await mess.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
-            await channel.send(embed=embed, delete_after=config.delay_embed)
+                await msg.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
+            await ctx.channel.send(embed=embed, delete_after=config.delay_embed)
+
+        await self.deleteCommand(ctx)
 
 
     @commands.check(check.is_elevated)

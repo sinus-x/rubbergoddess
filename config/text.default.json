@@ -134,10 +134,11 @@
 		"rename empty": "{user}, zadej alespoň jeden platný znak.",
 		"rename long": "{user}, takové jméno je moc dlouhé."
 	},
-	"warden": {
+	"janitor": {
 		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
-		"hoarding warning": "Ahoj. Všimla jsem si, že máš na FEKT serveru víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ - potřebné předměty si můžeš přidat v {channel}.",
-
+		"hoarding warning": "Ahoj. Všimla jsem si, že máš na **{guild}** víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ."
+	},
+	"warden": {
 		"gif warning": "{user}, Giphy nebo Tenor tu nemáme rádi. Odebrala jsem ti pět karma bodů.",
 		"repost title": "Nápověda",
 		"repost description": "{name}, shoda **{value}**!",
