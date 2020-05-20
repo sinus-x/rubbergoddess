@@ -28,6 +28,8 @@ class Warden (rubbercog.Rubbercog):
         self.limit_hard = 7
         self.limit_soft = 14
 
+        self.message_channel = None
+
     def doCheckRepost(self, message: discord.Message):
         return message.channel.id in config.get('warden cog', 'deduplication channels') \
         and message.attachments is not None and len(message.attachments) > 0 \
@@ -61,6 +63,28 @@ class Warden (rubbercog.Rubbercog):
                         await m.delete()
                 except:
                     continue
+
+    @commands.Cog.listener()
+    async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent):
+        if self.message_channel is None:
+            self.message_channel = self.getGuild().get_channel(config.get("channels", "messages"))
+
+        g = self.bot.get_guild(payload.guild_id)
+        ch = g.get_channel(payload.channel_id)
+        d = f"{ch.mention} in **{discord.utils.escape_markdown(g.name)}**"
+        embed = discord.Embed(title="Message deleted", description=d, color=config.color)
+        if payload.cached_message is not None:
+            m = payload.cached_message
+            embed.set_author(name=str(m.author), icon_url=m.author.avatar_url)
+            if m.content:
+                embed.set_footer(text=m.content)
+            else:
+                embed.set_footer(text=f"_No text; {len(m.attachments)} attachments_")
+        else:
+            embed.set_footer(text="Message not in cache.")
+
+        await self.message_channel.send(embed=embed)
+
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):

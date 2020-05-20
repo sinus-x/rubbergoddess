@@ -50,6 +50,8 @@
 		"botdev": 0,
 		"botlog": 0,
 		"guildlog": 0,
+		"__comment": "Where to log deleted messages",
+		"messages": 0,
 		"vote": 0,
 		"botspam": 0,
 		"__comment": "Where NOT to print '👉 #bot-room' message",
