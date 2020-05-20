@@ -120,6 +120,10 @@
 		"nameday sk": "http://svatky.adresa.info/json?lang=sk",
 		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
 	},
+	"janitor": {
+		"__comment": "Subject channel visible to the teacher",
+		"teacher suffix": "-teacher"
+	},
 	"voice cog": {
 		"__comment": "Wordlist for automatic voice channel name generation",
 		"adjectives": ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"],

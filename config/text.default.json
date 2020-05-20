@@ -136,7 +136,9 @@
 	},
 	"janitor": {
 		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
-		"hoarding warning": "Ahoj. Všimla jsem si, že máš na **{guild}** víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ."
+		"hoarding warning": "Ahoj. Všimla jsem si, že máš na **{guild}** víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ.",
+
+		"teacher not subject": "{channel} není předmětová místnost."
 	},
 	"warden": {
 		"gif warning": "{user}, Giphy nebo Tenor tu nemáme rádi. Odebrala jsem ti pět karma bodů.",

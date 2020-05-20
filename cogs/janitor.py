@@ -117,5 +117,21 @@ class Janitor(rubbercog.Rubbercog):
         channel = self.getGuild().get_channel(config.channel_botlog)
         await channel.send(embed=embed)
 
+    @commands.check(check.is_mod)
+    @commands.bot_has_permissions(manage_channels=True)
+    @commands.command(name="teacher_channel", aliases=["teacher-channel"])
+    async def teacher_channel(self, ctx, channel: discord.TextChannel):
+        """Create subject channel will be visible for the subject's teacher, too
+
+        channel: Subject channel to be duplicated
+        """
+        if channel.name not in config.subjects:
+            return await self.output.error(ctx, text.fill("janitor", "teacher not subject", channel=channel.mention))
+
+        ch = await channel.clone(name=channel.name + config.get("janitor", "teacher suffix"))
+        await ch.edit(position=channel.position+1)
+        await ctx.send(f"Created channel {ch.mention}")
+
+
 def setup(bot):
     bot.add_cog(Janitor(bot))
