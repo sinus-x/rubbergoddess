@@ -69,17 +69,25 @@ class Warden (rubbercog.Rubbercog):
         if self.message_channel is None:
             self.message_channel = self.getGuild().get_channel(config.get("channels", "messages"))
 
+        if payload.guild_id != config.guild_id and payload.guild_id != config.slave_id:
+            return
+
         g = self.bot.get_guild(payload.guild_id)
         ch = g.get_channel(payload.channel_id)
         d = f"{ch.mention} in **{discord.utils.escape_markdown(g.name)}**"
         embed = discord.Embed(title="Message deleted", description=d, color=config.color)
         if payload.cached_message is not None:
             m = payload.cached_message
+
+            # do not log deleted bot messages
+            if m.author.bot:
+                return
+
             embed.set_author(name=str(m.author), icon_url=m.author.avatar_url)
             if m.content:
                 embed.set_footer(text=m.content)
             else:
-                embed.set_footer(text=f"_No text; {len(m.attachments)} attachments_")
+                embed.set_footer(text=f"No text; {len(m.attachments)} attachments")
         else:
             embed.set_footer(text="Message not in cache.")
 
