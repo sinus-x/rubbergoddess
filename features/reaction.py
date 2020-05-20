@@ -374,6 +374,15 @@ class Reaction(BaseFeature):
                     return
                 if fekt in member.roles or vut in member.roles:
                     await channel.set_permissions(member, read_messages=True)
+                    # add teacher channel, if exists
+                    try:
+                        teacher = discord.utils.get(
+                            channel.guild.channels,
+                            name=channel.name + config.get('janitor', 'teacher suffix')
+                        )
+                        await teacher.set_permissions(member, read_messages=True)
+                    except:
+                        pass
                     return
                 else:
                     errmsg = "subject_add_denied_guest"
@@ -411,6 +420,15 @@ class Reaction(BaseFeature):
                 return
             if channel.name in config.subjects:
                 await channel.set_permissions(member, overwrite=None)
+                # remove teacher channel, if exists
+                try:
+                    teacher = discord.utils.get(
+                        channel.guild.channels,
+                        name=channel.name + config.get('janitor', 'teacher suffix')
+                    )
+                    await teacher.set_permissions(member, overwrite=None)
+                except:
+                    pass
                 return
             # While sending a permission error is supported, there is no need 
             # to do it.
