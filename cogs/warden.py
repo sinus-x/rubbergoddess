@@ -71,6 +71,9 @@ class Warden (rubbercog.Rubbercog):
 
         if payload.guild_id != config.guild_id and payload.guild_id != config.slave_id:
             return
+        if payload.channel_id == config.channel_jail \
+        or payload.channel_id in config.get("compatibility", "ignored message log channels"):
+            return
 
         g = self.bot.get_guild(payload.guild_id)
         ch = g.get_channel(payload.channel_id)
