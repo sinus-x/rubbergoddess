@@ -144,9 +144,6 @@
 	},
 	"compatibility": {
 		"__comment": "Do not send the same emote as other bot here",
-		"ignored imitation channels": [],
-
-		"__comment": "Where the bot should ignore deleted messages",
-		"ignored message log channels": []
+		"ignored imitation channels": []
 	}
 }

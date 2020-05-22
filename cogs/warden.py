@@ -46,6 +46,7 @@ class Warden (rubbercog.Rubbercog):
             await message.channel.send(text.fill('warden', 'gif warning', user=message.author))
             repo_k.update_karma_get(message.author, -5)
             await self.deleteCommand(message)
+            self.console.debug("Warden:on_message", "Removed message linking a gif")
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
@@ -63,39 +64,6 @@ class Warden (rubbercog.Rubbercog):
                         await m.delete()
                 except:
                     continue
-
-    @commands.Cog.listener()
-    async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent):
-        if self.message_channel is None:
-            self.message_channel = self.getGuild().get_channel(config.get("channels", "messages"))
-
-        if payload.guild_id != config.guild_id and payload.guild_id != config.slave_id:
-            return
-        if payload.channel_id == config.channel_jail \
-        or payload.channel_id in config.get("compatibility", "ignored message log channels"):
-            return
-
-        g = self.bot.get_guild(payload.guild_id)
-        ch = g.get_channel(payload.channel_id)
-        d = f"{ch.mention} in **{discord.utils.escape_markdown(g.name)}**"
-        embed = discord.Embed(title="Message deleted", description=d, color=config.color)
-        if payload.cached_message is not None:
-            m = payload.cached_message
-
-            # do not log deleted bot messages
-            if m.author.bot:
-                return
-
-            embed.set_author(name=str(m.author), icon_url=m.author.avatar_url)
-            if m.content:
-                embed.set_footer(text=m.content)
-            else:
-                embed.set_footer(text=f"No text; {len(m.attachments)} attachments")
-        else:
-            embed.set_footer(text="Message not in cache.")
-
-        await self.message_channel.send(embed=embed)
-
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
