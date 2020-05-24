@@ -24,7 +24,7 @@ class Actor(rubbercog.Rubbercog):
             self.reactions = []
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message):
         if message.author.bot:
             return
 
@@ -34,16 +34,26 @@ class Actor(rubbercog.Rubbercog):
             or r["match"] == "A" and r["trigger"] in message.content \
             or r["match"] == "S" and message.content.startswith(r["trigger"]) \
             or r["match"] == "E" and message.content.endswith(r["trigger"]):
-                return await message.channel.send(r["response"])
+                if r["type"] == "T":
+                    return await message.channel.send(r["response"])
+                elif r["type"] == "I":
+                    return await message.channel.send(file=discord.File(self.path + r["response"]))
             # fmt: on
 
     def _save_reactions(self):
         with open(self.reactions_path, "w", encoding="utf-8") as f:
             json.dump(self.reactions, f, ensure_ascii=False, indent=4)
 
+    def _check_match_string(self, match: str):
+        """Check if match string is valid"""
+        return match[:1].upper() in ["F", "A", "S", "E"]
+
+    def _check_filename_extension(self, filename: str):
+        return filename.split(".")[-1] in ["jpg", "jpeg", "png", "webm", "mp4"]
+
     @commands.group(name="send")
     @commands.check(check.is_bot_owner)
-    async def send(self, ctx: commands.Context):
+    async def send(self, ctx):
         """Send post to a channel"""
         await self.deleteCommand(ctx)
         if ctx.invoked_subcommand is None:
@@ -52,7 +62,7 @@ class Actor(rubbercog.Rubbercog):
             return
 
     @send.command(name="text")
-    async def send_text(self, ctx: commands.Context, channel: discord.TextChannel, *, text: str):
+    async def send_text(self, ctx, channel: discord.TextChannel, *, text: str):
         """Send a text message as a bot
 
         channel: Target text channel
@@ -62,9 +72,10 @@ class Actor(rubbercog.Rubbercog):
             return await ctx.send_help(ctx.invoked_with)
 
         await channel.send(text)
+        await ctx.send(f"Sent to {channel.mention}")
 
     @send.command(name="image")
-    async def send_image(self, ctx: commands.Context, channel: discord.TextChannel, filename):
+    async def send_image(self, ctx, channel: discord.TextChannel, filename):
         """Send an image as a bot
 
         channel: Target text channel
@@ -75,21 +86,22 @@ class Actor(rubbercog.Rubbercog):
 
         try:
             await channel.send(file=discord.File(self.path + filename))
+            await ctx.send(f"Sent to {channel.mention}")
         except Exception as e:
             await self.throwError(ctx, "Could not send image", e)
 
-    @commands.group(name="actor")
+    @commands.group(name="reactions")
     @commands.check(check.is_mod)
-    async def actor(self, ctx: commands.Context):
+    async def reactions(self, ctx):
         """Send post to a text channel"""
+        await self.deleteCommand(ctx)
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
-            await self.deleteCommand(ctx)
             return
 
-    @actor.command(name="list")
-    async def actor_list(self, ctx: commands.Context):
-        """See current reactions"""
+    @reactions.command(name="list")
+    async def reactions_list(self, ctx):
+        """See enabled reactions"""
         result = ""
         for r in self.reactions:
             s = f"[{r['match']}] {r['trigger']} -> {r['response']}"
@@ -101,28 +113,22 @@ class Actor(rubbercog.Rubbercog):
             result = "(No reactions)"
 
         await ctx.send(f"```\n{result}\n```")
-        await self.deleteCommand(ctx)
 
-    @commands.is_owner()
-    @actor.group(name="text")
-    async def actor_text(self, ctx: commands.Context):
-        """Manage automatic responses"""
+    @reactions.group(name="add")
+    async def reactions_add(self, ctx):
+        """Add reaction trigger"""
         if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
-            await self.deleteCommand(ctx)
-            return
+            return await ctx.send_help(ctx.invoked_with)
 
-    @actor_text.command(name="add")
-    async def actor_text_add(self, ctx: commands.Context, match: str, trigger: str, response: str):
+    @reactions_add.command(name="text")
+    async def reactions_add_text(self, ctx, match: str, trigger: str, response: str):
         """Add text reaction
 
         match: [full | any | starts | ends]
         trigger: "Trigger string" (in quotes)
         response: "Response string" (in quotes)
         """
-        await self.deleteCommand(ctx)
-
-        if match not in ["full", "any", "starts", "ends"]:
+        if not self._check_match_string(match):
             return await ctx.send_help(ctx.invoked_with)
 
         if trigger in [x["trigger"] for x in self.reactions]:
@@ -134,19 +140,46 @@ class Actor(rubbercog.Rubbercog):
         self._save_reactions()
         await ctx.send("Reaction added")
 
-    @actor_text.command(name="remove")
-    async def actor_text_remove(self, ctx: commands.Context, trigger: str):
-        """Remove text reaction"""
-        await self.deleteCommand(ctx)
+    @reactions_add.command(name="image", aliases=["img"])
+    async def reactions_add_image(self, ctx, match: str, trigger: str, filename: str):
+        """Add multimedia reaction
 
+        match: [full | any | starts | ends]
+        trigger: "Trigger string" (in quotes)
+        filename: An image or video
+        """
+        if not self._check_match_string(match):
+            return await ctx.send_help(ctx.invoked_with)
+
+        if trigger in [x["trigger"] for x in self.reactions]:
+            return await ctx.send("Trigger already in use")
+
+        if not os.path.exists(self.path + filename):
+            return await ctx.send("No such image")
+
+        self.reactions.append(
+            {"match": match[:1].upper(), "type": "I", "trigger": trigger, "response": filename}
+        )
+        self._save_reactions()
+        await ctx.send("Reaction added")
+
+    @reactions.command(name="remove", aliases=["delete", "rm", "del"])
+    async def reactions_remove(self, ctx, trigger: str):
+        """Remove reaction trigger"""
+        elem = None
         for r in self.reactions:
             if r["trigger"] == trigger:
-                self.reactions.remove(r)
-                return await ctx.send("Reaction removed")
-        return await ctx.send("Trigger not found")
+                elem = r
+
+        if elem:
+            self.reactions.remove(r)
+            self._save_reactions()
+            return await ctx.send("Reaction removed")
+        else:
+            return await ctx.send("Trigger not found")
 
     @commands.is_owner()
-    @actor.group(name="image")
+    @commands.group(name="image", aliases=["img", "images"])
     async def actor_image(self, ctx: commands.Context):
         """Manage images available to the bot"""
         if ctx.invoked_subcommand is None:
