@@ -29,11 +29,12 @@ class Actor(rubbercog.Rubbercog):
             return
 
         for r in self.reactions:
+            text = message.content.lower()
             # fmt: off
-            if r["match"] == "F" and r["trigger"] == message.content \
-            or r["match"] == "A" and r["trigger"] in message.content \
-            or r["match"] == "S" and message.content.startswith(r["trigger"]) \
-            or r["match"] == "E" and message.content.endswith(r["trigger"]):
+            if r["match"] == "F" and r["trigger"] == text \
+            or r["match"] == "A" and r["trigger"] in text \
+            or r["match"] == "S" and text.startswith(r["trigger"]) \
+            or r["match"] == "E" and text.endswith(r["trigger"]):
                 if r["type"] == "T":
                     return await message.channel.send(r["response"])
                 elif r["type"] == "I":
