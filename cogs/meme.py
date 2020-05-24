@@ -9,8 +9,6 @@ from core.emote import emote
 from core import rubbercog, utils
 from config.messages import Messages as messages
 
-uhoh_counter = 0
-
 
 class Meme(rubbercog.Rubbercog):
     """Interact with users"""
@@ -19,15 +17,10 @@ class Meme(rubbercog.Rubbercog):
         super().__init__(bot)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
-    @commands.command(name="??")
+    @commands.command(name="???", aliases=["??"])
     async def question(self, ctx):
         """What?"""
         await ctx.send(choice(messages.question))
-
-    @commands.command()
-    async def kachna(self, ctx):
-        """Quack"""
-        await ctx.send(text.fill("meme", "kachna", url=config.meme_kachna))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
