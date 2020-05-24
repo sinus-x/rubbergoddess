@@ -1,7 +1,9 @@
 import json
+import os
 
 import discord
 from discord.ext import commands
+from requests import get
 
 from core import check, rubbercog
 from core.config import config
@@ -14,7 +16,8 @@ class Actor(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
-        self.reactions_path = "data/actor/reactions.json"
+        self.path = os.getcwd() + "/data/actor/"
+        self.reactions_path = self.path + "reactions.json"
         try:
             self.reactions = json.load(open(self.reactions_path))
         except:
@@ -42,6 +45,7 @@ class Actor(rubbercog.Rubbercog):
     @commands.check(check.is_bot_owner)
     async def send(self, ctx: commands.Context):
         """Send post to a channel"""
+        await self.deleteCommand(ctx)
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
             await self.deleteCommand(ctx)
@@ -55,25 +59,27 @@ class Actor(rubbercog.Rubbercog):
         message: Text
         """
         if channel is None or text is None:
-            await self.deleteCommand(ctx)
-            await ctx.send_help(ctx.invoked_with)
-            return
+            return await ctx.send_help(ctx.invoked_with)
 
         await channel.send(text)
-        await self.deleteCommand(ctx)
 
     @send.command(name="image")
-    async def send_image(self, ctx: commands.Context, channel: discord.TextChannel, url):
+    async def send_image(self, ctx: commands.Context, channel: discord.TextChannel, filename):
         """Send an image as a bot
 
         channel: Target text channel
-        message: A path or an url to an image
+        filename: A filename
         """
-        await self.output.info(ctx, text.get("error", "not implemented"))
-        await self.deleteCommand(ctx)
+        if channel is None or text is None:
+            return await ctx.send_help(ctx.invoked_with)
+
+        try:
+            await channel.send(file=discord.File(self.path + filename))
+        except Exception as e:
+            await self.throwError(ctx, "Could not send image", e)
 
     @commands.group(name="actor")
-    @commands.check(check.is_bot_owner)
+    @commands.check(check.is_mod)
     async def actor(self, ctx: commands.Context):
         """Send post to a text channel"""
         if ctx.invoked_subcommand is None:
@@ -97,6 +103,7 @@ class Actor(rubbercog.Rubbercog):
         await ctx.send(f"```\n{result}\n```")
         await self.deleteCommand(ctx)
 
+    @commands.is_owner()
     @actor.group(name="text")
     async def actor_text(self, ctx: commands.Context):
         """Manage automatic responses"""
@@ -137,6 +144,67 @@ class Actor(rubbercog.Rubbercog):
                 self.reactions.remove(r)
                 return await ctx.send("Reaction removed")
         return await ctx.send("Trigger not found")
+
+    @commands.is_owner()
+    @actor.group(name="image")
+    async def actor_image(self, ctx: commands.Context):
+        """Manage images available to the bot"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.invoked_with)
+            await self.deleteCommand(ctx)
+            return
+
+    @actor_image.command(name="list")
+    async def actor_image_list(self, ctx: commands.Context):
+        """List available images"""
+        files = os.listdir(self.path)
+
+        result = ""
+        for f in files:
+            if f.split(".")[-1] not in ["jpg", "jpeg", "png", "webm", "mp4"]:
+                continue
+            result += f"{f} ({int(os.path.getsize(self.path + f)/1024)} kB)\n"
+        if result == "":
+            result = "(No images)"
+        await ctx.send(f"```\n{result}\n```")
+
+    @actor_image.command(name="download", aliases=["dl"])
+    async def actor_image_download(self, ctx, url: str, filename: str):
+        """Download new image
+
+        url: URL of an image
+        filename: Target filename
+        """
+        if filename.split(".")[-1] not in ["jpg", "jpeg", "png", "webm", "mp4"]:
+            return await ctx.send("Please, specify an file extension.")
+        if "/" in filename or "\\" in filename or ".." in filename:
+            return await ctx.send("Invalid characters inside of filename.")
+
+        with open(self.path + filename, "wb") as f:
+            response = get(url)
+            f.write(response.content)
+
+        await ctx.send("Image succesfully downloaded")
+
+    @actor_image.command(name="remove", aliases=["delete", "rm", "del"])
+    async def actor_image_remove(self, ctx, filename: str):
+        """Remove image
+
+        filename: An image file
+        """
+        if "/" in filename or "\\" in filename or ".." in filename:
+            return await ctx.send("Invalid characters inside of filename.")
+
+        os.remove(self.path + filename)
+        await ctx.send("File deleted")
+
+    @actor_image.command(name="show")
+    async def actor_image_show(self, ctx, filename: str):
+        """Show an image
+
+        filename: An image file
+        """
+        await self.send_image(ctx, ctx.channel, filename)
 
     @commands.cooldown(rate=1, per=600.0, type=commands.BucketType.default)
     @commands.check(check.is_bot_owner)
