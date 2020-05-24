@@ -25,12 +25,6 @@ class Errors(rubbercog.Rubbercog):
             print(''.join(traceback.format_exception(type(error), error, error.__traceback__)))
             printed = True
 
-        if isinstance(error, discord.Forbidden):
-            if ctx.channel.id in config.wormhole_distant:
-                #TODO Remove this when Errors is not a cog
-                # Ignore if the bot does not have permission in remote wormholes
-                return
-
         if isinstance(error, commands.MissingPermissions):
             await self.throwNotification(ctx, messages.err_no_permission)
             await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)

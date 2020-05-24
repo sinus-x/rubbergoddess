@@ -84,6 +84,7 @@
 		"verify_id": 0,
 		"mod_id": 0,
 		"elevated_ids": [0, 0, 0],
+		"sudo_id": 0,
 
 		"__comment": "Which roles are considered fully local",
 		"native": ["FEKT"],
@@ -101,9 +102,11 @@
 	"karma cog": {
 		"__comment": "IDs for roles that shouldn't have karma",
 		"banned roles": [],
-
-		"__comment": "IDs for channels that shouldn't have karma effects",
+		"__comment": "IDs for channels that shouldn't have karma",
 		"banned channels": [],
+		"__comment": "Messages with these strings shouldn't have karma",
+		"banned words": [],
+
 		"count subjects": true,
 
 		"vote limit": 5,

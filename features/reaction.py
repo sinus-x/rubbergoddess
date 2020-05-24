@@ -243,6 +243,11 @@ class Reaction(BaseFeature):
             # do not count banned roles
             elif config.karma_roles_ban in map(lambda x: x.id, member.roles):
                 count = False
+            # do not count banned strings
+            elif len(config.karma_string_ban) > 0:
+                for s in config.karma_string_ban:
+                    if s in message.content:
+                        count = False
             # optionally, do not count subjects
             elif not config.karma_subjects:
                 if isinstance(message.channel, discord.TextChannel) and \
@@ -329,6 +334,11 @@ class Reaction(BaseFeature):
             # do not count banned roles
             elif config.karma_roles_ban in map(lambda x: x.id, member.roles):
                 count = False
+            # do not count banned strings
+            elif len(config.karma_string_ban) > 0:
+                for s in config.karma_string_ban:
+                    if s in message.content:
+                        count = False
             # optionally, do not count subjects
             elif not config.karma_subjects:
                 if isinstance(message.channel, discord.TextChannel) and \

@@ -259,10 +259,17 @@ class Karma(BaseFeature):
         colour = config.color
         output = {'-1': [], '1': [], '0': []}
         karma = 0
-        #TODO ignore if user has banned role
-        if msg.channel in config.karma_channels_ban or \
+
+        count = True
            (msg.channel.name in config.subjects and not config.karma_subjects):
-            return karma
+        if msg.channel in config.karma_channels_ban or (
+            msg.channel.name in config.subjects and not config.karma_subjects
+        ):
+            count = False
+        for s in config.karma_string_ban:
+            if s in msg.content:
+                count = False
+
         for react in reactions:
             emoji = react.emoji
             val = self.repo.emoji_value_raw(emoji)
@@ -284,26 +291,30 @@ class Karma(BaseFeature):
                 output['0'].append(emoji)
         embed = discord.Embed(title='Karma zprávy')
         embed.add_field(name="Zpráva", value=msg.jump_url, inline=False)
-        for key in ['1', '-1', '0']:
-            if output[key]:
-                message = ""
-                for emoji in output[key]:
-                    message += str(emoji) + ' '
-                if key == '1':
-                    name = 'Pozitivní'
-                elif key == '0':
-                    name = 'Neutrální'
-                else:
-                    name = 'Negativní'
-                embed.add_field(name=name, value=message, inline=False)
-        if karma > 0:
-            colour = 0x34cb0b
-        elif karma < 0:
-            colour = 0xcb410b
-        embed.colour = colour
+
+        if count:
+            for key in ["1", "-1", "0"]:
+                if output[key]:
+                    message = ""
+                    for emoji in output[key]:
+                        message += str(emoji) + " "
+                    if key == "1":
+                        name = "Pozitivní"
+                    elif key == "0":
+                        name = "Neutrální"
+                    else:
+                        name = "Negativní"
+                    embed.add_field(name=name, value=message, inline=False)
+            if karma > 0:
+                colour = 0x34CB0B
+            elif karma < 0:
+                colour = 0xCB410B
+            embed.colour = colour
+            embed.add_field(name="Celková karma zprávy:", value=f"**{karma}**", inline=False)
+        else:
+            embed.add_field(name="\u200b", value="Pro tuto zprávu se karma nepočítá")
         embed.set_footer(text=author, icon_url=author.avatar_url)
-        embed.add_field(name='Celková karma za zprávu:', value=karma, inline=False)
-        await channel_out.send(embed=embed)
+        await channel_out.send(embed=embed, delete_after=config.delay_embed)
 
     async def leaderboard(self, channel, action, order, start=1):
         output = "> "
