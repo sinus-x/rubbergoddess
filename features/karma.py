@@ -261,7 +261,6 @@ class Karma(BaseFeature):
         karma = 0
 
         count = True
-           (msg.channel.name in config.subjects and not config.karma_subjects):
         if msg.channel in config.karma_channels_ban or (
             msg.channel.name in config.subjects and not config.karma_subjects
         ):
