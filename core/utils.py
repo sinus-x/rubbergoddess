@@ -5,8 +5,9 @@ from discord.ext import commands
 from core import config
 from config.messages import Messages
 
+
 def generate_mention(user_id):
-    return '<@' + str(user_id) + '>'
+    return "<@" + str(user_id) + ">"
 
 
 def git_hash():
@@ -43,6 +44,7 @@ def has_role(user, role):
         return role.lower() in [u.name.lower() for u in user.roles]
     return
 
+
 def fill_message(message_name, *args, **kwargs):
     """Fills message template from messages by attempting to get the attr.
     :param message_name: {str} message template name
@@ -51,11 +53,11 @@ def fill_message(message_name, *args, **kwargs):
     """
 
     # Convert username/admin to a mention
-    if 'user' in kwargs:
-        kwargs['user'] = generate_mention(kwargs['user'])
+    if "user" in kwargs:
+        kwargs["user"] = generate_mention(kwargs["user"])
 
-    if 'admin' in kwargs:
-        kwargs['admin'] = generate_mention(kwargs['admin'])
+    if "admin" in kwargs:
+        kwargs["admin"] = generate_mention(kwargs["admin"])
 
     # Attempt to get message template and fill
     try:
@@ -78,4 +80,3 @@ async def notify(ctx: commands.Context, msg: str):
     embed.add_field(name="Výsledek", value=msg, inline=False)
     embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed, delete_after=config.delay_embed)
-

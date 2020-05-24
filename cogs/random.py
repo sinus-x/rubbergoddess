@@ -11,6 +11,7 @@ rng = rng.Rng()
 
 class Random(rubbercog.Rubbercog):
     """Pick, flip, roll dice"""
+
     def __init__(self, bot):
         super().__init__(bot)
 
@@ -24,7 +25,7 @@ class Random(rubbercog.Rubbercog):
     @commands.command()
     async def pick(self, ctx, *args):
         """"Pick an option"""
-        option = rng.pick_option(discord.utils.escape_mentions(' '.join(args)))
+        option = rng.pick_option(discord.utils.escape_mentions(" ".join(args)))
         if option:
             await ctx.send("{} {}".format(option, utils.generate_mention(ctx.author.id)))
         await self.roomCheck(ctx)

@@ -12,6 +12,7 @@ review_repo = review_repo.ReviewRepository()
 
 class Review(rubbercog.Rubbercog):
     """Subject reviews"""
+
     def __init__(self, bot):
         super().__init__(bot)
         self.rev = review.Review(bot)
@@ -29,11 +30,12 @@ class Review(rubbercog.Rubbercog):
                 anonym = True
             else:
                 roles = ctx.message.author.roles
-            if subcommand == 'add':
+            if subcommand == "add":
                 for role in roles:
                     if role.name in config.roles_guest:
-                        await ctx.send(utils.fill_message(
-                            "review_add_denied", user=ctx.message.author.id))
+                        await ctx.send(
+                            utils.fill_message("review_add_denied", user=ctx.message.author.id)
+                        )
                         return
                 if subject is None or tier is None:
                     await ctx.send(messages.review_add_format)
@@ -46,28 +48,30 @@ class Review(rubbercog.Rubbercog):
                 if args_len == 0:
                     args = None
                 else:
-                    args = ' '.join(args)
+                    args = " ".join(args)
                 try:
                     self.rev.add_review(author, subject.lower(), tier, anonym, args)
                 except Exception:
                     await ctx.send(messages.review_wrong_subject)
                     return
                 await ctx.send(messages.review_added)
-            elif subcommand == 'remove':
+            elif subcommand == "remove":
                 if subject is None:
                     if ctx.author.id == config.admin_id:
                         await ctx.send(messages.review_remove_format_admin)
                     else:
                         await ctx.send(messages.review_remove_format)
-                elif subject == 'id':
+                elif subject == "id":
                     if ctx.author.id == config.admin_id:
                         if tier is None:
                             await ctx.send(messages.review_remove_id_format)
                         else:
-                            review_repo.remove(tier) # tier => ID of review
+                            review_repo.remove(tier)  # tier => ID of review
                             await ctx.send(messages.review_remove_success)
                     else:
-                        await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
+                        await ctx.send(
+                            utils.fill_message("insufficient_rights", user=ctx.author.id)
+                        )
                 else:
                     subject = subject.lower()
                     if self.rev.remove(str(ctx.message.author.id), subject):
@@ -81,7 +85,7 @@ class Review(rubbercog.Rubbercog):
                     await ctx.send(messages.review_wrong_subject)
                     return
                 msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
-                footer = msg.embeds[0].footer.text.split('|')[0]
+                footer = msg.embeds[0].footer.text.split("|")[0]
                 if msg.embeds[0].description[-1].isnumeric():
                     if footer != "Review: 1/1 ":
                         await msg.add_reaction("⏪")
@@ -110,14 +114,15 @@ class Review(rubbercog.Rubbercog):
         subject = subject.lower()
         if subcommand == "add":
             self.rev.add_subject(subject)
-            await ctx.send(f'Zkratka {subject} byla přidána')
-            #TODO Add to config, too
+            await ctx.send(f"Zkratka {subject} byla přidána")
+            # TODO Add to config, too
         elif subcommand == "remove":
             self.rev.remove_subject(subject)
-            await ctx.send(f'Zkratka {subject} byla odebrána')
-            #TODO Remove from config, too
+            await ctx.send(f"Zkratka {subject} byla odebrána")
+            # TODO Remove from config, too
         else:
             await ctx.send(messages.review_wrong_subject)
+
 
 def setup(bot):
     bot.add_cog(Review(bot))

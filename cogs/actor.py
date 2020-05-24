@@ -6,8 +6,10 @@ from core.config import config
 from core.emote import emote
 from core.text import text
 
+
 class Actor(rubbercog.Rubbercog):
     """Be a human"""
+
     def __init__(self, bot):
         super().__init__(bot)
 
@@ -42,7 +44,7 @@ class Actor(rubbercog.Rubbercog):
         channel: Target text channel
         message: A path or an url to an image
         """
-        await self.output.info(ctx, text.get('error', 'not implemented'))
+        await self.output.info(ctx, text.get("error", "not implemented"))
         await self.deleteCommand(ctx)
 
     @commands.group(name="actor")
@@ -57,7 +59,7 @@ class Actor(rubbercog.Rubbercog):
     @actor.command(name="list")
     async def actor_list(self, ctx: commands.Context):
         """See current reactions"""
-        await self.throwNotification(ctx, text.get('error', 'not implemented'))
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         await self.deleteCommand(ctx)
 
     @actor.group(name="add")
@@ -71,13 +73,13 @@ class Actor(rubbercog.Rubbercog):
     @actor_add.command(name="text")
     async def actor_add_text(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, text.get('error', 'not implemented'))
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         await self.deleteCommand(ctx)
 
     @actor_add.command(name="image")
     async def actor_add_image(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, text.get('error', 'not implemented'))
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         await self.deleteCommand(ctx)
 
     @actor.group(name="remove")
@@ -91,15 +93,14 @@ class Actor(rubbercog.Rubbercog):
     @actor_remove.command(name="text")
     async def actor_remove_text(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, text.get('error', 'not implemented'))
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         await self.deleteCommand(ctx)
 
     @actor_remove.command(name="image")
     async def actor_remove_image(self, ctx: commands.Context):
         """Add text reaction"""
-        await self.throwNotification(ctx, text.get('error', 'not implemented'))
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         await self.deleteCommand(ctx)
-
 
     @commands.cooldown(rate=1, per=600.0, type=commands.BucketType.default)
     @commands.check(check.is_bot_owner)
@@ -114,7 +115,7 @@ class Actor(rubbercog.Rubbercog):
     async def change_avatar(self, ctx: commands.Context, path: str):
         """Change bot's avatar"""
         path = f"images/{path}"
-        with open(path, 'rb') as img:
+        with open(path, "rb") as img:
             avatar = img.read()
             await self.bot.user.edit(avatar=avatar)
             await ctx.send(content="Dobře, takhle teď budu vypadat:", file=discord.File(path))
@@ -125,7 +126,7 @@ class Actor(rubbercog.Rubbercog):
 
         name: New name
         """
-        name = ' '.join(args)
+        name = " ".join(args)
         await self.bot.user.edit(username=name)
         await ctx.send(f"Dobře, od teď jsem **{name}**")
 
@@ -136,9 +137,8 @@ class Actor(rubbercog.Rubbercog):
         type: streaming, playing, listening
         name: The activity name
         """
-        await self.throwNotification(ctx, text.get('error', 'not implemented'))
+        await self.throwNotification(ctx, text.get("error", "not implemented"))
         await self.deleteCommand(ctx)
-
 
 
 def setup(bot):

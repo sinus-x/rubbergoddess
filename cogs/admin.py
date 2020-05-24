@@ -10,8 +10,10 @@ from core.text import text
 from core.emote import emote
 from config.messages import Messages as messages
 
+
 class Admin(rubbercog.Rubbercog):
     """Rubbergoddess administration"""
+
     def __init__(self, bot):
         super().__init__(bot)
 
@@ -43,13 +45,14 @@ class Admin(rubbercog.Rubbercog):
 
         elif config.loader in ["docker", "systemd+docker"]:
             if target == "docker":
-                #FIXME Can this help with anything? It doesn't even reload 
+                # FIXME Can this help with anything? It doesn't even reload
                 #      the changes in the code.
                 await ctx.send("Za chvíli budu zpátky. Restartuji Docker kontejner :wave:")
                 cmd = "docker restart rubbergoddess_bot_1"
             else:
-                await self.throwNotification(ctx, 
-                    "Jsem zavřená v Dockeru a ještě se neumím dostat ven " + emote.sad)
+                await self.throwNotification(
+                    ctx, "Jsem zavřená v Dockeru a ještě se neumím dostat ven " + emote.sad
+                )
                 return
 
         elif config.loader == "systemd":
@@ -72,7 +75,7 @@ class Admin(rubbercog.Rubbercog):
         asyncio.sleep(4)
         if len(stdout) > 1900:
             stdout = stdout[:1900]
-        await self.throwError(ctx, "Restarting error", "\n"+stdout)
+        await self.throwError(ctx, "Restarting error", "\n" + stdout)
 
     @commands.command(name="status")
     @commands.check(check.is_mod)
@@ -87,13 +90,13 @@ class Admin(rubbercog.Rubbercog):
         stdout = None
         try:
             stdout = subprocess.check_output(
-                "sudo systemctl status rubbergoddess", shell=True).decode("utf-8")
-        except subprocess. CalledProcessError as e:
+                "sudo systemctl status rubbergoddess", shell=True
+            ).decode("utf-8")
+        except subprocess.CalledProcessError as e:
             await self.throwError(ctx, e)
             return
 
         await ctx.send("```\n{}\n```".format(stdout))
-
 
     @commands.command(name="journalctl")
     @commands.check(check.is_mod)
@@ -116,13 +119,13 @@ class Admin(rubbercog.Rubbercog):
             if target == "bot":
                 file = await self._readFile(ctx, "rubbergoddess.log", docker=False)
             elif target == "cron":
-                file = await self._readFile(ctx, "journalctl.log",    docker=False)
+                file = await self._readFile(ctx, "journalctl.log", docker=False)
 
         elif config.loader == "systemd":
             if target == "bot":
                 cmd = "sudo journalctl -u rubbergoddess"
             elif target == "cron":
-                file = await self._readFile(ctx, "journalctl.log",    docker=False)
+                file = await self._readFile(ctx, "journalctl.log", docker=False)
 
         elif config.loader == "docker":
             if target == "bot":
@@ -132,7 +135,7 @@ class Admin(rubbercog.Rubbercog):
 
         elif config.loader == "systemd+docker":
             if target == "bot":
-                file = await self._readFile(ctx, "journalctl.log",    docker=True)
+                file = await self._readFile(ctx, "journalctl.log", docker=True)
             elif target == "cron":
                 file = await self._readFile(ctx, "rubbergoddess.log", docker=True)
 
@@ -151,7 +154,7 @@ class Admin(rubbercog.Rubbercog):
         elif file is None:
             return
 
-        output = list(stdout[0+i:1960+i] for i in range(0, len(stdout), 1960))
+        output = list(stdout[0 + i : 1960 + i] for i in range(0, len(stdout), 1960))
         for o in output:
             await ctx.send("```{}```".format(o))
         await self.deleteCommand(ctx)
@@ -163,12 +166,12 @@ class Admin(rubbercog.Rubbercog):
         docker: [ True | False ] Read from docker filesystem?
         """
         if docker:
-            path = '/rubbergoddess/' + file
+            path = "/rubbergoddess/" + file
         else:
             path = file
 
         try:
-            with open(path, 'r') as f:
+            with open(path, "r") as f:
                 lines = f.readlines()
         except FileNotFoundError as e:
             await self.throwNotification(ctx, "Log file not found")
@@ -179,6 +182,7 @@ class Admin(rubbercog.Rubbercog):
         for line in lines:
             data += line
         return data
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))

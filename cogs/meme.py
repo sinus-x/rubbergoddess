@@ -11,21 +11,25 @@ from config.messages import Messages as messages
 
 uhoh_counter = 0
 
+
 class Meme(rubbercog.Rubbercog):
     """Interact with users"""
+
     def __init__(self, bot):
         super().__init__(bot)
 
     @commands.Cog.listener()
-    async def on_message (self, message):
+    async def on_message(self, message):
         global uhoh_counter
 
         if message.author.bot:
-            if self.bot.user.id is not None and \
-               message.author.id != self.bot.user.id and \
-               message.channel.id not in config.noimitation and \
-               message.content.startswith("<:") and \
-               message.content.endswith(">"):
+            if (
+                self.bot.user.id is not None
+                and message.author.id != self.bot.user.id
+                and message.channel.id not in config.noimitation
+                and message.content.startswith("<:")
+                and message.content.endswith(">")
+            ):
                 # if another bot has an emoji trigger, say it too
                 await message.channel.send(message.content)
             return
@@ -42,13 +46,13 @@ class Meme(rubbercog.Rubbercog):
             await message.channel.send(link)
 
     @commands.command()
-    async def uhoh (self, ctx):
+    async def uhoh(self, ctx):
         """Say how many 'uh oh's have been said since last boot"""
         await ctx.send(utils.fill_message("uhoh_counter", uhohs=uhoh_counter))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
-    @commands.command(name='??')
-    async def question (self, ctx):
+    @commands.command(name="??")
+    async def question(self, ctx):
         """What?"""
         await ctx.send(choice(messages.question))
 
@@ -59,7 +63,7 @@ class Meme(rubbercog.Rubbercog):
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def hug (self, ctx, user: discord.Member = None):
+    async def hug(self, ctx, user: discord.Member = None):
         """Hug someone!
 
         user: Discord user. If none, the bot will hug yourself."""
@@ -72,9 +76,10 @@ class Meme(rubbercog.Rubbercog):
         await ctx.send(emote.hug_right + f" **{discord.utils.escape_markdown(user.display_name)}**")
 
     @hug.error
-    async def hugError (self, ctx, error):
+    async def hugError(self, ctx, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(text.get("error", "no user"))
+
 
 def setup(bot):
     bot.add_cog(Meme(bot))

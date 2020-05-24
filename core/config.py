@@ -1,9 +1,9 @@
 import json
 import sys
 
-class Config:
 
-    def get (self, group: str, key: str):
+class Config:
+    def get(self, group: str, key: str):
         if group in self.c and key in self.c.get(group):
             v = self.c.get(group).get(key)
         elif key in self.d.get(group):
@@ -16,15 +16,15 @@ class Config:
 
         raise AttributeError("Configuration file: key not found")
 
-    def __init__ (self):
+    def __init__(self):
         try:
-            self.d = json.load(open('config/config.default.json', 'r'))
-            self.c = json.load(open('config/config.json', 'r'))
+            self.d = json.load(open("config/config.default.json", "r"))
+            self.c = json.load(open("config/config.json", "r"))
         except FileNotFoundError:
             print("Error loading config files.")
             sys.exit(1)
 
-
+        # fmt: off
         ##
         ## DATABASE
         self.db_states = self.get('database', 'states')
@@ -123,6 +123,9 @@ class Config:
         ## COMPATIBILITY
         self.noimitation = self.get('compatibility', 'ignored imitation channels')
 
+        # fmt: on
+
+    # fmt: off
     ##
     ## LONG LISTS
     ##
@@ -174,5 +177,7 @@ class Config:
         "xpc-ca1", "xpc-ca2", "xpc-ca3", "xpc-ca4", "xpc-ca5", "xpc-mw1",
         "xpc-mw2", "xpc-mw3", "xpc-mw4"
     ]
+    # fmt: on
+
 
 config = Config()

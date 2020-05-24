@@ -10,14 +10,12 @@ review_r = review_repo.ReviewRepository()
 
 
 class Review(BaseFeature):
-
     def __init__(self, bot: Bot):
         super().__init__(bot)
 
     def make_embed(self, review, subject, tier_average, page):
         embed = discord.Embed(
-            title=subject.lower() + " reviews",
-            description="Average tier: " + tier_average
+            title=subject.lower() + " reviews", description="Average tier: " + tier_average
         )
         colour = config.color
         id = 0
@@ -36,8 +34,7 @@ class Review(BaseFeature):
                 if text_len > 1024:
                     pages = text_len // 1024 + (text_len % 1024 > 0)
                     text = review.text_review[:1024]
-                    embed.add_field(name="Text page",
-                                    value="1/" + str(pages), inline=False)
+                    embed.add_field(name="Text page", value="1/" + str(pages), inline=False)
                 embed.add_field(name="Text", value=text, inline=False)
             likes = review_r.get_votes_count(review.id, True)
             embed.add_field(name="Likes", value="👍" + str(likes))
@@ -45,24 +42,28 @@ class Review(BaseFeature):
             embed.add_field(name="Dislikes", value="👎" + str(dislikes))
             diff = likes - dislikes
             if diff > 0:
-                colour = 0x34cb0b
+                colour = 0x34CB0B
             elif diff < 0:
-                colour = 0xcb410b
+                colour = 0xCB410B
             id = review.id
-        embed.set_footer(text="Review: " + page + ' | ID: ' + str(id) +
-                         " | Last edited at: " +
-                         str(datetime.now().replace(microsecond=0)))
+        embed.set_footer(
+            text="Review: "
+            + page
+            + " | ID: "
+            + str(id)
+            + " | Last edited at: "
+            + str(datetime.now().replace(microsecond=0))
+        )
         embed.colour = colour
         return embed
 
     def change_text_page(self, review, embed, new_page, max_page):
-        text_index = 1024*(new_page-1)
-        if len(review.text_review) < 1024*new_page:
+        text_index = 1024 * (new_page - 1)
+        if len(review.text_review) < 1024 * new_page:
             text = review.text_review[text_index:]
         else:
-            text = review.text_review[text_index:1024*new_page]
-        embed.set_field_at(
-            3, name="Text page", value=str(new_page) + "/" + str(max_page))
+            text = review.text_review[text_index : 1024 * new_page]
+        embed.set_field_at(3, name="Text page", value=str(new_page) + "/" + str(max_page))
         embed.set_field_at(4, name="Text", value=text, inline=False)
         return embed
 
@@ -88,7 +89,7 @@ class Review(BaseFeature):
             review = None
             page = "1/1"
         else:
-            tier_average = str(round(tier_sum/tier_cnt))
+            tier_average = str(round(tier_sum / tier_cnt))
             review = reviews[0].Review
             page = "1/" + str(tier_cnt)
         return self.make_embed(review, subject, tier_average, page)

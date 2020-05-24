@@ -21,6 +21,7 @@ from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 
+
 class Sync(rubbercog.Rubbercog):
     """Master-Slave server synchronization"""
 
@@ -40,11 +41,10 @@ class Sync(rubbercog.Rubbercog):
             await self.throwHelp(ctx)
             return
 
-
     @sync.command(name="roles")
-    async def sync_roles(self, ctx:commands.Context):
+    async def sync_roles(self, ctx: commands.Context):
         """Synchronize roles from master to slave."""
-        if (ctx.message.guild == self.getGuild()):
+        if ctx.message.guild == self.getGuild():
             guild = self.getGuild()
             slave = self.getSlave()
             channel = ctx.message.channel
@@ -53,23 +53,43 @@ class Sync(rubbercog.Rubbercog):
             for role in master_roles:
                 slave_role = discord.utils.get(slave.roles, name=role.name)
                 if slave_role is not None:
-                    r = [role.position, role.hoist, role.mentionable,
-                         role.permissions, role.colour]
-                    a = [slave_role.position, slave_role.hoist, slave_role.mentionable,
-                         slave_role.permissions, slave_role.colour]
+                    r = [role.position, role.hoist, role.mentionable, role.permissions, role.colour]
+                    a = [
+                        slave_role.position,
+                        slave_role.hoist,
+                        slave_role.mentionable,
+                        slave_role.permissions,
+                        slave_role.colour,
+                    ]
                     if a != r:
                         await asyncio.sleep(0.5)
-                        await self.creator.edit_role(ctx, slave, slave_role, position=role.position, hoist=role.hoist, mentionable=role.mentionable,
-                                             permissions=role.permissions, color=role.colour)
+                        await self.creator.edit_role(
+                            ctx,
+                            slave,
+                            slave_role,
+                            position=role.position,
+                            hoist=role.hoist,
+                            mentionable=role.mentionable,
+                            permissions=role.permissions,
+                            color=role.colour,
+                        )
                 else:
                     await asyncio.sleep(0.5)
-                    await self.creator.create_role(ctx, slave, name=role.name, hoist=role.hoist, mentionable=role.mentionable, permissions=role.permissions, color=role.colour)
+                    await self.creator.create_role(
+                        ctx,
+                        slave,
+                        name=role.name,
+                        hoist=role.hoist,
+                        mentionable=role.mentionable,
+                        permissions=role.permissions,
+                        color=role.colour,
+                    )
                     # API is not a fan of creation and quick edit of roles (can't create one at a position tho)
-        await channel.send('Synchronizování rolí dokončeno.')
+        await channel.send("Synchronizování rolí dokončeno.")
         return
 
     @sync.command(name="members")
-    async def sync_members(self, ctx:commands.Context):
+    async def sync_members(self, ctx: commands.Context):
         """Synchronize member roles from master to slave.
         Only use for first time, automatic synchronization is used when cog loaded.
         Potentially slow depending on the number of users in slave."""
@@ -83,7 +103,7 @@ class Sync(rubbercog.Rubbercog):
             if member is not None:
                 after_roles = []
                 member_roles = []
-    
+
                 for role in main_member.roles:
                     after_roles.append(role.name)
                     slave_role = discord.utils.get(slave.roles, name=role.name)
@@ -94,42 +114,48 @@ class Sync(rubbercog.Rubbercog):
                                 break
                         else:
                             if config.debug:
-                                print("Adding role: "+slave_role.name +
-                                      " to "+member.name)
+                                print("Adding role: " + slave_role.name + " to " + member.name)
                             try:
                                 await member.add_roles(slave_role)
                             except Exception as e:
                                 embed = discord.Embed(
-                                    title="on_member_update Exception", description="add_roles() failed", color=config.color_error)
+                                    title="on_member_update Exception",
+                                    description="add_roles() failed",
+                                    color=config.color_error,
+                                )
                                 embed.add_field(name="Role", value=slave_role.name)
                                 embed.add_field(name="User", value=member.mention)
                                 embed.add_field(name="Exception", value=e)
-                                channel = self.bot.get_channel(
-                                    config.channel_botlog)
+                                channel = self.bot.get_channel(config.channel_botlog)
                                 await channel.send(embed=embed)
-    
+
                     else:
-                        await config.channel_botlog.send("Slave role {} neexistuje".format(slave_role.name))
+                        await config.channel_botlog.send(
+                            "Slave role {} neexistuje".format(slave_role.name)
+                        )
 
                 for name in member_roles:
                     if name not in after_roles:
                         role = discord.utils.get(slave.roles, name=name)
                         if config.debug:
-                            print("Removing role: "+role.name+" from "+member.name)
+                            print("Removing role: " + role.name + " from " + member.name)
                         try:
                             await member.remove_roles(role)
                         except Exception as e:
                             embed = discord.Embed(
-                                title="on_member_update Exception", description="remove_roles() failed", color=config.color_error)
+                                title="on_member_update Exception",
+                                description="remove_roles() failed",
+                                color=config.color_error,
+                            )
                             embed.add_field(name="Role", value=role.name)
                             embed.add_field(name="User", value=member.mention)
                             embed.add_field(name="Exception", value=e)
                             channel = self.bot.get_channel(config.channel_botlog)
                             await channel.send(embed=embed)
-        
+
         if config.debug:
             print("Role sync finished")
-        await channel.send('Synchronizování rolí uživatelů dokončeno.')
+        await channel.send("Synchronizování rolí uživatelů dokončeno.")
         return
 
     @commands.Cog.listener()
@@ -144,7 +170,15 @@ class Sync(rubbercog.Rubbercog):
 
         r = discord.utils.get(guild.roles, name=role.name)
         if r is None:
-            await self.creator.create_role(None, guild, name=role.name, hoist=role.hoist, mentionable=role.mentionable, permissions=role.permissions, color=role.colour)
+            await self.creator.create_role(
+                None,
+                guild,
+                name=role.name,
+                hoist=role.hoist,
+                mentionable=role.mentionable,
+                permissions=role.permissions,
+                color=role.colour,
+            )
         return
 
     @commands.Cog.listener()
@@ -156,7 +190,7 @@ class Sync(rubbercog.Rubbercog):
                 guild = self.getSlave()
             else:
                 return
-            
+
             slave_role = discord.utils.get(guild.roles, name=before.name)
 
             if slave_role is not None:
@@ -168,19 +202,32 @@ class Sync(rubbercog.Rubbercog):
                     if time.time() > now + timeout:
                         break
                     role = discord.utils.get(guild.roles, name=before.name)
-                r = [role.name, role.hoist, role.mentionable,
-                     role.permissions, role.colour]
-                a = [after.name, after.hoist, after.mentionable,
-                     after.permissions, after.colour]
-    
+                r = [role.name, role.hoist, role.mentionable, role.permissions, role.colour]
+                a = [after.name, after.hoist, after.mentionable, after.permissions, after.colour]
+
                 # ignoring positional changes of 1 (otherwise brace for a storm)
                 if abs(int(before.position) - int(after.position)) > 1 or a != r:
-                    await self.creator.edit_role(None, guild, role, name=after.name, position=after.position,
-                                            hoist=after.hoist, mentionable=after.mentionable, permissions=after.permissions, color=after.colour)
+                    await self.creator.edit_role(
+                        None,
+                        guild,
+                        role,
+                        name=after.name,
+                        position=after.position,
+                        hoist=after.hoist,
+                        mentionable=after.mentionable,
+                        permissions=after.permissions,
+                        color=after.colour,
+                    )
             else:
-                embed = discord.Embed(title="Role does not exist",
-                                      description="role update failed", color=config.color_error)
-                embed.add_field(name="Role", value="Before name: {} After name: {}".format(before.name, after.name))
+                embed = discord.Embed(
+                    title="Role does not exist",
+                    description="role update failed",
+                    color=config.color_error,
+                )
+                embed.add_field(
+                    name="Role",
+                    value="Before name: {} After name: {}".format(before.name, after.name),
+                )
                 embed.add_field(name="Advice", value="Manual role sync recommended")
                 channel = self.bot.get_channel(config.channel_guildlog)
                 await channel.send(embed=embed)
@@ -204,8 +251,11 @@ class Sync(rubbercog.Rubbercog):
             try:
                 await role.delete()
             except Exception as e:
-                embed = discord.Embed(title="on_guild_role_delete Exception",
-                                      description="role.delete() failed", color=config.color_error)
+                embed = discord.Embed(
+                    title="on_guild_role_delete Exception",
+                    description="role.delete() failed",
+                    color=config.color_error,
+                )
                 embed.add_field(name="Role", value=role.name)
                 embed.add_field(name="Exception", value=e)
                 channel = self.bot.get_channel(config.channel_botlog)
@@ -219,33 +269,34 @@ class Sync(rubbercog.Rubbercog):
             main_member = discord.utils.get(guild.members, id=member.id)
             if main_member is not None:
                 for role in main_member.roles:
-                    slave_role = discord.utils.get(
-                        self.getSlave().roles, name=role.name)
+                    slave_role = discord.utils.get(self.getSlave().roles, name=role.name)
                     if slave_role is not None:
                         for r in member.roles:
                             if r.name == role.name:
                                 break
                         else:
                             if config.debug:
-                                print("Adding role: "+slave_role.name +
-                                      " to "+member.name)
+                                print("Adding role: " + slave_role.name + " to " + member.name)
                             try:
                                 await member.add_roles(slave_role)
                             except Exception as e:
                                 embed = discord.Embed(
-                                    title="on_member_update Exception", description="add_roles() failed", color=config.color_error)
-                                embed.add_field(
-                                    name="Role", value=slave_role.name)
-                                embed.add_field(
-                                    name="User", value=member.mention)
+                                    title="on_member_update Exception",
+                                    description="add_roles() failed",
+                                    color=config.color_error,
+                                )
+                                embed.add_field(name="Role", value=slave_role.name)
+                                embed.add_field(name="User", value=member.mention)
                                 embed.add_field(name="Exception", value=e)
-                                channel = self.bot.get_channel(
-                                    config.channel_botlog)
+                                channel = self.bot.get_channel(config.channel_botlog)
                                 await channel.send(embed=embed)
 
                     else:
-                        embed = discord.Embed(title="Role does not exist",
-                                      description="Adding role on slave failed", color=config.color_error)
+                        embed = discord.Embed(
+                            title="Role does not exist",
+                            description="Adding role on slave failed",
+                            color=config.color_error,
+                        )
                         embed.add_field(name="Role", value="Role name: {}".format(role.name))
                         embed.add_field(name="Advice", value="Manual role sync recommended")
                         channel = self.bot.get_channel(config.channel_guildlog)
@@ -260,16 +311,18 @@ class Sync(rubbercog.Rubbercog):
             slave_member = discord.utils.get(slave.members, id=member.id)
             if slave_member is not None:
                 if config.debug:
-                    print("Removing member "+slave_member.name)
+                    print("Removing member " + slave_member.name)
                 try:
                     await slave_member.kick()
                 except Exception as e:
                     embed = discord.Embed(
-                        title="on_member_remove Exception", description="member.kick() failed", color=config.color_error)
+                        title="on_member_remove Exception",
+                        description="member.kick() failed",
+                        color=config.color_error,
+                    )
                     embed.add_field(name="User", value=member.mention)
                     embed.add_field(name="Exception", value=e)
-                    channel = self.bot.get_channel(
-                        config.channel_botlog)
+                    channel = self.bot.get_channel(config.channel_botlog)
                     await channel.send(embed=embed)
         return
 
@@ -290,17 +343,19 @@ class Sync(rubbercog.Rubbercog):
             banned = None
         if banned is None:
             if config.debug:
-                print("Banning member "+user.name)
+                print("Banning member " + user.name)
             try:
                 await server.ban(user)
-                #repository.update_status(discord_id=user.id, status="banned")
+                # repository.update_status(discord_id=user.id, status="banned")
             except Exception as e:
                 embed = discord.Embed(
-                    title="on_member_remove Exception", description="member.kick() failed", color=config.color_error)
+                    title="on_member_remove Exception",
+                    description="member.kick() failed",
+                    color=config.color_error,
+                )
                 embed.add_field(name="User", value=user.mention)
                 embed.add_field(name="Exception", value=e)
-                channel = self.bot.get_channel(
-                    config.channel_botlog)
+                channel = self.bot.get_channel(config.channel_botlog)
                 await channel.send(embed=embed)
         return
 
@@ -321,17 +376,19 @@ class Sync(rubbercog.Rubbercog):
             banned = None
         if banned is not None:
             if config.debug:
-                print("Unbanning member "+user.name)
+                print("Unbanning member " + user.name)
             try:
                 await server.unban(user)
-                #repository.update_status(discord_id=user.id, status="reverify")
+                # repository.update_status(discord_id=user.id, status="reverify")
             except Exception as e:
                 embed = discord.Embed(
-                    title="on_member_remove Exception", description="member.kick() failed", color=config.color_error)
+                    title="on_member_remove Exception",
+                    description="member.kick() failed",
+                    color=config.color_error,
+                )
                 embed.add_field(name="User", value=user.mention)
                 embed.add_field(name="Exception", value=e)
-                channel = self.bot.get_channel(
-                    config.channel_botlog)
+                channel = self.bot.get_channel(config.channel_botlog)
                 await channel.send(embed=embed)
         return
 
@@ -362,23 +419,27 @@ class Sync(rubbercog.Rubbercog):
                             break
                     else:
                         if config.debug:
-                            print("Adding role: "+slave_role.name +
-                                  " to "+member.name)
+                            print("Adding role: " + slave_role.name + " to " + member.name)
                         try:
                             await member.add_roles(slave_role)
                         except Exception as e:
                             embed = discord.Embed(
-                                title="on_member_update Exception", description="add_roles() failed", color=config.color_error)
+                                title="on_member_update Exception",
+                                description="add_roles() failed",
+                                color=config.color_error,
+                            )
                             embed.add_field(name="Role", value=slave_role.name)
                             embed.add_field(name="User", value=member.mention)
                             embed.add_field(name="Exception", value=e)
-                            channel = self.bot.get_channel(
-                                config.channel_botlog)
+                            channel = self.bot.get_channel(config.channel_botlog)
                             await channel.send(embed=embed)
 
                 else:
-                    embed = discord.Embed(title="Role does not exist",
-                                  description="Adding role on slave failed", color=config.color_error)
+                    embed = discord.Embed(
+                        title="Role does not exist",
+                        description="Adding role on slave failed",
+                        color=config.color_error,
+                    )
                     embed.add_field(name="Role", value="Role name: {}".format(role.name))
                     embed.add_field(name="Advice", value="Manual role sync recommended")
                     channel = self.bot.get_channel(config.channel_guildlog)
@@ -388,12 +449,15 @@ class Sync(rubbercog.Rubbercog):
                 if name not in after_roles:
                     role = discord.utils.get(guild.roles, name=name)
                     if config.debug:
-                        print("Removing role: "+role.name+" from "+member.name)
+                        print("Removing role: " + role.name + " from " + member.name)
                     try:
                         await member.remove_roles(role)
                     except Exception as e:
                         embed = discord.Embed(
-                            title="on_member_update Exception", description="remove_roles() failed", color=config.color_error)
+                            title="on_member_update Exception",
+                            description="remove_roles() failed",
+                            color=config.color_error,
+                        )
                         embed.add_field(name="Role", value=role.name)
                         embed.add_field(name="User", value=member.mention)
                         embed.add_field(name="Exception", value=e)

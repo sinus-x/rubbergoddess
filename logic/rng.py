@@ -10,7 +10,7 @@ class Rng:
     def pick_option(message):
         """"Pick one option from message"""
         if "?" in message:
-            message = message.split('?', 1)[1]
+            message = message.split("?", 1)[1]
 
         options = message.split()
         if len(options) > 0:
@@ -39,4 +39,3 @@ class Rng:
     @staticmethod
     def flip():
         return choice(["True", "False"])
-

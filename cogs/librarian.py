@@ -10,8 +10,10 @@ from core.text import text
 from core import rubbercog, utils
 from config.messages import Messages as messages
 
+
 class Librarian(rubbercog.Rubbercog):
     """Knowledge and information based commands"""
+
     def __init__(self, bot):
         super().__init__(bot)
 
@@ -22,7 +24,7 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(text.fill("librarian", "nameday cz", name=', '.join(names)))
+        await ctx.send(text.fill("librarian", "nameday cz", name=", ".join(names)))
 
     @commands.command()
     async def meniny(self, ctx):
@@ -31,7 +33,7 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(text.fill("librarian", "nameday sk", name=', '.join(names)))
+        await ctx.send(text.fill("librarian", "nameday sk", name=", ".join(names)))
 
     @commands.command(aliases=["tyden", "týden", "tyzden", "týždeň"])
     async def week(self, ctx: commands.Context):
@@ -40,7 +42,7 @@ class Librarian(rubbercog.Rubbercog):
         cal_week = date.today().isocalendar()[1]
         stud_week = cal_week - starting_week
         even, odd = "sudý", "lichý"
-        cal_type  = even if  cal_week % 2 == 0 else odd
+        cal_type = even if cal_week % 2 == 0 else odd
         stud_type = even if stud_week % 2 == 0 else odd
 
         embed = self._getEmbed(ctx)
@@ -49,19 +51,23 @@ class Librarian(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
         await self.deleteCommand(ctx)
 
-
-    @commands.command(aliases=['pocasi', 'pocasie'])
+    @commands.command(aliases=["pocasi", "pocasie"])
     async def weather(self, ctx, *args):
         token = config.weather_token
         city = "Brno"
-        if(len(args) != 0):
-            city = ' '.join(map(str, args))
-        url = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&lang=cz&appid=" + token
+        if len(args) != 0:
+            city = " ".join(map(str, args))
+        url = (
+            "http://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&units=metric&lang=cz&appid="
+            + token
+        )
         res = requests.get(url).json()
-        
-        if(str(res["cod"]) == "200"):
+
+        if str(res["cod"]) == "200":
             description = "Aktuální počasí v městě " + res["name"] + ", " + res["sys"]["country"]
-            embed=discord.Embed(title="Počasí", description=description)
+            embed = discord.Embed(title="Počasí", description=description)
             image = "http://openweathermap.org/img/w/" + res["weather"][0]["icon"] + ".png"
             embed.set_thumbnail(url=image)
             weather = res["weather"][0]["main"] + " (" + res["weather"][0]["description"] + ")"
@@ -79,9 +85,9 @@ class Librarian(rubbercog.Rubbercog):
             embed.add_field(name="Oblačnost", value=clouds, inline=True)
             embed.add_field(name="Viditelnost", value=visibility, inline=True)
             await ctx.send(embed=embed)
-        elif(str(res["cod"]) == "404"):
+        elif str(res["cod"]) == "404":
             await ctx.send("Město nenalezeno")
-        elif(str(res["cod"]) == "401"):
+        elif str(res["cod"]) == "401":
             await ctx.send("Rip token")
         else:
             await ctx.send("Město nenalezeno! " + emote.panic + " (" + res["message"] + ")")

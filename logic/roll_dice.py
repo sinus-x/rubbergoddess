@@ -25,9 +25,8 @@ class RollResult:
         self.result = result
 
 
-class Roll():
-    DICE_REGEX = r"^\s*(?:(\d*)[dD](\d+)(?:(d[hl]?)(\d+))?" + \
-                 r"(?:(k[hl]?)(\d+))?|(\d+))\s*$"
+class Roll:
+    DICE_REGEX = r"^\s*(?:(\d*)[dD](\d+)(?:(d[hl]?)(\d+))?" + r"(?:(k[hl]?)(\d+))?|(\d+))\s*$"
 
     def single_roll_dice(self, match_result):
         groups = match_result.groups()
@@ -38,7 +37,7 @@ class Roll():
         text = "("
         result = 0
 
-        dice_count = 1 if (groups[0] == '') else int(groups[0])
+        dice_count = 1 if (groups[0] == "") else int(groups[0])
         dice_sides = int(groups[1])
 
         if dice_count == 0 or dice_sides == 0:
@@ -51,12 +50,14 @@ class Roll():
             return RollResult("(**0**)", 0)
 
         if dice_count > Config.max_dice_at_once:
-            raise SyntaxError(utils.fill_message("rd_too_many_dice_in_group",
-                              maximum=Config.max_dice_at_once))
+            raise SyntaxError(
+                utils.fill_message("rd_too_many_dice_in_group", maximum=Config.max_dice_at_once)
+            )
 
         if dice_sides > Config.max_dice_sides:
-            raise SyntaxError(utils.fill_message("rd_too_many_dice_sides",
-                              maximum=Config.max_dice_sides))
+            raise SyntaxError(
+                utils.fill_message("rd_too_many_dice_sides", maximum=Config.max_dice_sides)
+            )
 
         dice = [randint(1, dice_sides) for i in range(dice_count)]
 
@@ -105,16 +106,14 @@ class Roll():
             # Keep highest dice,
             # which is functionally the same as dropping lowest dice
             if groups[4] == "k" or groups[4] == "kh":
-                to_drop = dice_count - int(groups[5]) - (crossed_low +
-                                                         crossed_high)
+                to_drop = dice_count - int(groups[5]) - (crossed_low + crossed_high)
                 to_skip = crossed_low
                 for i in range(1, dice_sides + 1):
                     length = len(lookup[i]) if i in lookup.keys() else 0
                     if length > 0:
                         if 0 < to_skip < length:
                             if to_drop < length - to_skip:
-                                crossed_indexes += lookup[i][to_skip:
-                                                             to_skip + to_drop]
+                                crossed_indexes += lookup[i][to_skip : to_skip + to_drop]
                                 to_drop = 0
                             else:
                                 crossed_indexes += lookup[i][to_skip:]
@@ -128,16 +127,14 @@ class Roll():
             # Keep lowest dice,
             # which is functionally the same as dropping highest dice
             if groups[4] == "kl":
-                to_drop = dice_count - int(groups[5]) - (crossed_low +
-                                                         crossed_high)
+                to_drop = dice_count - int(groups[5]) - (crossed_low + crossed_high)
                 to_skip = crossed_high
                 for i in range(dice_sides, 0, -1):
                     length = len(lookup[i]) if i in lookup.keys() else 0
                     if length > 0:
                         if 0 < to_skip < length:
                             if to_drop < length - to_skip:
-                                crossed_indexes += lookup[i][to_skip:
-                                                             to_skip + to_drop]
+                                crossed_indexes += lookup[i][to_skip : to_skip + to_drop]
                                 to_drop = 0
                             else:
                                 crossed_indexes += lookup[i][to_skip:]
@@ -149,9 +146,7 @@ class Roll():
                         to_skip -= length
 
         for index, die in enumerate(dice):
-            die_text = ("__" + str(die) + "__"
-                        if die == dice_sides
-                        else str(die))
+            die_text = "__" + str(die) + "__" if die == dice_sides else str(die)
             if index in crossed_indexes:
                 text += "~~" + die_text + "~~"
             else:
@@ -171,7 +166,7 @@ class Roll():
             return messages.rd_help
 
         results = []
-        dice_groups = roll_string.split('+')
+        dice_groups = roll_string.split("+")
 
         if len(dice_groups) > Config.max_dice_groups:
             return utils.fill_message("rd_too_many_dice_groups", maximum=Config.max_dice_groups)
@@ -186,6 +181,6 @@ class Roll():
             else:
                 return utils.fill_message("rd_format", group=index)
 
-        returntext = ' + '.join(r.text for r in results)
+        returntext = " + ".join(r.text for r in results)
         returntext += " = **" + str(sum(r.result for r in results)) + "**"
         return returntext

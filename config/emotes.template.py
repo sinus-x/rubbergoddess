@@ -1,4 +1,5 @@
 class Emotes:
+    # fmt: off
 	happy =  '<:code:000>'
 	love =   '<:code:000>'
 	sad =    '<:code:000>'
@@ -19,3 +20,4 @@ class Emotes:
 	yes =     '<:code:000>'
 	no =      '<:code:000>'
 	welcome = '<:code:000>'
+    # fmt: on

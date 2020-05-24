@@ -14,15 +14,17 @@ from repository.review_repo import ReviewRepository
 
 review_r = ReviewRepository()
 
-class Reaction(BaseFeature):
 
+class Reaction(BaseFeature):
     def __init__(self, bot: Bot, karma_repository: KarmaRepository):
         super().__init__(bot)
         self.karma_repo = karma_repository
         self.review = Review(bot)
 
     def make_embed(self, page):
-        embed = discord.Embed(title="Rubbergoddess", description="Rubbergod? Tss.", color=config.color)
+        embed = discord.Embed(
+            title="Rubbergoddess", description="Rubbergod? Tss.", color=config.color
+        )
         prefix = config.prefix
         embed.add_field(name="Autor", value="Cauchy#5244")
         embed.add_field(name="Počet serverů s touto instancí bota", value=f"{len(self.bot.guilds)}")
@@ -30,9 +32,11 @@ class Reaction(BaseFeature):
         info = Messages.info[page - 1]
         for command in info:
             embed.add_field(name=prefix + command[0], value=command[1], inline=False)
-        embed.set_footer(text=f"Page {page} | Commit {utils.git_hash()}",
+        embed.set_footer(
+            text=f"Page {page} | Commit {utils.git_hash()}",
             icon_url="https://cdn.discordapp.com/avatars/673134999402184734/d61a5db0c5047080"
-                     "4b3980567da3a1a0.png?size=32")
+            "4b3980567da3a1a0.png?size=32",
+        )
         return embed
 
     # Returns list of role names and emotes that represent them
@@ -41,8 +45,8 @@ class Reaction(BaseFeature):
         input_string = input_string.replace("**", "")
         try:
             if input_string.startswith(config.role_string):
-                input_string = input_string[input_string.index('\n') + 1:]
-            input_string = input_string.rstrip().split('\n')
+                input_string = input_string[input_string.index("\n") + 1 :]
+            input_string = input_string.rstrip().split("\n")
         except ValueError:
             await message.channel.send(utils.fill_message("role_format", user=message.author.id))
             return None
@@ -54,9 +58,13 @@ class Reaction(BaseFeature):
                 output.append(out)
             except Exception:
                 if message.channel.id not in config.role_channels:
-                    await message.channel.send(utils.fill_message("role_invalid_line",
-                                               user=message.author.id,
-                                               line=discord.utils.escape_mentions(line)))
+                    await message.channel.send(
+                        utils.fill_message(
+                            "role_invalid_line",
+                            user=message.author.id,
+                            line=discord.utils.escape_mentions(line),
+                        )
+                    )
         for line in output:
             if "<#" in line[0]:
                 line[0] = line[0].replace("<#", "")
@@ -65,9 +73,13 @@ class Reaction(BaseFeature):
                     line[0] = int(line[0])
                 except Exception:
                     if message.channel.id not in config.role_channels:
-                        await message.channel.send(utils.fill_message("role_invalid_line",
-                                                   user=message.author.id,
-                                                   line=discord.utils.escape_mentions(line[0])))
+                        await message.channel.send(
+                            utils.fill_message(
+                                "role_invalid_line",
+                                user=message.author.id,
+                                line=discord.utils.escape_mentions(line[0]),
+                            )
+                        )
         return output
 
     # Adds reactions to message
@@ -82,25 +94,36 @@ class Reaction(BaseFeature):
             if isinstance(line[0], int) or line[0].isdigit():
                 not_channel = discord.utils.get(guild.channels, id=int(line[0])) is None
             else:
-                not_channel = line[0][0] != "#" or \
-                    discord.utils.get(guild.channels, name=line[0][1:].lower()) is None
+                not_channel = (
+                    line[0][0] != "#"
+                    or discord.utils.get(guild.channels, name=line[0][1:].lower()) is None
+                )
             if not_role and not_channel and not message.author.bot:
-                #FIXME Do global check, not only this local one
+                # FIXME Do global check, not only this local one
                 # Do not allow messages over 2000 characters
                 if len(line[0]) > 100:
                     line[0] = line[0][:100]
-                await message.channel.send(utils.fill_message("role_not_role",
-                                           user=message.author.id, 
-                                           not_role=discord.utils.escape_mentions(line[0])))
+                await message.channel.send(
+                    utils.fill_message(
+                        "role_not_role",
+                        user=message.author.id,
+                        not_role=discord.utils.escape_mentions(line[0]),
+                    )
+                )
             else:
                 try:
                     await message.add_reaction(line[1])
                 except discord.errors.HTTPException:
                     if message.author.bot:
                         return
-                    await message.channel.send(utils.fill_message("role_invalid_emote",
-                        user=message.author.id, not_emote=discord.utils.escape_mentions(line[1]),
-                        role=discord.utils.escape_mentions(line[0])))
+                    await message.channel.send(
+                        utils.fill_message(
+                            "role_invalid_emote",
+                            user=message.author.id,
+                            not_emote=discord.utils.escape_mentions(line[1]),
+                            role=discord.utils.escape_mentions(line[0]),
+                        )
+                    )
 
     async def add(self, payload):
         channel = self.bot.get_channel(payload.channel_id)
@@ -128,8 +151,7 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if message.content.startswith(config.role_string) or \
-           channel.id in config.role_channels:
+        if message.content.startswith(config.role_string) or channel.id in config.role_channels:
             role_data = await self.get_join_role_data(message)
             for line in role_data:
                 if str(emoji) == line[1]:
@@ -151,8 +173,7 @@ class Reaction(BaseFeature):
         elif message.embeds and message.embeds[0].title == "Rubbergoddess":
             if emoji in ["◀", "▶"]:
                 page = int(message.embeds[0].footer.text[5])
-                next_page = self.pagination_next(emoji, page,
-                                                 len(Messages.info))
+                next_page = self.pagination_next(emoji, page, len(Messages.info))
                 if next_page:
                     embed = self.make_embed(next_page)
                     await message.edit(embed=embed)
@@ -160,15 +181,17 @@ class Reaction(BaseFeature):
                 await message.remove_reaction(emoji, member)
             except Exception:
                 pass
-        elif message.embeds and\
-                message.embeds[0].title is not discord.Embed.Empty and\
-                re.match(".* reviews", message.embeds[0].title):
-            subject = message.embeds[0].title.split(' ', 1)[0]
-            footer = message.embeds[0].footer.text.split('|')[0]
-            pos = footer.find('/')
+        elif (
+            message.embeds
+            and message.embeds[0].title is not discord.Embed.Empty
+            and re.match(".* reviews", message.embeds[0].title)
+        ):
+            subject = message.embeds[0].title.split(" ", 1)[0]
+            footer = message.embeds[0].footer.text.split("|")[0]
+            pos = footer.find("/")
             try:
                 page = int(footer[8:pos])
-                max_page = int(footer[(pos + 1):])
+                max_page = int(footer[(pos + 1) :])
             except ValueError:
                 await message.edit(content=Messages.reviews_page_e, embed=None)
                 return
@@ -180,8 +203,7 @@ class Reaction(BaseFeature):
                     if review.count() >= next_page:
                         review = review.all()[next_page - 1].Review
                         next_page = str(next_page) + "/" + str(max_page)
-                        embed = self.review.make_embed(
-                            review, subject, tier_average, next_page)
+                        embed = self.review.make_embed(review, subject, tier_average, next_page)
                         if embed.fields[3].name == "Text page":
                             await message.add_reaction("🔼")
                             await message.add_reaction("🔽")
@@ -201,11 +223,9 @@ class Reaction(BaseFeature):
                     elif emoji == "👎":
                         self.review.add_vote(review_id, False, str(member.id))
                     elif emoji == "🛑":
-                        review_r.remove_vote(
-                            review_id, str(member.id))
+                        review_r.remove_vote(review_id, str(member.id))
                     page = str(page) + "/" + str(max_page)
-                    embed = self.review.make_embed(
-                        review, subject, tier_average, page)
+                    embed = self.review.make_embed(review, subject, tier_average, page)
                     await message.edit(embed=embed)
             elif emoji in ["🔼", "🔽"]:
                 if message.embeds[0].fields[3].name == "Text page":
@@ -213,17 +233,16 @@ class Reaction(BaseFeature):
                     if review:
                         review = review[page - 1].Review
                         text_page = message.embeds[0].fields[3].value
-                        pos = message.embeds[0].fields[3].value.find('/')
-                        max_text_page = int(text_page[(pos + 1):])
+                        pos = message.embeds[0].fields[3].value.find("/")
+                        max_text_page = int(text_page[(pos + 1) :])
                         text_page = int(text_page[:pos])
-                        next_text_page = self.pagination_next(emoji, text_page,
-                                                              max_text_page)
+                        next_text_page = self.pagination_next(emoji, text_page, max_text_page)
                         if next_text_page:
                             page = str(page) + "/" + str(max_page)
-                            embed = self.review.make_embed(
-                                review, subject, tier_average, page)
+                            embed = self.review.make_embed(review, subject, tier_average, page)
                             embed = self.review.change_text_page(
-                                review, embed, next_text_page, max_text_page)
+                                review, embed, next_text_page, max_text_page
+                            )
                             await message.edit(embed=embed)
             try:
                 await message.remove_reaction(emoji, member)
@@ -250,8 +269,10 @@ class Reaction(BaseFeature):
                         count = False
             # optionally, do not count subjects
             elif not config.karma_subjects:
-                if isinstance(message.channel, discord.TextChannel) and \
-                message.channel.name in config.subjects:
+                if (
+                    isinstance(message.channel, discord.TextChannel)
+                    and message.channel.name in config.subjects
+                ):
                     count = False
 
             if count and isinstance(emoji, str):
@@ -260,25 +281,26 @@ class Reaction(BaseFeature):
                 self.karma_repo.karma_emoji(message.author, member, emoji.id)
 
         # if the message has X or more 'pin' emojis pin the message
-        if emoji == '📌':
+        if emoji == "📌":
             for reaction in message.reactions:
-                if reaction.emoji == '📌' and \
-                   reaction.count >= config.pin_limit and \
-                   not message.pinned:
-                    embed = discord.Embed(title="📌 Auto pin message log",
-                                          color=config.color)
+                if (
+                    reaction.emoji == "📌"
+                    and reaction.count >= config.pin_limit
+                    and not message.pinned
+                ):
+                    embed = discord.Embed(title="📌 Auto pin message log", color=config.color)
                     users = await reaction.users().flatten()
-                    user_names = ', '.join([user.name for user in users])
-                    message_link = Messages.message_link_prefix +\
-                        str(message.channel.id) + '/' +\
-                        str(message.id)
+                    user_names = ", ".join([user.name for user in users])
+                    message_link = (
+                        Messages.message_link_prefix
+                        + str(message.channel.id)
+                        + "/"
+                        + str(message.id)
+                    )
                     embed.add_field(name="Users", value=user_names)
                     embed.add_field(name="In channel", value=message.channel)
-                    embed.add_field(name="Message",
-                                    value=message_link, inline=False)
-                    embed.set_footer(
-                        text=datetime.datetime.now().replace(microsecond=0)
-                    )
+                    embed.add_field(name="Message", value=message_link, inline=False)
+                    embed.set_footer(text=datetime.datetime.now().replace(microsecond=0))
                     channel = self.bot.get_channel(config.channel_botlog)
                     await channel.send(embed=embed)
                     try:
@@ -312,13 +334,11 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if message.content.startswith(config.role_string) or\
-           channel.id in config.role_channels:
+        if message.content.startswith(config.role_string) or channel.id in config.role_channels:
             role_data = await self.get_join_role_data(message)
             for line in role_data:
                 if str(emoji) == line[1]:
-                    await self.remove_role_on_reaction(
-                        line[0], member, message.channel, guild)
+                    await self.remove_role_on_reaction(line[0], member, message.channel, guild)
                     break
         else:
             count = True
@@ -341,8 +361,10 @@ class Reaction(BaseFeature):
                         count = False
             # optionally, do not count subjects
             elif not config.karma_subjects:
-                if isinstance(message.channel, discord.TextChannel) and \
-                message.channel.name in config.subjects:
+                if (
+                    isinstance(message.channel, discord.TextChannel)
+                    and message.channel.name in config.subjects
+                ):
                     count = False
 
             if count and isinstance(emoji, str):
@@ -352,12 +374,12 @@ class Reaction(BaseFeature):
 
     # Adds a role for user based on reaction
     async def add_role_on_reaction(self, target, member, channel, guild):
-        fekt = discord.utils.get(guild.roles, name='FEKT')
-        vut  = discord.utils.get(guild.roles, name='VUT')
+        fekt = discord.utils.get(guild.roles, name="FEKT")
+        vut = discord.utils.get(guild.roles, name="VUT")
         role = discord.utils.get(guild.roles, name=target)
         if role is not None:
             allowed = True
-            limit = '---FEKT' if fekt in member.roles else '---'
+            limit = "---FEKT" if fekt in member.roles else "---"
             if role >= discord.utils.get(guild.roles, name=limit):
                 allowed = False
             if allowed or member.bot:
@@ -365,8 +387,9 @@ class Reaction(BaseFeature):
                 return True
             else:
                 bot_room = self.bot.get_channel(config.channel_botspam)
-                await bot_room.send(utils.fill_message(
-                    "role_add_denied", user=member.id, role=role.name))
+                await bot_room.send(
+                    utils.fill_message("role_add_denied", user=member.id, role=role.name)
+                )
                 return False
         else:
             try:
@@ -388,7 +411,7 @@ class Reaction(BaseFeature):
                     try:
                         teacher = discord.utils.get(
                             channel.guild.channels,
-                            name=channel.name + config.get('janitor', 'teacher suffix')
+                            name=channel.name + config.get("janitor", "teacher suffix"),
                         )
                         await teacher.set_permissions(member, read_messages=True)
                     except:
@@ -400,8 +423,7 @@ class Reaction(BaseFeature):
                 errmsg = "subject_add_denied_notsubject"
 
             bot_room = self.bot.get_channel(config.channel_botspam)
-            await bot_room.send(utils.fill_message(
-                errmsg, user=member.id, role=channel.name))
+            await bot_room.send(utils.fill_message(errmsg, user=member.id, role=channel.name))
 
     # Removes a role for user based on reaction
     async def remove_role_on_reaction(self, target, member, channel, guild):
@@ -415,8 +437,9 @@ class Reaction(BaseFeature):
                 return True
             else:
                 bot_room = self.bot.get_channel(config.channel_botspam)
-                await bot_room.send(utils.fill_message(
-                    "role_remove_denied", user=member.id, role=role.name))
+                await bot_room.send(
+                    utils.fill_message("role_remove_denied", user=member.id, role=role.name)
+                )
                 return False
 
         else:
@@ -434,23 +457,24 @@ class Reaction(BaseFeature):
                 try:
                     teacher = discord.utils.get(
                         channel.guild.channels,
-                        name=channel.name + config.get('janitor', 'teacher suffix')
+                        name=channel.name + config.get("janitor", "teacher suffix"),
                     )
                     await teacher.set_permissions(member, overwrite=None)
                 except:
                     pass
                 return
-            # While sending a permission error is supported, there is no need 
+            # While sending a permission error is supported, there is no need
             # to do it.
             # How could have the guest gotten an access anyway? If it was assigned
             # manually, so be it. They want to leave, let them leave.
-            # It is more likely that they clicked the reaction, did not get 
+            # It is more likely that they clicked the reaction, did not get
             # access, so they are un-clicking it back.
             # - subject_remove_denied_guest
             # - subject_remove_denied_notsubject
-#            bot_room = self.bot.get_channel(config.channel_botspam)
-#            await bot_room.send(utils.fill_message(
-#                errmsg, user=member.id, role=channel.name))
+
+    #            bot_room = self.bot.get_channel(config.channel_botspam)
+    #            await bot_room.send(utils.fill_message(
+    #                errmsg, user=member.id, role=channel.name))
 
     def pagination_next(self, emoji, page, max_page):
         if emoji in ["▶", "🔽"]:

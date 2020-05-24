@@ -28,7 +28,7 @@ class Verify(rubbercog.Rubbercog):
         super().__init__(bot)
         self.errors = errors.Errors(bot)
         self.rubbercog = rubbercog.Rubbercog(bot)
-        #self.verification = verification.Verification(bot, repository)
+        # self.verification = verification.Verification(bot, repository)
 
     async def in_jail(ctx):
         """Return true if current channel is #jail"""
@@ -39,13 +39,15 @@ class Verify(rubbercog.Rubbercog):
 
     async def send_mail(self, author, receiver_email, code):
         user_name = author.name
-        bot_img = self.bot.user.avatar_url_as(static_format='png', size=128)
-        user_img = author.avatar_url_as(static_format='png', size=32)
+        bot_img = self.bot.user.avatar_url_as(static_format="png", size=128)
+        user_img = author.avatar_url_as(static_format="png", size=32)
         h = utils.git_hash()[:7]
         cleartext = """\
             Tvůj verifikační kód pro VUT FEKT Discord server je: {code}.
             - Rubbergoddess (hash {h})
-            """.format(code=code, h=h)
+            """.format(
+            code=code, h=h
+        )
         richtext = """\
             <body style="background-color:#54355F;margin:0;text-align:center;">
             <div style="background-color:#54355F;margin:0;padding:20px;text-align:center;">
@@ -58,20 +60,25 @@ class Verify(rubbercog.Rubbercog):
                 <p style="color:white;font-family:Arial,Verdana,sans-serif;margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:#45355F;padding:5px 10px;font-family:monospace;background-color:white;border-radius:2px;">?submit {code}</span></p>
                 <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
             </div>
-            </body>""".format(code=code, h=h, bot_img=bot_img, user_img=user_img, user_name=user_name)
+            </body>""".format(
+            code=code, h=h, bot_img=bot_img, user_img=user_img, user_name=user_name
+        )
 
-        msg = MIMEMultipart('alternative')
+        msg = MIMEMultipart("alternative")
         # FIXME Can this be abused?
-        msg['Subject'] = "VUT FEKT verify → {}".format(user_name)
-        msg['From'] = config.mail_address
-        msg['To'] = receiver_email
-        msg['Bcc'] = config.mail_address
-        msg.attach(MIMEText(cleartext, 'plain'))
-        msg.attach(MIMEText(richtext, 'html'))
+        msg["Subject"] = "VUT FEKT verify → {}".format(user_name)
+        msg["From"] = config.mail_address
+        msg["To"] = receiver_email
+        msg["Bcc"] = config.mail_address
+        msg.attach(MIMEText(cleartext, "plain"))
+        msg.attach(MIMEText(richtext, "html"))
 
         if config.debug:
-            print("Simulating verification mail: {} for {} ({})".
-                  format(code, user_name, receiver_email))
+            print(
+                "Simulating verification mail: {} for {} ({})".format(
+                    code, user_name, receiver_email
+                )
+            )
             return
 
         with smtplib.SMTP(config.mail_smtp_server, config.mail_smtp_port) as server:
@@ -90,8 +97,7 @@ class Verify(rubbercog.Rubbercog):
 
     async def gen_code_and_send_mail(self, message, email, group=None):
         # generate code
-        code = ''.join(random.choices(
-            string.ascii_uppercase.replace("O", "") + string.digits, k=8))
+        code = "".join(random.choices(string.ascii_uppercase.replace("O", "") + string.digits, k=8))
         # send mail
         await self.send_mail(message.author, email, code)
         # save the newly generated code into the database
@@ -102,32 +108,33 @@ class Verify(rubbercog.Rubbercog):
         if group and group in ["FEKT", "VUT"]:
             c += group + "** [redacted]**"
         else:
-            c += "**[redacted]**@"+domain
+            c += "**[redacted]**@" + domain
         identifier = "xlogin00" if email.endswith("vutbr.cz") else "e-mail"
         await message.channel.send(
             utils.fill_message(
-                "verify_send_success", user=message.author.id, command=c, id=identifier),
-            delete_after=config.delay_verify
+                "verify_send_success", user=message.author.id, command=c, id=identifier
+            ),
+            delete_after=config.delay_verify,
         )
 
     async def login_check(self, string):
         # regex matches uppercase or lowercase VUT login, not if it contains "login"
-        logex = re.compile(r'([x](?![l][o][g][i][n])[a-z]{5}\d[a-z0-9])')
+        logex = re.compile(r"([x](?![l][o][g][i][n])[a-z]{5}\d[a-z0-9])")
         login = logex.match(string)
         if login is not None:
             login = login.group()
         else:
-            login = ' '
+            login = " "
         return login
 
     async def code_check(self, string):
         # regex matches uppercase or lowercase VUT login, not if it contains "login"
-        code_regex = re.compile(r'[A-Z0-9]{8}')
+        code_regex = re.compile(r"[A-Z0-9]{8}")
         code = code_regex.match(string)
         if code is not None:
             code = code.group().upper()
         else:
-            code = ' '
+            code = " "
         return code
 
     @commands.cooldown(rate=5, per=30.0, type=commands.BucketType.user)
@@ -138,11 +145,13 @@ class Verify(rubbercog.Rubbercog):
         message = ctx.message
 
         # get variables
-        args = tuple(re.split(r'\s+', str(message.content).strip("\r\n\t")))
+        args = tuple(re.split(r"\s+", str(message.content).strip("\r\n\t")))
 
         if len(args) != 2:
-            await message.channel.send(utils.fill_message("verify_verify_format", user=message.author.id),
-                                       delete_after=config.delay_verify)
+            await message.channel.send(
+                utils.fill_message("verify_verify_format", user=message.author.id),
+                delete_after=config.delay_verify,
+            )
             try:
                 await message.delete()
             except discord.HTTPException:
@@ -157,9 +166,12 @@ class Verify(rubbercog.Rubbercog):
             # test for common errors
             errmsg = None
             if args[1] == "kód" or args[1] == "kod":
-                await message.channel.send(utils.fill_message("verify_verify_no_code",
-                                                              user=message.author.id, emote=emote.facepalm),
-                                           delete_after=config.delay_verify)
+                await message.channel.send(
+                    utils.fill_message(
+                        "verify_verify_no_code", user=message.author.id, emote=emote.facepalm
+                    ),
+                    delete_after=config.delay_verify,
+                )
                 try:
                     await message.delete()
                 except discord.HTTPException:
@@ -167,9 +179,12 @@ class Verify(rubbercog.Rubbercog):
                 return
 
             elif code is None:
-                await message.channel.send(utils.fill_message("verify_verify_bad_input",
-                                                              user=message.author.id, emote=emote.facepalm),
-                                           delete_after=config.delay_verify)
+                await message.channel.send(
+                    utils.fill_message(
+                        "verify_verify_bad_input", user=message.author.id, emote=emote.facepalm
+                    ),
+                    delete_after=config.delay_verify,
+                )
                 try:
                     await message.delete()
                 except discord.HTTPException:
@@ -183,22 +198,29 @@ class Verify(rubbercog.Rubbercog):
 
             errmsg = None
             if new_user is None:
-                await message.channel.send(utils.fill_message(
-                    "verify_verify_not_found", user=message.author.id),
-                    delete_after=config.delay_verify)
+                await message.channel.send(
+                    utils.fill_message("verify_verify_not_found", user=message.author.id),
+                    delete_after=config.delay_verify,
+                )
             else:
                 # check the verification code
                 if code.replace("O", "0") != new_user.code:
-                    await message.channel.send(utils.fill_message(
-                        "verify_verify_wrong_code", user=message.author.id),
-                        delete_after=config.delay_verify)
+                    await message.channel.send(
+                        utils.fill_message("verify_verify_wrong_code", user=message.author.id),
+                        delete_after=config.delay_verify,
+                    )
                     errmsg = "Neúspěšný pokus o verifikaci kódem"
                 else:
                     group = new_user.group
 
                     if group is None:
-                        await message.channel.send(utils.fill_message(
-                            "verify_verify_manual", user=message.author.id, admin=config.admin_id))
+                        await message.channel.send(
+                            utils.fill_message(
+                                "verify_verify_manual",
+                                user=message.author.id,
+                                admin=config.admin_id,
+                            )
+                        )
                         errmsg = "Neúspěšný pokus o verifikaci kódem (chybí skupina)"
                     else:
                         # add verify role
@@ -207,15 +229,24 @@ class Verify(rubbercog.Rubbercog):
                         role = discord.utils.get(guild.roles, name=group)
                         if isinstance(ctx.channel, discord.channel.DMChannel):
                             member = guild.get_member(message.author.id)
-                            await message.channel.send(utils.fill_message(
-                                "verify_verify_success_public", user=message.author.id,
-                                 group=group))
+                            await message.channel.send(
+                                utils.fill_message(
+                                    "verify_verify_success_public",
+                                    user=message.author.id,
+                                    group=group,
+                                )
+                            )
                         else:
                             member = message.author
-                            await message.channel.send(utils.fill_message(
-                                "verify_verify_success_public", user=message.author.id,
-                                 group=group),delete_after=config.delay_verify)
-                            
+                            await message.channel.send(
+                                utils.fill_message(
+                                    "verify_verify_success_public",
+                                    user=message.author.id,
+                                    group=group,
+                                ),
+                                delete_after=config.delay_verify,
+                            )
+
                         await member.add_roles(verify)
                         await member.add_roles(role)
 
@@ -223,14 +254,19 @@ class Verify(rubbercog.Rubbercog):
                         repository.save_verified(discord_id=message.author.id)
 
                         # text user
-                        await member.send(utils.fill_message(
-                            "verify_verify_success_private", user=message.author.id))
+                        await member.send(
+                            utils.fill_message(
+                                "verify_verify_success_private", user=message.author.id
+                            )
+                        )
                         if role.name == "FEKT":
                             await member.send(messages.verify_congrats_fekt)
                         elif role.name == "TEACHER":
                             await member.send(messages.verify_congrats_teacher)
-                            
-                            embed = discord.Embed(title="New teacher verification", color=config.color)
+
+                            embed = discord.Embed(
+                                title="New teacher verification", color=config.color
+                            )
                             embed.add_field(name="User", value=member.mention)
                             channel = self.bot.get_channel(config.channel_guildlog)
                             await channel.send(embed=embed)
@@ -238,10 +274,8 @@ class Verify(rubbercog.Rubbercog):
                             await member.send(messages.verify_congrats_guest)
             if errmsg:
                 embed = discord.Embed(title=errmsg, color=config.color)
-                embed.add_field(
-                    name="User", value=utils.generate_mention(message.author.id))
-                embed.add_field(
-                    name="Message", value=message.content, inline=False)
+                embed.add_field(name="User", value=utils.generate_mention(message.author.id))
+                embed.add_field(name="Message", value=message.content, inline=False)
                 channel = self.bot.get_channel(config.channel_botlog)
                 await channel.send(embed=embed)
         try:
@@ -255,7 +289,7 @@ class Verify(rubbercog.Rubbercog):
     async def verify(self, ctx: commands.Context):
         # get variables
         message = ctx.message
-        args = tuple(re.split(r'\s+', str(message.content).strip("\r\n\t")))
+        args = tuple(re.split(r"\s+", str(message.content).strip("\r\n\t")))
         login = None
         group = None
         if len(args) == 2 and "@" in args[1]:
@@ -272,16 +306,20 @@ class Verify(rubbercog.Rubbercog):
         elif len(args) == 3:
             group = args[1].upper()
             if group == "TEACHER":
-                if args[2].lower().endswith("@vutbr.cz") or args[2].lower().endswith("@feec.vutbr.cz") or args[2].lower().endswith("@stud.feec.vutbr.cz"):
+                if (
+                    args[2].lower().endswith("@vutbr.cz")
+                    or args[2].lower().endswith("@feec.vutbr.cz")
+                    or args[2].lower().endswith("@stud.feec.vutbr.cz")
+                ):
                     login = args[2].lower()
                 else:
-                    login = ' '
+                    login = " "
             else:
                 login = await self.login_check(args[2].lower())
         else:
             await message.channel.send(
-                messages.verify_send_format,
-                delete_after=config.delay_verify)
+                messages.verify_send_format, delete_after=config.delay_verify
+            )
             try:
                 await message.delete()
             except discord.HTTPException:
@@ -293,21 +331,25 @@ class Verify(rubbercog.Rubbercog):
             # TODO Log as verify_log(channel,user,message)
             await message.channel.send(
                 utils.fill_message(
-                    "verify_already_verified_role",
-                    user=message.author.id,
-                    admin=config.admin_id))
+                    "verify_already_verified_role", user=message.author.id, admin=config.admin_id
+                )
+            )
         else:
 
             jail_info = self.rubbercog.getGuild().get_channel(config.channel_jailinfo)
             errmsg = None
 
-            if login == "e-mail" or login == ' ':
-                await message.channel.send(utils.fill_message("verify_wrong_arguments",
-                                                              user=message.author.id,
-                                                              login=login,
-                                                              emote=emote.facepalm,
-                                                              channel=jail_info.mention),
-                                           delete_after=config.delay_verify)
+            if login == "e-mail" or login == " ":
+                await message.channel.send(
+                    utils.fill_message(
+                        "verify_wrong_arguments",
+                        user=message.author.id,
+                        login=login,
+                        emote=emote.facepalm,
+                        channel=jail_info.mention,
+                    ),
+                    delete_after=config.delay_verify,
+                )
                 try:
                     await message.delete()
                 except discord.HTTPException:
@@ -334,9 +376,15 @@ class Verify(rubbercog.Rubbercog):
                         email = "{}@vutbr.cz".format(login)
                     else:
                         if "@" not in login:
-                            await message.channel.send(utils.fill_message("verify_wrong_arguments",
-                                                                          user=message.author.id, emote=emote.facepalm,
-                                                                          channel=jail_info.mention, login="**[redacted]]**"))
+                            await message.channel.send(
+                                utils.fill_message(
+                                    "verify_wrong_arguments",
+                                    user=message.author.id,
+                                    emote=emote.facepalm,
+                                    channel=jail_info.mention,
+                                    login="**[redacted]]**",
+                                )
+                            )
                             return
                         elif group and group.upper() == "TEACHER":
                             email = login
@@ -358,53 +406,68 @@ class Verify(rubbercog.Rubbercog):
                         else:
                             email = login
                             group = "GUEST"
-                    repository.add_user(discord_id=message.author.id, login=login,
-                                        group=group.upper(), status="pending")
+                    repository.add_user(
+                        discord_id=message.author.id,
+                        login=login,
+                        group=group.upper(),
+                        status="pending",
+                    )
                     await self.gen_code_and_send_mail(message, email, group=group)
                 else:
                     errmsg = "Login už v db existuje!"
-                    await message.channel.send(utils.fill_message(
-                        "verify_login_exists", user=message.author.id, admin=config.admin_id))
+                    await message.channel.send(
+                        utils.fill_message(
+                            "verify_login_exists", user=message.author.id, admin=config.admin_id
+                        )
+                    )
 
             elif u.status == "pending":
                 # say that message has been sent
-                await message.channel.send(utils.fill_message(
-                    "verify_already_sent", user=message.author.id, admin=config.admin_id),
-                    delete_after=config.delay_verify)
+                await message.channel.send(
+                    utils.fill_message(
+                        "verify_already_sent", user=message.author.id, admin=config.admin_id
+                    ),
+                    delete_after=config.delay_verify,
+                )
 
             elif u.status == "verified":
                 # say that the user is already verified
                 # TODO do nothing if not in #jail
                 await message.channel.send(
                     utils.fill_message(
-                        "verify_already_verified_db",
-                        user=message.author.id,
-                        admin=config.admin_id))
+                        "verify_already_verified_db", user=message.author.id, admin=config.admin_id
+                    )
+                )
 
             elif u.status == "kicked":
                 # say that the user has been kicked before
                 errmsg = "Pokus o verify s **kicked** záznamem!"
-                await message.channel.send(utils.fill_message(
-                    "verify_send_kicked", user=message.author.id, admin=config.admin_id))
+                await message.channel.send(
+                    utils.fill_message(
+                        "verify_send_kicked", user=message.author.id, admin=config.admin_id
+                    )
+                )
 
             elif u.status == "banned":
                 # say that the user has been banned before
                 errmsg = "Pokus o verify s **banned** záznamem!"
-                await message.channel.send(utils.fill_message(
-                    "verify_send_banned", user=message.author.id, admin=config.admin_id))
+                await message.channel.send(
+                    utils.fill_message(
+                        "verify_send_banned", user=message.author.id, admin=config.admin_id
+                    )
+                )
 
             else:
                 # show help
-                await message.channel.send(utils.fill_message(
-                    "verify_send_format", user=message.author.id),
-                    delete_after=config.delay_verify)
+                await message.channel.send(
+                    utils.fill_message("verify_send_format", user=message.author.id),
+                    delete_after=config.delay_verify,
+                )
 
             if errmsg:
                 embed = discord.Embed(title=errmsg, color=config.color)
-                embed.add_field(
-                    name="User", value=utils.generate_mention(message.author.id))
-                embed.add_field(
-                    name="Message", value=message.content, inline=False)
+                embed.add_field(name="User", value=utils.generate_mention(message.author.id))
+                embed.add_field(name="Message", value=message.content, inline=False)
                 channel = self.bot.get_channel(config.channel_botlog)
                 await channel.send(embed=embed)
 

@@ -1,5 +1,6 @@
 import json
 
+
 class Emote:
     def get(self, key: str):
         if self.custom is not None and key in self.custom:
@@ -7,16 +8,17 @@ class Emote:
 
         if key in self.default:
             return self.default.get(key)
-        
+
         return None
 
     def __init__(self):
-        self.default = json.load(open('config/emotes.default.json', 'r'))
+        self.default = json.load(open("config/emotes.default.json", "r"))
         try:
-            self.custom = json.load(open('config/emotes.json', 'r'))
+            self.custom = json.load(open("config/emotes.json", "r"))
         except FileNotFoundError:
             self.custom = None
 
+        # fmt: off
         self.happy =     self.get('happy')
         self.love =      self.get('love')
         self.sad =       self.get('sad')
@@ -37,5 +39,7 @@ class Emote:
         self.yes =       self.get('yes')
         self.no =        self.get('no')
         self.welcome =   self.get('welcome')
+        # fmt: on
+
 
 emote = Emote()
