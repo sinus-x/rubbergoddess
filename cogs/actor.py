@@ -1,3 +1,5 @@
+import json
+
 import discord
 from discord.ext import commands
 
@@ -12,6 +14,29 @@ class Actor(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+        self.reactions_path = "data/actor/reactions.json"
+        try:
+            self.reactions = json.load(open(self.reactions_path))
+        except:
+            self.reactions = []
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+
+        for r in self.reactions:
+            # fmt: off
+            if r["match"] == "F" and r["trigger"] == message.content \
+            or r["match"] == "A" and r["trigger"] in message.content \
+            or r["match"] == "S" and message.content.startswith(r["trigger"]) \
+            or r["match"] == "E" and message.content.endswith(r["trigger"]):
+                return await message.channel.send(r["response"])
+            # fmt: on
+
+    def _save_reactions(self):
+        with open(self.reactions_path, "w", encoding="utf-8") as f:
+            json.dump(self.reactions, f, ensure_ascii=False, indent=4)
 
     @commands.group(name="send")
     @commands.check(check.is_bot_owner)
@@ -59,48 +84,59 @@ class Actor(rubbercog.Rubbercog):
     @actor.command(name="list")
     async def actor_list(self, ctx: commands.Context):
         """See current reactions"""
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
+        result = ""
+        for r in self.reactions:
+            s = f"[{r['match']}] {r['trigger']} -> {r['response']}"
+            if r["type"] == "image":
+                s += " (image)"
+            result += s + "\n"
+
+        if len(result) == 0:
+            result = "(No reactions)"
+
+        await ctx.send(f"```\n{result}\n```")
         await self.deleteCommand(ctx)
 
-    @actor.group(name="add")
-    async def actor_add(self, ctx: commands.Context):
-        """Add reaction"""
+    @actor.group(name="text")
+    async def actor_text(self, ctx: commands.Context):
+        """Manage automatic responses"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
             await self.deleteCommand(ctx)
             return
 
-    @actor_add.command(name="text")
-    async def actor_add_text(self, ctx: commands.Context):
-        """Add text reaction"""
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
+    @actor_text.command(name="add")
+    async def actor_text_add(self, ctx: commands.Context, match: str, trigger: str, response: str):
+        """Add text reaction
+
+        match: [full | any | starts | ends]
+        trigger: "Trigger string" (in quotes)
+        response: "Response string" (in quotes)
+        """
         await self.deleteCommand(ctx)
 
-    @actor_add.command(name="image")
-    async def actor_add_image(self, ctx: commands.Context):
-        """Add text reaction"""
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
+        if match not in ["full", "any", "starts", "ends"]:
+            return await ctx.send_help(ctx.invoked_with)
+
+        if trigger in [x["trigger"] for x in self.reactions]:
+            return await ctx.send("Trigger already in use")
+
+        self.reactions.append(
+            {"match": match[:1].upper(), "type": "T", "trigger": trigger, "response": response}
+        )
+        self._save_reactions()
+        await ctx.send("Reaction added")
+
+    @actor_text.command(name="remove")
+    async def actor_text_remove(self, ctx: commands.Context, trigger: str):
+        """Remove text reaction"""
         await self.deleteCommand(ctx)
 
-    @actor.group(name="remove")
-    async def actor_remove(self, ctx: commands.Context):
-        """Add reaction"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
-            await self.deleteCommand(ctx)
-            return
-
-    @actor_remove.command(name="text")
-    async def actor_remove_text(self, ctx: commands.Context):
-        """Add text reaction"""
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
-        await self.deleteCommand(ctx)
-
-    @actor_remove.command(name="image")
-    async def actor_remove_image(self, ctx: commands.Context):
-        """Add text reaction"""
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
-        await self.deleteCommand(ctx)
+        for r in self.reactions:
+            if r["trigger"] == trigger:
+                self.reactions.remove(r)
+                return await ctx.send("Reaction removed")
+        return await ctx.send("Trigger not found")
 
     @commands.cooldown(rate=1, per=600.0, type=commands.BucketType.default)
     @commands.check(check.is_bot_owner)
@@ -114,7 +150,6 @@ class Actor(rubbercog.Rubbercog):
     @change.command(name="avatar")
     async def change_avatar(self, ctx: commands.Context, path: str):
         """Change bot's avatar"""
-        path = f"images/{path}"
         with open(path, "rb") as img:
             avatar = img.read()
             await self.bot.user.edit(avatar=avatar)
