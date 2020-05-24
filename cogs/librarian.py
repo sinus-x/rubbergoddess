@@ -17,7 +17,7 @@ class Librarian(rubbercog.Rubbercog):
 
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
-        url = config.nameday_cz
+        url = f"{config.nameday_cz}?date={date.today().strftime('%d%m')}"
         res = requests.get(url).json()
         names = []
         for i in res:
@@ -26,7 +26,7 @@ class Librarian(rubbercog.Rubbercog):
 
     @commands.command()
     async def meniny(self, ctx):
-        url = config.nameday_sk
+        url = f"{config.nameday_sk}?date={date.today().strftime('%d%m')}"
         res = requests.get(url).json()
         names = []
         for i in res:
