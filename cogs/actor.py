@@ -100,7 +100,7 @@ class Actor(rubbercog.Rubbercog):
         except Exception as e:
             await self.throwError(ctx, "Could not send media file", e)
 
-    @commands.group(name="reactions")
+    @commands.group(name="reactions", aliases=["reaction", "react"])
     @commands.check(check.is_mod)
     async def reactions(self, ctx):
         """Send post to a text channel"""
@@ -145,7 +145,12 @@ class Actor(rubbercog.Rubbercog):
             return await ctx.send("Trigger already in use")
 
         self.reactions.append(
-            {"match": match[:1].upper(), "type": "T", "trigger": trigger, "response": response}
+            {
+                "match": match[:1].upper(),
+                "type": "T",
+                "trigger": trigger.lower(),
+                "response": response,
+            }
         )
         self._save_reactions()
         await ctx.send("Reaction added")
@@ -168,7 +173,12 @@ class Actor(rubbercog.Rubbercog):
             return await ctx.send("No such image")
 
         self.reactions.append(
-            {"match": match[:1].upper(), "type": "I", "trigger": trigger, "response": filename}
+            {
+                "match": match[:1].upper(),
+                "type": "I",
+                "trigger": trigger.lower(),
+                "response": filename,
+            }
         )
         self._save_reactions()
         await ctx.send("Reaction added")
@@ -176,14 +186,10 @@ class Actor(rubbercog.Rubbercog):
     @reactions.command(name="remove", aliases=["delete", "rm", "del"])
     async def reactions_remove(self, ctx, trigger: str):
         """Remove reaction trigger"""
-        elem = None
-        for r in self.reactions:
-            if r["trigger"] == trigger:
-                elem = r
+        l = len(self.reactions)
+        self.reactions[:] = [x for x in self.reactions if x.get("trigger") != trigger]
 
-        if elem:
-            self.reactions.remove(r)
-            self._save_reactions()
+        if len(self.reactions) != l:
             return await ctx.send("Reaction removed")
         else:
             return await ctx.send("Trigger not found")
