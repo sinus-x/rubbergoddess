@@ -17,8 +17,8 @@ from repository.database.image import Image
 from repository.review_repo import ReviewRepository
 
 bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or(*config.prefixes),
-    help_command=help.Help())
+    command_prefix=commands.when_mentioned_or(*config.prefixes), help_command=help.Help()
+)
 
 presence = presence.Presence(bot)
 rubbercog = rubbercog.Rubbercog(bot)
@@ -46,53 +46,55 @@ async def on_error(event, *args, **kwargs):
     channel = bot.get_channel(config.channel_botdev)
     output = traceback.format_exc()
     print(output)
-    output = list(output[0+i:1960+i] for i in range(0, len(output), 1960))
+    output = list(output[0 + i : 1960 + i] for i in range(0, len(output), 1960))
     if channel is not None:
         for message in output:
             await channel.send("```\n{}```".format(message))
 
-#TODO Do not display those on ?help if user does not have permission
+
+# TODO Do not display those on ?help if user does not have permission
 #     Add library permission check or hide the command
 
-@bot.command()
+
+@bot.command(hidden=True)
 async def load(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
-            bot.load_extension(f'cogs.{extension}')
-            await ctx.send(f'Rozšíření **{extension}** načteno.')
+            bot.load_extension(f"cogs.{extension}")
+            await ctx.send(f"Rozšíření **{extension}** načteno.")
             await rubbercog.log(ctx, f"Cog {extension} loaded")
         except Exception:
-            await ctx.send(f'Načtení rozšíření **{extension}** se nezdařilo.')
+            await ctx.send(f"Načtení rozšíření **{extension}** se nezdařilo.")
             await rubbercog.log(ctx, "Cog loading failed", msg=e)
     else:
         raise commands.NotOwner()
 
 
-@bot.command()
+@bot.command(hidden=True)
 async def unload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
-            bot.unload_extension(f'cogs.{extension}')
-            await ctx.send(f'Rozšíření **{extension}** odebráno.')
+            bot.unload_extension(f"cogs.{extension}")
+            await ctx.send(f"Rozšíření **{extension}** odebráno.")
             await rubbercog.log(ctx, f"Cog {extension} unloaded")
         except Exception:
-            await ctx.send(f'Odebrání rozšíření **{extension}** se nezdařilo.')
+            await ctx.send(f"Odebrání rozšíření **{extension}** se nezdařilo.")
             await rubbercog.log(ctx, "Cog unloading failed", msg=e)
     else:
         raise commands.NotOwner()
 
 
-@bot.command()
+@bot.command(hidden=True)
 async def reload(ctx, extension):
     if ctx.author.id == config.admin_id:
         try:
-            bot.reload_extension(f'cogs.{extension}')
-            await ctx.send(f'Rozšíření **{extension}** aktualizováno.')
+            bot.reload_extension(f"cogs.{extension}")
+            await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
             await rubbercog.log(ctx, f"Cog {extension} reloaded")
             if "docker" in config.loader:
                 await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
         except Exception:
-            await ctx.send(f'Aktualizace rozšíření **{extension}** se nepovedla.')
+            await ctx.send(f"Aktualizace rozšíření **{extension}** se nepovedla.")
             await rubbercog.log(ctx, "Cog reloading failed", msg=e)
     else:
         raise commands.NotOwner()
@@ -103,9 +105,10 @@ async def reload(ctx, extension):
 @unload.error
 async def missing_arg_error(ctx, error):
     if isinstance(error, commands.errors.MissingRequiredArgument):
-       await ctx.send(f'Nesprávný počet argumentů' + emote.sad)
+        await ctx.send(f"Nesprávný počet argumentů" + emote.sad)
 
-#database.base.metadata.drop_all(database.db)
+
+# database.base.metadata.drop_all(database.db)
 database.base.metadata.create_all(database.db)
 session.commit()  # Making sure
 
@@ -114,7 +117,7 @@ load_subjects()
 bot.load_extension("cogs.errors")
 print("Meta ERRORS extension loaded.")
 for extension in config.extensions:
-    bot.load_extension(f'cogs.{extension}')
-    print('{} extension loaded.'.format(extension.upper()))
+    bot.load_extension(f"cogs.{extension}")
+    print("{} extension loaded.".format(extension.upper()))
 
 bot.run(config.key)
