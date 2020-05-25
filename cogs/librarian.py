@@ -19,16 +19,16 @@ class Librarian(rubbercog.Rubbercog):
 
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
-        url = f"{config.nameday_cz}?date={date.today().strftime('%d%m')}"
+        url = f"http://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
         res = requests.get(url).json()
         names = []
         for i in res:
             names.append(i["name"])
         await ctx.send(text.fill("librarian", "nameday cz", name=", ".join(names)))
 
-    @commands.command()
+    @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
-        url = f"{config.nameday_sk}?date={date.today().strftime('%d%m')}"
+        url = f"http://svatky.adresa.info/json?lang=sk&date={date.today().strftime('%d%m')}"
         res = requests.get(url).json()
         names = []
         for i in res:
