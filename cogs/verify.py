@@ -274,8 +274,11 @@ class Verify(rubbercog.Rubbercog):
                             await member.send(messages.verify_congrats_guest)
             if errmsg:
                 embed = discord.Embed(title=errmsg, color=config.color)
-                embed.add_field(name="User", value=utils.generate_mention(message.author.id))
-                embed.add_field(name="Message", value=message.content, inline=False)
+                embed.add_field(
+                    name="User",
+                    value=f"**{discord.utils.escape_markdown(message.author.name)}** ({message.author.id})\n{message.author.mention}",
+                )
+                embed.add_field(name="Command", value=message.content, inline=False)
                 channel = self.bot.get_channel(config.channel_botlog)
                 await channel.send(embed=embed)
         try:
@@ -466,8 +469,11 @@ class Verify(rubbercog.Rubbercog):
 
             if errmsg:
                 embed = discord.Embed(title=errmsg, color=config.color)
-                embed.add_field(name="User", value=utils.generate_mention(message.author.id))
-                embed.add_field(name="Message", value=message.content, inline=False)
+                embed.add_field(
+                    name="User",
+                    value=f"**{discord.utils.escape_markdown(message.author.name)}** ({message.author.id})\n{message.author.mention}",
+                )
+                embed.add_field(name="Command", value=message.content, inline=False)
                 channel = self.bot.get_channel(config.channel_botlog)
                 await channel.send(embed=embed)
 
