@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 import discord
 from discord.ext import commands
@@ -50,7 +51,7 @@ class Actor(rubbercog.Rubbercog):
         return match[:1].upper() in ["F", "A", "S", "E"]
 
     def _check_filename_extension(self, filename: str):
-        return filename.split(".")[-1] in ["jpg", "jpeg", "png", "webm", "mp4"]
+        return filename.split(".")[-1] in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]
 
     @commands.group(name="send")
     @commands.check(check.is_bot_owner)
@@ -72,8 +73,10 @@ class Actor(rubbercog.Rubbercog):
         if channel is None or text is None:
             return await ctx.send_help(ctx.invoked_with)
 
-        await channel.send(text)
-        await ctx.send(f"Sent to {channel.mention}")
+        m = await channel.send(text)
+        await ctx.send(
+            f"**Text sent to {channel.mention}:**\n> _{ctx.message.content}_\n> {m.jump_url}"
+        )
 
     @send.command(name="image")
     async def send_image(self, ctx, channel: discord.TextChannel, filename):
@@ -85,11 +88,17 @@ class Actor(rubbercog.Rubbercog):
         if channel is None or text is None:
             return await ctx.send_help(ctx.invoked_with)
 
+        now = time.monotonic()
         try:
-            await channel.send(file=discord.File(self.path + filename))
-            await ctx.send(f"Sent to {channel.mention}")
+            async with ctx.typing():
+                m = await channel.send(file=discord.File(self.path + filename))
+                delta = time.monotonic() - now
+                await ctx.send(
+                    f"**Media file uploaded to {channel.mention} in {delta:.1f} seconds:**\n"
+                    f"> _{ctx.message.content}_\n> {m.jump_url}"
+                )
         except Exception as e:
-            await self.throwError(ctx, "Could not send image", e)
+            await self.throwError(ctx, "Could not send media file", e)
 
     @commands.group(name="reactions")
     @commands.check(check.is_mod)
@@ -195,7 +204,7 @@ class Actor(rubbercog.Rubbercog):
 
         result = ""
         for f in files:
-            if f.split(".")[-1] not in ["jpg", "jpeg", "png", "webm", "mp4"]:
+            if f.split(".")[-1] not in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]:
                 continue
             result += f"{f} ({int(os.path.getsize(self.path + f)/1024)} kB)\n"
         if result == "":
@@ -209,7 +218,7 @@ class Actor(rubbercog.Rubbercog):
         url: URL of an image
         filename: Target filename
         """
-        if filename.split(".")[-1] not in ["jpg", "jpeg", "png", "webm", "mp4"]:
+        if filename.split(".")[-1] not in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]:
             return await ctx.send("Please, specify an file extension.")
         if "/" in filename or "\\" in filename or ".." in filename:
             return await ctx.send("Invalid characters inside of filename.")
