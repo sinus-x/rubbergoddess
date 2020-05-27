@@ -54,59 +54,33 @@ async def on_error(event, *args, **kwargs):
             await channel.send("```\n{}```".format(message))
 
 
-@bot.command(hidden=True)
+@bot.command()
+@commands.is_owner()
 async def load(ctx, extension):
-    if ctx.author.id == config.admin_id:
-        try:
-            bot.load_extension(f"cogs.{extension}")
-            await ctx.send(f"Rozšíření **{extension}** načteno.")
-            await rubbercog.log(ctx, f"Cog {extension} loaded")
-            print(f"Cog {extension} loaded")
-        except Exception:
-            await ctx.send(f"Načtení rozšíření **{extension}** se nezdařilo.")
-            await rubbercog.log(ctx, "Cog loading failed", msg=e)
-    else:
-        raise commands.NotOwner()
+    bot.load_extension(f"cogs.{extension}")
+    await ctx.send(f"Rozšíření **{extension}** načteno.")
+    await rubbercog.log(ctx, f"Cog {extension} loaded")
+    print(f"Cog {extension} loaded")
 
 
-@bot.command(hidden=True)
+@bot.command()
+@commands.is_owner()
 async def unload(ctx, extension):
-    if ctx.author.id == config.admin_id:
-        try:
-            bot.unload_extension(f"cogs.{extension}")
-            await ctx.send(f"Rozšíření **{extension}** odebráno.")
-            await rubbercog.log(ctx, f"Cog {extension} unloaded")
-            print(f"Cog {extension} unloaded")
-        except Exception:
-            await ctx.send(f"Odebrání rozšíření **{extension}** se nezdařilo.")
-            await rubbercog.log(ctx, "Cog unloading failed", msg=e)
-    else:
-        raise commands.NotOwner()
+    bot.unload_extension(f"cogs.{extension}")
+    await ctx.send(f"Rozšíření **{extension}** odebráno.")
+    await rubbercog.log(ctx, f"Cog {extension} unloaded")
+    print(f"Cog {extension} unloaded")
 
 
-@bot.command(hidden=True)
+@bot.command()
+@commands.is_owner()
 async def reload(ctx, extension):
-    if ctx.author.id == config.admin_id:
-        try:
-            bot.reload_extension(f"cogs.{extension}")
-            await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
-            await rubbercog.log(ctx, f"Cog {extension} reloaded")
-            print(f"Cog {extension} reloaded")
-            if "docker" in config.loader:
-                await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
-        except Exception:
-            await ctx.send(f"Aktualizace rozšíření **{extension}** se nepovedla.")
-            await rubbercog.log(ctx, "Cog reloading failed", msg=e)
-    else:
-        raise commands.NotOwner()
-
-
-@reload.error
-@load.error
-@unload.error
-async def missing_arg_error(ctx, error):
-    if isinstance(error, commands.errors.MissingRequiredArgument):
-        await ctx.send(f"Nesprávný počet argumentů" + emote.sad)
+    bot.reload_extension(f"cogs.{extension}")
+    await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
+    await rubbercog.log(ctx, f"Cog {extension} reloaded")
+    print(f"Cog {extension} reloaded")
+    if "docker" in config.loader:
+        await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
 
 
 # database.base.metadata.drop_all(database.db)

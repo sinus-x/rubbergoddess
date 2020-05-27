@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from core.config import config
 from core.emote import emote
+from core.text import text
 from core import rubbercog, utils
 from config.messages import Messages as messages
 
@@ -25,6 +26,7 @@ class Errors(rubbercog.Rubbercog):
             print("".join(traceback.format_exception(type(error), error, error.__traceback__)))
             printed = True
 
+        # user interaction
         if isinstance(error, commands.MissingPermissions):
             await self.throwNotification(ctx, messages.err_no_permission)
             await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)
@@ -40,7 +42,6 @@ class Errors(rubbercog.Rubbercog):
             return
 
         elif isinstance(error, commands.CheckFailure):
-            # TODO Extract requirements and add them to the embed
             await self.throwNotification(ctx, messages.err_no_requirements)
             await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=error)
             return
@@ -53,13 +54,7 @@ class Errors(rubbercog.Rubbercog):
             return
 
         elif isinstance(error, commands.CommandNotFound):
-            if not ctx.message.content[0] in config.prefixes:
-                await self.throwNotification(ctx, messages.err_no_command)
-            return
-
-        elif isinstance(error, commands.ExtensionError):
-            await self.throwError(ctx, error)
-            return
+            return await ctx.send(text.get("error", "no command"))
 
         elif isinstance(error, commands.MissingRequiredArgument):
             await self.throwNotification(ctx, error)
@@ -68,6 +63,19 @@ class Errors(rubbercog.Rubbercog):
 
         elif isinstance(error, commands.CommandError):
             return await self.throwNotification(ctx, error)
+
+        # cog loading
+        elif isinstance(error, commands.ExtensionAlreadyLoaded):
+            return await self.throwError(ctx, "The cog is already loaded")
+        elif isinstance(error, commands.ExtensionNotLoaded):
+            return await self.throwError(ctx, "The cog is not loaded")
+        elif isinstance(error, commands.ExtensionFailed):
+            return await self.throwError(ctx, "The cog failed")
+        elif isinstance(error, commands.ExtensionNotFound):
+            return await self.throwError(ctx, "No such cog")
+        elif isinstance(error, commands.ExtensionError):
+            return await self.throwError(ctx, error)
+        # fmt: on
 
         # display error message
         await self.throwError(ctx, error)
