@@ -73,8 +73,9 @@ class Actor(rubbercog.Rubbercog):
         if channel is None or text is None:
             return await ctx.send_help(ctx.invoked_with)
 
+        ch = self.getGuild().get_channel(config.channel_mods)
         m = await channel.send(text)
-        await ctx.send(
+        await ch.send(
             f"**Text sent to {channel.mention}:**\n> _{ctx.message.content}_\n> {m.jump_url}"
         )
 
@@ -93,7 +94,8 @@ class Actor(rubbercog.Rubbercog):
             async with ctx.typing():
                 m = await channel.send(file=discord.File(self.path + filename))
                 delta = time.monotonic() - now
-                await ctx.send(
+                ch = self.getGuild().get_channel(config.channel_mods)
+                await ch.send(
                     f"**Media file uploaded to {channel.mention} in {delta:.1f} seconds:**\n"
                     f"> _{ctx.message.content}_\n> {m.jump_url}"
                 )
