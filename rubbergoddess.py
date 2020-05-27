@@ -34,9 +34,11 @@ def load_subjects():
 async def on_ready():
     """If Rubbergoddess is ready"""
     if config.debug < 1:
-        login = "Logged in: "
+        login = f"Logged in [{config.get('bot', 'logging')}]: "
     else:
-        login = "Logged with debug(" + str(config.debug) + "): "
+        login = (
+            f"Logged in [{config.get('bot', 'logging')}] with debug(" + str(config.debug) + "): "
+        )
     print(login + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
     await presence.set_presence()
 
@@ -52,10 +54,6 @@ async def on_error(event, *args, **kwargs):
             await channel.send("```\n{}```".format(message))
 
 
-# TODO Do not display those on ?help if user does not have permission
-#     Add library permission check or hide the command
-
-
 @bot.command(hidden=True)
 async def load(ctx, extension):
     if ctx.author.id == config.admin_id:
@@ -63,6 +61,7 @@ async def load(ctx, extension):
             bot.load_extension(f"cogs.{extension}")
             await ctx.send(f"Rozšíření **{extension}** načteno.")
             await rubbercog.log(ctx, f"Cog {extension} loaded")
+            print(f"Cog {extension} loaded")
         except Exception:
             await ctx.send(f"Načtení rozšíření **{extension}** se nezdařilo.")
             await rubbercog.log(ctx, "Cog loading failed", msg=e)
@@ -77,6 +76,7 @@ async def unload(ctx, extension):
             bot.unload_extension(f"cogs.{extension}")
             await ctx.send(f"Rozšíření **{extension}** odebráno.")
             await rubbercog.log(ctx, f"Cog {extension} unloaded")
+            print(f"Cog {extension} unloaded")
         except Exception:
             await ctx.send(f"Odebrání rozšíření **{extension}** se nezdařilo.")
             await rubbercog.log(ctx, "Cog unloading failed", msg=e)
@@ -91,6 +91,7 @@ async def reload(ctx, extension):
             bot.reload_extension(f"cogs.{extension}")
             await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
             await rubbercog.log(ctx, f"Cog {extension} reloaded")
+            print(f"Cog {extension} reloaded")
             if "docker" in config.loader:
                 await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
         except Exception:

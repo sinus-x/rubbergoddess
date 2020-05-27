@@ -18,23 +18,56 @@ class Output:
     def bot(self, bot: discord.ext.commands.Bot):
         self.bot = bot
 
-    async def debug(self, msgbl: discord.abc.Messageable, msg: str):
+    async def debug(self, msgbl: discord.abc.Messageable, msg: str, error=None):
+        """Send output to discord
+
+        msgbl: Where to send an output to
+        msg: A text description
+        error: Optional. An generated error
+        """
         if self.level <= logging.DEBUG:
             await self.send(msgbl, "Debug", msg, delete_after=config.get("delay", "embed"))
 
-    async def info(self, msgbl: discord.abc.Messageable, msg: str):
+    async def info(self, msgbl: discord.abc.Messageable, msg: str, error=None):
+        """Send output to discord
+
+        msgbl: Where to send an output to
+        msg: A text description
+        error: Optional. An generated error
+        """
         if self.level <= logging.INFO:
             await self.send(msgbl, "Info", msg, delete_after=config.get("delay", "embed"))
 
-    async def warning(self, msgbl: discord.abc.Messageable, msg: str):
+    async def warning(self, msgbl: discord.abc.Messageable, msg: str, error=None):
+        """Send output to discord
+
+        msgbl: Where to send an output to
+        msg: A text description
+        error: Optional. An generated error
+        """
         if self.level <= logging.WARNING:
-            await self.send(msgbl, "Warning", msg, delete_after=config.get("delay", "embed"))
+            if error:
+                await self.send(msgbl, "Warning", msg, error)
+            else:
+                await self.send(msgbl, "Warning", msg, delete_after=config.get("delay", "embed"))
 
     async def error(self, msgbl: discord.abc.Messageable, msg: str, error=None):
+        """Send output to discord
+
+        msgbl: Where to send an output to
+        msg: A text description
+        error: Optional. An generated error
+        """
         if self.level <= logging.ERROR:
             await self.send(msgbl, "Error", msg, error)
 
     async def critical(self, msgbl: discord.abc.Messageable, msg: str, error=None):
+        """Send output to discord
+
+        msgbl: Where to send an output to
+        msg: A text description
+        error: Optional. An generated error
+        """
         if self.level <= logging.CRITICAL:
             await self.send(msgbl, "Critical error", msg, error)
 

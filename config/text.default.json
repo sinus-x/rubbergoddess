@@ -123,7 +123,7 @@
 	},
 	"librarian": {
 		"nameday cz": "Dnes má svátek {name} {emote.happy}",
-		"nameday sk": "Dnes má svátek {name} {emote.happy}"
+		"nameday sk": "Dnes má meniny {name} {emote.happy}"
 	},
 	"voice": {
 		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
