@@ -37,9 +37,9 @@ class Actor(rubbercog.Rubbercog):
             or r["match"] == "S" and text.startswith(r["trigger"]) \
             or r["match"] == "E" and text.endswith(r["trigger"]):
                 # conditions
-                if "users" in r and message.author.id not in r["users"]:
+                if "user" in r and message.author.id not in r["user"]:
                     continue
-                if "channels" in r and message.channel.id not in r["channels"]:
+                if "channel" in r and message.channel.id not in r["channel"]:
                     continue
 
                 # send
