@@ -1,3 +1,5 @@
+import asyncio
+import time
 from io import BytesIO
 
 import discord
@@ -105,24 +107,104 @@ class Warden(rubbercog.Rubbercog):
                     return
                 await message.delete()
 
-    async def checkDuplicate(self, message: discord.Message):
-        """Check if uploaded files are known"""
-        skipped = False
-        hashes = []
+    async def saveMessageHashes(self, message: discord.Message):
         for f in message.attachments:
             fp = BytesIO()
             await f.save(fp)
             try:
                 i = Image.open(fp)
-            except OSError:
+            except OSError as e:
                 # not an image
+                print(e)
                 continue
             h = dhash.dhash_int(i)
-            hashes.append(h)
-            h_ = str(hex(h))
+
+            # fmt: off
             repo_i.add_image(
-                channel_id=message.channel.id, message_id=message.id, attachment_id=f.id, dhash=h_
+                channel_id=message.channel.id,
+                message_id=message.id,
+                attachment_id=f.id,
+                dhash=str(hex(h))
             )
+            # fmt: on
+            yield h
+
+    @commands.group()
+    @commands.check(check.is_mod)
+    async def scan(self, ctx):
+        """Scan for reposts"""
+        if ctx.invoked_subcommand == None:
+            await ctx.send_help(ctx.invoked_with)
+
+    @commands.guild_only()
+    @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
+    @commands.bot_has_permissions(read_message_history=True)
+    @scan.command(name="history")
+    async def scan_history(self, ctx, limit):
+        """Scan current channel for images and save them as hashes
+
+        limit: [all | <int>]
+        """
+        # parse parameter
+        if limit == "all":
+            limit == None
+        else:
+            try:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValueError
+            except ValueError:
+                raise commands.BadArgument("Expected 'all' or positive integer")
+
+        messages = await ctx.channel.history(limit=limit, oldest_first=True).flatten()
+
+        # fmt: off
+        title = "**INITIATING...**\nLoaded {} messages"
+        template = (
+            "**SCANNING IN PROGRESS**\n"
+            "Processed **{}** of **{}** messages ({:.1f} %)\n"
+            "Computed **{}** hashes"
+        )
+        # fmt: on
+        msg = await ctx.send(title.format(len(messages)))
+
+        ctr_nofile = 0
+        ctr_hashes = 0
+        i = 0
+        now = time.time()
+        for i, message in enumerate(messages):
+            # update info on every 10th message
+            if i % 10 == 0:
+                # fmt: off
+                await msg.edit(content=template.format(
+                    i, len(messages), (i / len(messages) * 100),
+                    ctr_hashes
+                ))
+                # fmt: on
+
+            if len(message.attachments) == 0:
+                ctr_nofile += 1
+                continue
+
+            hashes = [x async for x in self.saveMessageHashes(message)]
+            ctr_hashes += len(hashes)
+
+        # fmt: off
+        await msg.edit(content=
+            "**SCAN COMPLETE**\n"
+            f"Processed **{len(messages)}** messages, {len(messages) - ctr_nofile} had attachments.\n"
+            f"Computed **{ctr_hashes}** hashes in {(time.time() - now):.1f} seconds."
+        )
+        # fmt: on
+
+    @scan.command(name="message")
+    async def scan_message(self, ctx, link):
+        """Scan message attachments in whole database"""
+        pass
+
+    async def checkDuplicate(self, message: discord.Message):
+        """Check if uploaded files are known"""
+        hashes = [x async for x in self.saveMessageHashes(message)]
 
         if len(message.attachments) > 0 and len(hashes) == 0:
             await message.add_reaction("▶")
