@@ -11,25 +11,27 @@ from repository.database.image import Image
 class ImageRepository(BaseRepository):
     def add_image(self, channel_id: int, message_id: int, attachment_id: int, dhash: str):
         """Add new image hash"""
-        try:
-            session.add(
-                Image(
-                    channel_id=channel_id,
-                    message_id=message_id,
-                    attachment_id=attachment_id,
-                    dhash=dhash,
-                    timestamp=datetime.datetime.now().replace(microsecond=0),
-                )
-            )
-            session.commit()
 
-        # image already indexed
-        except sqlalchemy.exc.IntegrityError:
-            session.rollback()
+        if self.getByMessage(message_id) != None:
+            # message already indexed
             return
+
+        session.add(
+            Image(
+                channel_id=channel_id,
+                message_id=message_id,
+                attachment_id=attachment_id,
+                dhash=dhash,
+                timestamp=datetime.datetime.now().replace(microsecond=0),
+            )
+        )
+        session.commit()
 
     def getHash(self, dhash: str):
         return session.query(Image).filter(Image.dhash == dhash).all()
+
+    def getByMessage(self, message_id: int):
+        return session.query(Image).filter(Image.message_id == message_id).all()
 
     def getAll(self):
         return session.query(Image)

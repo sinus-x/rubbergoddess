@@ -124,7 +124,7 @@ class Warden(rubbercog.Rubbercog):
                 channel_id=message.channel.id,
                 message_id=message.id,
                 attachment_id=f.id,
-                dhash=str(hex(h))
+                dhash=str(hex(h)),
             )
             # fmt: on
             yield h
@@ -147,7 +147,7 @@ class Warden(rubbercog.Rubbercog):
         """
         # parse parameter
         if limit == "all":
-            limit == None
+            limit = None
         else:
             try:
                 limit = int(limit)
@@ -156,12 +156,13 @@ class Warden(rubbercog.Rubbercog):
             except ValueError:
                 raise commands.BadArgument("Expected 'all' or positive integer")
 
-        messages = await ctx.channel.history(limit=limit, oldest_first=True).flatten()
+        messages = await ctx.channel.history(limit=limit).flatten()
 
         # fmt: off
-        title = "**INITIATING...**\nLoaded {} messages"
+        title = "**INITIATING...**\n\nLoaded {} messages"
+        await asyncio.sleep(0.5)
         template = (
-            "**SCANNING IN PROGRESS**\n"
+            "**SCANNING IN PROGRESS**\n\n"
             "Processed **{}** of **{}** messages ({:.1f} %)\n"
             "Computed **{}** hashes"
         )
@@ -191,8 +192,8 @@ class Warden(rubbercog.Rubbercog):
 
         # fmt: off
         await msg.edit(content=
-            "**SCAN COMPLETE**\n"
-            f"Processed **{len(messages)}** messages, {len(messages) - ctr_nofile} had attachments.\n"
+            "**SCAN COMPLETE**\n\n"
+            f"Processed **{len(messages)}** messages.\n"
             f"Computed **{ctr_hashes}** hashes in {(time.time() - now):.1f} seconds."
         )
         # fmt: on
