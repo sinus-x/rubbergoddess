@@ -29,13 +29,20 @@ class Actor(rubbercog.Rubbercog):
         if message.author.bot:
             return
 
-        for r in self.reactions:
+        for r in self.reactions.values():
             text = message.content.lower()
             # fmt: off
             if r["match"] == "F" and r["trigger"] == text \
             or r["match"] == "A" and r["trigger"] in text \
             or r["match"] == "S" and text.startswith(r["trigger"]) \
             or r["match"] == "E" and text.endswith(r["trigger"]):
+                # conditions
+                if "users" in r and message.author.id not in r["users"]:
+                    continue
+                if "channels" in r and message.channel.id not in r["channels"]:
+                    continue
+
+                # send
                 if r["type"] == "T":
                     return await message.channel.send(r["response"])
                 elif r["type"] == "I":
@@ -114,87 +121,159 @@ class Actor(rubbercog.Rubbercog):
     @reactions.command(name="list")
     async def reactions_list(self, ctx):
         """See enabled reactions"""
-        result = ""
-        for r in self.reactions:
-            s = f"[{r['match']}] {r['trigger']} -> {r['response']}"
-            if r["type"] == "image":
-                s += " (image)"
-            result += s + "\n"
+        result = []
+        for k, v in self.reactions.items():
+            line = []
+            # id and comment
+            # fmt: off
+            line.append(
+                v["match"] + 
+                v["type"].lower() + 
+                f"[{k}]" +
+                (f" {v['comment']}" if "comment" in v else "")
+            )
+            # fmt: on
+            # trigger and response
+            line.append(f" {v['trigger']} -> {v['response']}")
+            # conditions
+            if "user" in v:
+                us = []
+                for u in v["user"]:
+                    obj = self.bot.get_user(u)
+                    us.append(f"{u} ({obj.name})" if hasattr(obj, "name") else str(u))
+                line.append(" " + ", ".join(us))
+            if "channel" in v:
+                cs = []
+                for c in v["channel"]:
+                    obj = self.bot.get_channel(c)
+                    cs.append(f"{u} ({obj.name})" if hasattr(obj, "name") else str(u))
+                line.append(" " + ", ".join(cs))
+            result.append("\n".join(line))
 
         if len(result) == 0:
             result = "(No reactions)"
 
-        await ctx.send(f"```\n{result}\n```")
+        m = "\n".join(result)
+        await ctx.send(f"```\n{m}\n```")
 
-    @reactions.group(name="add")
+    @reactions.group(name="add", aliases=["edit"])
     async def reactions_add(self, ctx):
         """Add reaction trigger"""
         if ctx.invoked_subcommand is None:
             return await ctx.send_help(ctx.invoked_with)
 
     @reactions_add.command(name="text")
-    async def reactions_add_text(self, ctx, match: str, trigger: str, response: str):
+    async def reactions_add_text(
+        self, ctx, name: str, match: str, trigger: str, response: str, *, comment: str = None
+    ):
         """Add text reaction
 
-        match: [full | any | starts | ends]
+        match: [Full | Any | Starts | Ends]
+        name: "Reaction name"
         trigger: "Trigger string" (in quotes)
         response: "Response string" (in quotes)
         """
         if not self._check_match_string(match):
             return await ctx.send_help(ctx.invoked_with)
 
-        if trigger in [x["trigger"] for x in self.reactions]:
-            return await ctx.send("Trigger already in use")
+        name = discord.utils.escape_markdown(name)
+        if name in self.reactions.keys():
+            raise discord.BadArgument("Reaction name already exists")
 
-        self.reactions.append(
-            {
-                "match": match[:1].upper(),
-                "type": "T",
-                "trigger": trigger.lower(),
-                "response": response,
-            }
-        )
+        self.reactions[name] = {
+            "match": match[:1].upper(),
+            "type": "T",
+            "trigger": trigger.lower(),
+            "response": response,
+            "comment": comment if comment != None else "",
+        }
         self._save_reactions()
-        await ctx.send("Reaction added")
+        await ctx.send(f"Reaction **{discord.utils.escape_markdown(name)}** added")
 
     @reactions_add.command(name="image", aliases=["img"])
-    async def reactions_add_image(self, ctx, match: str, trigger: str, filename: str):
+    async def reactions_add_image(
+        self, ctx, name: str, match: str, trigger: str, filename: str, *, comment: str = None
+    ):
         """Add multimedia reaction
 
-        match: [full | any | starts | ends]
+        name: "Reaction name"
+        match: [Full | Any | Starts | Ends]
         trigger: "Trigger string" (in quotes)
-        filename: An image or video
+        filename: Path to an image or a video
         """
         if not self._check_match_string(match):
             return await ctx.send_help(ctx.invoked_with)
 
-        if trigger in [x["trigger"] for x in self.reactions]:
-            return await ctx.send("Trigger already in use")
+        name = discord.utils.escape_markdown(name)
+        if name in self.reactions.keys():
+            raise discord.BadArgument("Reaction name already exists")
 
         if not os.path.exists(self.path + filename):
-            return await ctx.send("No such image")
+            raise discord.BadArgument("No such image")
 
-        self.reactions.append(
-            {
-                "match": match[:1].upper(),
-                "type": "I",
-                "trigger": trigger.lower(),
-                "response": filename,
-            }
-        )
+        self.reactions[name] = {
+            "match": match[:1].upper(),
+            "type": "I",
+            "trigger": trigger.lower(),
+            "response": filename,
+            "comment": comment if comment != None else "",
+        }
         self._save_reactions()
-        await ctx.send("Reaction added")
+        await ctx.send(f"Media reaction **{name}** added")
+
+    @reactions_add.command(name="condition", aliases=["cond"])
+    async def reactions_add_condition(self, ctx, name: str, type: str, *, ids: str = None):
+        """Add condition for a reaction.
+
+        name: Trigger name
+        type: [user | channel]
+        ids: Space separated IDs; leave blank to remove condition type
+
+        This will overwrite old settings for given condition type.
+        """
+        if not name in self.reactions:
+            raise commands.BadArgument("Reaction name not found")
+        if not type in ["user", "channel"]:
+            raise commands.BadArgument("Type not supported")
+        try:
+            ids = [int(i) for i in ids.split(" ")]
+        except:
+            if ids != None:
+                raise commands.BadArgument("Invalid IDs")
+
+        if ids == None:
+            del self.reactions[name][type]
+        else:
+            self.reactions[name][type] = ids
+        self._save_reactions()
+        await ctx.send(f"Condition for **{name}** saved")
+
+    @reactions_add.command(name="comment")
+    async def reactions_add_comment(self, ctx, name: str, *, comment: str):
+        """Add comment to a reaction
+
+        name: Trigger name
+        comment: Text description for a reaction
+        """
+        if not name in self.reactions:
+            raise commands.BadArgument("Name not found")
+
+        self.reactions[name]["comment"] = comment
+        self._save_reactions()
+        await ctx.send(f"Comment for **{name}** set")
 
     @reactions.command(name="remove", aliases=["delete", "rm", "del"])
-    async def reactions_remove(self, ctx, trigger: str):
-        """Remove reaction trigger"""
-        l = len(self.reactions)
-        self.reactions[:] = [x for x in self.reactions if x.get("trigger") != trigger]
+    async def reactions_remove(self, ctx, name: str):
+        """Remove reaction trigger
 
-        if len(self.reactions) != l:
-            return await ctx.send("Reaction removed")
-        else:
-            return await ctx.send("Trigger not found")
+        name: Trigger name
+        """
+        if not name in self.reactions:
+            raise commands.BadArgument("Name not found")
+        reaction = self.reactions[name]
+        del self.reactions[name]
+        self._save_reactions()
+        return await ctx.send(f"Reaction **{name}** removed")
 
     @commands.is_owner()
     @commands.group(name="image", aliases=["img", "images"])
