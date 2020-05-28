@@ -54,7 +54,7 @@ class Errors(rubbercog.Rubbercog):
             return
 
         elif isinstance(error, commands.CommandNotFound):
-            return await ctx.send(text.get("error", "no command"))
+            return
 
         elif isinstance(error, commands.MissingRequiredArgument):
             await self.throwNotification(ctx, error)
