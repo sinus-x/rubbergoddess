@@ -73,14 +73,14 @@ class Text:
         if isinstance(channel, discord.TextChannel) or isinstance(channel, discord.VoiceChannel):
             return channel.mention
         if isinstance(channel, int):
-            return f"<#{discord_id}>"
+            return f"<#{channel}>"
         return str(channel)
 
     def _mention_role(self, role):
         if isinstance(role, discord.Role):
             return role.mention
         if isinstance(role, int):
-            return f"<@&{discord_id}>"
+            return f"<@&{role}>"
         return str(role)
 
 

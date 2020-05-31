@@ -2,10 +2,9 @@ import discord
 from discord.ext import commands
 
 from core import rubbercog, utils
-from logic import roll_dice, rng
+from logic import rng
 
 # Logic (functionality used by features or rubbergoddess directly)
-roll_dice = roll_dice.Roll()
 rng = rng.Rng()
 
 
@@ -14,12 +13,6 @@ class Random(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
-
-    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
-    @commands.command()
-    async def diceroll(self, ctx, *, arg=""):
-        await ctx.send(roll_dice.roll_dice(arg))
-        await self.roomCheck(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()

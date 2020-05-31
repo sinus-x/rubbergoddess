@@ -7,6 +7,7 @@ from discord.ext import commands
 
 from core.config import config
 from core.text import text
+from core.emote import emote
 from core import rubbercog, utils
 from config.messages import Messages as messages
 
@@ -90,7 +91,7 @@ class Librarian(rubbercog.Rubbercog):
         elif str(res["cod"]) == "401":
             await ctx.send("Rip token")
         else:
-            await ctx.send("Město nenalezeno! " + emote.panic + " (" + res["message"] + ")")
+            await ctx.send("Město nenalezeno! " + emote.sad + " (" + res["message"] + ")")
         await self.deleteCommand(ctx)
 
 

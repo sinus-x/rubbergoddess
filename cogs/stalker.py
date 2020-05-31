@@ -497,9 +497,9 @@ class Stalker(rubbercog.Rubbercog):
         for user in users:
             member = discord.utils.get(guild.members, id=user.discord_id)
             if member:
-                name = "__{}__, {}".format(member.name, member.id)
+                name = "**{}**, {}".format(member.name, member.id)
             else:
-                name = "{} _(not on server)_".format(user.discord_id, user.group)
+                name = "**{}**, {} _(not on server)_".format(user.discord_id, user.group)
             d = user.changed
             date = (d[:4] + "-" + d[4:6] + "-" + d[6:]) if (d and len(d) == 8) else "_(none)_"
             embed.add_field(
