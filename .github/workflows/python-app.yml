@@ -18,7 +18,7 @@ jobs:
       with:
         python-version: 3.7
 
-    - name: PIP cache
+    - name: Load PIP cache
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
@@ -39,7 +39,3 @@ jobs:
         flake8 . --count --select=BLK,E9,F70,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --ignore=E12,E20,E221,E222,E241,E251,E266,E30,E722,W50 --exclude=config/* --exit-zero --max-complexity=13 --max-line-length=110 --statistics
-
-    - name: Test with pytest
-      run: |
-        pytest
