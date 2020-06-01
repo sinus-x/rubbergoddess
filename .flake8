@@ -25,9 +25,13 @@ ignore =
 	W50
 per-file-ignores = 
 	# imports here are important to initiate the database
-	rubbergoddess.py:F401
+	rubbergoddess.py:F401,
+	# do not point out print() where it serves as a logging feature
+	core/output.py:T001,
+	rubbergoddess.py:T001,
+	cogs/errors.py:T001
 exclude =
-	# .py files here are deprecated
+	# .py files in this directory are deprecated
 	config/*,
 	# development and testing files
 	test.py
