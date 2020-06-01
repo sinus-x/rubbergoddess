@@ -19,8 +19,6 @@ class Messages:
     uhoh_counter = "{uhohs} uh ohs od spuštění."
     uptime_message = "Up since:  `{boottime}`\nUptime:\t`{uptime}`"
 
-    kachna_grillbot = emote.wtf + " Tady kachna není, běž na FIT: " + config.meme_kachna
-
     hoarders_none = "Žádné jsem nenašla."
     hoarders_warn = (
         "Ahoj {user}, všimla jsem si, že máš přidaný na FEKT serveru více než 1 ročník.\n"
