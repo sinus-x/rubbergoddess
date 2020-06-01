@@ -8,9 +8,8 @@ from repository.database.image import Image
 class ImageRepository(BaseRepository):
     def add_image(self, channel_id: int, message_id: int, attachment_id: int, dhash: str):
         """Add new image hash"""
-
-        if self.getByMessage(message_id) is not None:
-            # message already indexed
+        if self.getByAttachment(attachment_id) is not None:
+            # attachment already indexed
             return
 
         session.add(
@@ -27,8 +26,8 @@ class ImageRepository(BaseRepository):
     def getHash(self, dhash: str):
         return session.query(Image).filter(Image.dhash == dhash).all()
 
-    def getByMessage(self, message_id: int):
-        return session.query(Image).filter(Image.message_id == message_id).all()
+    def getByAttachment(self, attachment_id: int):
+        return session.query(Image).filter(Image.attachment_id == attachment_id).one_or_none()
 
     def getAll(self):
         return session.query(Image)
