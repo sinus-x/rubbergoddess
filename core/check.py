@@ -72,3 +72,18 @@ def __getAuthor(ctx: commands.Context):
     if u is not None:
         return u
     raise commands.CommandError("Not in master guild.")
+
+
+async def antispam(ctx: commands.Context):
+    """Send botroom redirect if needed"""
+    if not isinstance(ctx.channel, discord.TextChannel):
+        return
+
+    if ctx.channel.id in config.get("channels", "bot allowed"):
+        return
+
+    await ctx.send(
+        text.fill("server", "botroom redirect"),
+        user=ctx.author,
+        channel=config.get("channels", "botspam"),
+    )
