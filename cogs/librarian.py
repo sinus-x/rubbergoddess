@@ -1,4 +1,3 @@
-import json
 import requests
 from datetime import date
 
@@ -8,8 +7,7 @@ from discord.ext import commands
 from core.config import config
 from core.text import text
 from core.emote import emote
-from core import rubbercog, utils
-from config.messages import Messages as messages
+from core import rubbercog
 
 
 class Librarian(rubbercog.Rubbercog):

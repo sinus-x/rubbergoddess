@@ -1,12 +1,10 @@
 import subprocess
 import asyncio
 
-import discord
 from discord.ext import commands
 
 from core import check, rubbercog
 from core.config import config
-from core.text import text
 from core.emote import emote
 from config.messages import Messages as messages
 
@@ -161,7 +159,7 @@ class Admin(rubbercog.Rubbercog):
 
     async def _readFile(self, ctx: commands.Context, file: str, docker: bool):
         """Read file
-        
+
         file: path to file
         docker: [ True | False ] Read from docker filesystem?
         """
@@ -173,7 +171,7 @@ class Admin(rubbercog.Rubbercog):
         try:
             with open(path, "r") as f:
                 lines = f.readlines()
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             await self.throwNotification(ctx, "Log file not found")
             await self.log(ctx, "Log not found", msg=path)
             return None

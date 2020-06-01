@@ -1,12 +1,10 @@
 import traceback
 from datetime import datetime
 
-import discord
 from discord.ext import commands
 
-from core import help, utils, rubbercog
+from core import help, rubbercog
 from core.config import config
-from core.emote import emote
 from features import presence
 from repository.database import database
 from repository.database import session

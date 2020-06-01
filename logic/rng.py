@@ -1,4 +1,3 @@
-from datetime import date
 from random import randint, choice
 
 from core import utils

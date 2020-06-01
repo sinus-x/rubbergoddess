@@ -1,5 +1,4 @@
 import re
-import csv
 import time
 import json
 import random
@@ -9,15 +8,12 @@ from operator import itemgetter
 
 import discord
 from discord.ext import commands
-from discord.colour import Colour
 
-from cogs import errors
+from core import check, rubbercog
 from cogs import creator
 from core.text import text
 from core.config import config
 from repository import user_repo
-from core import check, rubbercog
-from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 

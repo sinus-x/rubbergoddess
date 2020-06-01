@@ -1,15 +1,11 @@
 import discord
 from discord.ext import commands
-from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
 from core.config import config
 from core.text import text
-from core.emote import emote
-from core import check, rubbercog, utils
+from core import check, rubbercog
 from repository import user_repo
-from repository.database import database
-from repository.database import session
 
 repository = user_repo.UserRepository()
 
@@ -114,7 +110,7 @@ class Stalker(rubbercog.Rubbercog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
-        if log != False:
+        if log:
             await self.log(ctx, "Database entry lookup", quote=True)
         await self.deleteCommand(ctx, now=True)
 
@@ -154,7 +150,7 @@ class Stalker(rubbercog.Rubbercog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
-        if log != False:
+        if log:
             await self.log(ctx, "No xlogin found", quote=True)
         await self.deleteCommand(ctx, now=True)
 
@@ -190,7 +186,7 @@ class Stalker(rubbercog.Rubbercog):
 
         # try to write to database
         try:
-            result = repository.filterId(discord_id=member.id)[0]
+            repository.filterId(discord_id=member.id)[0]
             await self.throwError(ctx, text.get("db", "duplicate"))
             return
         except IndexError:
@@ -241,7 +237,7 @@ class Stalker(rubbercog.Rubbercog):
                 result = repository.deleteId(discord_id=member.id)
             else:
                 result = repository.filterId(discord_id=member.id)
-        except Exception as e:
+        except Exception:
             await self.throwError(ctx, text.get("db", "read"))
             return
 
@@ -445,7 +441,6 @@ class Stalker(rubbercog.Rubbercog):
         g = self.getGuild()
 
         # guild
-        desc = "Created {}, {} boosters"
         embed.add_field(
             name=f"Guild **{g.name}**",
             inline=False,

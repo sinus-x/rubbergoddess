@@ -3,10 +3,9 @@ from random import choice
 import discord
 from discord.ext import commands
 
-from core.config import config
 from core.text import text
 from core.emote import emote
-from core import rubbercog, utils
+from core import rubbercog
 from config.messages import Messages as messages
 
 

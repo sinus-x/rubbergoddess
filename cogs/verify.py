@@ -3,14 +3,10 @@ import random
 import string
 import smtplib
 from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
 import discord
-from discord import Member
-from discord.asset import Asset
 from discord.ext import commands
-from discord.ext.commands import Bot
 
 from cogs import errors
 from repository import user_repo
@@ -88,7 +84,7 @@ class Verify(rubbercog.Rubbercog):
             server.send_message(msg)
 
     async def has_role(self, user, role_name):
-        if type(user) == Member:
+        if type(user) == discord.Member:
             return utils.has_role(user, role_name)
         else:
             guild = self.getGuild()
@@ -366,12 +362,12 @@ class Verify(rubbercog.Rubbercog):
             except IndexError:
                 u = None
             try:
-                l = repository.filterLogin(login=login)[0]
+                db_login = repository.filterLogin(login=login)[0]
             except IndexError:
-                l = None
+                db_login = None
 
             if u is None or u and u.status == "unknown":
-                if l is None:
+                if db_login is None:
                     # send verify message
                     if group and group.upper() == "FEKT":
                         email = "{}@stud.feec.vutbr.cz".format(login)

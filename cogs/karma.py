@@ -3,8 +3,6 @@ from discord.ext import commands
 
 from core import rubbercog, utils
 from core.config import config
-from core.text import text
-from config.messages import Messages as messages
 from features import karma, reaction
 from repository import karma_repo
 

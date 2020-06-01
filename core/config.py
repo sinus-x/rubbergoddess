@@ -41,7 +41,7 @@ class Config:
         self.host      = self.get('bot', 'host')
         self.prefixes  = self.get('bot', 'prefixes')
         self.prefix    = self.prefixes[0]
-        
+
         self.extensions = self.get('bot', 'extensions')
 
         ##

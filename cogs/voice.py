@@ -1,12 +1,11 @@
 import random
-import asyncio
 
 import discord
 from discord.ext import commands
 
 from core.config import config
 from core.text import text
-from core import check, rubbercog, utils
+from core import check, rubbercog
 
 
 class Voice(rubbercog.Rubbercog):
@@ -101,7 +100,6 @@ class Voice(rubbercog.Rubbercog):
         ):
             return
 
-        voices = self.getGuild().get_channel(config.channel_voices)
         nomic = self.getGuild().get_channel(config.channel_nomic)
 
         # alter access to the channels

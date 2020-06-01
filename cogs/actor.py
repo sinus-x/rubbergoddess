@@ -8,7 +8,6 @@ from requests import get
 
 from core import check, rubbercog
 from core.config import config
-from core.emote import emote
 from core.text import text
 
 
@@ -127,8 +126,8 @@ class Actor(rubbercog.Rubbercog):
             # id and comment
             # fmt: off
             line.append(
-                v["match"] + 
-                v["type"].lower() + 
+                v["match"] +
+                v["type"].lower() +
                 f"[{k}]" +
                 (f" {v['comment']}" if "comment" in v else "")
             )
@@ -185,7 +184,7 @@ class Actor(rubbercog.Rubbercog):
             "type": "T",
             "trigger": trigger.lower(),
             "response": response,
-            "comment": comment if comment != None else "",
+            "comment": comment if comment is not None else "",
         }
         self._save_reactions()
         await ctx.send(f"Reaction **{discord.utils.escape_markdown(name)}** added")
@@ -216,7 +215,7 @@ class Actor(rubbercog.Rubbercog):
             "type": "I",
             "trigger": trigger.lower(),
             "response": filename,
-            "comment": comment if comment != None else "",
+            "comment": comment if comment is not None else "",
         }
         self._save_reactions()
         await ctx.send(f"Media reaction **{name}** added")
@@ -231,17 +230,17 @@ class Actor(rubbercog.Rubbercog):
 
         This will overwrite old settings for given condition type.
         """
-        if not name in self.reactions:
+        if name not in self.reactions:
             raise commands.BadArgument("Reaction name not found")
-        if not type in ["user", "channel"]:
+        if type not in ["user", "channel"]:
             raise commands.BadArgument("Type not supported")
         try:
             ids = [int(i) for i in ids.split(" ")]
         except:
-            if ids != None:
+            if ids is not None:
                 raise commands.BadArgument("Invalid IDs")
 
-        if ids == None:
+        if ids is None:
             del self.reactions[name][type]
         else:
             self.reactions[name][type] = ids
@@ -255,7 +254,7 @@ class Actor(rubbercog.Rubbercog):
         name: Trigger name
         comment: Text description for a reaction
         """
-        if not name in self.reactions:
+        if name not in self.reactions:
             raise commands.BadArgument("Name not found")
 
         self.reactions[name]["comment"] = comment
@@ -268,9 +267,8 @@ class Actor(rubbercog.Rubbercog):
 
         name: Trigger name
         """
-        if not name in self.reactions:
+        if name not in self.reactions:
             raise commands.BadArgument("Name not found")
-        reaction = self.reactions[name]
         del self.reactions[name]
         self._save_reactions()
         return await ctx.send(f"Reaction **{name}** removed")

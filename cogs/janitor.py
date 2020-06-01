@@ -1,12 +1,9 @@
-import re
-
 import discord
 from discord.ext import commands
-import asyncio
 
 from core.config import config
 from core.text import text
-from core import check, rubbercog, utils
+from core import check, rubbercog
 
 
 class Janitor(rubbercog.Rubbercog):

@@ -23,9 +23,14 @@ ignore =
 	E722,
 	# line break
 	W50
+per-file-ignores = 
+	# imports here are important to initiate the database
+	rubbergoddess.py:F401
 exclude =
 	# .py files here are deprecated
-	config/*
+	config/*,
+	# development and testing files
+	test.py
 count = True
 max-complexity = 13
 max-line-length = 110

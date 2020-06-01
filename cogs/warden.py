@@ -7,7 +7,7 @@ from discord.ext import commands
 import dhash
 from PIL import Image
 
-from core import check, rubbercog, utils
+from core import check, rubbercog
 from core.config import config
 from core.emote import emote
 from core.text import text
@@ -133,7 +133,7 @@ class Warden(rubbercog.Rubbercog):
     @commands.check(check.is_mod)
     async def scan(self, ctx):
         """Scan for reposts"""
-        if ctx.invoked_subcommand == None:
+        if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
 
     @commands.guild_only()
@@ -216,7 +216,6 @@ class Warden(rubbercog.Rubbercog):
         for h in hashes:
             hamming_min = 128
             duplicate = None
-            limit = None
             for post in posts:
                 # skip current message
                 if post.message_id == message.id:

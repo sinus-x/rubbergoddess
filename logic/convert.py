@@ -1,6 +1,3 @@
-import string
-
-
 class Convert:
     @staticmethod
     def emote_number_from_int(number):
