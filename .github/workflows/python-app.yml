@@ -40,10 +40,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install black flake8 flake8-black
 
-    - name: flake8
+    - name: Check the code
       run: |
-        # stop the build on errors
+        # Run flake8 to find critical errors
         flake8 . --count --select=BLK,E9,F70,F82 --statistics
 
-        # check warnings
-        flake8 . --count --ignore=E12,E20,E221,E222,E241,E251,E266,E271,E272,E30,E722,W50 --exclude=config/* --exit-zero --max-complexity=13 --max-line-length=110 --statistics
+        # Run flake8 to find non-critical errors, while ignoring errors linked to black and our codestyle preferences
+        flake8 . --count --exit-zero --ignore=E12,E20,E221,E222,E241,E251,E266,E271,E272,E30,E722,W50 --exclude=config/* --max-complexity=13 --max-line-length=110 --statistics
+
+        # Check the code with black
+        black . --check --line-length=100
