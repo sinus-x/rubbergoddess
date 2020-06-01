@@ -112,11 +112,6 @@
 		"vote limit": 5,
 		"vote time": 120
 	},
-	"meme cog": {
-		"__comment": "Where to link on ?kachna command",
-		"kachna": "",
-		"uhoh": "uh oh"
-	},
 	"librarian cog": {
 		"__comment": "Week the current semester started",
 		"starting week": 0,

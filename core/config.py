@@ -103,12 +103,6 @@ class Config:
         self.karma_vote_time    = self.get('karma cog', 'vote time')
 
         ##
-        ## MEME COG
-        #TODO move to Actor cog
-        self.meme_kachna = self.get('meme cog', 'kachna')
-        self.meme_uhoh   = self.get('meme cog', 'uhoh')
-
-        ##
         ## LIBRARIAN COG
         self.starting_week = self.get('librarian cog', 'starting week')
         self.nameday_cz    = self.get('librarian cog', 'nameday cz')
