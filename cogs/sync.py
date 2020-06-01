@@ -10,7 +10,7 @@ import discord
 from discord.ext import commands
 
 from core import check, rubbercog
-from cogs import creator
+from cogs import creator, errors
 from core.text import text
 from core.config import config
 from repository import user_repo
