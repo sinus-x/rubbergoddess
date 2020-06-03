@@ -138,6 +138,10 @@
 		"__comment": "How many people have to react to embed for it to dissapear",
 		"not duplicate limit": 5
 	},
+	"shop": {
+		"__comment": "Karma points needed to change the nickname",
+		"nickname": 500
+	},
 	"compatibility": {
 		"__comment": "Do not send the same emote as other bot here",
 		"ignored imitation channels": []

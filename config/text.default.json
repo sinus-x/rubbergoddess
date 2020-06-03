@@ -147,11 +147,11 @@
 		"repost description": "{name}, shoda **{value}**!",
 		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže."
 	},
-	"interactions": {
+	"shop": {
 		"no karma": "{author}, zatím nemáš žádnou karmu",
 		"not enough karma": "{author}, nemáš dost karmy. Chybí ti **{value}** bodů",
 
-		"new nick": "{author}, přezdívku jsem ti nastavila na **{nick}** za {value} karma bodů",
+		"new nick": "{author}, za {value} karma bodů jsem ti nastavila přezdívku na **{nick}**",
 		
 		"no nick": "{author}, nemáš nastavenou žádnou přezdívku",
 		"nick removed": "{author}, přezdívku **{nick}** jsem ti odebrala"
