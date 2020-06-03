@@ -64,7 +64,7 @@ class Text:
         return discord.utils.escape_markdown(str(user))
 
     def _mention_user(self, user):
-        if isinstance(user, discord.Member):
+        if isinstance(user, discord.Member) or isinstance(user, discord.User):
             return user.mention
         if isinstance(user, int):
             return f"<@!{user}>"

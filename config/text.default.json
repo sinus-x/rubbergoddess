@@ -5,6 +5,7 @@
 
 		"no user permission": "Na to nemáš oprávnění.",
 		"no bot permission":  "Na to nemám oprávnění",
+		"higher permission":  "To nemůžu, máš vyšší oprávnění",
 
 		"no command":      "Takový příkaz neznám {emote.sad}",
 		"no requirements": "Nesplnili jste podmínky příkazu.",
@@ -146,7 +147,13 @@
 		"repost description": "{name}, shoda **{value}**!",
 		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže."
 	},
-	"wormhole": {
-		"statistics": "Od posledního spuštění jsem poslala **{sent}** a přijala **{received}** zpráv."
+	"shop": {
+		"no karma": "{author}, zatím nemáš žádnou karmu",
+		"not enough karma": "{author}, nemáš dost karmy. Chybí ti **{value}** bodů",
+
+		"new nick": "{author}, za {value} karma bodů jsem ti nastavila přezdívku na **{nick}**",
+		
+		"no nick": "{author}, nemáš nastavenou žádnou přezdívku",
+		"nick removed": "{author}, přezdívku **{nick}** jsem ti odebrala"
 	}
 }
