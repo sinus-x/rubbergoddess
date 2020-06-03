@@ -24,7 +24,7 @@ class Interactions(rubbercog.Rubbercog):
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
     @nickname.command(name="set")
-    async def nickname_set(self, ctx, nick: str):
+    async def nickname_set(self, ctx, *, nick: str):
         """Set the nickname
 
         nick: Your new nickname
@@ -55,6 +55,7 @@ class Interactions(rubbercog.Rubbercog):
         )
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
+    @nickname.command(name="unset")
     async def nickname_unset(self, ctx):
         """Unset the nickname"""
         if ctx.author.nick is None:

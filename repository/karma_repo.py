@@ -30,11 +30,12 @@ class KarmaRepository(BaseRepository):
     def updateMemberKarma(self, member_id: int, value: int):
         """Add karma to user"""
         # TODO This is duplicate for `update_karma_get`
-        user = self.getUser(member_id)
+        user = self.getMember(member_id)
         if user is None:
             session.add(Karma(discord_id=member_id, karma=value))
         else:
             user.karma += value
+        session.commit()
 
     # FUNCTIONS BELOW PROBABLY NEED REWRITE
     # TREAT WITH CARE!
