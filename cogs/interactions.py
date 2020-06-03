@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 from core import rubbercog, check
+from core.text import text
 from repository import user_repo, karma_repo
 
 repo_u = user_repo.UserRepository()
@@ -36,22 +37,32 @@ class Interactions(rubbercog.Rubbercog):
         # check if user has karma
         user = repo_k.getMember(ctx.author.id)
         if user is None:
-            return await ctx.send("You do not have any karma")
+            return await ctx.send(text.get("interactions", "no karma", author=ctx.author.mention))
         if user.karma < 500:
             return await ctx.send(
-                f"You do not have enough karma. You have to get **{500 - user.karma}** more"
+                text.fill(
+                    "interactions",
+                    "not enough karma",
+                    author=ctx.author.mention,
+                    value=500 - user.karma,
+                )
             )
 
         # set nickname
         try:
             await ctx.author.edit(nick=nick, reason="?nickname")
         except discord.Forbidden:
-            return await ctx.send("I cannot alter users with higher permissions")
+            return await ctx.send(text.get("error", "higher permission"))
 
         repo_k.updateMemberKarma(ctx.author.id, -500)
         await ctx.send(
-            f"Your new name is **{discord.utils.escape_markdown(nick)}**\n"
-            "500 karma points has been removed"
+            text.fill(
+                "interactions",
+                "new nick",
+                author=ctx.author.mention,
+                nick=discord.utils.escape_markdown(nick),
+                value=500,
+            )
         )
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
@@ -59,10 +70,19 @@ class Interactions(rubbercog.Rubbercog):
     async def nickname_unset(self, ctx):
         """Unset the nickname"""
         if ctx.author.nick is None:
-            return await ctx.send("You do not have any nickname")
+            return await ctx.send(text.get("interactions", "no nick", author=ctx.author.mention))
+
+        nick = ctx.author.nick
 
         await ctx.author.edit(nick=None, reason="?nickname unset")
-        await ctx.send("Your nickname has been removed")
+        await ctx.send(
+            text.fill(
+                "interactions",
+                "nick removed",
+                author=ctx.author.mention,
+                nick=discord.utils.escape_markdown(nick),
+            )
+        )
 
 
 def setup(bot):
