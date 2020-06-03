@@ -23,6 +23,22 @@ class KarmaRepository(BaseRepository):
     def __init__(self):
         super().__init__()
 
+    def getMember(self, member_id: int):
+        """Return user with given ID"""
+        return session.query(Karma).filter(Karma.discord_id == member_id).one_or_none()
+
+    def updateMemberKarma(self, member_id: int, value: int):
+        """Add karma to user"""
+        # TODO This is duplicate for `update_karma_get`
+        user = self.getUser(member_id)
+        if user is None:
+            session.add(Karma(discord_id=member_id, karma=value))
+        else:
+            user.karma += value
+
+    # FUNCTIONS BELOW PROBABLY NEED REWRITE
+    # TREAT WITH CARE!
+
     def get_ids_of_emojis_valued(self, val):
         """Returns a list of ids of emojis with specified value"""
         emojis = session.query(Karma_emoji).filter(Karma_emoji.value == val)
