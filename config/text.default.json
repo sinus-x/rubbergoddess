@@ -35,6 +35,17 @@
 		"botroom redirect": "{user} {emote.sad} 👉 {channel}"
 	},
 
+	"admin": {
+		"power fail":    "Ani jeden z definovaných kanálů jsem nenašla.",
+
+		"poweroff reason":  "Důvod:\n> {reason}",
+		"poweroff jail":    "Dočasně nejde provádět verifikaci, jsem offline. Prosím, zkus to později.",
+		"poweroff botspam": "Teď budu chvíli offline.",
+		"poweroff ok":      "Ví o tom kanály {channels}. Můžeme.",
+
+		"poweron botspam": "Jsem zpátky! {emote.happy}",
+		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
+	},
 	"karma": {
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 

@@ -6,6 +6,7 @@ from discord.ext import commands
 from core import check, rubbercog
 from core.config import config
 from core.emote import emote
+from core.text import text
 from config.messages import Messages as messages
 
 
@@ -24,13 +25,69 @@ class Admin(rubbercog.Rubbercog):
 
     @power.command(name="off")
     async def power_off(self, ctx, *, reason: str = None):
-        """Prepare for power off"""
-        pass
+        """Prepare for power off
+
+        reason: Optional. The reason for shutdown
+        """
+        if reason is None:
+            reason = ""
+        else:
+            reason = " " + text.fill("admin", "poweroff reason", reason=reason)
+
+        jail = self.getGuild().get_channel(config.get("channels", "jail"))
+        everyone = self.getGuild().default_role
+        botspam = self.getGuild().get_channel(config.get("channels", "botspam"))
+
+        visited = []
+
+        if jail is not None:
+            # send message
+            await jail.send(text.get("admin", "poweroff jail") + reason)
+            # switch to read-only
+            await jail.set_permissions(everyone, send_messages=False, reason="?power off")
+            visited.append(jail.mention)
+
+        if botspam is not None:
+            # send message
+            await botspam.send(text.get("admin", "poweroff botspam") + reason)
+            visited.append(botspam.mention)
+
+        # send confirmation message
+        if len(visited) > 0:
+            await ctx.send(text.fill("admin", "poweroff ok", channels=", ".join(visited)))
+        else:
+            await ctx.send(text.fill("admin", "power fail"))
 
     @power.command(name="on")
     async def power_on(self, ctx):
         """Restore"""
-        pass
+        jail = self.getGuild().get_channel(config.get("channels", "jail"))
+        everyone = self.getGuild().default_role
+        botspam = self.getGuild().get_channel(config.get("channels", "botspam"))
+
+        visited = []
+
+        if jail is not None:
+            # remove the message
+            messages = await jail.history(limit=10).flatten()
+            for message in messages:
+                if message.content.startswith(text.get("admin", "poweroff jail")):
+                    await message.delete()
+                    break
+            # switch to read-write
+            await jail.set_permissions(everyone, send_messages=True, reason="?power on")
+            visited.append(jail.mention)
+
+        if botspam is not None:
+            # send message
+            await botspam.send(text.get("admin", "poweron botspam"))
+            visited.append(botspam.mention)
+
+        # send confirmation message
+        if len(visited) > 0:
+            await ctx.send(text.fill("admin", "poweron ok", channels=", ".join(visited)))
+        else:
+            await ctx.send(text.fill("admin", "power fail"))
 
     @commands.command(name="restart", aliases=["reboot"])
     @commands.check(check.is_bot_owner)
