@@ -1,0 +1,6 @@
+black
+flake8
+flake8-black
+flake8-print
+flake8-todo
+pre-commit

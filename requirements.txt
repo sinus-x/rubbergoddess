@@ -1,8 +1,8 @@
 dhash
-discord
+discord>=1.3
 emoji
-gitpython
-pillow
+GitPython
+Pillow>=7.0
 pre-commit
 psycopg2
 requests
