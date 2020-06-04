@@ -12,44 +12,44 @@ Sends uptime message
 
 Tells if the current calender & study week is even or odd
 
-**goddess**  
+**goddess**
 aliases **god**, **help**
 
 Displays embed with available commands
 
 ## VERIFY cog
 
-Implements verification system. Requires some setting-up: a #jail channel with 
-RW permission for @everyone, and a 'VERIFY' role (or other, as specified in 
-config file). Other channels on a server should only be visible with (at least) 
-'VERIFY' role. It is recommended to have RO channel #jail-info visible only to 
+Implements verification system. Requires some setting-up: a #jail channel with
+RW permission for @everyone, and a 'VERIFY' role (or other, as specified in
+config file). Other channels on a server should only be visible with (at least)
+'VERIFY' role. It is recommended to have RO channel #jail-info visible only to
 users without 'VERIFY' role, so newcomers know what to do.
 
 **verify &lt;group&gt; &lt;xlogin00&gt;**
 
-Request a security code. &lt;group&gt; is a privileged role ('FEKT', 'VUT' 
+Request a security code. &lt;group&gt; is a privileged role ('FEKT', 'VUT'
 etc.), &lt;xlogin00&gt; is a VUT identifier.
 
 **verify &lt;e-mail&gt;**
 
 Request a security code. Used for non-VUT users.
 
-If user submits e-mail from known university, they will be assigned a role 
+If user submits e-mail from known university, they will be assigned a role
 (currently supported: 'MUNI', 'ČVUT', 'CUNI', 'VŠB').
 
 **submit &lt;code&gt;**
 
-Submit a security code. &lt;xlogin00&gt; is a VUT login or MUNI UČO, 
+Submit a security code. &lt;xlogin00&gt; is a VUT login or MUNI UČO,
 &lt;code&gt; is a security code from verification e-mail.
 
 ## KARMA cog
 
 Karma cog contains code for karma and react-to-role functionality.
 
-An emote can have positive, neutral or negative karma value. By reacting with 
+An emote can have positive, neutral or negative karma value. By reacting with
 an emote users can rate each other, to show their (dis)approval of a post.
 
-React-to-role allows users independent management of selected roles (hobby 
+React-to-role allows users independent management of selected roles (hobby
 channels), while still having control over core privileged roles.
 
 **karma vote**
@@ -115,7 +115,7 @@ Send one of question responses.
 
 **hug &lt;user&gt;**
 
-If no argument is specified, make the bot hug itself. Otherwise, hug mentioned 
+If no argument is specified, make the bot hug itself. Otherwise, hug mentioned
 user.
 
 ## RANDOM cog
@@ -134,17 +134,17 @@ Return true/false
 
 **roll &lt;integer&gt; [&lt;integer&gt;]**
 
-Pick a number in given interval. If only one argument is specified, pick 
+Pick a number in given interval. If only one argument is specified, pick
 between 0 and number.
 
 ## REVIEW cog
 
-Allows to submit subject reviews, allowing for less formal notion compared to 
+Allows to submit subject reviews, allowing for less formal notion compared to
 reviews in VUT's review system in it's IS.
 
 **reviews add &lt;subject&gt; &lt;score&gt; [anonym] &lt;text&gt;**
 
-Add a subject review. The subject must be declared in config file. The score is 
+Add a subject review. The subject must be declared in config file. The score is
 an integer between 0 and 4, 0 being the best.
 
 **reviews remove &lt;subject&gt;**
@@ -157,7 +157,7 @@ Admin only. Delete specified review.
 
 **reviews &lt;subject&gt;**
 
-See reviews for a given subject. 
+See reviews for a given subject.
 
 ## VOTE cog
 
@@ -192,7 +192,7 @@ Fetch info from database.
 Displays discord and database info if called by admin in mod room.
 Displays discord info if called by regular user or in public channel.
 
-**database**  
+**database**
 alias **db**
 
 A command group.
@@ -201,7 +201,7 @@ A command group.
 
 Add entry into database.
 
-**database remove &lt;user&gt; [force]**  
+**database remove &lt;user&gt; [force]**
 alias **db delete**
 
 Remove entry from database. Use **force** to apply, simulate otherwise.
@@ -210,7 +210,7 @@ Remove entry from database. Use **force** to apply, simulate otherwise.
 
 Edit entry. Not implemented.
 
-***database statistics [since] [until]***  
+***database statistics [since] [until]***
 alias ***db stats***
 
 Display statistics about users. Not implemented.
@@ -223,7 +223,7 @@ See what happened on that day. Not implemented.
 
 **find_rolehoarders [&lt;limit&gt;]**
 
-Find users hoarding subject roles. Optional &lt;limit&gt; arguments specifies number 
+Find users hoarding subject roles. Optional &lt;limit&gt; arguments specifies number
 of users to print.
 
 **offer_subjects [&lt;group&gt;]**
@@ -236,7 +236,7 @@ If no group is selected, prints all channels labeled as subjects.
 
 Deletes messages from channel. If no limit is entered, all messages are delted.
 
-If no pinMode is entered, pins are ignored. `pinStop` stops at pin, `pinSkip` 
+If no pinMode is entered, pins are ignored. `pinStop` stops at pin, `pinSkip`
 skips the message.
 
 **role_check (deprecated)**

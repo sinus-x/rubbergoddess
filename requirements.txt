@@ -1,8 +1,9 @@
+dhash
 discord
 emoji
 gitpython
-sqlalchemy
+pillow
+pre-commit
 psycopg2
 requests
-pillow
-dhash
+sqlalchemy

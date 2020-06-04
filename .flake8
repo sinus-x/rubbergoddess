@@ -23,7 +23,7 @@ ignore =
 	E722,
 	# line break
 	W50
-per-file-ignores = 
+per-file-ignores =
 	# imports here are important to initiate the database
 	rubbergoddess.py:F401,
 	# do not point out print() where it serves as a logging feature

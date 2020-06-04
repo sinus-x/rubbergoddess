@@ -41,10 +41,10 @@ async def foo_bar_baz(self, ctx: commands.Context):
 
 ---
 
-The Rubbercog implements some functions to help you with Discord objects: 
+The Rubbercog implements some functions to help you with Discord objects:
 `getGuild()`, `getModRole()`, `getVerifyRole()`, `getElevatedRoles()`.
 
-It also includes a helper function `_getEmbed(ctx)`, which initiates Embed for 
+It also includes a helper function `_getEmbed(ctx)`, which initiates Embed for
 output.
 
 ---
@@ -77,7 +77,7 @@ except Exception as e:
 	return
 ```
 
-These messages will be sent to the guild log channel.  
+These messages will be sent to the guild log channel.
 **Note**: `throwError` already logs the event.
 
 ---
@@ -88,5 +88,5 @@ Usually, when the bot sends an embed, it deletes the original message:
 await self.deleteCommand(ctx)
 ```
 
-Run it only if your code created the embed. Thrown errors/notifications/... 
+Run it only if your code created the embed. Thrown errors/notifications/...
 already do this.
