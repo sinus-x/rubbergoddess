@@ -15,6 +15,23 @@ class Admin(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
+    @commands.group(name="power")
+    @commands.is_owner()
+    async def power(self, ctx):
+        """Prepare the guild for shutdown"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.invoked_with)
+
+    @power.command(name="off")
+    async def power_off(self, ctx, *, reason: str = None):
+        """Prepare for power off"""
+        pass
+
+    @power.command(name="on")
+    async def power_on(self, ctx):
+        """Restore"""
+        pass
+
     @commands.command(name="restart", aliases=["reboot"])
     @commands.check(check.is_bot_owner)
     @commands.check(check.is_in_modroom)
