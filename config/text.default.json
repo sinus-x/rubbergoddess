@@ -35,11 +35,6 @@
 		"botroom redirect": "{user} {emote.sad} 👉 {channel}"
 	},
 
-	"meme": {
-		"kachna":  "{emote.wtf} Tady kachna není, běž na FIT: {url}",
-		"git url": "https://github.com/sinus-x/rubbergoddess/",
-		"uh oh":   "uh oh"
-	},
 	"karma": {
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 
