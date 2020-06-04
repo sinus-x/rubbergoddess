@@ -4,6 +4,7 @@
   <a href="https://github.com/sinus-x/rubbergoddess/actions?query=workflow%3ARubbergoddess"><img src="https://github.com/sinus-x/rubbergoddess/workflows/Rubbergoddess/badge.svg?branch=master" alt="Build" /></a>
   <a href="https://github.com/sinus-x/rubbergoddess/graphs/commit-activity"><img src="https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg" alt="Maintenance" /></a>
   <a href="https://github.com/sinus-x/rubbergoddess/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-brightgreen.svg" alt="GPLv3 license" /></a>
+  <img src="https://img.shields.io/badge/python-3.7+-blue.svg" alt="Python 3.7+" />
   <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Formatted with Black" /></a>
 </p>
 
