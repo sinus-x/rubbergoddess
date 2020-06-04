@@ -142,7 +142,7 @@
 		"teacher not subject": "{channel} není předmětová místnost."
 	},
 	"warden": {
-		"gif warning": "{user}, Giphy nebo Tenor tu nemáme rádi. Odebrala jsem ti pět karma bodů.",
+		"gif warning": "{user}, linkování externích obrázků nemám ráda. O {value} body jsem ti snížila karmu.",
 		"repost title": "Nápověda",
 		"repost description": "{name}, shoda **{value}**!",
 		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže."

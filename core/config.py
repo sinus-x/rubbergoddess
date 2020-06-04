@@ -14,7 +14,7 @@ class Config:
         if v is not None:
             return v
 
-        raise AttributeError("Configuration file: key not found")
+        raise AttributeError(f'Configuration file: key "{key}" in "{group}" not found')
 
     def __init__(self):
         try:
@@ -111,7 +111,7 @@ class Config:
 
         ##
         ## WARDEN COG
-        self.rolehoarders = self.get('warden cog', 'rolehoarders')
+        self.rolehoarders = self.get('warden', 'rolehoarders')
 
         ##
         ## COMPATIBILITY

@@ -129,14 +129,19 @@
                 "octopus", "cockroach", "butterfly", "owl", "fox", "tiger",
                 "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
 	},
-	"warden cog": {
+	"warden": {
 		"rolehoarders": 10,
 
 		"__comment": "Where the images should be checked for duplicities. (memes etc)",
 		"deduplication channels": [],
 
 		"__comment": "How many people have to react to embed for it to dissapear",
-		"not duplicate limit": 5
+		"not duplicate limit": 5,
+
+		"__comment": "Look for these strings in messages. ",
+		"penalty strings": ["giphy.com", "tenor.com", "imgur.com", "gfycat.com"],
+		"__comment": "Remove karma is strings above are found",
+		"penalty value": 2
 	},
 	"shop": {
 		"__comment": "Karma points needed to change the nickname",

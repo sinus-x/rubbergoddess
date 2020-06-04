@@ -35,7 +35,7 @@ class Warden(rubbercog.Rubbercog):
 
     def doCheckRepost(self, message: discord.Message):
         return (
-            message.channel.id in config.get("warden cog", "deduplication channels")
+            message.channel.id in config.get("warden", "deduplication channels")
             and message.attachments is not None
             and len(message.attachments) > 0
             and not message.author.bot
@@ -48,15 +48,16 @@ class Warden(rubbercog.Rubbercog):
             await self.checkDuplicate(message)
 
         # gif check
-        if (
-            "giphy.com/" in message.content
-            or "tenor.com/" in message.content
-            or "imgur.com/" in message.content
-        ):
-            await message.channel.send(text.fill("warden", "gif warning", user=message.author))
-            repo_k.update_karma_get(message.author, -5)
-            await self.deleteCommand(message)
-            self.console.debug("Warden:on_message", "Removed message linking a gif")
+        for link in config.get("warden", "penalty strings"):
+            if link in message.content:
+                penalty = config.get("warden", "penalty value")
+                await message.channel.send(
+                    text.fill("warden", "gif warning", user=message.author, value=penalty)
+                )
+                repo_k.update_karma_get(message.author, -1 * penalty)
+                await self.deleteCommand(message)
+                self.console.debug("Warden:on_message", f"Removed message linking to {link}")
+                break
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
@@ -80,7 +81,7 @@ class Warden(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Delete duplicate embed if original is not a duplicate"""
-        if payload.channel_id not in config.get("warden cog", "deduplication channels"):
+        if payload.channel_id not in config.get("warden", "deduplication channels"):
             return
         if payload.member.bot:
             return
@@ -97,7 +98,7 @@ class Warden(rubbercog.Rubbercog):
             return
 
         for r in message.reactions:
-            if r.emoji == "❎" and r.count > config.get("warden cog", "not duplicate limit"):
+            if r.emoji == "❎" and r.count > config.get("warden", "not duplicate limit"):
                 try:
                     orig = message.embeds[0].footer.text
                     orig = await message.channel.fetch_message(int(orig))
@@ -280,7 +281,7 @@ class Warden(rubbercog.Rubbercog):
             name=text.get("warden", "repost title"),
             value="_"
             + text.fill(
-                "warden", "repost content", limit=config.get("warden cog", "not duplicate limit")
+                "warden", "repost content", limit=config.get("warden", "not duplicate limit")
             )
             + "_",
         )
