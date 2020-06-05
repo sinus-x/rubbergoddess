@@ -22,30 +22,37 @@ class Actor(rubbercog.Rubbercog):
             self.reactions = json.load(open(self.reactions_path))
         except:
             self.reactions = []
+        self.reactions_usage = {}
 
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
 
-        for r in self.reactions.values():
+        for name, reaction in self.reactions.items():
             text = message.content.lower()
             # fmt: off
-            if r["match"] == "F" and r["trigger"] == text \
-            or r["match"] == "A" and r["trigger"] in text \
-            or r["match"] == "S" and text.startswith(r["trigger"]) \
-            or r["match"] == "E" and text.endswith(r["trigger"]):
+            if reaction["match"] == "F" and reaction["trigger"] == text \
+            or reaction["match"] == "A" and reaction["trigger"] in text \
+            or reaction["match"] == "S" and text.startswith(reaction["trigger"]) \
+            or reaction["match"] == "E" and text.endswith(reaction["trigger"]):
                 # conditions
-                if "user" in r and message.author.id not in r["user"]:
+                if "user" in reaction and message.author.id not in reaction["user"]:
                     continue
-                if "channel" in r and message.channel.id not in r["channel"]:
+                if "channel" in reaction and message.channel.id not in reaction["channel"]:
                     continue
 
                 # send
-                if r["type"] == "T":
-                    return await message.channel.send(r["response"])
-                elif r["type"] == "I":
-                    return await message.channel.send(file=discord.File(self.path + r["response"]))
+                if reaction["type"] == "T":
+                    await message.channel.send(reaction["response"])
+                elif reaction["type"] == "I":
+                    await message.channel.send(file=discord.File(self.path + reaction["response"]))
+
+                # log
+                if name in self.reactions_usage:
+                    self.reactions_usage[name] += 1
+                else:
+                    self.reactions_usage[name] = 1
             # fmt: on
 
     def _save_reactions(self):
@@ -154,6 +161,29 @@ class Actor(rubbercog.Rubbercog):
 
         m = "\n".join(result)
         await ctx.send(f"```\n{m}\n```")
+
+    @reactions.command(name="usage", aliases=["stat", "stats", "statistics"])
+    async def reactions_usage(self, ctx):
+        """See reactions usage since start"""
+        items = {
+            k: v
+            for k, v in sorted(self.reactions_usage.items(), key=lambda item: item[1], reverse=True)
+        }
+
+        embed = discord.Embed(
+            title="Bot reaction", description="Trigger statistics", color=config.color,
+        )
+
+        content = []
+        total = 0
+        for reaction, count in items.items():
+            content.append(f"`{count:>2}` ... **{reaction}**")
+            total += count
+        if len(content) == 0:
+            content.append("Nothing yet")
+
+        embed.add_field(name=f"{total} in total", value="\n".join(content))
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
 
     @reactions.group(name="add", aliases=["edit"])
     async def reactions_add(self, ctx):
