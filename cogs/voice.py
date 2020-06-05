@@ -149,7 +149,10 @@ class Voice(rubbercog.Rubbercog):
         # Remove all previous 'Empty' channels
         for v in voices.voice_channels:
             if len(v.members) == 0 and v is not empty:
-                await v.delete()
+                try:
+                    await v.delete()
+                except discord.NotFound:
+                    pass
 
         # Move 'Empty' to end
         if empty:
