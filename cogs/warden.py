@@ -213,7 +213,7 @@ class Warden(rubbercog.Rubbercog):
             return
 
         duplicates = {}
-        posts = repo_i.getLast(1000)
+        posts = repo_i.getAll()
         for h in hashes:
             hamming_min = 128
             duplicate = None
