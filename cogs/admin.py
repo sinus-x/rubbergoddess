@@ -89,66 +89,6 @@ class Admin(rubbercog.Rubbercog):
         else:
             await ctx.send(text.fill("admin", "power fail"))
 
-    @commands.command(name="restart", aliases=["reboot"])
-    @commands.check(check.is_bot_owner)
-    @commands.check(check.is_in_modroom)
-    async def restart(self, ctx: commands.Context, target: str = None):
-        """Restart Rubbergoddess
-
-        target: Optional. [ all (default) | docker ]
-        """
-        await self.throwNotification(messages.err_not_implemented)
-        return
-
-        if target != "docker":
-            target = None
-
-        cmd = ""
-        stdout = None
-        """
-        Current state:
-        standalone systemd docker systemd+docker
-        YES        YES     DOCKER DOCKER
-        """
-
-        if config.loader == "standalone":
-            await self.throwNotification(ctx, messages.err_not_supported + " (nohup)")
-            return
-
-        elif config.loader in ["docker", "systemd+docker"]:
-            if target == "docker":
-                # FIXME Can this help with anything? It doesn't even reload
-                #      the changes in the code.
-                await ctx.send("Za chvíli budu zpátky. Restartuji Docker kontejner :wave:")
-                cmd = "docker restart rubbergoddess_bot_1"
-            else:
-                await self.throwNotification(
-                    ctx, "Jsem zavřená v Dockeru a ještě se neumím dostat ven " + emote.sad
-                )
-                return
-
-        elif config.loader == "systemd":
-            await ctx.send("Za chvíli budou zpátky. Restartuji systemd službu :wave:")
-            cmd = "sudo systemctl restart rubbergoddess"
-
-        else:
-            await self.throwError(ctx, "Invalid config.loader option")
-            return
-
-        await self.log(ctx, "Restart", msg=config.loader)
-        try:
-            print("Restarting (" + config.loader + "): " + self.getTimestamp())
-            stdout = subprocess.check_output(cmd, shell=True).decode("utf-8")
-        except subprocess.CalledProcessError as e:
-            print(e)
-            await self.throwError(ctx, e)
-            return
-
-        asyncio.sleep(4)
-        if len(stdout) > 1900:
-            stdout = stdout[:1900]
-        await self.throwError(ctx, "Restarting error", "\n" + stdout)
-
     @commands.command(name="status")
     @commands.check(check.is_mod)
     @commands.check(check.is_in_modroom)
