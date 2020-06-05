@@ -88,7 +88,7 @@ class Output:
                 tr = tr[-1000:]
             result += f"\n```{tr}```"
 
-        result += f"\n_{getTimestamp()}_"
+        result += f" _{getTimestamp()}_"
 
         await msgbl.send(result, delete_after=delete_after)
 

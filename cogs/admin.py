@@ -4,7 +4,6 @@ from discord.ext import commands
 
 from core import check, rubbercog
 from core.config import config
-from core.emote import emote
 from core.text import text
 
 
@@ -93,9 +92,7 @@ class Admin(rubbercog.Rubbercog):
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
-            await ctx.send("Neběžím přímo v systemd, tak to neumím " + emote.sad)
-            await self.deleteCommand(ctx)
-            return
+            return self.output.error(ctx, "Neběžím přímo v systemd, takže to neumím")
 
         stdout = None
         try:
@@ -103,7 +100,8 @@ class Admin(rubbercog.Rubbercog):
                 "sudo systemctl status rubbergoddess", shell=True
             ).decode("utf-8")
         except subprocess.CalledProcessError as e:
-            await self.throwError(ctx, e)
+            self.console.error("Admin:status", "No access to systemctl", e)
+            await self.output.error(ctx, "No access to systemctl", e)
             return
 
         await ctx.send("```\n{}\n```".format(stdout))
@@ -167,6 +165,31 @@ class Admin(rubbercog.Rubbercog):
         output = list(stdout[0 + i : 1960 + i] for i in range(0, len(stdout), 1960))
         for o in output:
             await ctx.send("```{}```".format(o))
+        await self.deleteCommand(ctx)
+
+    @commands.check(check.is_mod)
+    @commands.command()
+    async def config(self, ctx):
+        """See configuration from 'bot' section"""
+        lines = []
+        lines.append("**RUBBERGODDESS CONFIGURATION**")
+        lines.append("")
+
+        # fmt: off
+        # hosting
+        lines.append("**Host machine:** " + config.get('bot', 'host'))
+        lines.append("**Loader:** " + config.get('bot', 'loader'))
+        lines.append("")
+        # logging
+        lines.append("**Logging:** " + config.get('bot', 'logging'))
+        lines.append("**Debug** (deprecated): " + str(config.get('bot', 'debug')))
+        lines.append("")
+        # extensions
+        lines.append("**Extensions:** " +
+            ", ".join([x.lower() for x in config.get("bot", "extensions")]))
+        # fmt: on
+
+        await ctx.send(">>> " + "\n".join(lines), delete_after=config.delay_embed)
         await self.deleteCommand(ctx)
 
     async def _readFile(self, ctx: commands.Context, file: str, docker: bool):
