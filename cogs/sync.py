@@ -17,6 +17,9 @@ from repository import user_repo
 
 repository = user_repo.UserRepository()
 
+# flake8: noqa
+# TODO: Fix it all
+
 
 class Sync(rubbercog.Rubbercog):
     """Master-Slave server synchronization"""

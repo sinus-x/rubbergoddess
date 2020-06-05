@@ -19,6 +19,9 @@ from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 
+# flake8: noqa
+# TODO: Fix it all
+
 
 class Creator(rubbercog.Rubbercog):
     """Server building cog"""
@@ -169,7 +172,7 @@ class Creator(rubbercog.Rubbercog):
 
     @creator.command(name="roles")
     async def creator_roles(self, ctx: commands.Context):
-        """Create server roles. Takes 2 arguments: 
+        """Create server roles. Takes 2 arguments:
         1. - guild (master/slave)
         2. - config (optional, for overwriting the config file as well)"""
         self.creator_running = True

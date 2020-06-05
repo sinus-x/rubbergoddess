@@ -131,7 +131,6 @@ class Rubbercog(commands.Cog):
         if quote:
             message += "\n> _{}_".format(ctx.message.content)
         await channel.send(message)
-        # TODO Save to log
 
     async def roomCheck(self, ctx: commands.Context):
         """Send an message to prevent bot spamming"""
@@ -170,7 +169,7 @@ class Rubbercog(commands.Cog):
     ##
     ## Embeds
     ##
-    # TODO Create RubbergoddessException class
+    # TODO This code is deprecated. We should just raise the exception, so it is caught by Errors cog
     async def throwError(self, ctx: commands.Context, err, delete: bool = False, pin: bool = False):
         """Show an embed and log the error"""
         # Get error information
@@ -185,8 +184,8 @@ class Rubbercog(commands.Cog):
 
         # Do the debug
         if config.debug >= 1:
-            print("ERROR OCCURED: " + err_title)
-            print("ERROR TRACE: " + err_trace)
+            print("ERROR OCCURED: " + err_title)  # noqa: T001
+            print("ERROR TRACE: " + err_trace)  # noqa: T001
         if config.debug >= 2:
             await self.sendLong(ctx, "[debug=2] Error: " + err_title + "\n" + err_trace, code=True)
         # Clean the input
@@ -207,14 +206,15 @@ class Rubbercog(commands.Cog):
         await self.deleteCommand(ctx, now=True)
         await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=err_type)
 
+    # TODO This code is deprecated. Use self.output.info() instead
     async def throwNotification(self, ctx: commands.Context, msg: str, pin: bool = False):
         """Show an embed with a message."""
         msg = str(msg)
         # Do the debug
         title = "{}: {}".format(ctx.author, ctx.message.content)
         if config.debug >= 1:
-            print("NOTIFICATION: " + title)
-            print("NOTIFY TRACE: " + msg)
+            print("NOTIFICATION: " + title)  # noqa: T001
+            print("NOTIFY TRACE: " + msg)  # noqa: T001
         if config.debug >= 2:
             await self.sendLong(ctx, "[debug=2] Notification: " + title + "\n" + msg, code=True)
 
@@ -233,8 +233,8 @@ class Rubbercog(commands.Cog):
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
-        # TODO Should we log this?
 
+    # TODO This code is deprecated. Use ctx.send_help() instead
     async def throwDescription(self, ctx: commands.Context, pin: bool = False):
         """Show an embed with full docstring content."""
         embed = self._getEmbed(ctx)
@@ -245,6 +245,7 @@ class Rubbercog(commands.Cog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         await self.deleteCommand(ctx, now=True)
 
+    # TODO This code is deprecated. Use ctx.send_help() instead
     async def throwHelp(self, ctx: commands.Context, pin: bool = False):
         """Show help for command groups"""
         embed = self._getEmbed(ctx)
@@ -252,7 +253,6 @@ class Rubbercog(commands.Cog):
 
         if isinstance(ctx.command, commands.Group) and ctx.command.commands:
             embed.add_field(name="-" * 60, value="**SUBCOMMANDS**:", inline=False)
-            # TODO Sort by lambda or something
             for opt in ctx.command.commands:
                 embed.add_field(name=opt.name, value=opt.short_doc, inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)

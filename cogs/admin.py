@@ -1,5 +1,4 @@
 import subprocess
-import asyncio
 
 from discord.ext import commands
 
@@ -7,7 +6,6 @@ from core import check, rubbercog
 from core.config import config
 from core.emote import emote
 from core.text import text
-from config.messages import Messages as messages
 
 
 class Admin(rubbercog.Rubbercog):

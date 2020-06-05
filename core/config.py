@@ -21,7 +21,7 @@ class Config:
             self.d = json.load(open("config/config.default.json", "r"))
             self.c = json.load(open("config/config.json", "r"))
         except FileNotFoundError:
-            print("Error loading config files.")
+            print("Error loading config files.")  # noqa: T001
             sys.exit(1)
 
         # fmt: off

@@ -12,7 +12,7 @@ class Errors(rubbercog.Rubbercog):
         super().__init__(bot)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error):
+    async def on_command_error(self, ctx: commands.Context, error):  # noqa: C901
         """Handle errors"""
         if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
             return

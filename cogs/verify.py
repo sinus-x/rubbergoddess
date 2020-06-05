@@ -69,14 +69,6 @@ class Verify(rubbercog.Rubbercog):
         msg.attach(MIMEText(cleartext, "plain"))
         msg.attach(MIMEText(richtext, "html"))
 
-        if config.debug:
-            print(
-                "Simulating verification mail: {} for {} ({})".format(
-                    code, user_name, receiver_email
-                )
-            )
-            return
-
         with smtplib.SMTP(config.mail_smtp_server, config.mail_smtp_port) as server:
             server.starttls()
             server.ehlo()
