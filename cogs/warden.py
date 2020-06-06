@@ -43,6 +43,9 @@ class Warden(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+
         # repost check
         if self.doCheckRepost(message):
             await self.checkDuplicate(message)
