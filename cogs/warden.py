@@ -22,7 +22,6 @@ class Warden(rubbercog.Rubbercog):
     """A cog for database lookups"""
 
     # TODO Implement template matching to prevent false positives
-    # TODO Implement ?deepscan to test against all database hashes
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -46,9 +45,18 @@ class Warden(rubbercog.Rubbercog):
         if message.author.bot:
             return
 
-        # repost check
+        # repost check - disallow linking
+        if "https://cdn.discordapp.com/" in message.content:
+            await self.deleteCommand(message)
+            await message.channel.send(
+                text.fill("warden", "repost cheating", mention=message.author.mention)
+            )
+            return
+
+        # repost check - test for duplicates
         if self.doCheckRepost(message):
-            await self.checkDuplicate(message)
+            if len(message.attachments) > 0:
+                await self.checkDuplicate(message)
 
         # gif check
         for link in config.get("warden", "penalty strings"):

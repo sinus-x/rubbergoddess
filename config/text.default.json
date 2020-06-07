@@ -151,7 +151,8 @@
 		"gif warning": "{user}, linkování externích obrázků nemám ráda. Snížila jsem ti karmu o {value}.",
 		"repost title": "Nápověda",
 		"repost description": "{name}, shoda **{value}**!",
-		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže."
+		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže.",
+		"repost cheating": "{mention}, v tomhle kanálu se kontrolují duplikáty. Posílej sem přílohy, ať si je můžu zaindexovat."
 	},
 	"shop": {
 		"no karma": "{author}, zatím nemáš žádnou karmu",
