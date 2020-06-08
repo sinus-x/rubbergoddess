@@ -23,7 +23,7 @@ ADD COLUMN name VARCHAR;
 """
 
 
-class Roles(rubbercog.Rubbercog):
+class Chameleon(rubbercog.Rubbercog):
     """Edit the roles"""
 
     def __init__(self, bot):
@@ -315,4 +315,4 @@ permission_type: {permission_type}
 
 
 def setup(bot):
-    bot.add_cog(Roles(bot))
+    bot.add_cog(Chameleon(bot))
