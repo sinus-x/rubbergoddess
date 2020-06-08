@@ -142,7 +142,7 @@ class Janitor(rubbercog.Rubbercog):
                 ctx, text.fill("janitor", "teacher not subject", channel=channel.mention)
             )
 
-        ch = await channel.clone(name=channel.name + config.get("janitor", "teacher suffix"))
+        ch = await channel.clone(name=channel.name + config.get("channels", "teacher suffix"))
         await ch.edit(position=channel.position + 1)
         await ctx.send(f"Created channel {ch.mention}")
 

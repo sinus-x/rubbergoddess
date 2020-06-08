@@ -69,6 +69,7 @@ class Config:
 
         ##
         ## DELAY
+        # TODO Rename these variables
         self.delay_embed  = self.get('delay', 'embed')
         self.delay_verify = self.get('delay', 'verify')
 

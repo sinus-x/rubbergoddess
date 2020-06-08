@@ -60,7 +60,9 @@
 		"__comment": "ID for voice channels group",
 		"voice group": 0,
 		"__comment": "Channel for voice commands & chat with people without mic",
-		"voice no mic": 0
+		"voice no mic": 0,
+
+		"teacher suffix": "-teacher"
 	},
 	"__comment": "Colors for embeds. They are standard hex RGB values in base 10",
 	"color": {
@@ -71,6 +73,9 @@
 	},
 	"__comment": "Timers for automatic deletion of bot's messages",
 	"delay": {
+		"error": 10,
+		"success": 3,
+
 		"embed": 120,
 		"verify": 900
 	},
@@ -117,10 +122,6 @@
 		"starting week": 0,
 
 		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
-	},
-	"janitor": {
-		"__comment": "Subject channel visible to the teacher",
-		"teacher suffix": "-teacher"
 	},
 	"voice cog": {
 		"__comment": "Wordlist for automatic voice channel name generation",
