@@ -127,7 +127,7 @@ class Warden(rubbercog.Rubbercog):
                 i = Image.open(fp)
             except OSError as e:
                 # not an image
-                print(e)
+                self.console.error("Warden:saveMessageHashes", "Error opening attachment", e)
                 continue
             h = dhash.dhash_int(i)
 
@@ -224,17 +224,38 @@ class Warden(rubbercog.Rubbercog):
             return
 
         duplicates = {}
-        posts = repo_i.getAll()
-        for h in hashes:
+        posts_all = None
+        for image_hash in hashes:
+            # try to look up hash directly
+            posts_full = repo_i.getHash(str(hex(image_hash)))
+
+            if len(posts_full) > 0:
+                # full match found
+                for post in posts_full:
+                    # skip current message
+                    if post.message_id == message.id:
+                        continue
+                    # add to duplicates
+                    duplicates[post] = 0
+                    self.console.debug("Warden:checkDuplicate", "Full match")
+                    break
+
+                # move on to the next hash
+                continue
+
+            # full match not found, iterate over whole database
+            if posts_all is None:
+                posts_all = repo_i.getAll()
+
             hamming_min = 128
             duplicate = None
-            for post in posts:
+            for post in posts_all:
                 # skip current message
                 if post.message_id == message.id:
                     continue
                 # do the comparison
                 post_hash = int(post.dhash, 16)
-                hamming = dhash.get_num_bits_different(h, post_hash)
+                hamming = dhash.get_num_bits_different(image_hash, post_hash)
                 if hamming < hamming_min:
                     duplicate = post
                     hamming_min = hamming
@@ -248,9 +269,9 @@ class Warden(rubbercog.Rubbercog):
                 "Warden:checkDuplicate", f"Closest Hamming distance: {hamming_min}/128 bits"
             )
 
-        for d, h in duplicates.items():
-            if h <= self.limit_soft:
-                await self._announceDuplicate(message, d, h)
+        for image_hash, hamming_distance in duplicates.items():
+            if hamming_distance <= self.limit_soft:
+                await self._announceDuplicate(message, image_hash, hamming_distance)
 
     async def _announceDuplicate(self, message: discord.Message, original: object, hamming: int):
         """Send message that a post is a original
