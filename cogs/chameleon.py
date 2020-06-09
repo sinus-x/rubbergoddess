@@ -96,7 +96,7 @@ class Chameleon(rubbercog.Rubbercog):
                 member=ctx.author,
                 shortcut=shortcut,
                 channel=channel,
-                type="subject",
+                permission_type="subject",
             )
             # fmt: on
             added = True
@@ -269,10 +269,12 @@ class Chameleon(rubbercog.Rubbercog):
         if permission_type not in ["subject", "role", None]:
             await self.console.error(self, "Wrong permission type")
             return
-        if permission_type is None and channel is not None:
-            permission_type = "role" if repo_s.get(channel.name) is None else "subject"
-        else:
-            permission_type = "role"
+        if permission_type is None:
+            if channel is not None:
+                subject_test = repo_s.get(channel.name)
+                permission_type = "role" if subject_test is None else "subject"
+            else:
+                permission_type = "role"
 
         # access controll
         if permission_type == "subject":
@@ -285,15 +287,18 @@ class Chameleon(rubbercog.Rubbercog):
                     break
             if not allowed:
                 await source.channel.send(
-                    text.fill("chameleon", "deny subject", mention=member.mention)
+                    text.fill("chameleon", "deny subject", mention=member.mention),
+                    delete_after=config.get("delay", "user error"),
                 )
                 return
+
         elif permission_type == "role":
             role = discord.utils.get(self.getGuild().roles, name=shortcut)
             limit = discord.utils.get(self.getGuild().roles, name="---INTERESTS")
             if role >= limit:
                 await source.channel.send(
-                    text.fill("chameleon", "deny role add", mention=member.mention)
+                    text.fill("chameleon", "deny role add", mention=member.mention),
+                    delete_after=config.get("delay", "user error"),
                 )
                 return
 
@@ -342,10 +347,12 @@ class Chameleon(rubbercog.Rubbercog):
         # permission type
         if permission_type not in ["subject", "role", None]:
             return await self.console.error(self, "Wrong permission type")
-        if permission_type is None and channel is not None:
-            permission_type = "role" if repo_s.get(channel.name) is None else "subject"
-        else:
-            permission_type = "role"
+        if permission_type is None:
+            if channel is not None:
+                subject_test = repo_s.get(channel.name)
+                permission_type = "role" if subject_test is None else "subject"
+            else:
+                permission_type = "role"
 
         # access control
         if permission_type == "role":
@@ -355,7 +362,8 @@ class Chameleon(rubbercog.Rubbercog):
                 return
             if role >= limit:
                 await source.channel.send(
-                    text.fill("chameleon", "deny role remove", mention=member.mention)
+                    text.fill("chameleon", "deny role remove", mention=member.mention),
+                    delete_after=config.get("delay", "user error"),
                 )
                 return
 
