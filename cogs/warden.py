@@ -30,8 +30,6 @@ class Warden(rubbercog.Rubbercog):
         self.limit_hard = 7
         self.limit_soft = 14
 
-        self.message_channel = None
-
     def doCheckRepost(self, message: discord.Message):
         return (
             message.channel.id in config.get("warden", "deduplication channels")
@@ -113,6 +111,7 @@ class Warden(rubbercog.Rubbercog):
                 try:
                     orig = message.embeds[0].footer.text
                     orig = await message.channel.fetch_message(int(orig))
+                    # TODO Try to remove other bot's emoji, too
                     await orig.remove_reaction("♻️", self.bot.user)
                 except Exception as e:
                     await self.console.debug(message, "Could not remove ♻️", e)
@@ -187,7 +186,7 @@ class Warden(rubbercog.Rubbercog):
         now = time.time()
         for i, message in enumerate(messages):
             # update info on every 10th message
-            if i % 10 == 0:
+            if i % 20 == 0:
                 # fmt: off
                 await msg.edit(content=template.format(
                     i, len(messages), (i / len(messages) * 100),
