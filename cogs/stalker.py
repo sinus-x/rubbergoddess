@@ -393,7 +393,8 @@ class Stalker(rubbercog.Rubbercog):
         """Display the count of users that joined/were verified today"""
         pin = self.parseArg(pin)
 
-        ctr_usr_ver = 0  # TODO count verified users with entry.roles
+        # TODO count verified users with entry.roles
+        ctr_usr_ver = 0  # noqa: F841
         ctr_usr_kic = 0
         ctr_usr_ban = 0
         ctr_invites = 0
