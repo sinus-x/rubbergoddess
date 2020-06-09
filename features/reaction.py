@@ -39,92 +39,6 @@ class Reaction(BaseFeature):
         )
         return embed
 
-    # Returns list of role names and emotes that represent them
-    async def get_join_role_data(self, message):
-        input_string = message.content
-        input_string = input_string.replace("**", "")
-        try:
-            if input_string.startswith(config.role_string):
-                input_string = input_string[input_string.index("\n") + 1 :]
-            input_string = input_string.rstrip().split("\n")
-        except ValueError:
-            await message.channel.send(utils.fill_message("role_format", user=message.author.id))
-            return None
-        output = []
-        for line in input_string:
-            try:
-                out = line.split(" - ", 1)[0].split()
-                out = [out[1], out[0]]
-                output.append(out)
-            except Exception:
-                if message.channel.id not in config.role_channels:
-                    await message.channel.send(
-                        utils.fill_message(
-                            "role_invalid_line",
-                            user=message.author.id,
-                            line=discord.utils.escape_mentions(line),
-                        )
-                    )
-        for line in output:
-            if "<#" in line[0]:
-                line[0] = line[0].replace("<#", "")
-                line[0] = line[0].replace(">", "")
-                try:
-                    line[0] = int(line[0])
-                except Exception:
-                    if message.channel.id not in config.role_channels:
-                        await message.channel.send(
-                            utils.fill_message(
-                                "role_invalid_line",
-                                user=message.author.id,
-                                line=discord.utils.escape_mentions(line[0]),
-                            )
-                        )
-        return output
-
-    # Adds reactions to message
-    async def message_role_reactions(self, message, data):
-        if message.channel.type is not discord.ChannelType.text:
-            await message.channel.send(Messages.role_not_on_server)
-            guild = self.bot.get_guild(config.guild_id)
-        else:
-            guild = message.guild
-        for line in data:
-            not_role = discord.utils.get(guild.roles, name=line[0]) is None
-            if isinstance(line[0], int) or line[0].isdigit():
-                not_channel = discord.utils.get(guild.channels, id=int(line[0])) is None
-            else:
-                not_channel = (
-                    line[0][0] != "#"
-                    or discord.utils.get(guild.channels, name=line[0][1:].lower()) is None
-                )
-            if not_role and not_channel and not message.author.bot:
-                # FIXME Do global check, not only this local one
-                # Do not allow messages over 2000 characters
-                if len(line[0]) > 100:
-                    line[0] = line[0][:100]
-                await message.channel.send(
-                    utils.fill_message(
-                        "role_not_role",
-                        user=message.author.id,
-                        not_role=discord.utils.escape_mentions(line[0]),
-                    )
-                )
-            else:
-                try:
-                    await message.add_reaction(line[1])
-                except discord.errors.HTTPException:
-                    if message.author.bot:
-                        return
-                    await message.channel.send(
-                        utils.fill_message(
-                            "role_invalid_emote",
-                            user=message.author.id,
-                            not_emote=discord.utils.escape_mentions(line[1]),
-                            role=discord.utils.escape_mentions(line[0]),
-                        )
-                    )
-
     async def add(self, payload):
         channel = self.bot.get_channel(payload.channel_id)
         if channel is None:
@@ -151,15 +65,8 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if message.content.startswith(config.role_string) or channel.id in config.role_channels:
-            role_data = await self.get_join_role_data(message)
-            for line in role_data:
-                if str(emoji) == line[1]:
-                    await self.add_role_on_reaction(line[0], member, message.channel, guild)
-                    break
-            else:
-                await message.remove_reaction(emoji, member)
-        elif message.content.startswith(Messages.karma_vote_message_hack):
+
+        if message.content.startswith(Messages.karma_vote_message_hack):
             if emoji not in ["☑️", "0⃣", "❎"]:
                 await message.remove_reaction(emoji, member)
             else:
@@ -334,147 +241,37 @@ class Reaction(BaseFeature):
                 emoji = payload.emoji
         else:
             emoji = payload.emoji.name
-        if message.content.startswith(config.role_string) or channel.id in config.role_channels:
-            role_data = await self.get_join_role_data(message)
-            for line in role_data:
-                if str(emoji) == line[1]:
-                    await self.remove_role_on_reaction(line[0], member, message.channel, guild)
-                    break
-        else:
-            count = True
-            # do not count author's emotes
-            if member.id == message.author.id:
-                count = False
-            # count master and slave guilds
-            elif guild.id != config.guild_id and guild.id != config.slave_id:
-                count = False
-            # do not count banned channels
-            elif message.channel.id in config.karma_channels_ban:
-                count = False
-            # do not count banned roles
-            elif config.karma_roles_ban in map(lambda x: x.id, member.roles):
-                count = False
-            # do not count banned strings
-            elif len(config.karma_string_ban) > 0:
-                for s in config.karma_string_ban:
-                    if s in message.content:
-                        count = False
-            # optionally, do not count subjects
-            elif not config.karma_subjects:
-                if (
-                    isinstance(message.channel, discord.TextChannel)
-                    and message.channel.name in config.subjects
-                ):
+
+        count = True
+        # do not count author's emotes
+        if member.id == message.author.id:
+            count = False
+        # count master and slave guilds
+        elif guild.id != config.guild_id and guild.id != config.slave_id:
+            count = False
+        # do not count banned channels
+        elif message.channel.id in config.karma_channels_ban:
+            count = False
+        # do not count banned roles
+        elif config.karma_roles_ban in map(lambda x: x.id, member.roles):
+            count = False
+        # do not count banned strings
+        elif len(config.karma_string_ban) > 0:
+            for s in config.karma_string_ban:
+                if s in message.content:
                     count = False
+        # optionally, do not count subjects
+        elif not config.karma_subjects:
+            if (
+                isinstance(message.channel, discord.TextChannel)
+                and message.channel.name in config.subjects
+            ):
+                count = False
 
-            if count and isinstance(emoji, str):
-                self.karma_repo.karma_emoji_remove(message.author, member, emoji)
-            elif count:
-                self.karma_repo.karma_emoji_remove(message.author, member, emoji.id)
-
-    # Adds a role for user based on reaction
-    async def add_role_on_reaction(self, target, member, channel, guild):
-        fekt = discord.utils.get(guild.roles, name="FEKT")
-        vut = discord.utils.get(guild.roles, name="VUT")
-        role = discord.utils.get(guild.roles, name=target)
-        if role is not None:
-            allowed = True
-            limit = "---FEKT" if fekt in member.roles else "---"
-            if role >= discord.utils.get(guild.roles, name=limit):
-                allowed = False
-            if allowed or member.bot:
-                await member.add_roles(role)
-                return True
-            else:
-                bot_room = self.bot.get_channel(config.channel_botspam)
-                await bot_room.send(
-                    utils.fill_message("role_add_denied", user=member.id, role=role.name)
-                )
-                return False
-        else:
-            try:
-                channel = discord.utils.get(guild.channels, id=int(target))
-            except ValueError:
-                channel = None
-            if channel is None:
-                channel = discord.utils.get(guild.channels, name=target[1:].lower())
-            if channel is None:
-                return
-
-            errmsg = ""
-            if channel.name in config.subjects:
-                if member.bot:
-                    return
-                if fekt in member.roles or vut in member.roles:
-                    await channel.set_permissions(member, read_messages=True)
-                    # add teacher channel, if exists
-                    try:
-                        teacher = discord.utils.get(
-                            channel.guild.channels,
-                            name=channel.name + config.get("janitor", "teacher suffix"),
-                        )
-                        await teacher.set_permissions(member, read_messages=True)
-                    except:
-                        pass
-                    return
-                else:
-                    errmsg = "subject_add_denied_guest"
-            else:
-                errmsg = "subject_add_denied_notsubject"
-
-            bot_room = self.bot.get_channel(config.channel_botspam)
-            await bot_room.send(utils.fill_message(errmsg, user=member.id, role=channel.name))
-
-    # Removes a role for user based on reaction
-    async def remove_role_on_reaction(self, target, member, channel, guild):
-        role = discord.utils.get(guild.roles, name=target)
-        if role is not None:
-            allowed = True
-            if role >= member.roles[-1]:
-                allowed = False
-            if allowed:
-                await member.remove_roles(role)
-                return True
-            else:
-                bot_room = self.bot.get_channel(config.channel_botspam)
-                await bot_room.send(
-                    utils.fill_message("role_remove_denied", user=member.id, role=role.name)
-                )
-                return False
-
-        else:
-            try:
-                channel = discord.utils.get(guild.channels, id=int(target))
-            except ValueError:
-                channel = None
-            if channel is None:
-                channel = discord.utils.get(guild.channels, name=target[1:].lower())
-            if channel is None:
-                return
-            if channel.name in config.subjects:
-                await channel.set_permissions(member, overwrite=None)
-                # remove teacher channel, if exists
-                try:
-                    teacher = discord.utils.get(
-                        channel.guild.channels,
-                        name=channel.name + config.get("janitor", "teacher suffix"),
-                    )
-                    await teacher.set_permissions(member, overwrite=None)
-                except:
-                    pass
-                return
-            # While sending a permission error is supported, there is no need
-            # to do it.
-            # How could have the guest gotten an access anyway? If it was assigned
-            # manually, so be it. They want to leave, let them leave.
-            # It is more likely that they clicked the reaction, did not get
-            # access, so they are un-clicking it back.
-            # - subject_remove_denied_guest
-            # - subject_remove_denied_notsubject
-
-    #            bot_room = self.bot.get_channel(config.channel_botspam)
-    #            await bot_room.send(utils.fill_message(
-    #                errmsg, user=member.id, role=channel.name))
+        if count and isinstance(emoji, str):
+            self.karma_repo.karma_emoji_remove(message.author, member, emoji)
+        elif count:
+            self.karma_repo.karma_emoji_remove(message.author, member, emoji.id)
 
     def pagination_next(self, emoji, page, max_page):
         if emoji in ["▶", "🔽"]:
