@@ -10,19 +10,6 @@ from repository.subject_repo import SubjectRepository
 
 repo_s = SubjectRepository()
 
-"""
-This file should replace react-to-role part of reaction.py in the future.
-
-As it is still in development, we're keeping it in separate branch.
-
-
-Before running this, you need to alter the subjects table. Open your psql
-shell and run:
-ALTER TABLE subjects
-ADD COLUMN category VARCHAR,
-ADD COLUMN name VARCHAR;
-"""
-
 
 class Chameleon(rubbercog.Rubbercog):
     """Edit the roles"""
