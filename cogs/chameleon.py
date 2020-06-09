@@ -80,7 +80,7 @@ class Chameleon(rubbercog.Rubbercog):
             await asyncio.sleep(config.get("delay", "success"))
         else:
             await ctx.message.add_reaction("❎")
-            await asyncio.sleep(config.get("delay", "error"))
+            await asyncio.sleep(config.get("delay", "user error"))
         await self.deleteCommand(ctx)
 
     @subject.command(name="remove")
@@ -120,7 +120,7 @@ class Chameleon(rubbercog.Rubbercog):
             await asyncio.sleep(config.get("delay", "success"))
         else:
             await ctx.message.add_reaction("❎")
-            await asyncio.sleep(config.get("delay", "error"))
+            await asyncio.sleep(config.get("delay", "user error"))
         await self.deleteCommand(ctx)
 
     ##
@@ -199,10 +199,10 @@ class Chameleon(rubbercog.Rubbercog):
                     mention=ctx.author.mention,
                     shortcut=self.sanitise(shortcut, limit=50),
                 ),
-                delete_after=config.get("delay", "error"),
+                delete_after=config.get("delay", "user error"),
             )
             await ctx.message.add_reaction("❎")
-            await asyncio.sleep(config.get("delay", "error"))
+            await asyncio.sleep(config.get("delay", "user error"))
             await self.deleteCommand(ctx)
             return False
         return True
@@ -218,7 +218,7 @@ class Chameleon(rubbercog.Rubbercog):
                     mention=ctx.author.mention,
                     shortcut=self.sanitise(shortcut, limit=20),
                 ),
-                delete_after=config.get("delay", "error"),
+                delete_after=config.get("delay", "user error"),
             )
             return False
         return channel

@@ -73,8 +73,10 @@
 	},
 	"__comment": "Timers for automatic deletion of bot's messages",
 	"delay": {
-		"error": 10,
 		"success": 3,
+
+		"user error": 10,
+		"bot error": 60,
 
 		"embed": 120,
 		"verify": 900
