@@ -2,10 +2,12 @@
 
 ## Supported Versions
 
-The latest commit in `master` branch is the only supported version.
-Because this project is closer to collection of scripts than to an
-application on its own, we have decided that we won't be defining
-any versioning system.
+We only support the latest 
+[tag](https://github.com/sinus-x/rubbergoddess/tags).
+
+`devel` branch is considered highly unstable, contains bugs and
+is not meant to be used in production in any way. Things change
+and break -- daily.
 
 ## Reporting a Vulnerability
 
