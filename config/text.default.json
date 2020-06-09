@@ -46,6 +46,17 @@
 		"poweron botspam": "Jsem zpátky! {emote.happy}",
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
 	},
+	"chameleon": {
+		"shortcut not subject": "{mention}, **{shortcut}** není předmět.",
+		"shortcut no channel": "{mention}, **{shortcut}** nemá kanál. V případě potřeby kontaktuj mod tým.",
+
+		"deny subject": "{mention}, předměty si můžou přidávat jen studenti VUT.",
+		"deny role add": "{mention}, takovou roli si přidat nemůžeš.",
+		"deny role remove": "{mention}, takovou roli si odebrat nemůžeš.",
+
+		"role help": "Špatný formát\n>>> Role\n🐈 cat-role\n🦜 #parrot-channel",
+		"invalid role line": "Řádek obsahuje chybu: _{line}_"
+	},
 	"karma": {
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 

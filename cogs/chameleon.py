@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from core import check, rubbercog
 from core.config import config
+from core.text import text
 from repository.subject_repo import SubjectRepository
 
 repo_s = SubjectRepository()
@@ -192,7 +193,13 @@ class Chameleon(rubbercog.Rubbercog):
         """Display error and delete message if shortcut is not valid subject"""
         if repo_s.get(shortcut) is None:
             await ctx.send(
-                f"**{shortcut}** is not a subject", delete_after=config.get("delay", "error"),
+                text.fill(
+                    "chameleon",
+                    "shortcut not subject",
+                    mention=ctx.author.mention,
+                    shortcut=discord.utils.escape_markdown(shortcut).replace("@", ""),
+                ),
+                delete_after=config.get("delay", "error"),
             )
             await ctx.message.add_reaction("❎")
             await asyncio.sleep(config.get("delay", "error"))
@@ -205,7 +212,12 @@ class Chameleon(rubbercog.Rubbercog):
         channel = discord.utils.get(ctx.guild.text_channels, name=shortcut)
         if channel is None:
             await ctx.send(
-                f"Channel for **{shortcut}** does not exist",
+                text.fill(
+                    "chameleon",
+                    "shortcut no channel",
+                    mention=ctx.author.mention,
+                    shortcut=discord.utils.escape_markdown(shortcut).replace("@", ""),
+                ),
                 delete_after=config.get("delay", "error"),
             )
             return False
@@ -255,19 +267,18 @@ class Chameleon(rubbercog.Rubbercog):
 
         # source can be context or message
         if ctx is None and message is None:
-            return self.console.error("Chameleon:_add_permission", "Missing any context")
+            return self.console.error("Chameleon", "Missing any context")
         source = ctx if ctx is not None else message
 
         if channel is None and source is None:
-            return self.console.error(
-                "Chameleon:_add_permission", "No channel to apply the overrides to"
-            )
+            self.console.error("Chameleon", "No channel to apply the overrides to")
+            return
         elif channel is None:
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
 
         # test permission type
         if permission_type not in ["subject", "role", None]:
-            return self.console.error("Chameleion:_add_permission", "Wrong permission type")
+            return self.console.error("Chameleon", "Wrong permission type")
         if permission_type is None and channel is not None:
             permission_type = "role" if repo_s.get(channel.name) is None else "subject"
         else:
@@ -283,32 +294,34 @@ class Chameleon(rubbercog.Rubbercog):
                     allowed = True
                     break
             if not allowed:
-                # deny
-                print("DENIED!")
+                await source.channel.send(
+                    text.fill("chameleon", "deny subject", mention=member.mention)
+                )
                 return
         elif permission_type == "role":
             role = discord.utils.get(self.getGuild().roles, name=shortcut)
             limit = discord.utils.get(self.getGuild().roles, name="---INTERESTS")
             if role >= limit:
-                # TODO denied
-                print("DENIED!")
+                await source.channel.send(
+                    text.fill("chameleon", "deny role add", mention=member.mention)
+                )
                 return
 
         # add
         if permission_type == "subject":
             # add subject channel
             await channel.set_permissions(member, view_channel=True)
-            print(f"Added to subject {channel.name} to {member.name}")
+            self.console.debug("Chameleon", f"Allowed {member.name} into {channel.name}")
             # try to add teacher channel
             shortcut = shortcut + config.get("channels", "teacher suffix")
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
             if channel is not None:
                 await channel.set_permissions(member, view_channel=True)
-                print(f"Added to channel {channel.name} to {member.name}")
+                self.console.debug("Chameleon", f"Allowed {member.name} into {channel.name}")
 
         elif permission_type == "role":
             await member.add_roles(role)
-            print(f"Added role {role.name} (user {member.name})")
+            self.console.debug("Chameleon", f"Added role {role.name} to {member.name}")
 
     async def _remove_permission(
         self,
@@ -328,19 +341,17 @@ class Chameleon(rubbercog.Rubbercog):
 
         # source can be context or message
         if ctx is None and message is None:
-            return self.console.error("Chameleon:_remove_permission", "Missing any context")
+            return self.console.error("Chameleon", "Missing any context")
         source = ctx if ctx is not None else message
 
         if channel is None and source is None:
-            return self.console.error(
-                "Chameleon:_remove_permission", "No channel to apply the overrides to"
-            )
+            return self.console.error("Chameleon", "No channel to apply the overrides to")
         elif channel is None:
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
 
         # permission type
         if permission_type not in ["subject", "role", None]:
-            return self.console.error("Chameleon:_remove_permission", "Wrong permission type")
+            return self.console.error("Chameleon", "Wrong permission type")
         if permission_type is None and channel is not None:
             permission_type = "role" if repo_s.get(channel.name) is None else "subject"
         else:
@@ -350,26 +361,29 @@ class Chameleon(rubbercog.Rubbercog):
         if permission_type == "role":
             role = discord.utils.get(self.getGuild().roles, name=shortcut)
             limit = discord.utils.get(self.getGuild().roles, name="---INTERESTS")
+            if role not in member.roles:
+                return
             if role >= limit:
-                # TODO Denied
-                print("DENIED!")
+                await source.channel.send(
+                    text.fill("chameleon", "deny role remove", mention=member.mention)
+                )
                 return
 
         # remove
         if permission_type == "subject":
             # remove subject channel
             await channel.set_permissions(member, overwrite=None)
-            print(f"Removed from subject {channel.name}")
+            self.console.debug("Chameleon", f"Disallowed {member.name} into {channel.name}")
             # try to remove from teacher channel
             shortcut = shortcut + config.get("channels", "teacher suffix")
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
             if channel is not None:
                 await channel.set_permissions(member, overwrite=None)
-                print(f"Removed from subject {channel.name}")
+                self.console.debug("Chameleon", f"Disallowed {member.name} into {channel.name}")
 
         elif permission_type == "role":
             await member.remove_roles(role)
-            print(f"Removed role {role.name} (user {member.name})")
+            self.console.debug("Chameleon", f"Removed role {role.name} from {member.name}")
 
     async def _emote_role_map(self, message):
         """Return (role name, emote) list"""
@@ -379,8 +393,8 @@ class Chameleon(rubbercog.Rubbercog):
         try:
             content = content.rstrip().split("\n")
         except ValueError:
+            await message.channel.send(text.get("chameleon", "role help"))
             return
-            # TODO Send Role help
 
         # check every line
         result = []
@@ -396,8 +410,13 @@ class Chameleon(rubbercog.Rubbercog):
                     emote = int(emote.replace("<#", "").replace(">", ""))
                 result.append((emote, channel))
             except:
-                # TODO Send "invalid role line"
-                print("invalid role line: " + line)
+                await message.channel.send(
+                    text.fill(
+                        "chameleon",
+                        "invalid role line",
+                        line=discord.utils.escape_markdown(line).replace("@", ""),
+                    )
+                )
                 return
         return result
 
