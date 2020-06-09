@@ -98,6 +98,9 @@
 		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 	},
 
+	"chameleon": {
+		"trigger": "Role\n"
+	},
 	"reaction cog": {
 		"trigger": "Role\n",
 		"__comment": "Some channels are dedicated to the react-to-role",

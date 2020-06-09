@@ -60,9 +60,12 @@ class Chameleon(rubbercog.Rubbercog):
             if not isinstance(channel, discord.TextChannel):
                 return
 
+            # permissions are handled in the _add_permission() funcion
+
             # fmt: off
             await self._add_permission(
                 ctx=ctx,
+                member=ctx.author,
                 shortcut=shortcut,
                 channel=channel,
                 permission_type="subject",
@@ -70,11 +73,13 @@ class Chameleon(rubbercog.Rubbercog):
             # fmt: on
             added = True
 
-        # add checkmark, wait and delete message
+        # add reaction, wait and delete message
         if added:
             await ctx.message.add_reaction("✅")
             await asyncio.sleep(config.get("delay", "success"))
-
+        else:
+            await ctx.message.add_reaction("❎")
+            await asyncio.sleep(config.get("delay", "error"))
         await self.deleteCommand(ctx)
 
     @subject.command(name="remove")
@@ -95,9 +100,12 @@ class Chameleon(rubbercog.Rubbercog):
             if not isinstance(channel, discord.TextChannel):
                 return
 
+            # permissions are handled in the _remove_permission() funcion
+
             # fmt: off
             await self._remove_permission(
                 ctx=ctx,
+                member=ctx.author,
                 shortcut=shortcut,
                 channel=channel,
                 type="subject",
@@ -105,11 +113,13 @@ class Chameleon(rubbercog.Rubbercog):
             # fmt: on
             added = True
 
-        # add checkmark, wait and delete message
+        # add reaction, wait and delete message
         if added:
             await ctx.message.add_reaction("✅")
             await asyncio.sleep(config.get("delay", "success"))
-
+        else:
+            await ctx.message.add_reaction("❎")
+            await asyncio.sleep(config.get("delay", "error"))
         await self.deleteCommand(ctx)
 
     ##
@@ -118,58 +128,61 @@ class Chameleon(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        # add reactions if message starts with "role" string or is in role channel
+        # add reactions if message starts with "Role" string or is in role channel
         # fmt: off
         if message.channel.id in config.role_channels \
-        or message.content.startswith(config.role_string):
-            role_data = await self._emote_role_map(message)
-            for emote_channel in role_data:
+        or message.content.startswith(config.get("chameleon", "trigger")):
+            message_data = await self._emote_role_map(message)
+            for emote_channel in message_data:
                 await message.add_reaction(emote_channel[0])
         # fmt: on
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        # channel
-        channel = self.bot.get_channel(payload.channel_id)
-        if not isinstance(channel, discord.TextChannel):
+        # extract data from payload
+        payload = await self._parsePayload(payload)
+        if payload is None:
             return
-
-        # message
-        try:
-            message = await channel.fetch_message(payload.message_id)
-        except discord.NotFound:
-            return
-
-        # author
-        author = message.guild.get_member(payload.user_id)
-        if author.bot:
-            return
-
-        # emoji
-        if payload.emoji.is_custom_emoji():
-            emoji = self.bot.get_emoji(payload.emoji.id) or payload.emoji
-        else:
-            emoji = payload.emoji.name
-
-        # check for role string
-        if (
-            not message.content.startswith(config.role_string)
-            and not channel.id in config.role_channels
-        ):
-            return
+        channel, message, member, emoji = payload
 
         # add role on reaction
         emote_channel_list = await self._emote_role_map(message)
         for emote_channel in emote_channel_list:
             if str(emoji) == emote_channel[0]:
-                await self._add_permission(message=message, shortcut=emote_channel[1])
+                # fmt: off
+                await self._add_permission(
+                    message=message,
+                    member=member,
+                    shortcut=emote_channel[1],
+                )
+                # fmt: on
                 break
         else:
-            await message.remove_reaction(emoji, author)
+            try:
+                await message.remove_reaction(emoji, member)
+            except:
+                pass
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        pass
+        # extract data from payload
+        payload = await self._parsePayload(payload)
+        if payload is None:
+            return
+        channel, message, member, emoji = payload
+
+        # remove role on reaction
+        emote_channel_list = await self._emote_role_map(message)
+        for emote_channel in emote_channel_list:
+            if str(emoji) == emote_channel[0]:
+                # fmt: off
+                await self._remove_permission(
+                    message=message,
+                    member=member,
+                    shortcut=emote_channel[1],
+                )
+                # fmt: on
+                break
 
     ##
     ## Helper functions
@@ -198,24 +211,47 @@ class Chameleon(rubbercog.Rubbercog):
             return False
         return channel
 
+    async def _parsePayload(self, payload):
+        """Return (channel, message, member, emoji) or None"""
+        # channel
+        channel = self.bot.get_channel(payload.channel_id)
+        if not isinstance(channel, discord.TextChannel):
+            return
+        # message
+        try:
+            message = await channel.fetch_message(payload.message_id)
+        except discord.NotFound:
+            return
+        # reacting user
+        member = message.guild.get_member(payload.user_id)
+        if member.bot:
+            return
+        # emoji
+        if payload.emoji.is_custom_emoji():
+            emoji = self.bot.get_emoji(payload.emoji.id) or payload.emoji
+        else:
+            emoji = payload.emoji.name
+        # role string
+        if (
+            not message.content.startswith(config.get("chameleon", "trigger"))
+            and channel.id not in config.role_channels
+        ):
+            return
+
+        # done
+        return channel, message, member, emoji
+
     async def _add_permission(
         self,
         *,
         shortcut: str,
+        member: discord.Member,
         ctx: commands.Context = None,
         message: discord.Message = None,
         channel: discord.TextChannel = None,
         permission_type: str = None,
     ):
         """Add subject channel"""
-        # fmt: off
-        print(f"""DEBUG:
-shortcut:        {shortcut}
-ctx:             {ctx}
-channel:         {channel}
-permission_type: {permission_type}
-""")
-        # fmt: on
 
         # source can be context or message
         if ctx is None and message is None:
@@ -241,7 +277,7 @@ permission_type: {permission_type}
         if permission_type == "subject":
             # get user roles
             allowed = False
-            user_role_ids = [x.id for x in source.author.roles]
+            user_role_ids = [x.id for x in member.roles]
             for role_id in user_role_ids:
                 if role_id in config.get("roles", "native"):
                     allowed = True
@@ -250,7 +286,7 @@ permission_type: {permission_type}
                 # deny
                 print("DENIED!")
                 return
-        else:
+        elif permission_type == "role":
             role = discord.utils.get(self.getGuild().roles, name=shortcut)
             limit = discord.utils.get(self.getGuild().roles, name="---INTERESTS")
             if role >= limit:
@@ -258,33 +294,85 @@ permission_type: {permission_type}
                 print("DENIED!")
                 return
 
+        # add
         if permission_type == "subject":
             # add subject channel
-            await channel.set_permissions(source.author, view_channel=True)
-            print(f"Added to channel {channel.name}")
+            await channel.set_permissions(member, view_channel=True)
+            print(f"Added to subject {channel.name} to {member.name}")
             # try to add teacher channel
             shortcut = shortcut + config.get("channels", "teacher suffix")
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
             if channel is not None:
-                await channel.set_permissions(source.author, view_channel=True)
-                print(f"Added to channel {channel.name}")
-        else:
-            await source.author.add_roles(role)
-            print(f"Added role {role.name}")
+                await channel.set_permissions(member, view_channel=True)
+                print(f"Added to channel {channel.name} to {member.name}")
+
+        elif permission_type == "role":
+            await member.add_roles(role)
+            print(f"Added role {role.name} (user {member.name})")
 
     async def _remove_permission(
         self,
         *,
-        ctx: commands.Context,
+        ctx: commands.Context = None,
+        message: discord.Message = None,
+        member: discord.Member,
         shortcut: str,
         channel: discord.TextChannel = None,
         permission_type: str = None,
     ):
         """Remove subject channel"""
-        pass
+        # Removing role is easier than adding -- we generally do not need
+        # to check permissions. If they want to leave, why not?
+        # We only have to check if the role is lower than "---INTERESTS";
+        # subject can be _removed_ by anyone.
+
+        # source can be context or message
+        if ctx is None and message is None:
+            return self.console.error("Chameleon:_remove_permission", "Missing any context")
+        source = ctx if ctx is not None else message
+
+        if channel is None and source is None:
+            return self.console.error(
+                "Chameleon:_remove_permission", "No channel to apply the overrides to"
+            )
+        elif channel is None:
+            channel = discord.utils.get(source.guild.text_channels, name=shortcut)
+
+        # permission type
+        if permission_type not in ["subject", "role", None]:
+            return self.console.error("Chameleon:_remove_permission", "Wrong permission type")
+        if permission_type is None and channel is not None:
+            permission_type = "role" if repo_s.get(channel.name) is None else "subject"
+        else:
+            permission_type = "role"
+
+        # access control
+        if permission_type == "role":
+            role = discord.utils.get(self.getGuild().roles, name=shortcut)
+            limit = discord.utils.get(self.getGuild().roles, name="---INTERESTS")
+            if role >= limit:
+                # TODO Denied
+                print("DENIED!")
+                return
+
+        # remove
+        if permission_type == "subject":
+            # remove subject channel
+            await channel.set_permissions(member, overwrite=None)
+            print(f"Removed from subject {channel.name}")
+            # try to remove from teacher channel
+            shortcut = shortcut + config.get("channels", "teacher suffix")
+            channel = discord.utils.get(source.guild.text_channels, name=shortcut)
+            if channel is not None:
+                await channel.set_permissions(member, overwrite=None)
+                print(f"Removed from subject {channel.name}")
+
+        elif permission_type == "role":
+            await member.remove_roles(role)
+            print(f"Removed role {role.name} (user {member.name})")
 
     async def _emote_role_map(self, message):
-        """Return list of role names and emotes that represent them"""
+        """Return (role name, emote) list"""
 
         # preprocess message content
         content = message.content.replace("**", "")
@@ -297,7 +385,7 @@ permission_type: {permission_type}
         # check every line
         result = []
         for i, line in enumerate(content):
-            if i == 0 and line == config.get("chameleon", "trigger"):
+            if i == 0 and line == config.get("chameleon", "trigger").replace("\n", ""):
                 continue
             try:
                 tokens = line.split(" ")
@@ -306,8 +394,8 @@ permission_type: {permission_type}
 
                 if "<#" in emote:
                     emote = int(emote.replace("<#", "").replace(">", ""))
-                result.append([emote, channel])
-            except Exception as e:
+                result.append((emote, channel))
+            except:
                 # TODO Send "invalid role line"
                 print("invalid role line: " + line)
                 return
