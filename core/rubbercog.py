@@ -165,6 +165,10 @@ class Rubbercog(commands.Cog):
         """Get yyyy-mm-dd HH:MM:SS string"""
         return datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
+    def sanitise(self, string: str, *, limit: int = 500):
+        """Return cleaned-up string ready for output"""
+        return discord.utils.escape_markdown(string).replace("@", "")[:limit]
+
     ##
     ## Embeds
     ##

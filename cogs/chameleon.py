@@ -197,7 +197,7 @@ class Chameleon(rubbercog.Rubbercog):
                     "chameleon",
                     "shortcut not subject",
                     mention=ctx.author.mention,
-                    shortcut=discord.utils.escape_markdown(shortcut).replace("@", ""),
+                    shortcut=self.sanitise(shortcut, limit=50),
                 ),
                 delete_after=config.get("delay", "error"),
             )
@@ -216,7 +216,7 @@ class Chameleon(rubbercog.Rubbercog):
                     "chameleon",
                     "shortcut no channel",
                     mention=ctx.author.mention,
-                    shortcut=discord.utils.escape_markdown(shortcut).replace("@", ""),
+                    shortcut=self.sanitise(shortcut, limit=20),
                 ),
                 delete_after=config.get("delay", "error"),
             )
@@ -411,11 +411,7 @@ class Chameleon(rubbercog.Rubbercog):
                 result.append((emote, channel))
             except:
                 await message.channel.send(
-                    text.fill(
-                        "chameleon",
-                        "invalid role line",
-                        line=discord.utils.escape_markdown(line).replace("@", ""),
-                    )
+                    text.fill("chameleon", "invalid role line", line=self.sanitise(line, limit=50))
                 )
                 return
         return result
