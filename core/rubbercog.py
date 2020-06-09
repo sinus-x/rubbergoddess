@@ -21,6 +21,7 @@ class Rubbercog(commands.Cog):
         self.role_mod = None
         self.role_verify = None
         self.roles_elevated = None
+        self.roles_native = None
 
         self.output = output.Output(self.bot)
         self.console = output.Console(self.bot)
