@@ -49,6 +49,8 @@
 		"mods": 0,
 		"botdev": 0,
 		"botlog": 0,
+		"__comment": "Where the bot output is sent",
+		"stdout": 0,
 		"guildlog": 0,
 		"__comment": "Where to log deleted messages",
 		"messages": 0,

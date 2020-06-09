@@ -92,7 +92,8 @@ class Admin(rubbercog.Rubbercog):
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
-            return self.output.error(ctx, "Neběžím přímo v systemd, takže to neumím")
+            await self.output.error(ctx, "Neběžím přímo v systemd, takže to neumím")
+            return
 
         stdout = None
         try:
@@ -100,7 +101,7 @@ class Admin(rubbercog.Rubbercog):
                 "sudo systemctl status rubbergoddess", shell=True
             ).decode("utf-8")
         except subprocess.CalledProcessError as e:
-            self.console.error("Admin:status", "No access to systemctl", e)
+            await self.console.error(ctx, "No access to systemctl", e)
             await self.output.error(ctx, "No access to systemctl", e)
             return
 

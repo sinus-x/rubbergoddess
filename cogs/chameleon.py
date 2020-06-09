@@ -267,18 +267,21 @@ class Chameleon(rubbercog.Rubbercog):
 
         # source can be context or message
         if ctx is None and message is None:
-            return self.console.error("Chameleon", "Missing any context")
+            await self.console.error(self, "Cannot add permission, missing any context")
+            return
+
         source = ctx if ctx is not None else message
 
         if channel is None and source is None:
-            self.console.error("Chameleon", "No channel to apply the overrides to")
+            await self.console.error(self, "No channel to apply the overrides to")
             return
         elif channel is None:
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
 
         # test permission type
         if permission_type not in ["subject", "role", None]:
-            return self.console.error("Chameleon", "Wrong permission type")
+            await self.console.error(self, "Wrong permission type")
+            return
         if permission_type is None and channel is not None:
             permission_type = "role" if repo_s.get(channel.name) is None else "subject"
         else:
@@ -311,17 +314,17 @@ class Chameleon(rubbercog.Rubbercog):
         if permission_type == "subject":
             # add subject channel
             await channel.set_permissions(member, view_channel=True)
-            self.console.debug("Chameleon", f"Allowed {member.name} into {channel.name}")
+            await self.console.debug(self, f"Allowed {member.name} into {channel.name}")
             # try to add teacher channel
             shortcut = shortcut + config.get("channels", "teacher suffix")
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
             if channel is not None:
                 await channel.set_permissions(member, view_channel=True)
-                self.console.debug("Chameleon", f"Allowed {member.name} into {channel.name}")
+                await self.console.debug(self, f"Allowed {member.name} into {channel.name}")
 
         elif permission_type == "role":
             await member.add_roles(role)
-            self.console.debug("Chameleon", f"Added role {role.name} to {member.name}")
+            await self.console.debug(self, f"Added role {role.name} to {member.name}")
 
     async def _remove_permission(
         self,
@@ -341,17 +344,17 @@ class Chameleon(rubbercog.Rubbercog):
 
         # source can be context or message
         if ctx is None and message is None:
-            return self.console.error("Chameleon", "Missing any context")
+            return await self.console.error(self, "Missing any context")
         source = ctx if ctx is not None else message
 
         if channel is None and source is None:
-            return self.console.error("Chameleon", "No channel to apply the overrides to")
+            return await self.console.error(self, "No channel to apply the overrides to")
         elif channel is None:
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
 
         # permission type
         if permission_type not in ["subject", "role", None]:
-            return self.console.error("Chameleon", "Wrong permission type")
+            return await self.console.error(self, "Wrong permission type")
         if permission_type is None and channel is not None:
             permission_type = "role" if repo_s.get(channel.name) is None else "subject"
         else:
@@ -373,17 +376,17 @@ class Chameleon(rubbercog.Rubbercog):
         if permission_type == "subject":
             # remove subject channel
             await channel.set_permissions(member, overwrite=None)
-            self.console.debug("Chameleon", f"Disallowed {member.name} into {channel.name}")
+            await self.console.debug(self, f"Disallowed {member.name} into {channel.name}")
             # try to remove from teacher channel
             shortcut = shortcut + config.get("channels", "teacher suffix")
             channel = discord.utils.get(source.guild.text_channels, name=shortcut)
             if channel is not None:
                 await channel.set_permissions(member, overwrite=None)
-                self.console.debug("Chameleon", f"Disallowed {member.name} into {channel.name}")
+                await self.console.debug(self, f"Disallowed {member.name} into {channel.name}")
 
         elif permission_type == "role":
             await member.remove_roles(role)
-            self.console.debug("Chameleon", f"Removed role {role.name} from {member.name}")
+            await self.console.debug(self, f"Removed role {role.name} from {member.name}")
 
     async def _emote_role_map(self, message):
         """Return (role name, emote) list"""
