@@ -56,7 +56,7 @@
 		"poweron botspam": "Jsem zpátky! {emote.happy}",
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
 	},
-	"chameleon": {
+	"faceshifter": {
 		"shortcut not subject": "{mention}, **{shortcut}** není předmět.",
 		"shortcut no channel": "{mention}, **{shortcut}** nemá kanál. V případě potřeby kontaktuj mod tým.",
 

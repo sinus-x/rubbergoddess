@@ -121,11 +121,44 @@ class Faceshifter(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        pass
+        # fmt: off
+        if message.channel.id in config.get("faceshifter", "react-to-role channels") \
+        or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
+            message_data = await self._message_to_tuple_list(message)
+            for emote_channel in message_data:
+                try:
+                    await message.add_reaction(emote_channel[0])
+                except discord.HTTPException:
+                    continue
+        # fmt: on
 
     @commands.Cog.listener()
-    async def on_raw_message_edit(self, payload):
-        pass
+    async def on_raw_message_edit(self, payload: discord.RawMessageUpdateEvent):
+        # fmt: off
+        message = payload.cached_message
+        if message is None:
+            message_channel = self.bot.get_channel(payload.channel_id)
+            message = await message_channel.fetch_message(payload.message_id)
+
+        if message.channel.id in config.get("faceshifter", "react-to-role channels") \
+        or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
+            # make a list of current emotes
+            emotes = []
+            message_data = await self._message_to_tuple_list(message)
+            for emote_channel in message_data:
+                try:
+                    await message.add_reaction(emote_channel[0])
+                except (discord.Forbidden, discord.HTTPException):
+                    continue
+                emotes.append(emote_channel[0])
+            # check if there are any more -- if so, remove them
+            for reaction in message.reactions:
+                if reaction.emoji not in emotes:
+                    try:
+                        await reaction.clear()
+                    except (discord.Forbidden, discord.HTTPException):
+                        continue
+        # fmt: on
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -144,8 +177,41 @@ class Faceshifter(rubbercog.Rubbercog):
     async def _get_subject(self, ctx, shortcut: str) -> discord.TextChannel:
         return discord.utils.get(ctx.guild.text_channels, name=shortcut)
 
-    async def _message_to_tuple(self, message: discord.Message) -> tuple:
-        pass
+    async def _message_to_tuple_list(self, message: discord.Message) -> list:
+        """Return (emote, channel/role) list"""
+        # preprocess message content
+        content = message.content.replace("**", "")
+        try:
+            content = content.rstrip().split("\n")
+        except ValueError:
+            await message.channel.send(text.get("faceshifter", "role help"))
+            return
+
+        # check every line
+        result = []
+        for i, line in enumerate(content):
+            if i == 0 and line == config.get("faceshifter", "react-to-role prefix").replace(
+                "\n", ""
+            ):
+                # invoked via message prefix, skip the first line
+                continue
+            try:
+                line_ = line.split(" ")
+                emote = line_[0]
+                target = line_[1]
+
+                if "<#" in emote:
+                    # custom emote, get it's ID
+                    emote = int(emote.replace("<#", "").replace(">", ""))
+                result.append((emote, target))
+            except:
+                await message.channel.send(
+                    text.fill(
+                        "faceshifter", "invalid role line", line=self.sanitise(line, limit=50)
+                    )
+                )
+                return
+        return result
 
     async def _reaction_payload_to_tuple(self, payload: discord.RawMessageUpdateEvent) -> tuple:
         # _parsePayload()

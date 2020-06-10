@@ -103,6 +103,9 @@
 	},
 
 	"faceshifter": {
+		"react-to-role channels": [],
+		"react-to-role prefix": "Role\n",
+
 		"programme roles": [0],
 		"subject roles": [0]
 	},
