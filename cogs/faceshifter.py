@@ -128,17 +128,15 @@ class Faceshifter(rubbercog.Rubbercog):
             for emote_channel in message_data:
                 try:
                     await message.add_reaction(emote_channel[0])
-                except discord.HTTPException:
+                except (discord.errors.Forbidden, discord.errors.HTTPException):
                     continue
         # fmt: on
 
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload: discord.RawMessageUpdateEvent):
         # fmt: off
-        message = payload.cached_message
-        if message is None:
-            message_channel = self.bot.get_channel(payload.channel_id)
-            message = await message_channel.fetch_message(payload.message_id)
+        message_channel = self.bot.get_channel(payload.channel_id)
+        message = await message_channel.fetch_message(payload.message_id)
 
         if message.channel.id in config.get("faceshifter", "react-to-role channels") \
         or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
@@ -148,16 +146,9 @@ class Faceshifter(rubbercog.Rubbercog):
             for emote_channel in message_data:
                 try:
                     await message.add_reaction(emote_channel[0])
-                except (discord.Forbidden, discord.HTTPException):
+                except (discord.errors.Forbidden, discord.errors.HTTPException):
                     continue
                 emotes.append(emote_channel[0])
-            # check if there are any more -- if so, remove them
-            for reaction in message.reactions:
-                if reaction.emoji not in emotes:
-                    try:
-                        await reaction.clear()
-                    except (discord.Forbidden, discord.HTTPException):
-                        continue
         # fmt: on
 
     @commands.Cog.listener()
@@ -205,6 +196,9 @@ class Faceshifter(rubbercog.Rubbercog):
                     emote = int(emote.replace("<#", "").replace(">", ""))
                 result.append((emote, target))
             except:
+                # do not send errors if message is in #add-* channel
+                if message.channel.id in config.get("faceshifter", "react-to-role channels"):
+                    return
                 await message.channel.send(
                     text.fill(
                         "faceshifter", "invalid role line", line=self.sanitise(line, limit=50)
