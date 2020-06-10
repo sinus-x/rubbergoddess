@@ -114,7 +114,13 @@ class Console:
             await self.send(source, "critical", message, error)
 
     async def send(
-        self, source, level: str, message: str = None, error: Exception = None,
+        # fmt: off
+        self,
+        source,
+        level: str,
+        message: str = None,
+        error: Exception = None,
+        # fmt: on
     ):
         if self.getLogChannel() is None:
             return
