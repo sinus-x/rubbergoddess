@@ -3,7 +3,7 @@ from repository.database import session
 from repository.database.review import Subject
 
 
-class SubjectRepository(object):
+class SubjectRepository(BaseRepository):
     def __init__(self):
         super().__init__()
 
