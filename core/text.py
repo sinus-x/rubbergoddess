@@ -1,4 +1,4 @@
-import json
+import hjson
 import re
 
 import discord
@@ -11,9 +11,9 @@ class Text:
     """Manage string values"""
 
     def __init__(self):
-        self.default = json.load(open("config/text.default.json", "r"))
+        self.default = hjson.load(open("config/text.default.hjson", "r"))
         try:
-            self.custom = json.load(open("config/text.json", "r"))
+            self.custom = hjson.load(open("config/text.hjson", "r"))
         except FileNotFoundError:
             self.custom = None
 

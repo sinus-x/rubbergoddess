@@ -1,4 +1,4 @@
-import json
+import hjson
 import sys
 
 
@@ -18,8 +18,8 @@ class Config:
 
     def __init__(self):
         try:
-            self.d = json.load(open("config/config.default.json", "r"))
-            self.c = json.load(open("config/config.json", "r"))
+            self.d = hjson.load(open("config/config.default.hjson", "r"))
+            self.c = hjson.load(open("config/config.hjson", "r"))
         except FileNotFoundError:
             print("Error loading config files.")  # noqa: T001
             sys.exit(1)
