@@ -53,11 +53,16 @@ class Faceshifter(rubbercog.Rubbercog):
         for subject in subjects:
             channel = await self._get_subject(ctx, subject)
             if channel is None:
-                await ctx.send("předmětovou místnost {subject} tu nemáme.")
+                # fmt: off
+                await ctx.send(text.fill(
+                    "faceshifter",
+                    "not subject",
+                    mention=ctx.author.mention,
+                    shortcut=subject
+                ))
+                # fmt: on
             else:
                 await self._subject_add(ctx, ctx.author, channel)
-
-        await ctx.send("hotovo ^.^")
 
     @subject.command(name="remove")
     async def subject_remove(self, ctx, *, subjects: str):
@@ -69,11 +74,16 @@ class Faceshifter(rubbercog.Rubbercog):
         for subject in subjects:
             channel = await self._get_subject(ctx, subject)
             if channel is None:
-                await ctx.send("předmětovou místnost {subject} tu nemáme.")
+                # fmt: off
+                await ctx.send(text.fill(
+                    "faceshifter",
+                    "not subject",
+                    mention=ctx.author.mention,
+                    shortcut=subject
+                ))
+                # fmt: on
             else:
                 await self._subject_remove(ctx, ctx.author, channel)
-
-        await ctx.send("hotovo ^.^")
 
     @commands.guild_only()
     @commands.check(check.is_verified)
@@ -93,11 +103,16 @@ class Faceshifter(rubbercog.Rubbercog):
         for role in roles:
             guild_role = await self._get_role(ctx, role)
             if guild_role is None:
-                await ctx.send("roli {role} tu nemáme")
+                # fmt: off
+                await ctx.send(text.fill(
+                    "faceshifter",
+                    "not role",
+                    mention=ctx.author.mention,
+                    role=role
+                ))
+                # fmt: on
             else:
                 await self._role_add(ctx, ctx.author, guild_role)
-
-        await ctx.send("hotovo ^.^")
 
     @role.command(name="remove")
     async def role_remove(self, ctx, *, roles: str):
@@ -109,11 +124,16 @@ class Faceshifter(rubbercog.Rubbercog):
         for role in roles:
             guild_role = await self._get_role(ctx, role)
             if guild_role is None:
-                await ctx.send("roli {role} tu nemáme")
+                # fmt: off
+                await ctx.send(text.fill(
+                    "faceshifter",
+                    "not role",
+                    mention=ctx.author.mention,
+                    role=role
+                ))
+                # fmt: on
             else:
                 await self._role_remove(ctx, ctx.author, guild_role)
-
-        await ctx.send("hotovo ^.^")
 
     ##
     ## Listeners
@@ -299,7 +319,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 break
         else:
             # they do not have neccesary role
-            await location.send("na to nemáš právo, nejsi z VUT ^.^")
+            await location.send(text.fill("deny subject", mention=member.mention))
             return
 
         await channel.set_permissions(member, view_channel=True)
@@ -328,14 +348,14 @@ class Faceshifter(rubbercog.Rubbercog):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send("na to nemáš právo, nejsi z FEKTu ^.^")
+                await location.send(text.fill("faceshifter", "deny role", mention=member.mention))
                 return
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send("do takových rolí nesmíš sahat!")
+            await location.send(text.fill("faceshifter", "deny high role", mention=member.mention))
             return
 
         await member.add_roles(role)
@@ -349,14 +369,14 @@ class Faceshifter(rubbercog.Rubbercog):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send("na to nemáš právo, nejsi z FEKTu ^.^")
+                await location.send(text.fill("faceshifter", "deny role", mention=member.mention))
                 return
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send("do takových rolí nesmíš sahat!")
+            await location.send(text.fill("faceshifter", "deny high role", mention=member.mention))
             return
 
         await member.remove_roles(role)
