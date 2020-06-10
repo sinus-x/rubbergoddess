@@ -49,7 +49,7 @@ class Faceshifter(rubbercog.Rubbercog):
 
         subjects: Space separated subject shortcuts
         """
-        subjects = self.sanitise(subjects, limit=200).lower().split(" ")
+        subjects = self.sanitise(subjects, limit=200).split(" ")
         for subject in subjects:
             channel = await self._get_subject(ctx, subject)
             if channel is None:
@@ -65,7 +65,7 @@ class Faceshifter(rubbercog.Rubbercog):
 
         subjects: Space separated subject shortcuts
         """
-        subjects = self.sanitise(subjects, limit=200).lower().split(" ")
+        subjects = self.sanitise(subjects, limit=200).split(" ")
         for subject in subjects:
             channel = await self._get_subject(ctx, subject)
             if channel is None:
@@ -89,7 +89,15 @@ class Faceshifter(rubbercog.Rubbercog):
 
         roles: Space separated role shortcuts
         """
-        pass
+        roles = self.sanitise(roles, limit=200).split(" ")
+        for role in roles:
+            guild_role = await self._get_role(ctx, role)
+            if guild_role is None:
+                await ctx.send("roli {role} tu nemáme")
+            else:
+                await self._role_add(ctx, ctx.author, guild_role)
+
+        await ctx.send("hotovo ^.^")
 
     @role.command(name="remove")
     async def role_remove(self, ctx, *, roles: str):
@@ -97,7 +105,15 @@ class Faceshifter(rubbercog.Rubbercog):
 
         roles: Space separated role shortcuts
         """
-        pass
+        roles = self.sanitise(roles, limit=200).split(" ")
+        for role in roles:
+            guild_role = await self._get_role(ctx, role)
+            if guild_role is None:
+                await ctx.send("roli {role} tu nemáme")
+            else:
+                await self._role_remove(ctx, ctx.author, guild_role)
+
+        await ctx.send("hotovo ^.^")
 
     ##
     ## Listeners
@@ -123,7 +139,7 @@ class Faceshifter(rubbercog.Rubbercog):
     ## Helper functions
     ##
     async def _get_role(self, ctx, role: str) -> discord.Role:
-        pass
+        return discord.utils.get(ctx.guild.roles, name=role)
 
     async def _get_subject(self, ctx, shortcut: str) -> discord.TextChannel:
         return discord.utils.get(ctx.guild.text_channels, name=shortcut)
@@ -145,7 +161,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 break
         else:
             # they do not have neccesary role
-            await ctx.send("na to nemáš právo ^.^")
+            await ctx.send("na to nemáš právo, nejsi z VUT ^.^")
             return
 
         await channel.set_permissions(member, view_channel=True)
@@ -155,10 +171,42 @@ class Faceshifter(rubbercog.Rubbercog):
         await channel.set_permissions(member, overwrite=None)
 
     async def _role_add(self, ctx, member: discord.Member, role: discord.Role):
-        pass
+        if role < self.getLimitProgrammes(ctx) and role > self.getLimitInterests(ctx):
+            # role is programme, check if user has permission
+            for programme_role in config.get("faceshifter", "programme roles"):
+                if programme_role in [r.id for r in member.roles]:
+                    break
+            else:
+                await ctx.send("na to nemáš právo, nejsi z FEKTu ^.^")
+                return
+        elif role < self.getLimitInterests(ctx):
+            # role is below interests limit, continue
+            pass
+        else:
+            # role is limit itself or something above programmes
+            await ctx.send("do takových rolí nesmíš sahat!")
+            return
+
+        await member.add_roles(role)
 
     async def _role_remove(self, ctx, member: discord.Member, role: discord.Role):
-        pass
+        if role < self.getLimitProgrammes(ctx) and role > self.getLimitInterests(ctx):
+            # role is programme, check if user has permission
+            for programme_role in config.get("faceshifter", "programme roles"):
+                if programme_role in [r.id for r in member.roles]:
+                    break
+            else:
+                await ctx.send("na to nemáš právo, nejsi z FEKTu ^.^")
+                return
+        elif role < self.getLimitInterests(ctx):
+            # role is below interests limit, continue
+            pass
+        else:
+            # role is limit itself or something above programmes
+            await ctx.send("do takových rolí nesmíš sahat!")
+            return
+
+        await member.remove_roles(role)
 
 
 def setup(bot):

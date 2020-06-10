@@ -5,7 +5,13 @@ configuration or database.
 
 ## [Unreleased]
 ### Added
-- Chameleon cog (deprecating some of the code in `features/reaction.py`)
+- Faceshifter cog (deprecating some of the code in `features/reaction.py`)
+
+### Mods
+
+- Change in limiting pseudo-role naming:
+  - `---FEKT` becomes `---PROGRAMMES`
+  - `---` becomes `---INTERESTS`
 
 ### Developers
 - United logging functions:
