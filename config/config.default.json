@@ -102,13 +102,11 @@
 		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 	},
 
-	"chameleon": {
-		"trigger": "Role\n"
+	"faceshifter": {
+		"programme roles": [0],
+		"subject roles": [0]
 	},
 	"reaction cog": {
-		"trigger": "Role\n",
-		"__comment": "Some channels are dedicated to the react-to-role",
-		"channels": [0, 0, 0],
 		"pin limit": 5
 	},
 	"karma cog": {
