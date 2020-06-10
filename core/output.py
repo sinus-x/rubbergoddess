@@ -53,23 +53,22 @@ class Output:
         message: str = None,
         error: Exception = None,
     ):
-        template = ">>> **{level}**: {message}\n{error} ```{traceback}``` {timestamp}"
+        template = ">>> **{level}**: {message}"
+        template_cont = "\n{error} ```{traceback}```"
 
         # make sure there is something after the colon
         if message is None and error is None:
             message = "unspecified"
+
+        result = template.format(level=level.upper(), message=message)
 
         # parse error
         if error is not None:
             tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             if len(tr) > 1000:
                 tr = tr[-999:] + "…"
-        else:
-            tr = ""
+            result += template_cont.format(error=error, traceback=tr)
 
-        result = template.format(
-            level=level, message=message, traceback=tr, timestamp=getTimestamp()
-        )
         await source.send(result, delete_after=config.get("delay", "bot error"))
 
 

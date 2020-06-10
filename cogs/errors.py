@@ -8,6 +8,30 @@ from core.text import text
 from core.config import config
 
 
+def seconds2str(time):
+    time = int(time)
+    D = 3600 * 24
+    H = 3600
+    M = 60
+
+    d = (time - (time % D)) / D
+    h = (time - (time % H)) / H
+    m = (time - (time % M)) / M
+    s = time % 60
+
+    if d > 0:
+        return f"{d} d, {h:02}:{m:02}:{s:02}"
+    if h > 0:
+        return f"{h}:{m:02}:{s:02}"
+    if m > 0:
+        return f"{m}:{s:02}"
+    if s > 4:
+        return f"{s} vteřin"
+    if s > 1:
+        return f"{s} vteřiny"
+    return "vteřinu"
+
+
 class Errors(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
@@ -37,12 +61,12 @@ class Errors(rubbercog.Rubbercog):
             return
 
         if isinstance(error, commands.CommandOnCooldown):
-            time = datetime.timedelta(error.retry_after)
-            await self.output.error(ctx, text.fill("error", "cooldown", time=time))
+            time = seconds2str(error.retry_after)
+            await self.output.warning(ctx, text.fill("error", "cooldown", time=time))
             return
 
         if isinstance(error, commands.MaxConcurrencyReached):
-            await self.output.error(
+            await self.output.warning(
                 ctx,
                 text.fill("error", "concurrency", number=error.number, bucket_type=error.per.name),
             )
@@ -53,32 +77,32 @@ class Errors(rubbercog.Rubbercog):
 
         if isinstance(error, commands.CheckFailure):
             # Should we send _which_ checks failed?
-            await self.output.error(ctx, text.get("error", "no requirement"))
+            await self.output.warning(ctx, text.get("error", "no requirement"))
             return
 
         if isinstance(error, commands.BadArgument):
-            await self.output.error(ctx, text.get("error", "bad argument"))
+            await self.output.warning(ctx, text.get("error", "bad argument"))
             return
 
         if isinstance(error, commands.ExpectedClosingQuoteError):
-            await self.output.error(ctx, text.get("error", "bad argument"))
+            await self.output.warning(ctx, text.get("error", "bad argument"))
             return
 
         if isinstance(error, commands.CommandNotFound):
             return
 
         if isinstance(error, commands.MissingRequiredArgument):
-            await self.output.error(
+            await self.output.warning(
                 ctx, text.fill("error", "missing argument", argument=error.param.name)
             )
             return
 
         if isinstance(error, commands.ArgumentParsingError):
-            await self.output.error(ctx, text.get("error", "argument parsing"))
+            await self.output.warning(ctx, text.get("error", "argument parsing"))
             return
 
         elif isinstance(error, commands.CommandError):
-            await self.output.error(ctx, text.get("error" "command"), error)
+            await self.output.warning(ctx, text.get("error" "command"), error)
             return
 
         # cog loading

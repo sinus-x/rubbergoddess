@@ -1,4 +1,4 @@
-from random import choice
+import random
 
 import discord
 from discord.ext import commands
@@ -19,7 +19,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.command(name="???", aliases=["??"])
     async def question(self, ctx):
         """What?"""
-        await ctx.send(choice(messages.question))
+        await ctx.send(random.choice(text.get("meme", "???")))
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
