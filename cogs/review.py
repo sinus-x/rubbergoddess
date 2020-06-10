@@ -107,7 +107,7 @@ class Review(rubbercog.Rubbercog):
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.check(check.is_mod)
     @commands.command()
-    async def subject(self, ctx, subcommand=None, subject=None):
+    async def db_subject(self, ctx, subcommand=None, subject=None):
         if not subcommand or not subject:
             await ctx.send(messages.subject_format)
             return

@@ -18,23 +18,6 @@ class Karma(rubbercog.Rubbercog):
         self.reaction = reaction.Reaction(bot, karma_r)
 
     @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.author.bot and (message.channel.id in config.role_channels):
-            role_data = await self.reaction.get_join_role_data(message)
-            await self.reaction.message_role_reactions(message, role_data)
-            return
-
-        if message.author.bot:
-            return
-
-        if (
-            message.content.startswith(config.role_string)
-            or message.channel.id in config.role_channels
-        ):
-            role_data = await self.reaction.get_join_role_data(message)
-            await self.reaction.message_role_reactions(message, role_data)
-
-    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         try:
             await self.reaction.add(payload)

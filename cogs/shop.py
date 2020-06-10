@@ -54,7 +54,7 @@ class Shop(rubbercog.Rubbercog):
         # check if user has karma
         user = repo_k.getMember(ctx.author.id)
         if user is None:
-            return await ctx.send(text.get("shop", "no karma", author=ctx.author.mention))
+            return await ctx.send(text.fill("shop", "no karma", author=ctx.author.mention))
         if user.karma < self.price_nick:
             return await ctx.send(
                 text.fill(
@@ -87,7 +87,7 @@ class Shop(rubbercog.Rubbercog):
     async def nickname_unset(self, ctx):
         """Unset the nickname"""
         if ctx.author.nick is None:
-            return await ctx.send(text.get("shop", "no nick", author=ctx.author.mention))
+            return await ctx.send(text.fill("shop", "no nick", author=ctx.author.mention))
 
         nick = ctx.author.nick
 

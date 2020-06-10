@@ -49,6 +49,8 @@
 		"mods": 0,
 		"botdev": 0,
 		"botlog": 0,
+		"__comment": "Where the bot output is sent",
+		"stdout": 0,
 		"guildlog": 0,
 		"__comment": "Where to log deleted messages",
 		"messages": 0,
@@ -60,7 +62,9 @@
 		"__comment": "ID for voice channels group",
 		"voice group": 0,
 		"__comment": "Channel for voice commands & chat with people without mic",
-		"voice no mic": 0
+		"voice no mic": 0,
+
+		"teacher suffix": "-teacher"
 	},
 	"__comment": "Colors for embeds. They are standard hex RGB values in base 10",
 	"color": {
@@ -71,6 +75,11 @@
 	},
 	"__comment": "Timers for automatic deletion of bot's messages",
 	"delay": {
+		"success": 3,
+
+		"user error": 10,
+		"bot error": 60,
+
 		"embed": 120,
 		"verify": 900
 	},
@@ -93,10 +102,14 @@
 		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
 	},
 
+	"faceshifter": {
+		"react-to-role channels": [],
+		"react-to-role prefix": "Role\n",
+
+		"programme roles": [0],
+		"subject roles": [0]
+	},
 	"reaction cog": {
-		"trigger": "Role\n",
-		"__comment": "Some channels are dedicated to the react-to-role",
-		"channels": [0, 0, 0],
 		"pin limit": 5
 	},
 	"karma cog": {
@@ -117,10 +130,6 @@
 		"starting week": 0,
 
 		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
-	},
-	"janitor": {
-		"__comment": "Subject channel visible to the teacher",
-		"teacher suffix": "-teacher"
 	},
 	"voice cog": {
 		"__comment": "Wordlist for automatic voice channel name generation",

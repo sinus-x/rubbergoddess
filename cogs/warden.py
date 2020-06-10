@@ -30,8 +30,6 @@ class Warden(rubbercog.Rubbercog):
         self.limit_hard = 7
         self.limit_soft = 14
 
-        self.message_channel = None
-
     def doCheckRepost(self, message: discord.Message):
         return (
             message.channel.id in config.get("warden", "deduplication channels")
@@ -67,14 +65,14 @@ class Warden(rubbercog.Rubbercog):
                 )
                 repo_k.update_karma_get(message.author, -1 * penalty)
                 await self.deleteCommand(message)
-                self.console.debug("Warden:on_message", f"Removed message linking to {link}")
+                await self.console.debug(message, f"Removed message linking to {link}")
                 break
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         if self.doCheckRepost(message):
             i = repo_i.deleteByMessage(message.id)
-            self.console.debug("Warden:on_message_delete", f"Removed {i} dhash(es) from database")
+            await self.console.debug(self, f"Removed {i} dhash(es) from database")
 
             # try to detect repost embed
             messages = await message.channel.history(
@@ -103,7 +101,7 @@ class Warden(rubbercog.Rubbercog):
                 .fetch_message(payload.message_id)
             )
         except Exception as e:
-            self.console.debug("Warden:on_raw_reaction_add", "Message not found", e)
+            await self.console.debug(self, "Message not found", e)
             return
         if not message or not message.author.bot:
             return
@@ -113,9 +111,10 @@ class Warden(rubbercog.Rubbercog):
                 try:
                     orig = message.embeds[0].footer.text
                     orig = await message.channel.fetch_message(int(orig))
+                    # TODO Try to remove other bot's emoji, too
                     await orig.remove_reaction("♻️", self.bot.user)
                 except Exception as e:
-                    self.console.debug("Warden:on_raw_reaction_add", "Could not remove ♻️", e)
+                    await self.console.debug(message, "Could not remove ♻️", e)
                     return
                 await message.delete()
 
@@ -127,7 +126,7 @@ class Warden(rubbercog.Rubbercog):
                 i = Image.open(fp)
             except OSError as e:
                 # not an image
-                self.console.error("Warden:saveMessageHashes", "Error opening attachment", e)
+                await self.console.error(message, "Error opening attachment", e)
                 continue
             h = dhash.dhash_int(i)
 
@@ -187,7 +186,7 @@ class Warden(rubbercog.Rubbercog):
         now = time.time()
         for i, message in enumerate(messages):
             # update info on every 10th message
-            if i % 10 == 0:
+            if i % 20 == 0:
                 # fmt: off
                 await msg.edit(content=template.format(
                     i, len(messages), (i / len(messages) * 100),
@@ -237,7 +236,7 @@ class Warden(rubbercog.Rubbercog):
                         continue
                     # add to duplicates
                     duplicates[post] = 0
-                    self.console.debug("Warden:checkDuplicate", "Full match")
+                    await self.console.debug(message, "Full dhash match")
                     break
 
                 # move on to the next hash
@@ -262,12 +261,7 @@ class Warden(rubbercog.Rubbercog):
 
             duplicates[duplicate] = hamming_min
 
-            await self.output.debug(
-                message.channel, f"Closest Hamming distance: {hamming_min}/128 bits"
-            )
-            self.console.debug(
-                "Warden:checkDuplicate", f"Closest Hamming distance: {hamming_min}/128 bits"
-            )
+            await self.console.debug(message, f"Closest Hamming distance: {hamming_min}/128 bits")
 
         for image_hash, hamming_distance in duplicates.items():
             if hamming_distance <= self.limit_soft:

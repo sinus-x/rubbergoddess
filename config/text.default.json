@@ -3,18 +3,28 @@
 		"not implemented": "To ještě neumím... {emote.sad}",
 		"not supported":    "To nejde.",
 
-		"no user permission": "Na to nemáš oprávnění.",
-		"no bot permission":  "Na to nemám oprávnění",
+		"no user permission": "Na to ti chybí oprávnění: {permissions}",
+		"no bot permission":  "Na to mi chybí oprávnění: {permissions}",
 		"higher permission":  "To nemůžu, máš vyšší oprávnění",
 
 		"no command":      "Takový příkaz neznám {emote.sad}",
 		"no requirements": "Nesplnili jste podmínky příkazu.",
 		"no user":         "Nikoho takového jsem nenašla {emote.sad}",
+		"nsfw required":   "To jde použít jen v NSFW kanálech.",
 
-		"command":   "Chyba v příkazu",
-		"cooldown":  "Ten příkaz nemůžeš používat tak často.",
-		"extension": "Chyba v rozšíření {emote.ree}",
-		"argument":  "Chyba v argumentu {emote.sad}"
+		"command":         "Chyba v příkazu",
+		"cooldown":        "Trochu zpomal. Počkej ještě {time}",
+		"concurrency":     "Tento příkaz už běží mockrát, limit je {number}/{bucket_type}.",
+		"extension":       "Chyba v rozšíření {emote.ree}",
+		"bad argument":    "Chyba v argumentu {emote.sad}",
+		"missing argument": "Chybí mi argument {argument} {emote.sad}",
+		"argument parsing": "Chyba v parsování argument {emote.ree}",
+
+		"extension loaded":     "Rozšíření už je načteno.",
+		"extension not loaded": "Rozšíření není načteno.",
+		"extension failed":     "Načtení se nezdařilo.",
+		"extension not found":  "Takové rozšíření neexistuje.",
+		"extension":            "Chyba rozšíření."
 	},
 	"db": {
 		"read success":   "Záznam nalezen",
@@ -45,6 +55,17 @@
 
 		"poweron botspam": "Jsem zpátky! {emote.happy}",
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
+	},
+	"faceshifter": {
+		"not subject": "{mention}, předmětovou místnost **{shortcut}** tu nemáme",
+		"not role": "{mention}, roli **{role}** tu nemáme",
+
+		"role help": "Špatný formát\n>>> Role\n🐈 cat-role\n🦜 parrot-channel",
+		"invalid role line": "Řádek obsahuje chybu: _{line}_",
+
+		"deny subject": "{mention}, předměty si můžou přidávat jen studenti VUT.",
+		"deny role": "{mention}, na to nemáš právo, nejsi z FEKTu.",
+		"deny high role": "{mention}, na to nemáš právo."
 	},
 	"karma": {
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
@@ -131,6 +152,9 @@
 	"librarian": {
 		"nameday cz": "Dnes má svátek {name} {emote.happy}",
 		"nameday sk": "Dnes má meniny {name} {emote.happy}"
+	},
+	"meme": {
+		"???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
 	},
 	"voice": {
 		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",

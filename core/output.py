@@ -3,6 +3,7 @@ import traceback
 from datetime import datetime
 
 import discord
+from discord.ext import commands
 
 from core.config import config
 
@@ -12,6 +13,12 @@ def getTimestamp():
 
 
 class Output:
+    """Present errors to the user
+
+    This class is meant to provide feedback to the user.
+    Use Console class to send the text to stdout/logging channel.
+    """
+
     def __init__(self, bot: discord.ext.commands.Bot = None):
         self.bot = bot
         self.level = getattr(logging, config.get("bot", "logging").upper())
@@ -19,154 +26,163 @@ class Output:
     def bot(self, bot: discord.ext.commands.Bot):
         self.bot = bot
 
-    async def debug(self, msgbl: discord.abc.Messageable, msg: str, error=None):
-        """Send output to discord
-
-        msgbl: Where to send an output to
-        msg: A text description
-        error: Optional. An generated error
-        """
+    async def debug(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.DEBUG:
-            await self.send(msgbl, "Debug", msg, delete_after=config.get("delay", "embed"))
+            await self.send(source, "debug", message, error)
 
-    async def info(self, msgbl: discord.abc.Messageable, msg: str, error=None):
-        """Send output to discord
-
-        msgbl: Where to send an output to
-        msg: A text description
-        error: Optional. An generated error
-        """
+    async def info(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.INFO:
-            await self.send(msgbl, "Info", msg, delete_after=config.get("delay", "embed"))
+            await self.send(source, "info", message, error)
 
-    async def warning(self, msgbl: discord.abc.Messageable, msg: str, error=None):
-        """Send output to discord
-
-        msgbl: Where to send an output to
-        msg: A text description
-        error: Optional. An generated error
-        """
+    async def warning(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.WARNING:
-            if error:
-                await self.send(msgbl, "Warning", msg, error)
-            else:
-                await self.send(msgbl, "Warning", msg, delete_after=config.get("delay", "embed"))
+            await self.send(source, "warning", message, error)
 
-    async def error(self, msgbl: discord.abc.Messageable, msg: str, error=None):
-        """Send output to discord
-
-        msgbl: Where to send an output to
-        msg: A text description
-        error: Optional. An generated error
-        """
+    async def error(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.ERROR:
-            await self.send(msgbl, "Error", msg, error)
+            await self.send(source, "error", message, error)
 
-    async def critical(self, msgbl: discord.abc.Messageable, msg: str, error=None):
-        """Send output to discord
-
-        msgbl: Where to send an output to
-        msg: A text description
-        error: Optional. An generated error
-        """
+    async def critical(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.CRITICAL:
-            await self.send(msgbl, "Critical error", msg, error)
+            await self.send(source, "critical", message, error)
 
     async def send(
-        self, msgbl: discord.abc.Messageable, level: str, msg: str, error=None, delete_after=None
+        self,
+        source: discord.abc.Messageable,
+        level: str,
+        message: str = None,
+        error: Exception = None,
     ):
-        result = f">>> **{level}**"
-        try:
-            result += f" (`{config.prefix}{msgbl.command.qualified_name}`)"
-        except:
-            pass
-        result += f":\n{discord.utils.escape_mentions(msg)}"
+        template = ">>> **{level}**: {message}"
+        template_cont = "\n{error} ```{traceback}```"
 
+        # make sure there is something after the colon
+        if message is None and error is None:
+            message = "unspecified"
+
+        result = template.format(level=level.upper(), message=message)
+
+        # parse error
         if error is not None:
             tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             if len(tr) > 1000:
-                tr = tr[-1000:]
-            result += f"\n```{tr}```"
+                tr = tr[-999:] + "…"
+            result += template_cont.format(error=error, traceback=tr)
 
-        result += f" _{getTimestamp()}_"
-
-        await msgbl.send(result, delete_after=delete_after)
+        await source.send(result, delete_after=config.get("delay", "bot error"))
 
 
 class Console:
     def __init__(self, bot: discord.ext.commands.Bot = None):
         self.bot = bot
         self.level = getattr(logging, config.get("bot", "logging").upper())
+        self.log_channel = None
+
+    def getLogChannel(self):
+        if self.log_channel == 0:
+            return
+
+        if self.log_channel is None:
+            log_channel_id = config.get("channels", "stdout")
+            if log_channel_id == 0:
+                self.log_channel = 0
+                return
+            self.log_channel = self.bot.get_channel(log_channel_id)
+        return self.log_channel
 
     def bot(self, bot: discord.ext.commands.Bot):
         self.bot = bot
 
-    def debug(self, src, msg, error=None):
-        """Send output to console
-
-        src: commands.Command invoked from context or string
-        """
-        try:
-            src = src.command.qualified_name
-        except:
-            src = str(src)
+    async def debug(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.DEBUG:
-            print(f"{getTimestamp()} DEB [{src}]: {msg}")
-            self.printTraceback(error)
+            await self.send(source, "debug", message, error)
 
-    def info(self, src, msg, error=None):
-        """Send output to console
-
-        src: commands.Command invoked from context or string
-        """
-        try:
-            src = src.command.qualified_name
-        except:
-            src = str(src)
+    async def info(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.INFO:
-            print(f"{getTimestamp()} INF [{src}]: {msg}")
-            self.printTraceback(error)
+            await self.send(source, "info", message, error)
 
-    def warning(self, src, msg, error=None):
-        """Send output to console
-
-        src: commands.Command invoked from context or string
-        """
-        try:
-            src = src.command.qualified_name
-        except:
-            src = str(src)
+    async def warning(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.WARNING:
-            print(f"{getTimestamp()} WAR [{src}]: {msg}")
-            self.printTraceback(error)
+            await self.send(source, "warning", message, error)
 
-    def error(self, src, msg, error=None):
-        """Send output to console
-
-        src: commands.Command invoked from context or string
-        """
-        try:
-            src = src.command.qualified_name
-        except:
-            src = str(src)
+    async def error(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.ERROR:
-            print(f"{getTimestamp()} ERR [{src}]: {msg}")
-            self.printTraceback(error)
+            await self.send(source, "error", message, error)
 
-    def critical(self, src, msg, error=None):
-        """Send output to console
-
-        src: commands.Command invoked from context or string
-        """
-        try:
-            src = src.command.qualified_name
-        except:
-            src = str(src)
+    async def critical(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.CRITICAL:
-            print(f"{getTimestamp()} CRI [{src}]: {msg}")
-            self.printTraceback(error)
+            await self.send(source, "critical", message, error)
 
-    def printTraceback(self, error):
+    async def send(
+        # fmt: off
+        self,
+        source,
+        level: str,
+        message: str = None,
+        error: Exception = None,
+        # fmt: on
+    ):
+        if self.getLogChannel() is None:
+            return
+
+        template = (
+            "{timestamp} {level:>8} [{position}] {message}\n"
+            "{author} in {location}\n"
+            "{traceback}"
+        )
+        """
+        position ... command or message that have triggered the error
+        message  ... log event argument
+        author   ... author behind the log event
+        location ... physical location
+        """
+
+        location = str(source)
+        author = "unknown author"
+        position = "unknown position"
+        message = message or ""
+        error = error or ""
+
+        # parse source
+        if isinstance(source, commands.Context):
+            if isinstance(source.channel, discord.TextChannel):
+                location = f"{source.channel.guild}/{source.channel.name}"
+            else:
+                location = "DM"
+            author = str(source.author)
+            position = source.invoked_with
+
+        elif isinstance(source, discord.Message):
+            if isinstance(source.channel, discord.TextChannel):
+                location = f"{source.channel.guild}/{source.channel.name}"
+            else:
+                location = "DM"
+            author = str(source.author)
+            position = message.content[:50]
+
+        elif isinstance(source, commands.Cog):
+            position = source.name
+
+        elif isinstance(source, commands.Command):
+            position = source.qualified_name
+
+        # parse error
         if error is not None:
             tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))
-            print(tr)
+            if len(tr) > 1000:
+                tr = tr[-999:] + "…"
+        else:
+            tr = ""
+
+        result = template.format(
+            timestamp=getTimestamp(),
+            level=level,
+            position=position,
+            message=message,
+            author=author,
+            location=location,
+            traceback=tr,
+        )
+
+        await self.getLogChannel().send(f"```{result}```")
+        print(result)

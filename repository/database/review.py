@@ -19,9 +19,9 @@ class Review(database.base):
     id          = Column(Integer, primary_key=True)
     discord_id  = Column(BigInteger)
     anonym      = Column(Boolean, default=True)
-    subject     = Column(String, ForeignKey("subjects.shortcut", ondelete="CASCADE"))
+    subject     = Column(String,  ForeignKey("subjects.shortcut", ondelete="CASCADE"))
     tier        = Column(Integer, default=0)
-    text_review = Column(String, default=None)
+    text_review = Column(String,  default=None)
     date        = Column(Date)
     relevance   = relationship('ReviewRelevance')
     # fmt: on
@@ -43,5 +43,7 @@ class Subject(database.base):
 
     # fmt: off
     shortcut = Column(String, primary_key=True)
-    reviews = relationship('Review')
+    category = Column(String)
+    name     = Column(String)
+    reviews  = relationship('Review')
     # fmt: on

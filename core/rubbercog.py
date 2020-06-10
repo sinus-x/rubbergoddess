@@ -21,6 +21,7 @@ class Rubbercog(commands.Cog):
         self.role_mod = None
         self.role_verify = None
         self.roles_elevated = None
+        self.roles_native = None
 
         self.output = output.Output(self.bot)
         self.console = output.Console(self.bot)
@@ -142,18 +143,17 @@ class Rubbercog(commands.Cog):
                 text.fill("server", "botroom redirect", user=ctx.author, channel=botspam)
             )
 
-    async def deleteCommand(self, message, now: bool = True):
+    # TODO Rename to deleteMessage()
+    async def deleteCommand(self, message, delay: int = 0):
         """Try to delete the context message.
 
         now: Do not wait for message delay
         """
-        delay = 0.0 if now else config.delay_embed
         try:
             if not isinstance(message, discord.Message):
                 message = message.message
             await message.delete(delay=delay)
         except discord.HTTPException as err:
-            self.logException(message, err)
             pass
 
     def parseArg(self, arg: str = None):
@@ -165,6 +165,10 @@ class Rubbercog(commands.Cog):
     def getTimestamp(self):
         """Get yyyy-mm-dd HH:MM:SS string"""
         return datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
+    def sanitise(self, string: str, *, limit: int = 500):
+        """Return cleaned-up string ready for output"""
+        return discord.utils.escape_markdown(string).replace("@", "")[:limit]
 
     ##
     ## Embeds
@@ -203,7 +207,7 @@ class Rubbercog(commands.Cog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         else:
             await ctx.send(embed=embed)
-        await self.deleteCommand(ctx, now=True)
+        await self.deleteCommand(ctx, delay=0)
         await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=err_type)
 
     # TODO This code is deprecated. Use self.output.info() instead
@@ -232,7 +236,7 @@ class Rubbercog(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx, now=True)
+        await self.deleteCommand(ctx, delay=0)
 
     # TODO This code is deprecated. Use ctx.send_help() instead
     async def throwDescription(self, ctx: commands.Context, pin: bool = False):
@@ -243,7 +247,7 @@ class Rubbercog(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx, now=True)
+        await self.deleteCommand(ctx, delay=0)
 
     # TODO This code is deprecated. Use ctx.send_help() instead
     async def throwHelp(self, ctx: commands.Context, pin: bool = False):
@@ -256,7 +260,7 @@ class Rubbercog(commands.Cog):
             for opt in ctx.command.commands:
                 embed.add_field(name=opt.name, value=opt.short_doc, inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx, now=True)
+        await self.deleteCommand(ctx, delay=0)
 
     # TODO Move helper functions here
     ##

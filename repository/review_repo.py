@@ -82,9 +82,11 @@ class ReviewRepository(BaseRepository):
         ).delete()
 
     def get_subject(self, shortcut):
+        # FIXME Outdated, moved to subject_repo.py
         return session.query(Subject).filter(Subject.shortcut == shortcut)
 
     def add_subject(self, shortcut):
+        # FIXME Outdated, moved to subject_repo.py
         subject = Subject(shortcut=shortcut)
         session.merge(subject)
         session.commit()
