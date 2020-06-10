@@ -153,6 +153,9 @@
 		"nameday cz": "Dnes má svátek {name} {emote.happy}",
 		"nameday sk": "Dnes má meniny {name} {emote.happy}"
 	},
+	"meme": {
+		"???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
+	},
 	"voice": {
 		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
 

@@ -18,18 +18,21 @@ class Text:
             self.custom = None
 
     def get(self, group: str, key: str):
-        # load string
         if self.custom is not None and group in self.custom and key in self.custom.get(group):
-            string = self.custom.get(group).get(key)
+            result = self.custom.get(group).get(key)
         elif group in self.default and key in self.default.get(group):
-            string = self.default.get(group).get(key)
+            result = self.default.get(group).get(key)
         else:
             return None
 
-        return self._replace(string)
+        if isinstance(result, list):
+            return [self._replace(x) for x in result]
+        if isinstance(result, str):
+            return self._replace(result)
+        return result
 
     def fill(self, group: str, key: str, **kwargs):
-        string = self.get(group, key)
+        result = self.get(group, key)
 
         if "nickname" in kwargs:
             kwargs["nickname"] = self._escape_user(kwargs["nickname"])
@@ -43,9 +46,9 @@ class Text:
             kwargs["channel"] = self._mention_channel(kwargs["channel"])
 
         for key in kwargs:
-            if "{" + key + "}" in string:
-                string = string.replace("{" + key + "}", str(kwargs[key]))
-        return string
+            if "{" + key + "}" in result:
+                result = result.replace("{" + key + "}", str(kwargs[key]))
+        return result
 
     def _replace(self, string: str):
         # substitute emotes
