@@ -1,163 +1,237 @@
 {
-	"__comment": "You should only copy those values that are empty or those",
-	"__comment": "that you explicitly want to modify.",
+	/*
+	 * You should only copy those values that are empty or those that you
+	 * explicitly want to modify.
+	*/
 
-	"database": {
-		"__comment": "States user can have in database. No need to change this.",
-		"states": ["unknown", "unverified", "pending", "verified", "kicked", "banned"],
+	database: {
+		# "States user can have in database. No need to change this."
+		states: ["unknown", "unverified", "pending", "verified", "kicked", "banned"]
 
-		"__comment": "Docker:     postgres://postgres:postgres@db:5432/postgres",
-		"__comment": "Standalone: postgres://rubbergoddess:rubbergoddess@localhost/rubbergoddess",
-		"string": "postgres://postgres:postgres@db:5432/postgres"
+		# Docker:      postgres://postgres:postgres@db:5432/postgres"
+		# Standalone:  postgres://rubbergoddess:rubbergoddess@localhost/rubbergoddess"
+		# No database: sqlite3:///rubbergoddess.db
+		string: postgres://postgres:postgres@db:5432/postgres
 	},
-	"bot": {
-		"__comment": "0 for production, 1 to print debugging information,",
-		"__comment": "2 to disable error catching and safety mechanisms",
-		"debug": 0,
 
-		"__comment": "DEBUG | INFO | WARNING | ERROR | CRITICAL",
-		"logging": "INFO",
+	bot: {
+		# This value is outdated and will be removed. You do not need to change this.
+		# 0 ... production, 1 ... print debugging information, 2 ... disable error catching
+		debug: 0
 
-		"__comment": "Bot key from https://discordapp.com/developers",
-		"key": "",
+		# Accepted values: DEBUG | INFO | WARNING | ERROR | CRITICAL
+		logging: "INFO"
 
-		"__comment": "IDs for bot admin and main guild",
-		"admin id": 0,
-		"guild id": 0,
+		# Bot key from https://discord.com/developers
+		key: ""
 
-		"__comment": "If you have too much subjects, that they exceed the 500 channel limit,",
-		"__comment": "you can set up second server. The bot will deal with role sync.",
-		"slave guild id": 0,
+		# In some cases, we need to tag the admin.
+		"admin id": 0
 
-		"__comment": "machine name for development purposes",
-		"host": "",
+		# Your guild's ID
+		"guild id": 0
 
-		"__comment": "How is the bot hosted? This is needed in some Admin cog commands.",
-		"__comment": "Supported options: standalone, docker, systemd, systemd+docker",
-		"loader": "systemd+docker",
+		# If you have too much channels (subjects, for example), that you'd exceed the 500 channel
+		# limit, you can set up second guild. The bot will deal with the role synchronisation.
+		"slave guild id": 0
 
-		"prefixes": ["?", "!"],
+		# Machine name for development purposes
+		host: "",
 
-		"__comment": "cogs to load by default",
-		"extensions": ["base", "meme", "karma", "librarian", "random",
-					   "review", "stalker", "verify", "voice"]
+		# How is the bot hosted? This is needed in some Admin cog commands.
+		# Accepted values: standalone | docker | systemd | systemd+docker
+		loader: "systemd+docker",
+
+		# To which prefixes the bot will respond
+		prefixes: ["?", "!"],
+
+		# Cogs to load by default
+		extensions: [
+			# replying to programmed triggers, sending posts as a bot, change avatar or name
+			actor
+			# send messages that the bot will be offline, display bot and host machine info
+			admin
+			# uptime, ping
+			base
+			# managed role and channel assignment, react-to-role functionality
+			faceshifter
+			# purge messages, duplicate subject channel for teacher
+			janitor
+			# see and manage karma
+			karma
+			# nameday, weather
+			librarian
+			# hug
+			meme
+			# pick, flip, roll
+			random
+			# allow students to review their subjects
+			review
+			# allow users to buy stuff for their karma
+			shop
+			# manage users and make database lookups
+			stalker
+			# add role to new users based on their e-mail
+			verify
+			# automatic voice channel creation
+			voice
+			# check against image reposts
+			warden
+		]
 	},
-	"__comment": "Special channels",
-	"channels": {
-		"jail": 0,
-		"jail-info": 0,
-		"mods": 0,
-		"botdev": 0,
-		"botlog": 0,
-		"__comment": "Where the bot output is sent",
-		"stdout": 0,
-		"guildlog": 0,
-		"__comment": "Where to log deleted messages",
-		"messages": 0,
-		"vote": 0,
-		"botspam": 0,
-		"__comment": "Where NOT to print '👉 #bot-room' message",
-		"bot allowed": [0, 0, 0],
 
-		"__comment": "ID for voice channels group",
-		"voice group": 0,
-		"__comment": "Channel for voice commands & chat with people without mic",
-		"voice no mic": 0,
+	channels: {
+		# the only writable channel when user joins the guild
+		jail: 0
+		# information for new users
+		jail-info: 0
 
-		"teacher suffix": "-teacher"
+		# mod channel
+		mods: 0
+
+		# bot is throwing unhandled errors here
+		botdev: 0
+		# logs for unprivileged actions
+		botlog: 0
+		# logs for privileged actions
+		guildlog: 0
+		# duplicate of your stdout output
+		stdout: 0
+
+		# where not to print the '👉 #bot-room' message
+		"bot allowed": [0, 0]
+		# where to point users on bot spamming
+		botspam: 0
+
+		# channel for voting over emoji value
+		vote: 0
+
+		# voice channels group
+		"voice group": 0
+		# channel for voice commands & chat with people without mic
+		"voice no mic": 0
+
+
+		# channel name suffix, looked for on teacher channel creation & role assignment
+		"teacher suffix": -teacher
 	},
-	"__comment": "Colors for embeds. They are standard hex RGB values in base 10",
+
+	# Colors for embeds. They are standard hex RGB values in base 10
 	"color": {
-		"main":     5518687,
-		"success":  2015049,
-		"notify":  15042615,
-		"error":   14166812
-	},
-	"__comment": "Timers for automatic deletion of bot's messages",
-	"delay": {
-		"success": 3,
-
-		"user error": 10,
-		"bot error": 60,
-
-		"embed": 120,
-		"verify": 900
-	},
-	"email": {
-		"address": "",
-		"server": "",
-		"port": 587,
-		"password": ""
-	},
-	"roles": {
-		"verify_id": 0,
-		"mod_id": 0,
-		"elevated_ids": [0, 0, 0],
-		"sudo_id": 0,
-
-		"__comment": "Which roles are considered fully local",
-		"native": ["FEKT"],
-
-		"__comment": "Which roles are considered as visiting",
-		"guests": ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
+		main:     5518687
+		success:  2015049
+		notify:  15042615
+		error:   14166812
 	},
 
-	"faceshifter": {
+	# Timers for automatic deletion of bot's messages
+	delay: {
+		success:      3
+		"user error": 10
+		"bot error":  60
+		verify:       900
+
+		# outdated, still in use
+		"embed": 120
+	},
+
+	# SMTP credentials for verification
+	email: {
+		# e-mail address
+		address:  ""
+		# your smtp server
+		server:   ""
+		# STARTTLS 587, SSL/TLS 465
+		port:     587
+		# password. yes, in cleartext.
+		password: ""
+	},
+
+	roles: {
+		# role assigned after successful verification
+		verify_id: 0
+		# mod
+		mod_id: 0
+		# mods, submods, helpers, ...
+		# include the mod ID even if you do not have any other
+		elevated_ids: [0, 0, 0],
+
+		# Which roles are considered fully local
+		native: ["FEKT"],
+
+		# Which roles are considered as visiting
+		guests: ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
+	},
+
+	faceshifter: {
+		# where to look for "<emote> <channel>/<role>" pattern
 		"react-to-role channels": [],
+		# how to start the react-to-role ouside of specified channels
 		"react-to-role prefix": "Role\n",
 
-		"programme roles": [0],
+		# which role IDs are allowed to assign programmes
+		"programme roles": [0]
+		# which role IDs are allowed to assign subjects
 		"subject roles": [0]
 	},
+
 	"reaction cog": {
+		# how many users have to react with 📌 to have their post pinned by the bot
 		"pin limit": 5
 	},
+
 	"karma cog": {
-		"__comment": "IDs for roles that shouldn't have karma",
-		"banned roles": [],
-		"__comment": "IDs for channels that shouldn't have karma",
-		"banned channels": [],
-		"__comment": "Messages with these strings shouldn't have karma",
-		"banned words": [],
+		# IDs for roles that shouldn't have karma
+		"banned roles": []
+		# IDs for channels that shouldn't have karma
+		"banned channels": []
+		# messages with these strings shouldn't have karma
+		"banned words": []
 
-		"count subjects": true,
+		# you can disable karma for subjects
+		"count subjects": true
 
-		"vote limit": 5,
-		"vote time": 120
+		# emote value vote
+		"vote limit": 5
+		"vote time":  120
 	},
-	"librarian cog": {
-		"__comment": "Week the current semester started",
-		"starting week": 0,
 
+	"librarian cog": {
+		# Week the current semester started
+		"starting week": 0
+
+		# token for openweathermap.com
 		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
 	},
+
 	"voice cog": {
-		"__comment": "Wordlist for automatic voice channel name generation",
-		"adjectives": ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"],
-		"nouns": ["cat", "dog", "elephant", "horse", "mouse", "fish",
+		# Wordlist for automatic voice channel name generation
+		adjectives: ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]
+		nouns: ["cat", "dog", "elephant", "horse", "mouse", "fish",
                 "octopus", "cockroach", "butterfly", "owl", "fox", "tiger",
                 "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
 	},
-	"warden": {
-		"rolehoarders": 10,
 
-		"__comment": "Where the images should be checked for duplicities. (memes etc)",
-		"deduplication channels": [],
+	warden: {
+		# Where the images should be checked for duplicities. (memes etc)
+		"deduplication channels": []
 
-		"__comment": "How many people have to react to embed for it to dissapear",
-		"not duplicate limit": 5,
+		# How many people have to react to embed for it to dissapear
+		"not duplicate limit": 5
 
-		"__comment": "Look for these strings in messages. ",
-		"penalty strings": ["giphy.com", "tenor.com", "imgur.com", "gfycat.com"],
-		"__comment": "Remove karma is strings above are found",
+		# Look for these strings in messages
+		"penalty strings": ["giphy.com", "tenor.com", "imgur.com", "gfycat.com"]
+		# Remove karma is strings above are found
 		"penalty value": 2
 	},
-	"shop": {
-		"__comment": "Karma points needed to change the nickname",
-		"nickname": 500
+
+	shop: {
+		# Karma points needed to change the nickname
+		nickname: 500
 	},
-	"compatibility": {
-		"__comment": "Do not send the same emote as other bot here",
+
+	compatibility: {
+		# Do not send the same emote as other bot here
 		"ignored imitation channels": []
 	}
 }
