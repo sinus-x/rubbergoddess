@@ -147,6 +147,19 @@
 		password: ""
 	},
 
+	# email domain to role ID mapping
+	verification: {
+		stud.feec.vutbr.cz: 0
+		vutbr.cz:           0
+		muni.cz:            0
+		cuni.cz:            0
+		cvut.cz:            0
+		vsb.cz:             0
+		zcu.cz:             0
+		# guest role
+		.:                  0
+	},
+
 	roles: {
 		# role assigned after successful verification
 		verify_id: 0
