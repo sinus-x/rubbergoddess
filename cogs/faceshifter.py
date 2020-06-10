@@ -21,14 +21,14 @@ class Faceshifter(rubbercog.Rubbercog):
     ## Getters
     ##
 
-    def getLimitProgrammes(self, ctx: commands.Context) -> discord.Role:
+    def getLimitProgrammes(self, location: discord.abc.Messageable) -> discord.Role:
         if self.limit_programmes is None:
-            self.limit_programmes = discord.utils.get(ctx.guild.roles, name="---PROGRAMMES")
+            self.limit_programmes = discord.utils.get(location.guild.roles, name="---PROGRAMMES")
         return self.limit_programmes
 
-    def getLimitInterests(self, ctx: commands.Context) -> discord.Role:
+    def getLimitInterests(self, location: discord.abc.Messageable) -> discord.Role:
         if self.limit_interests is None:
-            self.limit_interests = discord.utils.get(ctx.guild.roles, name="---INTERESTS")
+            self.limit_interests = discord.utils.get(location.guild.roles, name="---INTERESTS")
         return self.limit_interests
 
     ##
@@ -124,8 +124,8 @@ class Faceshifter(rubbercog.Rubbercog):
         # fmt: off
         if message.channel.id in config.get("faceshifter", "react-to-role channels") \
         or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
-            message_data = await self._message_to_tuple_list(message)
-            for emote_channel in message_data:
+            emote_channel_list = await self._message_to_tuple_list(message)
+            for emote_channel in emote_channel_list:
                 try:
                     await message.add_reaction(emote_channel[0])
                 except (discord.errors.Forbidden, discord.errors.HTTPException):
@@ -142,8 +142,8 @@ class Faceshifter(rubbercog.Rubbercog):
         or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
             # make a list of current emotes
             emotes = []
-            message_data = await self._message_to_tuple_list(message)
-            for emote_channel in message_data:
+            emote_channel_list = await self._message_to_tuple_list(message)
+            for emote_channel in emote_channel_list:
                 try:
                     await message.add_reaction(emote_channel[0])
                 except (discord.errors.Forbidden, discord.errors.HTTPException):
@@ -153,20 +153,58 @@ class Faceshifter(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        pass
+        # extract data from payload
+        payload = await self._reaction_payload_to_tuple(payload)
+        if payload is None:
+            return
+        channel, message, member, emoji = payload
+        emote_channel_list = await self._message_to_tuple_list(message)
+        for emote_channel in emote_channel_list:
+            if str(emoji) == emote_channel[0]:
+                # try both subject and role
+                subject = await self._get_subject(channel, emote_channel[1])
+                if subject is not None:
+                    await self._subject_add(message.channel, member, subject)
+                    break
+                role = await self._get_role(channel, emote_channel[1])
+                if role is not None:
+                    await self._role_add(message.channel, member, role)
+                    break
+        else:
+            # another emote was added
+            try:
+                await message.remove_reaction(emoji, member)
+            except:
+                pass
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        pass
+        # extract data from payload
+        payload = await self._reaction_payload_to_tuple(payload)
+        if payload is None:
+            return
+        channel, message, member, emoji = payload
+        emote_channel_list = await self._message_to_tuple_list(message)
+        for emote_channel in emote_channel_list:
+            if str(emoji) == emote_channel[0]:
+                # try both subject and role
+                subject = await self._get_subject(channel, emote_channel[1])
+                if subject is not None:
+                    await self._subject_remove(message.channel, member, subject)
+                    break
+                role = await self._get_role(channel, emote_channel[1])
+                if role is not None:
+                    await self._role_remove(message.channel, member, role)
+                    break
 
     ##
     ## Helper functions
     ##
-    async def _get_role(self, ctx, role: str) -> discord.Role:
-        return discord.utils.get(ctx.guild.roles, name=role)
+    async def _get_subject(self, location, shortcut: str) -> discord.TextChannel:
+        return discord.utils.get(location.guild.text_channels, name=shortcut)
 
-    async def _get_subject(self, ctx, shortcut: str) -> discord.TextChannel:
-        return discord.utils.get(ctx.guild.text_channels, name=shortcut)
+    async def _get_role(self, location, role: str) -> discord.Role:
+        return discord.utils.get(location.guild.roles, name=role)
 
     async def _message_to_tuple_list(self, message: discord.Message) -> list:
         """Return (emote, channel/role) list"""
@@ -208,62 +246,117 @@ class Faceshifter(rubbercog.Rubbercog):
         return result
 
     async def _reaction_payload_to_tuple(self, payload: discord.RawMessageUpdateEvent) -> tuple:
-        # _parsePayload()
-        pass
+        """Return (channel, message, member, emoji) or None"""
+        # channel
+        channel = self.bot.get_channel(payload.channel_id)
+        if not isinstance(channel, discord.TextChannel):
+            return
+        # message
+        try:
+            message = await channel.fetch_message(payload.message_id)
+        except discord.NotFound:
+            return
+
+        # halt if not react-to-role message
+        # fmt: off
+        if (
+            channel.id not in config.get("faceshifter", "react-to-role channels")
+            and not message.content.startswith(config.get("faceshifter", "react-to-role prefix"))
+        ):
+            return
+        # fmt: on
+
+        # member
+        member = message.guild.get_member(payload.user_id)
+        if member.bot:
+            return
+        # emoji
+        if payload.emoji.is_custom_emoji():
+            emoji = self.bot.get_emoji(payload.emoji.id) or payload.emoji
+        else:
+            emoji = payload.emoji.name
+
+        return channel, message, member, emoji
+
+    def _get_teacher_channel(self, subject: discord.TextChannel) -> discord.TextChannel:
+        return discord.utils.get(
+            subject.guild.text_channels,
+            name=subject.name + config.get("channels", "teacher suffix"),
+        )
 
     ##
     ## Logic
     ##
-    async def _subject_add(self, ctx, member: discord.Member, channel: discord.TextChannel):
+    async def _subject_add(
+        self,
+        location: discord.abc.Messageable,
+        member: discord.Member,
+        channel: discord.TextChannel,
+    ):
         # check permission
         for subject_role in config.get("faceshifter", "subject roles"):
             if subject_role in [r.id for r in member.roles]:
                 break
         else:
             # they do not have neccesary role
-            await ctx.send("na to nemáš právo, nejsi z VUT ^.^")
+            await location.send("na to nemáš právo, nejsi z VUT ^.^")
             return
 
         await channel.set_permissions(member, view_channel=True)
+        teacher_channel = self._get_teacher_channel(channel)
+        if teacher_channel is not None:
+            await teacher_channel.set_permissions(member, view_channel=True)
 
-    async def _subject_remove(self, ctx, member: discord.Member, channel: discord.TextChannel):
+    async def _subject_remove(
+        self,
+        location: discord.abc.Messageable,
+        member: discord.Member,
+        channel: discord.TextChannel,
+    ):
         # we do not need to check for permissions
         await channel.set_permissions(member, overwrite=None)
+        teacher_channel = self._get_teacher_channel(channel)
+        if teacher_channel is not None:
+            await teacher_channel.set_permissions(member, overwrite=None)
 
-    async def _role_add(self, ctx, member: discord.Member, role: discord.Role):
-        if role < self.getLimitProgrammes(ctx) and role > self.getLimitInterests(ctx):
+    async def _role_add(
+        self, location: discord.abc.Messageable, member: discord.Member, role: discord.Role
+    ):
+        if role < self.getLimitProgrammes(location) and role > self.getLimitInterests(location):
             # role is programme, check if user has permission
             for programme_role in config.get("faceshifter", "programme roles"):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await ctx.send("na to nemáš právo, nejsi z FEKTu ^.^")
+                await location.send("na to nemáš právo, nejsi z FEKTu ^.^")
                 return
-        elif role < self.getLimitInterests(ctx):
+        elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await ctx.send("do takových rolí nesmíš sahat!")
+            await location.send("do takových rolí nesmíš sahat!")
             return
 
         await member.add_roles(role)
 
-    async def _role_remove(self, ctx, member: discord.Member, role: discord.Role):
-        if role < self.getLimitProgrammes(ctx) and role > self.getLimitInterests(ctx):
+    async def _role_remove(
+        self, location: discord.abc.Messageable, member: discord.Member, role: discord.Role
+    ):
+        if role < self.getLimitProgrammes(location) and role > self.getLimitInterests(location):
             # role is programme, check if user has permission
             for programme_role in config.get("faceshifter", "programme roles"):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await ctx.send("na to nemáš právo, nejsi z FEKTu ^.^")
+                await location.send("na to nemáš právo, nejsi z FEKTu ^.^")
                 return
-        elif role < self.getLimitInterests(ctx):
+        elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await ctx.send("do takových rolí nesmíš sahat!")
+            await location.send("do takových rolí nesmíš sahat!")
             return
 
         await member.remove_roles(role)
