@@ -167,13 +167,13 @@
 		mod_id: 0
 		# mods, submods, helpers, ...
 		# include the mod ID even if you do not have any other
-		elevated_ids: [0, 0, 0],
+		elevated_ids: [0, 0, 0]
 
 		# Which roles are considered fully local
-		native: ["FEKT"],
+		native: [0]
 
 		# Which roles are considered as visiting
-		guests: ["VUT", "MUNI", "ČVUT", "CUNI", "VŠB", "GUEST"]
+		guests: [0, 0, 0]
 	},
 
 	faceshifter: {

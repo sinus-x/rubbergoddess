@@ -447,22 +447,32 @@ class Stalker(rubbercog.Rubbercog):
             inline=False,
             value=f"Created {g.created_at.strftime('%Y-%m-%d')}," f" owned by **{g.owner.name}**",
         )
+
         # verification
         states = ", ".join(
             "**{}** {}".format(repository.countStatus(state), state) for state in config.db_states
         )
         embed.add_field(name="Verification states", value=states, inline=False)
+
         # roles
-        groups = ", ".join(
-            "**{}** {}".format(group, repository.countGroup(group))
-            for group in (config.roles_native + config.roles_guest)
-        )
-        embed.add_field(name="Roles", value=f"Total count {len(g.roles)}\n{groups}", inline=False)
+        role_ids = config.get("roles", "native") + config.get("roles", "guests")
+        roles = []
+        for role_id in role_ids:
+            role = self.getGuild().get_role(role_id)
+            if role is not None:
+                roles.append(f"**{role}** {repository.countGroup(role.name)}")
+                print(role.name)
+            else:
+                roles.append(f"**{role_id}** {repository.countGroup(role_id)}")
+        roles = ", ".join(roles)
+        embed.add_field(name="Roles", value=f"Total count {len(g.roles)}\n{roles}", inline=False)
+
         # channels
         embed.add_field(
             name=f"{len(g.categories)} categories",
             value=f"{len(g.text_channels)} text channels, {len(g.voice_channels)} voice channels",
         )
+
         # users
         embed.add_field(
             name="Users",
