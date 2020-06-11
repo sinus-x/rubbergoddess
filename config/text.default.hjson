@@ -150,9 +150,8 @@
 		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
 		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
 		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `{constraint}`.
-
 		# Exceptions: ?submit
-		NotInDatabase:           Nejsi v databázi, musíš zažádat o kód.
+		SubmitWithoutCode:       Nejdřív musíš zažádat o kód.
 		ProblematicVerification: Hmm, {admin}, je tu pokus o verifikaci se záznamem {status}...
 		WrongVerificationCode:   Špatný kód, {mention}.
 	}

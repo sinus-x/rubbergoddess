@@ -83,8 +83,9 @@ class Gatekeeper(rubbercog.Rubbercog):
         await self.deleteCommand(ctx)
 
         db_user = repo_u.get(ctx.author.id)
-        if db_user is None:
-            raise exceptions.NotInDatabase()
+
+        if db_user is None or db_user.status in ("unknown", "unverified") or db_user.code is None:
+            raise exceptions.SubmitWithoutCode()
 
         if db_user.status != "pending":
             raise exceptions.ProblematicVerification(status=db_user.status)
@@ -236,26 +237,24 @@ class Gatekeeper(rubbercog.Rubbercog):
         if not isinstance(error, exceptions.RubbergoddessException):
             return
 
+        # fmt: off
+        # exceptions with parameters
         if isinstance(error, exceptions.ProblematicVerification):
-            await self.output.error(
-                ctx, text.fill("gatekeeper", "ProblematicVerification", status=error.status)
-            )
-
+            await self.output.error(ctx, text.fill(
+                "gatekeeper", "ProblematicVerification", status=error.status))
         elif isinstance(error, exceptions.BadEmail):
-            await self.output.error(
-                ctx, text.fill("gatekeeper", "BadEmail", constraint=error.constraint)
-            )
-
+            await self.output.error(ctx, text.fill(
+                "gatekeeper", "BadEmail", constraint=error.constraint))
         elif isinstance(error, exceptions.WrongVerificationCode):
-            await self.output.error(
-                ctx, text.fill("gatekeeper", "WrongVerificationCode", mention=ctx.author.mention)
-            )
+            await self.output.error(ctx, text.fill(
+                "gatekeeper", "WrongVerificationCode", mention=ctx.author.mention))
             # log event
             message = f"Verification code mismatch: `{error.their}` != `{error.database}`"
             await self.event.user(ctx.author, ctx.channel, message)
-
+        # exceptions without parameters
         elif isinstance(error, exceptions.VerificationException):
             await self.output.error(ctx, text.get("gatekeeper", type(error).__name__))
+        # fmt: on
 
 
 def setup(bot):
