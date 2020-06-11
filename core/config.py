@@ -104,17 +104,6 @@ class Config:
         self.karma_vote_time    = self.get('karma cog', 'vote time')
 
         ##
-        ## LIBRARIAN COG
-        self.starting_week = self.get('librarian cog', 'starting week')
-        self.nameday_cz    = self.get('librarian cog', 'nameday cz')
-        self.nameday_sk    = self.get('librarian cog', 'nameday sk')
-        self.weather_token = self.get('librarian cog', 'weather token')
-
-        ##
-        ## WARDEN COG
-        self.rolehoarders = self.get('warden', 'rolehoarders')
-
-        ##
         ## COMPATIBILITY
         self.noimitation = self.get('compatibility', 'ignored imitation channels')
 
