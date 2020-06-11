@@ -80,3 +80,27 @@ async def notify(ctx: commands.Context, msg: str):
     embed.add_field(name="Výsledek", value=msg, inline=False)
     embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+
+def seconds2str(time):
+    time = int(time)
+    D = 3600 * 24
+    H = 3600
+    M = 60
+
+    d = (time - (time % D)) / D
+    h = (time - (time % H)) / H
+    m = (time - (time % M)) / M
+    s = time % 60
+
+    if d > 0:
+        return f"{d} d, {h:02}:{m:02}:{s:02}"
+    if h > 0:
+        return f"{h}:{m:02}:{s:02}"
+    if m > 0:
+        return f"{m}:{s:02}"
+    if s > 4:
+        return f"{s} vteřin"
+    if s > 1:
+        return f"{s} vteřiny"
+    return "vteřinu"

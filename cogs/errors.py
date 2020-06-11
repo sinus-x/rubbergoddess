@@ -3,33 +3,9 @@ import traceback
 
 from discord.ext import commands
 
-from core import rubbercog
+from core import exceptions, rubbercog, utils
 from core.text import text
 from core.config import config
-
-
-def seconds2str(time):
-    time = int(time)
-    D = 3600 * 24
-    H = 3600
-    M = 60
-
-    d = (time - (time % D)) / D
-    h = (time - (time % H)) / H
-    m = (time - (time % M)) / M
-    s = time % 60
-
-    if d > 0:
-        return f"{d} d, {h:02}:{m:02}:{s:02}"
-    if h > 0:
-        return f"{h}:{m:02}:{s:02}"
-    if m > 0:
-        return f"{m}:{s:02}"
-    if s > 4:
-        return f"{s} vteřin"
-    if s > 1:
-        return f"{s} vteřiny"
-    return "vteřinu"
 
 
 class Errors(rubbercog.Rubbercog):
@@ -61,7 +37,7 @@ class Errors(rubbercog.Rubbercog):
             return
 
         if isinstance(error, commands.CommandOnCooldown):
-            time = seconds2str(error.retry_after)
+            time = utils.seconds2str(error.retry_after)
             await self.output.warning(ctx, text.fill("error", "cooldown", time=time))
             return
 
