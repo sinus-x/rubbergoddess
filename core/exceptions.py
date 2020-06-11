@@ -1,6 +1,10 @@
-class VerificationException(Exception):
+class RubbergoddessException(Exception):
     def __init__(self, message: str = None):
         self.message = message
+
+
+class VerificationException(RubbergoddessException):
+    pass
 
 
 class NotAnEmail(VerificationException):
