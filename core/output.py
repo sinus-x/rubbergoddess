@@ -193,8 +193,8 @@ class Event:
         self.bot = bot
         self.channel = None
 
-        self.user = "{user} in {channel}: {message}"
-        self.sudo = "{user} in {channel}: {message}"
+        self.user_template = "{user} in {location}: {message}"
+        self.sudo_template = "{user} in {location}: {message}"
 
     def getChannel(self):
         if self.channel is None:
@@ -204,19 +204,19 @@ class Event:
     async def user(self, member: discord.Member, location: discord.abc.Messageable, message: str):
         """Unprivileged events"""
         # fmt: off
-        await self.getChannel().send(self.user.format(
+        await self.getChannel().send(self.user_template.format(
             user=str(member),
             location=location.mention,
-            message=discord.utils.escape_mentions(message)
+            message=message.replace("@", "@\u200b"),
         ))
         # fmt: on
 
     async def sudo(self, member: discord.Member, location: discord.abc.Messageable, message: str):
         """Privileged events"""
         # fmt: off
-        await self.getChannel().send(self.sudo.format(
+        await self.getChannel().send(self.sudo_template.format(
             user=str(member),
             location=location.mention,
-            message=discord.utils.escape_mentions(message)
+            message=message.replace("@", "@\u200b"),
         ))
         # fmt: on
