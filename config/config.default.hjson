@@ -20,7 +20,7 @@
 		debug: 0
 
 		# Accepted values: DEBUG | INFO | WARNING | ERROR | CRITICAL
-		logging: "INFO"
+		logging: INFO
 
 		# Bot key from https://discord.com/developers
 		key: ""
@@ -36,14 +36,14 @@
 		"slave guild id": 0
 
 		# Machine name for development purposes
-		host: "",
+		host: ""
 
 		# How is the bot hosted? This is needed in some Admin cog commands.
 		# Accepted values: standalone | docker | systemd | systemd+docker
-		loader: "systemd+docker",
+		loader: systemd+docker
 
 		# To which prefixes the bot will respond
-		prefixes: ["?", "!"],
+		prefixes: ["?", "!"]
 
 		# Cogs to load by default
 		extensions: [
@@ -84,19 +84,24 @@
 		# the only writable channel when user joins the guild
 		jail: 0
 		# information for new users
-		jail-info: 0
+		jail_info: 0
+
+		# info channel
+		info: 0
+		# channel dedicated to adding programmes/subjects/roles via commands
+		bot_roles: 0
+		# channel dedicated to adding programmes/subjects/roles via react-to-role
+		bot_react: 0
 
 		# mod channel
 		mods: 0
 
 		# bot is throwing unhandled errors here
 		botdev: 0
-		# logs for unprivileged actions
-		botlog: 0
-		# logs for privileged actions
-		guildlog: 0
 		# duplicate of your stdout output
 		stdout: 0
+		# event logging
+		events: 0
 
 		# where not to print the '👉 #bot-room' message
 		"bot allowed": [0, 0]
@@ -111,13 +116,19 @@
 		# channel for voice commands & chat with people without mic
 		"voice no mic": 0
 
-
 		# channel name suffix, looked for on teacher channel creation & role assignment
 		"teacher suffix": -teacher
+
+
+		# DEPRECATED
+		# logs for unprivileged actions
+		botlog: 0
+		# logs for privileged actions
+		guildlog: 0
 	},
 
 	# Colors for embeds. They are standard hex RGB values in base 10
-	"color": {
+	color: {
 		main:     5518687
 		success:  2015049
 		notify:  15042615
@@ -147,26 +158,6 @@
 		password: ""
 	},
 
-	# email domain to role ID mapping
-	"verification suffixes": {
-		stud.feec.vutbr.cz: 0
-		vutbr.cz:           0
-		muni.cz:            0
-		cuni.cz:            0
-		cvut.cz:            0
-		vsb.cz:             0
-		zcu.cz:             0
-		# guest role
-		.:                  0
-	},
-	# if the e-mail can have more formats, you can enforce one of them
-	"verification constraints": {
-		stud.feec.vutbr.cz: "x[a-z]{5}[0-9]{2}"
-		vutbr.cz:           "x[a-z]{5}[0-9]{2}"
-		# the rest
-		.:                  "[a-zA-Z0-9]+"
-	},
-
 	roles: {
 		# role assigned after successful verification
 		verify_id: 0
@@ -182,6 +173,28 @@
 		# Which roles are considered as visiting
 		guests: [0, 0, 0]
 	},
+
+	gatekeeper: {
+		# email domain to role ID mapping
+		suffixes: {
+			stud.feec.vutbr.cz: 0
+			vutbr.cz:           0
+			muni.cz:            0
+			cuni.cz:            0
+			cvut.cz:            0
+			vsb.cz:             0
+			zcu.cz:             0
+			# guest role
+			.:                  0
+		},
+		# if the e-mail can have more formats, you can enforce one of them
+		constraints: {
+			stud.feec.vutbr.cz: "x[a-z]{5}[0-9]{2}"
+			vutbr.cz:           "x[a-z]{5}[0-9]{2}"
+			# the rest
+			.:                  "[a-zA-Z0-9]+"
+		}
+	}
 
 	faceshifter: {
 		# where to look for "<emote> <channel>/<role>" pattern

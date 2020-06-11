@@ -8,7 +8,7 @@
 		"higher permission":  "To nemůžu, máš vyšší oprávnění",
 
 		"no command":      "Takový příkaz neznám {emote.sad}",
-		"no requirements": "Nesplnili jste podmínky příkazu.",
+		"no requirements": "Nebyly splněny podmínky příkazu.",
 		"no user":         "Nikoho takového jsem nenašla {emote.sad}",
 		"nsfw required":   "To jde použít jen v NSFW kanálech.",
 
@@ -25,19 +25,22 @@
 		"extension failed":     "Načtení se nezdařilo.",
 		"extension not found":  "Takové rozšíření neexistuje.",
 		"extension":            "Chyba rozšíření."
-	},
+	}
 
 	exception: {
 		RubbergoddessException:  Narazila jsem na neznámou chybu.
 
+		# Gatekeeper: ?verify
 		VerificationException:   Chyba ve verifikaci.
-		NotInDatabase:           Nejsi v databázi.
 		NotAnEmail:              To není e-mail.
 		AlreadyInDatabase:       Ty už v databázi jsi.
 		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
 		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
-		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat `{constraint}`.
+		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `{constraint}`.
+		# Gatekeeper: ?submit
+		NotInDatabase:           Nejsi v databázi, musíš zažádat o kód.
 		ProblematicVerification: Hmm, {admin}, je tu pokus o verifikaci se záznamem {status}...
+		WrongVerificationCode:   Špatný kód, {mention}.
 	}
 
 	"db": {
@@ -51,13 +54,13 @@
 		"delete error":   "Smazání uživatele z databáze se nezdařilo",
 		"not found":      "Nikoho takového jsem v databázi nenašla",
 		"duplicate":      "Takové ID už v databázi existuje"
-	},
+	}
 
 	"server": {
 		"guild only":       "Tohle funguje jenom na VUT FEKT serveru",
 		"channel only":     "Tohle funguje jenom v {channel}",
 		"botroom redirect": "{user} {emote.sad} 👉 {channel}"
-	},
+	}
 
 	"admin": {
 		"power fail":    "Ani jeden z definovaných kanálů jsem nenašla.",
@@ -69,7 +72,8 @@
 
 		"poweron botspam": "Jsem zpátky! {emote.happy}",
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
-	},
+	}
+
 	"faceshifter": {
 		"not subject": "{mention}, předmětovou místnost **{shortcut}** tu nemáme",
 		"not role": "{mention}, roli **{role}** tu nemáme",
@@ -80,7 +84,8 @@
 		"deny subject": "{mention}, předměty si můžou přidávat jen studenti VUT.",
 		"deny role": "{mention}, na to nemáš právo, nejsi z FEKTu.",
 		"deny high role": "{mention}, na to nemáš právo."
-	},
+	}
+
 	"karma": {
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 
@@ -104,7 +109,23 @@
 
 		"message help":       "`{prefix}karma message [url|id]",
 		"leaderboard offset": "Špatný offset, {user}, zadej kladné číslo."
-	},
+	}
+
+	gatekeeper: {
+		"verification public": Nový uživatel {mention} byl úspěšně přidán s rolí **{role}**.
+		"verification DM native": '''
+			Grauluji k verifikaci!
+
+			Obor a role pro zájmy  zapiš v {add_programmes}.
+			V {add_roles} získáš další role pro zájmy, obecné informace jsou v {info}.
+			'''
+		"verification DM guest": '''
+			Gratuluji k verifikaci!
+
+			V {add_roles} si můžeš přidat role pro zájmy, obcené informace jsou v {info}.
+			'''
+	}
+
 	"roles": {
 		"role add denied":       "{user}, na přidání role {role} nemáš právo.",
 		"role remove denied":    "{user}, na odebrání role {role} nemáš právo.",
@@ -116,7 +137,8 @@
 		"not on server":   "Budu předpokládat, že myslíš role na VUT FEKT serveru.",
 		"not role":        "{user}, {not_role} není role.",
 		"invalid emote":   "{user}, {not_emote} pro roli {role} není emote."
-	},
+	}
+
 	"random": {
 		"roll help":         "`{prefix}roll x [y]`; x, y jsou celočíselná rozmezí.",
 		"roll error":        "{user}, zadej dvě celá čísla.",
@@ -125,7 +147,8 @@
 		"dice groups error": "Moc skupin kostek, maximum je {max}.",
 		"wrong syntax":      "Chybná syntax hodu ve skupině {group}.",
 		"help":              "Formát naleznete na https://wiki.roll20.net/Dice_Reference#Drop.2FKeep"
-	},
+	}
+
 	"verify": {
 		"verify format":         "Pro získání kódu použij příkaz podle toho, kam patříš:```\n{prefix}verify FEKT xlogin00\n{prefix}verify FUT xlogin00\n{prefix}verify e-mail (ideálně školní)```",
 		"mail sent success":     "> {command}\nV pořádku, {user}, poslala jsem ti ověřovací kód. Pro verifikaci použij: `{prefix}submit kód`.",
@@ -149,7 +172,8 @@
 		"sucess public":         "{emote.welcome} Nový uživatel {user} byl úspěšně přidán s rolí **{group}**.",
 		"success private fekt":  "Gratuluji k verifikaci! Obor si zapiš v {programmes}.\n\nV {roles} získáš další role pro zájmy,\nobecné informace jsou v {info}.\n\nNeboj se na cokoliv zeptat nebo někomu odpovědět. FEKT tě vítá.",
 		"success private guest": "Gratuluji k verifikaci!\n\nV {roles} získáš role pro zájmy,\nobecné informace jsou v {info}.\n\nFEKT tě vítá."
-	},
+	}
+
 	"review": {
 		"no permission": "{user}, nemáš právo hodnotit předměty.",
 		"added":         "Hodnocení předmětu bylo úspěšně přidáno.",
@@ -162,14 +186,17 @@
 		"no subject":       "Takový předmět neznám",
 		"wrong tier value": "Číselné hodnocení je známka z rozsahu 1-5",
 		"text too long":    "Maximální počet znaků je 1024"
-	},
+	}
+
 	"librarian": {
 		"nameday cz": "Dnes má svátek {name} {emote.happy}",
 		"nameday sk": "Dnes má meniny {name} {emote.happy}"
-	},
+	}
+
 	"meme": {
-		"???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
-	},
+		???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
+	}
+
 	"voice": {
 		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
 
@@ -178,20 +205,23 @@
 		"unlock error": "{user}, aktuální kanál není uzamklý.",
 		"rename empty": "{user}, zadej alespoň jeden platný znak.",
 		"rename long": "{user}, takové jméno je moc dlouhé."
-	},
+	}
+
 	"janitor": {
 		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
 		"hoarding warning": "Ahoj. Všimla jsem si, že máš na **{guild}** víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ.",
 
 		"teacher not subject": "{channel} není předmětová místnost."
-	},
+	}
+
 	"warden": {
 		"gif warning": "{user}, linkování externích obrázků nemám ráda. Snížila jsem ti karmu o {value}.",
 		"repost title": "Nápověda",
 		"repost description": "{name}, shoda **{value}**!",
 		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže.",
 		"repost cheating": "{mention}, v tomhle kanálu se kontrolují duplikáty. Posílej sem přílohy, ať si je můžu zaindexovat."
-	},
+	}
+
 	"shop": {
 		"no karma": "{author}, zatím nemáš žádnou karmu",
 		"not enough karma": "{author}, nemáš dost karmy. Chybí ti **{value}** bodů",
