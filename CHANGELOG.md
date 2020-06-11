@@ -5,23 +5,21 @@ configuration or database.
 
 ## [Unreleased]
 ### Added
-- Verify e-mails in config.
+- Gatekeeper cog
 
-E-mail domains are no longer hardcoded into the cog. See `verification` section
+E-mail domains are no longer hardcoded into the cog. See `gatekeeper` section
 of the default configuration file.
 
 ### Mods
+- `stdout` and `events` channels: duplicate for terminal stdout, user interaction.
+These two replace previous logging channels, which weren't clearly defined.
 
-- New stdout channel: everything that is printed to stdout is also sent here.
+### Developers
+- Events class, accessible via `self.event.user()` and `self.event.sudo()`.
 
 ### Maintenance
-- Config uses **HJSON** instead of **JSON**. Make sure you update the dependencies.
-
-This means that you have to rename your `.json` files to `.hjson`. JSON is a
-subset of HJSON, so you do not need to do anything else. We hope that this will
-improve the readibility of the config file, as HJSON supports commenting.
-
-- Config: `librarian cog` -> `librarian`
+- Config: **HJSON** instead of **JSON**. Make sure you update the dependencies.
+- Config: major naming change. Go line-by-line and copy values that apply.
 
 ## [0.2.0]
 ### Added

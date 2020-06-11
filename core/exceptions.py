@@ -1,7 +1,5 @@
 import discord
 
-from core.text import text
-
 
 class RubbergoddessException(Exception):
     def __init__(self, message: str = None):
