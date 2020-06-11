@@ -59,7 +59,7 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not subject",
                     mention=ctx.author.mention,
                     shortcut=subject
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._subject_add(ctx, ctx.author, channel)
@@ -80,7 +80,7 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not subject",
                     mention=ctx.author.mention,
                     shortcut=subject
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._subject_remove(ctx, ctx.author, channel)
@@ -109,7 +109,7 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not role",
                     mention=ctx.author.mention,
                     role=role
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._role_add(ctx, ctx.author, guild_role)
@@ -130,7 +130,7 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not role",
                     mention=ctx.author.mention,
                     role=role
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._role_remove(ctx, ctx.author, guild_role)
@@ -229,7 +229,7 @@ class Faceshifter(rubbercog.Rubbercog):
     async def _message_to_tuple_list(self, message: discord.Message) -> list:
         """Return (emote, channel/role) list"""
         # preprocess message content
-        content = message.content.replace("**", "")
+        content = message.content.replace("*", "").replace("_", "")
         try:
             content = content.rstrip().split("\n")
         except ValueError:
@@ -260,7 +260,8 @@ class Faceshifter(rubbercog.Rubbercog):
                 await message.channel.send(
                     text.fill(
                         "faceshifter", "invalid role line", line=self.sanitise(line, limit=50)
-                    )
+                    ),
+                    delete_after=config.get("delay", "user error"),
                 )
                 return
         return result
@@ -348,14 +349,20 @@ class Faceshifter(rubbercog.Rubbercog):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send(text.fill("faceshifter", "deny role", mention=member.mention))
+                await location.send(
+                    text.fill("faceshifter", "deny role", mention=member.mention),
+                    delete_after=config.get("delay", "user error"),
+                )
                 return
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send(text.fill("faceshifter", "deny high role", mention=member.mention))
+            await location.send(
+                text.fill("faceshifter", "deny high role", mention=member.mention),
+                delete_after=config.get("delay", "user error"),
+            )
             return
 
         await member.add_roles(role)
@@ -369,14 +376,20 @@ class Faceshifter(rubbercog.Rubbercog):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send(text.fill("faceshifter", "deny role", mention=member.mention))
+                await location.send(
+                    text.fill("faceshifter", "deny role", mention=member.mention),
+                    delete_after=config.get("delay", "user error"),
+                )
                 return
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send(text.fill("faceshifter", "deny high role", mention=member.mention))
+            await location.send(
+                text.fill("faceshifter", "deny high role", mention=member.mention),
+                delete_after=config.get("delay", "user error"),
+            )
             return
 
         await member.remove_roles(role)
