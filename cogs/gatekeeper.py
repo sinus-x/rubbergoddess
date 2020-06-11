@@ -33,7 +33,9 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def verify(self, ctx, email: str):
         """Ask for verification code"""
-        if "@" not in email:
+        await self.deleteCommand(ctx)
+
+        if "@" not in email or len(email.split("@")) > 2:
             raise exceptions.NotAnEmail()
 
         # check the database for member ID
@@ -52,7 +54,11 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         # send mail
         await self._send_verification_email(ctx.author, email, code)
-        await ctx.send("podívej se do mailu ^.^")
+        anonymised = "**[...]**@" + email.split("@")[1]
+        await ctx.send(
+            text.fill("gatekeeper", "verify successful", email=anonymised, prefix=config.prefix),
+            delte_after=config.get("delay", "verify"),
+        )
 
     @commands.check(check.is_not_verified)
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
@@ -68,6 +74,8 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def submit(self, ctx, code: str):
         """Submit verification code"""
+        await self.deleteCommand(ctx)
+
         db_user = repo_u.get(ctx.author.id)
         if db_user is None:
             raise exceptions.NotInDatabase()
@@ -112,7 +120,7 @@ class Gatekeeper(rubbercog.Rubbercog):
                 "verification public",
                 mention=ctx.author.mention,
                 role=db_user.group,
-        ))
+        ), delte_after=config.get("delay", "verify"))
         # fmt: on
         if db_user.group == "TEACHER":
             await self.event.user(ctx.author, ctx.channel, "New teacher")
@@ -255,6 +263,13 @@ class Gatekeeper(rubbercog.Rubbercog):
                 ctx, text.fill("exception", "BadEmail", constraint=error.constraint)
             )
             return
+
+        if isinstance(error, exceptions.WrongVerificationCode):
+            await self.event.user(
+                ctx.author,
+                ctx.channel,
+                "Verification code mismatch: {} != {}".format(error.submitted, error.database),
+            )
 
         if isinstance(error, exceptions.VerificationException):
             await self.output.error(ctx, text.get("exception", type(error).__name__))

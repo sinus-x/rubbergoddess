@@ -112,6 +112,8 @@
 	}
 
 	gatekeeper: {
+		"verify successful":  Na e-mail {email} jsem ti poslala kód. Pro verifikaci použij `{prefix}submit kód`.
+
 		"verification public": Nový uživatel {mention} byl úspěšně přidán s rolí **{role}**.
 		"verification DM native": '''
 			Grauluji k verifikaci!
