@@ -11,6 +11,7 @@ from discord.ext import commands
 
 from core import check, exceptions, rubbercog, utils
 from core.config import config
+from core.text import text
 from repository import user_repo
 
 repo_u = user_repo.UserRepository()
@@ -40,7 +41,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             raise exceptions.IDAlreadyInDatabase()
 
         # check the database for email
-        if repo_u.get(email) is not None:
+        if repo_u.getByLogin(email) is not None:
             raise exceptions.EmailAlreadyInDatabase()
 
         # check e-mail format
@@ -74,18 +75,58 @@ class Gatekeeper(rubbercog.Rubbercog):
         if db_user.status != "pending":
             raise exceptions.ProblematicVerification(status=db_user.status)
 
-        pass
+        # repair the code
+        code = code.replace("I", "1").replace("O", "0").upper()
+        if code != db_user.code:
+            raise exceptions.WrongVerificationCode(ctx.author, code, db_user.code)
+
+        # user is verified now
+        repo_u.save_verified(ctx.author.id)
+
+        # add role
+        await self._add_verify_roles(ctx.author, db_user)
+
+        # send messages
+        role_channel = self.getGuild().get_channel(config.get("channels", "bot_roles"))
+        info_channel = self.getGuild().get_channel(config.get("channels", "info"))
+        # fmt: off
+        for role_id in config.get("roles", "native"):
+            if role_id in [x.id for x in ctx.author.roles]:
+                ctx.author.send(text.fill(
+                    "gatekeeper",
+                    "verification DM native",
+                    add_roles=role_channel.mention,
+                    info=info_channel.mention,
+                ))
+                break
+        else:
+            await ctx.author.send(text.fill(
+                "gatekeeper",
+                "verification DM guest",
+                add_roles=role_channel.mention,
+                info=info_channel.mention,
+            ))
+        # announce the verification
+        await ctx.channel.send(text.fill(
+                "gatekeeper",
+                "verification public",
+                mention=ctx.author.mention,
+                role=db_user.group,
+        ))
+        # fmt: on
+        if db_user.group == "TEACHER":
+            await self.event.user(ctx.author, ctx.channel, "New teacher")
 
     ##
     ## Helper functions
     ##
     def _email_to_role(self, email: str) -> discord.Role:
         """Get role from email address"""
-        registered = config.get("verification suffixes")
-        constraints = config.get("verification constraints")
+        registered = config.get("gatekeeper", "suffixes")
+        constraints = config.get("gatekeeper", "constraints")
         username = email.split("@")[0]
 
-        for domain, role_id in registered.items()[:-1]:
+        for domain, role_id in list(registered.items())[:-1]:
             if not email.endswith(domain):
                 continue
             # found corresponding domain, check constraint
@@ -98,36 +139,37 @@ class Gatekeeper(rubbercog.Rubbercog):
             if match is not None:
                 return self.getGuild().get_role(role_id)
             else:
-                raise exceptions.BadEmail(expected=constraint)
+                raise exceptions.BadEmail(constraint=constraint)
 
         # domain not found, fallback to basic guest role
-        constraint = list(constraint.values())[-1]
+        constraint = list(constraints.values())[-1]
         match = re.fullmatch(constraint, username)
         # return
         if match is not None:
             return self.getGuild().get_role(role_id)
         else:
-            raise exceptions.BadEmail(expected=constraint)
+            raise exceptions.BadEmail(constraint=constraint)
 
     def _generate_and_save_code(self, member: discord.Member, role: discord.Role) -> str:
         code_source = string.ascii_uppercase.replace("O", "").replace("I", "") + string.digits
         code = "".join(random.choices(code_source, k=8))
 
-        repo_u.save_code(code=code, discord_id=member.id)
+        repo_u.save_code(code=code, discord_id=member.id, group=role.name)
         return code
 
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
         # TODO Move texts somewhere else
         cleartext = """\
             Tvůj verifikační kód pro {guild_name} Discord server je: {code}.
-            Ověříš se příkazem ?submit {code}.
+            Ověříš se příkazem {prefix}submit {code}.
 
             - {bot_name} (hash {git_hash})
         """.format(
             guild_name=self.getGuild().name,
             code=code,
-            bot_name=self.bot.name,
+            bot_name=self.bot.user.name,
             git_hash=utils.git_hash()[:7],
+            prefix=config.prefix,
         )
 
         richtext = """\
@@ -140,7 +182,7 @@ class Gatekeeper(rubbercog.Rubbercog):
                 </p>
                 <p style="display:block;color:{color_fg};font-family:{font_family};">Tvůj verifikační kód pro <span style="font-weight:bold;">{guild_name}</span> Discord server:</p>
                 <p style="color:{color_bg};font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:{color_fg};display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">{code}</p>
-                <p style="color:{color_fg};font-family:{font_family};margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:{color_bg};padding:5px 10px;font-family:monospace;background-color:{color_fg};border-radius:2px;">?submit {code}</span></p>
+                <p style="color:{color_fg};font-family:{font_family};margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:{color_bg};padding:5px 10px;font-family:monospace;background-color:{color_fg};border-radius:2px;">{prefix}submit {code}</span></p>
                 <p style="display:block;color:{color_fg};font-family:{font_family};">
                     <a style="color:{color_fg};text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">{bot_name}</a>
                 , hash {git_hash}</p>
@@ -158,6 +200,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             # codes
             code=code,
             git_hash=utils.git_hash()[:7],
+            prefix=config.prefix,
             # images
             bot_avatar=self.bot.user.avatar_url_as(static_format="png", size=128),
             bot_avatar_size="120px",
@@ -181,6 +224,11 @@ class Gatekeeper(rubbercog.Rubbercog):
             server.login(config.get("email", "address"), config.get("email", "password"))
             server.send_message(msg)
 
+    async def _add_verify_roles(self, member: discord.Member, db_user: object):
+        verify = self.getVerifyRole()
+        group = discord.utils.get(self.getGuild().roles, name=db_user.group)
+        await member.add_roles(verify, group, reason="Successful verification")
+
     ##
     ## Error catching
     ##
@@ -197,17 +245,21 @@ class Gatekeeper(rubbercog.Rubbercog):
             return
 
         if isinstance(error, exceptions.ProblematicVerification):
-            await self.output.error("exception", "ProblematicVerification", status=error.status)
+            await self.output.error(
+                ctx, text.fill("exception", "ProblematicVerification", status=error.status)
+            )
             return
 
         if isinstance(error, exceptions.BadEmail):
-            await self.output.error("exception", "BadEmail", constraint=error.constraint)
+            await self.output.error(
+                ctx, text.fill("exception", "BadEmail", constraint=error.constraint)
+            )
             return
 
         if isinstance(error, exceptions.VerificationException):
-            await self.output.error("exception", error.__name__)
+            await self.output.error(ctx, text.get("exception", type(error).__name__))
             return
 
 
 def setup(bot):
-    bot.add_cot(Gatekeeper(bot))
+    bot.add_cog(Gatekeeper(bot))
