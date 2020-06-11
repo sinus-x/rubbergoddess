@@ -209,7 +209,7 @@
 		"vote time":  120
 	},
 
-	"librarian cog": {
+	librarian: {
 		# Week the current semester started
 		"starting week": 0
 

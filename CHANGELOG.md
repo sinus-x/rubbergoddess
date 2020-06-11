@@ -21,6 +21,8 @@ This means that you have to rename your `.json` files to `.hjson`. JSON is a
 subset of HJSON, so you do not need to do anything else. We hope that this will
 improve the readibility of the config file, as HJSON supports commenting.
 
+- Config: `librarian cog` -> `librarian`
+
 ## [0.2.0]
 ### Added
 - Faceshifter cog (deprecating some of the code in `features/reaction.py`)
