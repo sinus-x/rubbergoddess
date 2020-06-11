@@ -43,8 +43,8 @@ class ProblematicVerification(VerificationException):
 
 
 class WrongVerificationCode(VerificationException):
-    def __init__(self, member: discord.Member, submitted: str, database: str):
+    def __init__(self, member: discord.Member, their: str, database: str):
         super().__init__()
         self.member = member
-        self.submitted = submitted
+        self.their = their
         self.database = database

@@ -54,10 +54,16 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         # send mail
         await self._send_verification_email(ctx.author, email, code)
-        anonymised = "**[...]**@" + email.split("@")[1]
+        anonymised = "[redacted]@" + email.split("@")[1]
         await ctx.send(
-            text.fill("gatekeeper", "verify successful", email=anonymised, prefix=config.prefix),
-            delte_after=config.get("delay", "verify"),
+            text.fill(
+                "gatekeeper",
+                "verify successful",
+                mention=ctx.author.mention,
+                email=anonymised,
+                prefix=config.prefix,
+            ),
+            delete_after=config.get("delay", "verify"),
         )
 
     @commands.check(check.is_not_verified)
@@ -100,7 +106,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         # fmt: off
         for role_id in config.get("roles", "native"):
             if role_id in [x.id for x in ctx.author.roles]:
-                ctx.author.send(text.fill(
+                await ctx.author.send(text.fill(
                     "gatekeeper",
                     "verification DM native",
                     add_roles=role_channel.mention,
@@ -120,7 +126,7 @@ class Gatekeeper(rubbercog.Rubbercog):
                 "verification public",
                 mention=ctx.author.mention,
                 role=db_user.group,
-        ), delte_after=config.get("delay", "verify"))
+        ), delete_after=config.get("delay", "verify"))
         # fmt: on
         if db_user.group == "TEACHER":
             await self.event.user(ctx.author, ctx.channel, "New teacher")
@@ -232,26 +238,24 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         if isinstance(error, exceptions.ProblematicVerification):
             await self.output.error(
-                ctx, text.fill("exception", "ProblematicVerification", status=error.status)
+                ctx, text.fill("gatekeeper", "ProblematicVerification", status=error.status)
             )
-            return
 
-        if isinstance(error, exceptions.BadEmail):
+        elif isinstance(error, exceptions.BadEmail):
             await self.output.error(
-                ctx, text.fill("exception", "BadEmail", constraint=error.constraint)
-            )
-            return
-
-        if isinstance(error, exceptions.WrongVerificationCode):
-            await self.event.user(
-                ctx.author,
-                ctx.channel,
-                "Verification code mismatch: {} != {}".format(error.submitted, error.database),
+                ctx, text.fill("gatekeeper", "BadEmail", constraint=error.constraint)
             )
 
-        if isinstance(error, exceptions.VerificationException):
-            await self.output.error(ctx, text.get("exception", type(error).__name__))
-            return
+        elif isinstance(error, exceptions.WrongVerificationCode):
+            await self.output.error(
+                ctx, text.fill("gatekeeper", "WrongVerificationCode", mention=ctx.author.mention)
+            )
+            # log event
+            message = f"Verification code mismatch: `{error.their}` != `{error.database}`"
+            await self.event.user(ctx.author, ctx.channel, message)
+
+        elif isinstance(error, exceptions.VerificationException):
+            await self.output.error(ctx, text.get("gatekeeper", type(error).__name__))
 
 
 def setup(bot):

@@ -30,10 +30,10 @@ class Errors(rubbercog.Rubbercog):
 
         # user interaction
         if isinstance(error, commands.MissingPermissions):
-            perms = ", ".join(error.missing_perms)
+            perms = ", ".join(f"_{x}_" for x in error.missing_perms)
             return await self.output.error(ctx, text.fill("error", "no user permission", permissions=perms))
         if isinstance(error, commands.BotMissingPermissions):
-            perms = ", ".join(error.missing_perms)
+            perms = ", ".join(f"_{x}_" for x in error.missing_perms)
             await self.output.error(ctx, text.fill("error", "no bot permission", permissions=perms))
             await self.console.error(ctx, "I'm missing permissions: " + perms)
             return

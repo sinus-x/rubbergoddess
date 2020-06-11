@@ -17,7 +17,7 @@
 		"concurrency":     "Tento příkaz už běží mockrát, limit je {number}/{bucket_type}.",
 		"extension":       "Chyba v rozšíření {emote.ree}",
 		"bad argument":    "Chyba v argumentu {emote.sad}",
-		"missing argument": "Chybí mi argument {argument} {emote.sad}",
+		"missing argument": "Chybí mi argument _{argument}_ {emote.sad}",
 		"argument parsing": "Chyba v parsování argument {emote.ree}",
 
 		"extension loaded":     "Rozšíření už je načteno.",
@@ -30,17 +30,6 @@
 	exception: {
 		RubbergoddessException:  Narazila jsem na neznámou chybu.
 
-		# Gatekeeper: ?verify
-		VerificationException:   Chyba ve verifikaci.
-		NotAnEmail:              To není e-mail.
-		AlreadyInDatabase:       Ty už v databázi jsi.
-		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
-		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
-		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `{constraint}`.
-		# Gatekeeper: ?submit
-		NotInDatabase:           Nejsi v databázi, musíš zažádat o kód.
-		ProblematicVerification: Hmm, {admin}, je tu pokus o verifikaci se záznamem {status}...
-		WrongVerificationCode:   Špatný kód, {mention}.
 	}
 
 	"db": {
@@ -112,14 +101,13 @@
 	}
 
 	gatekeeper: {
-		"verify successful":  Na e-mail {email} jsem ti poslala kód. Pro verifikaci použij `{prefix}submit kód`.
-
+		# success
+		"verify successful":  "{mention}, na e-mail **{email}** jsem ti poslala kód. Pro verifikaci použij `{prefix}submit kód`."
 		"verification public": Nový uživatel {mention} byl úspěšně přidán s rolí **{role}**.
 		"verification DM native": '''
 			Grauluji k verifikaci!
 
-			Obor a role pro zájmy  zapiš v {add_programmes}.
-			V {add_roles} získáš další role pro zájmy, obecné informace jsou v {info}.
+			V {add_roles} si přidej obor a role zájmů, obené informace jsou v {info}.
 			'''
 		"verification DM guest": '''
 			Gratuluji k verifikaci!
@@ -127,16 +115,16 @@
 			V {add_roles} si můžeš přidat role pro zájmy, obcené informace jsou v {info}.
 			'''
 
-
-		mail_plaintext:
-			'''\
+		# e-mail content
+		"plaintext mail":
+			'''
 			Tvůj verifikační kód pro {guild_name} Discord server je: {code}.
 			Ověříš se příkazem {prefix}submit {code}.
 
 			- {bot_name} (hash {git_hash})
 			'''
-		mail_richtext:
-			'''\
+		"html mail":
+			'''
 			<body style="background-color:{color_bg};margin:0;text-align:center;">
 			<div style="background-color:{color_bg};margin:0;padding:20px;text-align:center;">
 				<img src="{bot_avatar}" alt="{bot_name}" style="margin:0 auto;border-radius:100%;border:5px solid {color_fg};height:{bot_avatar_size};width:{bot_avatar_size};backtround-color:{color_bg};" />
@@ -153,6 +141,20 @@
 			</div>
 			</body>
 			'''
+
+		# Exceptions
+		VerificationException:   Chyba ve verifikaci.
+		# Exceptions: ?verify
+		NotAnEmail:              To není e-mail.
+		AlreadyInDatabase:       Ty už v databázi jsi.
+		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
+		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
+		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `{constraint}`.
+
+		# Exceptions: ?submit
+		NotInDatabase:           Nejsi v databázi, musíš zažádat o kód.
+		ProblematicVerification: Hmm, {admin}, je tu pokus o verifikaci se záznamem {status}...
+		WrongVerificationCode:   Špatný kód, {mention}.
 	}
 
 	"roles": {
