@@ -1,4 +1,3 @@
-import datetime
 import traceback
 
 from discord.ext import commands
@@ -22,71 +21,44 @@ class Errors(rubbercog.Rubbercog):
         # TODO Implement all exceptions
         # https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exceptions
 
+        # fmt: off
         # rubbergoddess exceptions are handled in their cogs
         if isinstance(error, exceptions.RubbergoddessException):
             if type(error) is not exceptions.RubbergoddessException:
                 return
-            await self.output.error(ctx, text.fill("exception", "RubbergoddessException"), error)
-            return
+            return await self.output.error(ctx, text.fill("exception", "RubbergoddessException"), error)
 
         # user interaction
         if isinstance(error, commands.MissingPermissions):
             perms = ", ".join(error.missing_perms)
-            await self.output.error(
-                ctx, text.fill("error", "no user permission", permissions=perms)
-            )
-            return
-
+            return await self.output.error(ctx, text.fill("error", "no user permission", permissions=perms))
         if isinstance(error, commands.BotMissingPermissions):
             perms = ", ".join(error.missing_perms)
             await self.output.error(ctx, text.fill("error", "no bot permission", permissions=perms))
             await self.console.error(ctx, "I'm missing permissions: " + perms)
             return
-
         if isinstance(error, commands.CommandOnCooldown):
             time = utils.seconds2str(error.retry_after)
-            await self.output.warning(ctx, text.fill("error", "cooldown", time=time))
-            return
-
+            return await self.output.warning(ctx, text.fill("error", "cooldown", time=time))
         if isinstance(error, commands.MaxConcurrencyReached):
-            await self.output.warning(
-                ctx,
-                text.fill("error", "concurrency", number=error.number, bucket_type=error.per.name),
-            )
-
+            return await self.output.warning(ctx, text.fill("error", "concurrency", number=error.number, bucket_type=error.per.name))
         if isinstance(error, commands.NSFWChannelRequired):
-            await self.output.error("error", "nsfw required")
-            return
-
+            return await self.output.error("error", "nsfw required")
         if isinstance(error, commands.CheckFailure):
             # Should we send _which_ checks failed?
-            await self.output.warning(ctx, text.get("error", "no requirement"))
-            return
-
+            return await self.output.warning(ctx, text.get("error", "no requirements"))
         if isinstance(error, commands.BadArgument):
-            await self.output.warning(ctx, text.get("error", "bad argument"))
-            return
-
+            return await self.output.warning(ctx, text.get("error", "bad argument"))
         if isinstance(error, commands.ExpectedClosingQuoteError):
-            await self.output.warning(ctx, text.get("error", "bad argument"))
-            return
-
+            return await self.output.warning(ctx, text.get("error", "bad argument"))
         if isinstance(error, commands.CommandNotFound):
             return
-
         if isinstance(error, commands.MissingRequiredArgument):
-            await self.output.warning(
-                ctx, text.fill("error", "missing argument", argument=error.param.name)
-            )
-            return
-
+            return await self.output.warning(ctx, text.fill("error", "missing argument", argument=error.param.name))
         if isinstance(error, commands.ArgumentParsingError):
-            await self.output.warning(ctx, text.get("error", "argument parsing"))
-            return
-
-        elif isinstance(error, commands.CommandError):
-            await self.output.warning(ctx, text.get("error" "command"), error)
-            return
+            return await self.output.warning(ctx, text.get("error", "argument parsing"))
+        if isinstance(error, commands.CommandError):
+            return await self.output.warning(ctx, text.get("error" "command"), error)
 
         # cog loading
         elif isinstance(error, commands.ExtensionAlreadyLoaded):
