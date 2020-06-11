@@ -6,7 +6,6 @@ from discord.ext import commands
 from core.text import text
 from core.emote import emote
 from core import rubbercog
-from config.messages import Messages as messages
 
 
 class Meme(rubbercog.Rubbercog):
