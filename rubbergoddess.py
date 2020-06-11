@@ -57,8 +57,8 @@ async def on_error(event, *args, **kwargs):
 async def load(ctx, extension):
     bot.load_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** načteno.")
-    await rubbercog.log(ctx, f"Cog {extension} loaded")
-    print(f"Cog {extension} loaded")
+    await rubbercog.log(ctx, f"Loaded: {extension.upper()}")
+    print(f"Loaded: {extension.upper()}")
 
 
 @bot.command()
@@ -66,8 +66,8 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     bot.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** odebráno.")
-    await rubbercog.log(ctx, f"Cog {extension} unloaded")
-    print(f"Cog {extension} unloaded")
+    await rubbercog.log(ctx, f"Unloaded: {extension.upper()}")
+    print(f"Unloaded: {extension.upper()}")
 
 
 @bot.command()
@@ -75,8 +75,8 @@ async def unload(ctx, extension):
 async def reload(ctx, extension):
     bot.reload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
-    await rubbercog.log(ctx, f"Cog {extension} reloaded")
-    print(f"Cog {extension} reloaded")
+    await rubbercog.log(ctx, f"Reloaded: {extension.upper()}")
+    print(f"Reloaded: {extension.upper()}")
     if "docker" in config.loader:
         await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
 
@@ -88,9 +88,9 @@ session.commit()  # Making sure
 load_subjects()
 
 bot.load_extension("cogs.errors")
-print("Meta ERRORS extension loaded.")
+print("Loaded: ERRORS (implicit)")
 for extension in config.extensions:
     bot.load_extension(f"cogs.{extension}")
-    print("{} extension loaded.".format(extension.upper()))
+    print(f"Loaded: {extension.upper()}")
 
 bot.run(config.key)
