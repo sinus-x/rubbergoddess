@@ -20,7 +20,7 @@
 This FEKTwide Discord bot manages the verification process, karma and some other
 commands on VUT FEKT Discord server.
 
-[Rubbergod](https://github.com/Toaster192/rubbergod)'s younger sister.
+[Rubbergod](https://github.com/Toaster192/rubbergod)'s younger but more mature sister. Originally forked, now independent.
 
 ## Installing and running the bot
 
