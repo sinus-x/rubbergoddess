@@ -186,3 +186,37 @@ class Console:
 
         await self.getLogChannel().send(f"```{result}```")
         print(result)
+
+
+class Event:
+    def __init__(self, bot):
+        self.bot = bot
+        self.channel = None
+
+        self.user = "{user} in {channel}: {message}"
+        self.sudo = "{user} in {channel}: {message}"
+
+    def getChannel(self):
+        if self.channel is None:
+            self.channel = self.bot.get_channel(config.get("channels", "events"))
+        return self.channel
+
+    async def user(self, member: discord.Member, location: discord.abc.Messageable, message: str):
+        """Unprivileged events"""
+        # fmt: off
+        await self.getChannel().send(self.user.format(
+            user=str(member),
+            location=location.mention,
+            message=discord.utils.escape_mentions(message)
+        ))
+        # fmt: on
+
+    async def sudo(self, member: discord.Member, location: discord.abc.Messageable, message: str):
+        """Privileged events"""
+        # fmt: off
+        await self.getChannel().send(self.sudo.format(
+            user=str(member),
+            location=location.mention,
+            message=discord.utils.escape_mentions(message)
+        ))
+        # fmt: on

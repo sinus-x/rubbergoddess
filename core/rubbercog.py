@@ -25,6 +25,7 @@ class Rubbercog(commands.Cog):
 
         self.output = output.Output(self.bot)
         self.console = output.Console(self.bot)
+        self.event = output.Event(self.bot)
 
     ##
     ## OBJECT GETTERS
@@ -153,7 +154,7 @@ class Rubbercog(commands.Cog):
             if not isinstance(message, discord.Message):
                 message = message.message
             await message.delete(delay=delay)
-        except discord.HTTPException as err:
+        except discord.HTTPException:
             pass
 
     def parseArg(self, arg: str = None):
