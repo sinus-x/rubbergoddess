@@ -1,3 +1,8 @@
+import discord
+
+from core.text import text
+
+
 class RubbergoddessException(Exception):
     def __init__(self, message: str = None):
         self.message = message
@@ -34,6 +39,14 @@ class BadEmail(VerificationException):
 
 
 class ProblematicVerification(VerificationException):
-    def __init__(self, status: str, message: str = None):
-        super().__init__(message)
+    def __init__(self, status: str):
+        super().__init__()
         self.status = status
+
+
+class WrongVerificationCode(VerificationException):
+    def __init__(self, member: discord.Member, submitted: str, database: str):
+        super().__init__()
+        self.member = member
+        self.submitted = submitted
+        self.database = database

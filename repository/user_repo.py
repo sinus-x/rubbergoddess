@@ -31,7 +31,7 @@ class UserRepository(BaseRepository):
         )
         session.commit()
 
-    def save_code(self, code: str, discord_id: int):
+    def save_code(self, code: str, discord_id: int, group: str):
         """Update a specified user with a new verification code"""
         user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         if not user:
@@ -39,6 +39,7 @@ class UserRepository(BaseRepository):
             user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
         user.code = code
         user.discord_id = discord_id
+        user.group = group
         user.status = "pending"
         user.comment = ""
         user.changed = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
