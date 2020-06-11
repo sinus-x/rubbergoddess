@@ -45,11 +45,11 @@ class Verify(rubbercog.Rubbercog):
             code=code, h=h
         )
         richtext = """\
-            <body style="background-color:#54355F;margin:0;text-align:center;">
-            <div style="background-color:#54355F;margin:0;padding:20px;text-align:center;">
-                <img src="{bot_img}" alt="Rubbergoddess" style="margin:0 auto;border-radius:100%;border:5px solid white;">
+            <body style="background-color:{color};margin:0;text-align:center;">
+            <div style="background-color:{color};margin:0;padding:20px;text-align:center;">
+                <img src="{bot_img}" alt="Rubbergoddess" style="margin:0 auto;border-radius:100%;border:5px solid white;height:{bot_img_size};width:{bot_img_size};background-color:{color};">
                 <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;font-size:24px;">
-                    <img src="{user_img}" alt="" style="height:20px;width:20px;top:4px;margin-right:6px;border-radius:100%;border:2px solid white;display:inline;position:relative;"><span>{user_name}</span>
+                    <img src="{user_img}" alt="" style="height:{user_img_size};width:{user_img_size};top:4px;margin-right:6px;border-radius:100%;border:2px solid white;display:inline;position:relative;background-color:{color};"><span>{user_name}</span>
                 </p>
                 <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;">Tvůj verifikační kód pro <span style="font-weight:bold;">VUT FEKT</span> Discord server:</p>
                 <p style="color:#45355F;font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:white;display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">{code}</p>
@@ -57,12 +57,18 @@ class Verify(rubbercog.Rubbercog):
                 <p style="display:block;color:white;font-family:Arial,Verdana,sans-serif;"><a style="color:white;text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">Rubbergoddess</a>, hash {h}</p>
             </div>
             </body>""".format(
-            code=code, h=h, bot_img=bot_img, user_img=user_img, user_name=user_name
+            code=code,
+            h=h,
+            bot_img=bot_img,
+            user_img=user_img,
+            user_name=user_name,
+            color="#54355F",
+            bot_img_size="120px",
+            user_img_size="20px",
         )
 
         msg = MIMEMultipart("alternative")
-        # FIXME Can this be abused?
-        msg["Subject"] = "VUT FEKT verify → {}".format(user_name)
+        msg["Subject"] = f"TEST VUT FEKT verify → {user_name}"
         msg["From"] = config.mail_address
         msg["To"] = receiver_email
         msg["Bcc"] = config.mail_address
