@@ -7,6 +7,10 @@ class VerificationException(RubbergoddessException):
     pass
 
 
+class NotInDatabase(VerificationException):
+    pass
+
+
 class NotAnEmail(VerificationException):
     pass
 
@@ -24,6 +28,12 @@ class IDAlreadyInDatabase(AlreadyInDatabase):
 
 
 class BadEmail(VerificationException):
-    def __init__(self, message: str = None, expected: str = None):
+    def __init__(self, message: str = None, constraint: str = None):
         super().__init__(message)
-        self.expected = expected
+        self.constraint = constraint
+
+
+class ProblematicVerification(VerificationException):
+    def __init__(self, status: str, message: str = None):
+        super().__init__(message)
+        self.status = status

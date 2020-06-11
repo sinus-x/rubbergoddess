@@ -22,6 +22,13 @@ class Errors(rubbercog.Rubbercog):
         # TODO Implement all exceptions
         # https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exceptions
 
+        # rubbergoddess exceptions are handled in their cogs
+        if isinstance(error, exceptions.RubbergoddessException):
+            if type(error) is not exceptions.RubbergoddessException:
+                return
+            await self.output.error(ctx, text.fill("exception", "RubbergoddessException"), error)
+            return
+
         # user interaction
         if isinstance(error, commands.MissingPermissions):
             perms = ", ".join(error.missing_perms)

@@ -28,11 +28,16 @@
 	},
 
 	exception: {
-		VerificationException:  Chyba ve verifikaci.
-		NotAnEmail:             To není e-mail.
-		AlreadyInDatabase:      Ty už v databázi jsi.
-		EmailAlreadyInDatabase: Tvůj e-mail už v databázi jsi.
-		IDAlreadyInDatabase:    Tvůj účet už v databázi je.
+		RubbergoddessException:  Narazila jsem na neznámou chybu.
+
+		VerificationException:   Chyba ve verifikaci.
+		NotInDatabase:           Nejsi v databázi.
+		NotAnEmail:              To není e-mail.
+		AlreadyInDatabase:       Ty už v databázi jsi.
+		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
+		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
+		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat `{constraint}`.
+		ProblematicVerification: Hmm, {admin}, je tu pokus o verifikaci se záznamem {status}...
 	}
 
 	"db": {

@@ -67,6 +67,13 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def submit(self, ctx, code: str):
         """Submit verification code"""
+        db_user = repo_u.get(ctx.author.id)
+        if db_user is None:
+            raise exceptions.NotInDatabase()
+
+        if db_user.status != "pending":
+            raise exceptions.ProblematicVerification(status=db_user.status)
+
         pass
 
     ##
@@ -172,6 +179,33 @@ class Gatekeeper(rubbercog.Rubbercog):
             server.ehlo()
             server.login(config.get("email", "address"), config.get("email", "password"))
             server.send_message(msg)
+
+    ##
+    ## Error catching
+    ##
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx: commands.Context, error):
+        # try to get original error
+        if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
+            return
+        error = getattr(error, "original", error)
+
+        # non-rubbergoddess exceptions are handled globally
+        if not isinstance(error, exceptions.RubbergoddessException):
+            return
+
+        if isinstance(error, exceptions.ProblematicVerification):
+            await self.output.error("exception", "ProblematicVerification", status=error.status)
+            return
+
+        if isinstance(error, exceptions.BadEmail):
+            await self.output.error("exception", "BadEmail", constraint=error.constraint)
+            return
+
+        if isinstance(error, exceptions.VerificationException):
+            await self.output.error("exception", error.__name__)
+            return
 
 
 def setup(bot):
