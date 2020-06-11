@@ -26,6 +26,15 @@
 		"extension not found":  "Takové rozšíření neexistuje.",
 		"extension":            "Chyba rozšíření."
 	},
+
+	exception: {
+		VerificationException:  Chyba ve verifikaci.
+		NotAnEmail:             To není e-mail.
+		AlreadyInDatabase:      Ty už v databázi jsi.
+		EmailAlreadyInDatabase: Tvůj e-mail už v databázi jsi.
+		IDAlreadyInDatabase:    Tvůj účet už v databázi je.
+	}
+
 	"db": {
 		"read success":   "Záznam nalezen",
 		"read error":     "Nepodařilo se mi načíst databázi",

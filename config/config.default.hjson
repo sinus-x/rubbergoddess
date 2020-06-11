@@ -148,7 +148,7 @@
 	},
 
 	# email domain to role ID mapping
-	verification: {
+	"verification suffixes": {
 		stud.feec.vutbr.cz: 0
 		vutbr.cz:           0
 		muni.cz:            0
@@ -158,6 +158,13 @@
 		zcu.cz:             0
 		# guest role
 		.:                  0
+	},
+	# if the e-mail can have more formats, you can enforce one of them
+	"verification constraints": {
+		stud.feec.vutbr.cz: "x[a-z]{5}[0-9]{2}"
+		vutbr.cz:           "x[a-z]{5}[0-9]{2}"
+		# the rest
+		.:                  "[a-zA-Z0-9]+"
 	},
 
 	roles: {

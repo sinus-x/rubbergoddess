@@ -102,6 +102,10 @@ class UserRepository(BaseRepository):
         """Get user from database"""
         return session.query(User).filter(User.discord_id == discord_id).one_or_none()
 
+    def getByLogin(self, login: str):
+        """Get user from database"""
+        return session.query(User).filter(User.login == login).one_or_none()
+
     # TODO Deprecated
     def filterId(self, discord_id: int = None):
         """Find user in database"""
