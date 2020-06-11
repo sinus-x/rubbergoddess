@@ -461,7 +461,6 @@ class Stalker(rubbercog.Rubbercog):
             role = self.getGuild().get_role(role_id)
             if role is not None:
                 roles.append(f"**{role}** {repository.countGroup(role.name)}")
-                print(role.name)
             else:
                 roles.append(f"**{role_id}** {repository.countGroup(role_id)}")
         roles = ", ".join(roles)
