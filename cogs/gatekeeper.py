@@ -151,9 +151,10 @@ class Gatekeeper(rubbercog.Rubbercog):
             color_bg=config.color,
             color_fg="white",
             font_family="Arial,Verdana,sans-serif",
-            # bot & guild information
+            # names
             guild_name=self.getGuild().name,
             bot_name=self.bot.user.name,
+            user_name=member.name,
             # codes
             code=code,
             git_hash=utils.git_hash()[:7],
