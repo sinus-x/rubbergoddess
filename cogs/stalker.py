@@ -112,7 +112,7 @@ class Stalker(rubbercog.Rubbercog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         if log:
             await self.log(ctx, "Database entry lookup", quote=True)
-        await self.deleteCommand(ctx, now=True)
+        await self.deleteCommand(ctx)
 
     @whois.command(name="login", aliases=["xlogin", "vutlogin"])
     async def whois_login(
@@ -152,7 +152,7 @@ class Stalker(rubbercog.Rubbercog):
             await ctx.send(embed=embed, delete_after=config.delay_embed)
         if log:
             await self.log(ctx, "No xlogin found", quote=True)
-        await self.deleteCommand(ctx, now=True)
+        await self.deleteCommand(ctx)
 
     @commands.guild_only()
     @commands.group(aliases=["db"])

@@ -29,7 +29,7 @@ class Base(rubbercog.Rubbercog):
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx, now=True)
+        await self.deleteCommand(ctx)
 
     @commands.command()
     async def ping(self, ctx):

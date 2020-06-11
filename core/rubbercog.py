@@ -144,7 +144,7 @@ class Rubbercog(commands.Cog):
             )
 
     # TODO Rename to deleteMessage()
-    async def deleteCommand(self, message, delay: int = 0):
+    async def deleteCommand(self, message, *, delay: int = 0):
         """Try to delete the context message.
 
         now: Do not wait for message delay
