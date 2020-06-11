@@ -68,7 +68,7 @@ class Verify(rubbercog.Rubbercog):
         )
 
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"TEST VUT FEKT verify → {user_name}"
+        msg["Subject"] = f"VUT FEKT verify → {user_name}"
         msg["From"] = config.mail_address
         msg["To"] = receiver_email
         msg["Bcc"] = config.mail_address
