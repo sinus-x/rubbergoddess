@@ -10,6 +10,10 @@ configuration or database.
 E-mail domains are no longer hardcoded into the cog. See `verification` section
 of the default configuration file.
 
+### Mods
+
+- New stdout channel: everything that is printed to stdout is also sent here.
+
 ### Maintenance
 - Config uses **HJSON** instead of **JSON**. Make sure you update the dependencies.
 
@@ -23,7 +27,7 @@ improve the readibility of the config file, as HJSON supports commenting.
 
 ### Mods
 
-- Change in limiting pseudo-role naming:
+- Change in pseudo-role naming:
   - `---FEKT` becomes `---PROGRAMMES`
   - `---` becomes `---INTERESTS`
 
