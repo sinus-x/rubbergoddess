@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import rubbercog, check
+from core import exceptions, rubbercog, check
 from core.config import config
 from core.text import text
 from repository import user_repo, karma_repo
@@ -65,6 +65,9 @@ class Shop(rubbercog.Rubbercog):
                 )
             )
 
+        if "@" in nick:
+            raise exceptions.ForbiddenNicknameCharacter("@")
+
         # set nickname
         try:
             await ctx.author.edit(nick=nick, reason="?nickname")
@@ -81,6 +84,7 @@ class Shop(rubbercog.Rubbercog):
                 value=self.price_nick,
             )
         )
+        await self.event.user(ctx.author, ctx.channel, f"Nickname changed to {nick}.")
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
     @nickname.command(name="unset")
@@ -100,6 +104,32 @@ class Shop(rubbercog.Rubbercog):
                 nick=discord.utils.escape_markdown(nick),
             )
         )
+        await self.event.user(ctx.author, ctx.channel, f"Nickname reset.")
+
+    ##
+    ## Error catching
+    ##
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx: commands.Context, error):
+        # try to get original error
+        if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
+            return
+        error = getattr(error, "original", error)
+
+        # non-rubbergoddess exceptions are handled globally
+        if not isinstance(error, exceptions.RubbergoddessException):
+            return
+
+        # fmt: off
+        # exceptions with parameters
+        if isinstance(error, exceptions.ForbiddenNicknameCharacter):
+            await self.output.error(ctx, text.fill(
+                "shop", "ForbiddenNicknameCharacter", characters=error.forbidden))
+        # exceptions without parameters
+        elif isinstance(error, exceptions.ShopException):
+            await self.output.error(ctx, text.get("shop", type(error).__name__))
+        # fmt: on
 
 
 def setup(bot):

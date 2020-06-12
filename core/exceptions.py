@@ -39,3 +39,15 @@ class WrongVerificationCode(VerificationException):
         self.their = their
         self.database = database
 # fmt: on
+
+##
+## Shop
+##
+# fmt: off
+class ShopException(RubbergoddessException):
+    pass
+class ForbiddenNicknameCharacter(ShopException):
+    def __init__(self, forbidden: str):
+        super().__init__()
+        self.forbidden = forbidden
+# fmt: on
