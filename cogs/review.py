@@ -119,9 +119,11 @@ class Review(rubbercog.Rubbercog):
         elif subcommand == "remove":
             self.rev.remove_subject(subject)
             await ctx.send(f"Zkratka {subject} byla odebrána")
+            await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} added")
             # TODO Remove from config, too
         else:
             await ctx.send(messages.review_wrong_subject)
+            await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} removed")
 
 
 def setup(bot):
