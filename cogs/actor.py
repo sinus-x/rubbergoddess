@@ -32,10 +32,10 @@ class Actor(rubbercog.Rubbercog):
         for name, reaction in self.reactions.items():
             text = message.content.lower()
             # fmt: off
-            if reaction["match"] == "F" and reaction["trigger"] == text \
-            or reaction["match"] == "A" and reaction["trigger"] in text \
-            or reaction["match"] == "S" and text.startswith(reaction["trigger"]) \
-            or reaction["match"] == "E" and text.endswith(reaction["trigger"]):
+            if reaction["match"] == "full" and reaction["trigger"] == text \
+            or reaction["match"] == "any" and reaction["trigger"] in text \
+            or reaction["match"] == "starts" and text.startswith(reaction["trigger"]) \
+            or reaction["match"] == "ends" and text.endswith(reaction["trigger"]):
                 # conditions
                 if "user" in reaction and message.author.id not in reaction["user"]:
                     continue
@@ -43,9 +43,9 @@ class Actor(rubbercog.Rubbercog):
                     continue
 
                 # send
-                if reaction["type"] == "T":
+                if reaction["type"] == "text":
                     await message.channel.send(reaction["response"])
-                elif reaction["type"] == "I":
+                elif reaction["type"] == "image":
                     await message.channel.send(file=discord.File(self.path + reaction["response"]))
 
                 # log
@@ -61,10 +61,10 @@ class Actor(rubbercog.Rubbercog):
 
     def _check_match_string(self, match: str):
         """Check if match string is valid"""
-        return match[:1].upper() in ["F", "A", "S", "E"]
+        return match[:1].upper() in ["full", "any", "starts", "ends"]
 
     def _check_filename_extension(self, filename: str):
-        return filename.split(".")[-1] in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]
+        return filename.split(".") in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]
 
     @commands.group(name="send")
     @commands.check(check.is_bot_owner)
@@ -88,8 +88,10 @@ class Actor(rubbercog.Rubbercog):
 
         ch = self.getGuild().get_channel(config.channel_mods)
         m = await channel.send(text)
-        await ch.send(
-            f"**Text sent to {channel.mention}:**\n> _{ctx.message.content}_\n> {m.jump_url}"
+        await self.event.sudo(
+            ctx.author,
+            ctx.channel,
+            f"Text sent to {channel.mention}:\n> _{ctx.message.content}\n> {m.jump_url}",
         )
 
     @send.command(name="image")
@@ -108,9 +110,11 @@ class Actor(rubbercog.Rubbercog):
                 m = await channel.send(file=discord.File(self.path + filename))
                 delta = time.monotonic() - now
                 ch = self.getGuild().get_channel(config.channel_mods)
-                await ch.send(
-                    f"**Media file uploaded to {channel.mention} in {delta:.1f} seconds:**\n"
-                    f"> _{ctx.message.content}_\n> {m.jump_url}"
+                await self.event.sudo(
+                    ctx.author,
+                    ctx.channel,
+                    f"Media file sent to {channel.mention} in {delta:.1f} seconds:\n"
+                    f"> _{ctx.message.content}_\n> {m.jump_url}",
                 )
         except Exception as e:
             await self.throwError(ctx, "Could not send media file", e)
@@ -128,39 +132,55 @@ class Actor(rubbercog.Rubbercog):
     async def reactions_list(self, ctx):
         """See enabled reactions"""
         result = []
-        for k, v in self.reactions.items():
+
+        for key, value in self.reactions.items():
             line = []
             # id and comment
             # fmt: off
-            line.append(
-                v["match"] +
-                v["type"].lower() +
-                f"[{k}]" +
-                (f" {v['comment']}" if "comment" in v else "")
+            line.append("{match} {type} [{key}]".format(
+                match=value["match"],
+                type=value["type"],
+                key=key,
+                ) + (f" {value['comment']}" if ("comment" in value) else "")
             )
-            # fmt: on
+
             # trigger and response
-            line.append(f" {v['trigger']} -> {v['response']}")
-            # conditions
-            if "user" in v:
-                us = []
-                for u in v["user"]:
-                    obj = self.bot.get_user(u)
-                    us.append(f"{u} ({obj.name})" if hasattr(obj, "name") else str(u))
-                line.append(" " + ", ".join(us))
-            if "channel" in v:
-                cs = []
-                for c in v["channel"]:
-                    obj = self.bot.get_channel(c)
-                    cs.append(f"{u} ({obj.name})" if hasattr(obj, "name") else str(u))
-                line.append(" " + ", ".join(cs))
+            line.append(" {trigger} -> {response}".format(
+                trigger=value["trigger"],
+                response=value["response"],
+            ))
+
+            # user constraints
+            if "user" in value:
+                users = []
+                for user_id in value["user"]:
+                    obj = self.bot.get_user(user_id)
+                    users.append(
+                        f"{user_id} ({obj.name})"
+                        if hasattr(obj, "name")
+                        else str(user_id)
+                    )
+                line.append(" " + ", ".join(users))
+
+            # channel constraints
+            if "channel" in value:
+                channels = []
+                for channel_id in value["channel"]:
+                    obj = self.bot.get_channel(channel_id)
+                    channels.append(
+                        f"{channel_id} ({obj.name})"
+                        if hasattr(obj, "name")
+                        else str(channel_id)
+                    )
+                line.append(" " + ", ".join(channels))
             result.append("\n".join(line))
+            # fmt: on
 
         if len(result) == 0:
             result = "(No reactions)"
 
-        m = "\n".join(result)
-        await ctx.send(f"```\n{m}\n```")
+        message = "\n".join(result)
+        await ctx.send(f"```\n{message}\n```")
 
     @reactions.command(name="usage", aliases=["stat", "stats", "statistics"])
     async def reactions_usage(self, ctx):
@@ -197,8 +217,8 @@ class Actor(rubbercog.Rubbercog):
     ):
         """Add text reaction
 
-        match: [Full | Any | Starts | Ends]
         name: "Reaction name"
+        match: [full | any | starts | ends]
         trigger: "Trigger string" (in quotes)
         response: "Response string" (in quotes)
         """
@@ -210,14 +230,19 @@ class Actor(rubbercog.Rubbercog):
             raise discord.BadArgument("Reaction name already exists")
 
         self.reactions[name] = {
-            "match": match[:1].upper(),
-            "type": "T",
+            "match": match,
+            "type": "text",
             "trigger": trigger.lower(),
             "response": response,
             "comment": comment if comment is not None else "",
         }
         self._save_reactions()
         await ctx.send(f"Reaction **{discord.utils.escape_markdown(name)}** added")
+        await self.event.sudo(
+            ctx.author,
+            ctx.location,
+            "New text reaction: `{name}` on `{trigger}`".format(name=name, trigger=trigger),
+        )
 
     @reactions_add.command(name="image", aliases=["img"])
     async def reactions_add_image(
@@ -226,7 +251,7 @@ class Actor(rubbercog.Rubbercog):
         """Add multimedia reaction
 
         name: "Reaction name"
-        match: [Full | Any | Starts | Ends]
+        match: [full | any | starts | ends]
         trigger: "Trigger string" (in quotes)
         filename: Path to an image or a video
         """
@@ -241,14 +266,19 @@ class Actor(rubbercog.Rubbercog):
             raise discord.BadArgument("No such image")
 
         self.reactions[name] = {
-            "match": match[:1].upper(),
-            "type": "I",
+            "match": match,
+            "type": "image",
             "trigger": trigger.lower(),
             "response": filename,
             "comment": comment if comment is not None else "",
         }
         self._save_reactions()
         await ctx.send(f"Media reaction **{name}** added")
+        await self.event.sudo(
+            ctx.author,
+            ctx.location,
+            "New media reaction: `{name}` on `{trigger}`".format(name=name, trigger=trigger),
+        )
 
     @reactions_add.command(name="condition", aliases=["cond"])
     async def reactions_add_condition(self, ctx, name: str, type: str, *, ids: str = None):
@@ -277,6 +307,14 @@ class Actor(rubbercog.Rubbercog):
         self._save_reactions()
         await ctx.send(f"Condition for **{name}** saved")
 
+        # log event
+        if ids is None:
+            message = f"Reaction condition `{type}` for `{name}` cleared."
+        else:
+            message = f"Reaction condition for `{name}`: "
+            f"{type} has to match {', '.join(ids)}"
+        await self.event.sudo(ctx.author, ctx.location, message)
+
     @reactions_add.command(name="comment")
     async def reactions_add_comment(self, ctx, name: str, *, comment: str):
         """Add comment to a reaction
@@ -302,6 +340,7 @@ class Actor(rubbercog.Rubbercog):
         del self.reactions[name]
         self._save_reactions()
         return await ctx.send(f"Reaction **{name}** removed")
+        await self.event.sudo(ctx.author, ctx.channel, f"Reaction `{name}` removed.")
 
     @commands.is_owner()
     @commands.group(name="image", aliases=["img", "images"])
@@ -380,6 +419,7 @@ class Actor(rubbercog.Rubbercog):
             avatar = img.read()
             await self.bot.user.edit(avatar=avatar)
             await ctx.send(content="Dobře, takhle teď budu vypadat:", file=discord.File(path))
+        await self.event.sudo(ctx.author, ctx.channel, f"New bot avatar set.")
 
     @change.command(name="name")
     async def change_name(self, ctx: commands.Context, *args):
@@ -390,6 +430,7 @@ class Actor(rubbercog.Rubbercog):
         name = " ".join(args)
         await self.bot.user.edit(username=name)
         await ctx.send(f"Dobře, od teď jsem **{name}**")
+        await self.event.sudo(ctx.author, ctx.channel, f"New bot name set.")
 
     @change.command(name="activity")
     async def change_activity(self, ctx: commands.Context, type: str, name: str):
