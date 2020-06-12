@@ -40,7 +40,7 @@
 
 		"__comment": "cogs to load by default",
 		"extensions": ["base", "meme", "karma", "librarian", "random",
-					   "review", "stalker", "verify", "voice"]
+					   "review", "stalker", "faceshifter", "voice"]
 	},
 	"__comment": "Special channels",
 	"channels": {

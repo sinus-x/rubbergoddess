@@ -90,8 +90,6 @@ class Config:
 
         ##
         ## REACTION COG
-        self.role_string   = self.get('reaction cog', 'trigger')
-        self.role_channels = self.get('reaction cog', 'channels')
         self.pin_limit     = self.get('reaction cog', 'pin limit')
 
         ##
