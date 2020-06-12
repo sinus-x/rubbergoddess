@@ -7,15 +7,15 @@ configuration or database.
 ### Added
 - Gatekeeper cog
 
-E-mail domains are no longer hardcoded into the cog. See `gatekeeper` section
-of the default configuration file.
+### Removed
+- Verify cog
 
 ### Mods
-- `stdout` and `events` channels: duplicate for terminal stdout, user interaction.
+- `stdout` and `events` output text channels: duplicate for terminal stdout, user interaction.
 These two replace previous logging channels, which weren't clearly defined.
 
 ### Developers
-- Events class, accessible via `self.event.user()` and `self.event.sudo()`.
+- Events class, used for event logging via `self.event.user()` and `self.event.sudo()`.
 
 ### Maintenance
 - Config: **HJSON** instead of **JSON**. Make sure you update the dependencies.
@@ -26,7 +26,6 @@ These two replace previous logging channels, which weren't clearly defined.
 - Faceshifter cog (deprecating some of the code in `features/reaction.py`)
 
 ### Mods
-
 - Change in pseudo-role naming:
   - `---FEKT` becomes `---PROGRAMMES`
   - `---` becomes `---INTERESTS`
