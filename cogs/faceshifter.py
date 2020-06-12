@@ -40,6 +40,7 @@ class Faceshifter(rubbercog.Rubbercog):
     @commands.group(name="subject")
     async def subject(self, ctx):
         """Add or remove subject"""
+        await self.deleteCommand(ctx)
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
 
@@ -63,6 +64,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 # fmt: on
             else:
                 await self._subject_add(ctx, ctx.author, channel)
+        await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
     @subject.command(name="remove")
     async def subject_remove(self, ctx, *, subjects: str):
@@ -84,12 +86,14 @@ class Faceshifter(rubbercog.Rubbercog):
                 # fmt: on
             else:
                 await self._subject_remove(ctx, ctx.author, channel)
+        await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
     @commands.guild_only()
     @commands.check(check.is_verified)
     @commands.group(name="role", aliases=["programme"])
     async def role(self, ctx):
         """Add or remove role"""
+        await self.deleteCommand(ctx)
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
 
@@ -113,6 +117,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 # fmt: on
             else:
                 await self._role_add(ctx, ctx.author, guild_role)
+        await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
     @role.command(name="remove")
     async def role_remove(self, ctx, *, roles: str):
@@ -134,6 +139,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 # fmt: on
             else:
                 await self._role_remove(ctx, ctx.author, guild_role)
+        await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
     ##
     ## Listeners
@@ -229,7 +235,7 @@ class Faceshifter(rubbercog.Rubbercog):
     async def _message_to_tuple_list(self, message: discord.Message) -> list:
         """Return (emote, channel/role) list"""
         # preprocess message content
-        content = message.content.replace("*", "").replace("_", "")
+        content = message.content.replace("*", "").replace("_", "").replace("#", "")
         try:
             content = content.rstrip().split("\n")
         except ValueError:
