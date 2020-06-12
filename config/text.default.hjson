@@ -169,14 +169,9 @@
 		"invalid emote":   "{user}, {not_emote} pro roli {role} není emote."
 	}
 
-	"random": {
-		"roll help":         "`{prefix}roll x [y]`; x, y jsou celočíselná rozmezí.",
-		"roll error":        "{user}, zadej dvě celá čísla.",
-		"dice group error":  "Moc kostek v jedné skupině, maximum je {max}.",
-		"dice side error":   "Moc stěn na kostkách, maximum je {max}.",
-		"dice groups error": "Moc skupin kostek, maximum je {max}.",
-		"wrong syntax":      "Chybná syntax hodu ve skupině {group}.",
-		"help":              "Formát naleznete na https://wiki.roll20.net/Dice_Reference#Drop.2FKeep"
+	random: {
+		answer: "{mention}, asi {option}."
+		flip:   ["Ano", "Ne"]
 	}
 
 	"review": {
