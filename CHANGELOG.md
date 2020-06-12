@@ -16,10 +16,12 @@ These two replace previous logging channels, which weren't clearly defined.
 
 ### Developers
 - Events class, used for event logging via `self.event.user()` and `self.event.sudo()`.
+- Exceptions, handled inside of the cog.
 
 ### Maintenance
 - Config: **HJSON** instead of **JSON**. Make sure you update the dependencies.
 - Config: major naming change. Go line-by-line and copy values that apply.
+- Actor: using word values (`full` instead of `F`, `text` instead of `T`)
 
 ## [0.2.0]
 ### Added
