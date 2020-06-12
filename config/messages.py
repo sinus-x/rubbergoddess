@@ -91,39 +91,6 @@ class Messages:
     review_add_denied = "{user}, na přidání hodnocení předmětu nemáš právo."
     subject_format = "```" + prefix + "subject [add|remove] <zkratka předmětu>```"
 
-    info = [
-        [
-            ("karma", "Vypíše vaši karmu, kolik pozitivní a negativní karmy jste rozdali."),
-            ("karma stalk <user>", "Vypíše karmu uživatele, kolik +/- karmy rozdal."),
-            ("karma get", "Vypíše, které emoty mají hodnotu 1 a -1."),
-            ("karma get <emote>", "Vrátí karma hodnotu emotu."),
-            ("karma vote", "Odstartuje hlasování o hodnotě zatím neohodnoceného emotu."),
-            ("karma revote <emote>", "Odstartuje hlasování o nové hodnotě emotu."),
-            ("karma message [<url>|<id>]", "Zobrazí karmu získanou za zprávu"),
-        ],
-        [
-            ("leaderboard [offset]", "Karma leaderboard"),
-            ("bajkarboard [offset]", "Karma leaderboard v opačném pořadí"),
-            ("givingboard [offset]", "Leaderboard rozdávání pozitivní karmy."),
-            ("ishaboard [offset]", "Leaderboard rozdávání negativní karmy."),
-            (review_add_format_short[4:].replace("`", ""), "Přidá recenzi na předmět."),
-            (review_get_format[4:].replace("`", ""), "Vypíše recenze na vybraný předmět."),
-            (review_remove_format[4:].replace("`", ""), "Odstraní hodnocení."),
-            ("vote", "Zahájí hlasování."),
-        ],
-        [
-            ("roll X Y", "Vygeneruje náhodné celé číslo z intervalu <**X**, **Y**>."),
-            ("flip", "Hodí mincí"),
-            ("pick *Is foo bar? Yes No Maybe*", "Vybere jedno ze slov za otazníkem."),
-            ("diceroll", "Všechno možné házení kostkami."),
-            ("week", "Vypíše, kolikátý je zrovna týden " "a jestli je sudý nebo lichý."),
-            ("uhoh", "Vypíše počet uh ohs od spuštění."),
-            ("uptime", "Vypíše čas spuštění a čas uplynulý od spuštění."),
-            ("kachna", "Nejsme FIT, ani to nezkoušej."),
-            ("goddess", "Vypíše tuto zprávu."),
-        ],
-    ]
-
     # Core
     log_error = "Error in {channel} by {user}:\n> {command}"
     log_exception = "Exception in {channel} by {user}:\n> {command}\n{error}"

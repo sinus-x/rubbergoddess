@@ -36,16 +36,6 @@ class Base(rubbercog.Rubbercog):
         """Bot latency"""
         await ctx.send("pong: **{:.2f} s**".format(self.bot.latency))
 
-    @commands.cooldown(rate=2, per=60.0, type=commands.BucketType.user)
-    @commands.command(aliases=["goddess"])
-    async def god(self, ctx):
-        """Display information about bot functions"""
-        embed = self.reaction.make_embed(1)
-        msg = await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx)
-        await msg.add_reaction("◀")
-        await msg.add_reaction("▶")
-
 
 def setup(bot):
     bot.add_cog(Base(bot))
