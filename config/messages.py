@@ -16,17 +16,6 @@ class Messages:
     bot_room_redirect = "{user} " + emote.sad + " 👉 <#{bot_room}>\n"
     message_link_prefix = "https://discordapp.com/channels/" + str(config.guild_id) + "/"
 
-    uhoh_counter = "{uhohs} uh ohs od spuštění."
-    uptime_message = "Up since:  `{boottime}`\nUptime:\t`{uptime}`"
-
-    hoarders_none = "Žádné jsem nenašla."
-    hoarders_warn = (
-        "Ahoj {user}, všimla jsem si, že máš přidaný na FEKT serveru více než 1 ročník.\n"
-        "Aby byl celý server přehlednější, byli bychom rádi, kdyby sis nechal/a jen ten, který studuješ. "
-        "Nemusíš se bát, že přijdeš o ostatní předměty, můžeš si je přidat v <#692626097669406720>.\n"
-        "Díky a jestli máš nějaké dotazy, zeptej se někoho z MODs (Jsem robot)."
-    )
-
     karma = (
         "{user} Karma uživatele `{target}` je **{karma}** "
         "(**{order}.**)\nA rozdal:\n"
@@ -67,18 +56,6 @@ class Messages:
     member_not_found = "{user} Nikoho takového jsem nenašla."
     karma_lederboard_offser_error = "{user} Špatný offset, zadej kladné číslo"
 
-    role_add_denied = "{user}, na přidání role {role} nemáš právo."
-    role_remove_denied = "{user}, na odebrání role {role} nemáš právo."
-    subject_add_denied_guest = "{user}, předměty si mohou přidávat jen studenti VUT."
-    subject_remove_denied_guest = "{user}, předměty si mohou odebrat jen studenti VUT."
-    subject_add_denied_notsubject = "{user}, přidávat se dají jen kanály předmětů."
-    subject_remove_denied_notsubject = "{user}, odebrat se dají jen kanály předmětů."
-    role_invalid_line = "{user}, řádek `{line}` je neplatný."
-    role_format = "{user}, použij `" + prefix + "goddess`."
-    role_not_on_server = "Nepíšeš na serveru, takže předpokládám, že myslíš role VUT FEKT serveru."
-    role_not_role = "{user}, {not_role} není role."
-    role_invalid_emote = "{user}, {not_emote} pro roli {role} není emote."
-
     rng_generator_format = (
         "Použití: `" + prefix + "roll x [y]`\n"
         "x, y je rozmezí čísel,\n"
@@ -86,100 +63,6 @@ class Messages:
         "pokud y není specifikováno, je považováno za 0."
     )
     rng_generator_format_number = "{user}, zadej dvě celá čísla, **integers**."
-
-    rd_too_many_dice_in_group = "Příliš moc kostek v jedné skupině, maximum je {maximum}."
-    rd_too_many_dice_sides = "Příliš moc stěn na kostkách, maximum je {maximum}."
-    rd_too_many_dice_groups = "Příliš moc skupin kostek, maximum je {maximum}."
-    rd_format = "Chybná syntax hodu ve skupině {group}."
-    rd_help = (
-        "Formát naleznete na https://wiki.roll20.net/Dice_Reference\n"
-        "Implementovány featury podle obsahu: **8. Drop/Keep**"
-    )
-
-    # VERIFY
-    verify_no_email = "__Tvůj__ e-mail, {user} ({channel} {emote})"
-    verify_login_only = (
-        "{user}, ještě chybí, jestli jsi přímo z FEKTu, nebo z VUT ({channel} {emote})"
-    )
-    verify_no_login = "__Tvůj__ xlogin, {user} ({channel} {emote})"
-    verify_wrong_arguments = (
-        "> ?verify **{login}**\n" + "{user}, podívej se do {channel} na příklad. {emote}"
-    )
-    verify_login_exists = "{user}, něco se pokazilo. Napiš DM {admin}"
-
-    verify_already_sent = "{user}, e-mail už jsem ti jednou poslala (kdyžtak napiš DM {admin})"
-    verify_already_verified_role = "{user}, tebe už znám... {admin}?"
-    verify_already_verified_db = "{user} se podle záznamů už verifikoval... {admin}?"
-    verify_send_kicked = "{admin}, {user} byl vykopnut a snaží se verifikovat."
-    verify_send_banned = "{admin}, {user} byl zabanován a snaží se verifikovat."
-    verify_send_success = (
-        "> {command}\n"
-        + "V pořádku, {user}, poslala jsem ti ověřovací kód. "
-        + "Pro verifikaci použij: `"
-        + prefix
-        + "submit kód`"
-    )
-    verify_send_format = (
-        "Pro získání kódu použij příkaz podle toho, kam patříš:```\n"
-        + "{}verify FEKT xlogin00\n".format(prefix)
-        + "{}verify VUT xlogin00\n".format(prefix)
-        + "{}verify e-mail (ideálně školní)```\n".format(prefix)
-    )
-
-    verify_verify_no_code = "{user}, ten kód, který jsem ti poslala na e-mail {emote}"
-    verify_verify_bad_input = "{user}, zkontroluj si kód, nebyl správně napsaný {emote}"
-    verify_verify_not_found = "{user}, nemám tě v databázi, je nutné zažádat o verifikační kód"
-    verify_verify_wrong_code = "Špatný kód, {user}."
-    verify_verify_manual = "{admin}, {user} asi nemá skupinu."
-    verify_verify_success_private = "{user} Gratuluji k verifikaci!"
-    verify_verify_success_public = (
-        emote.welcome + " Nový uživatel {user} byl úspěšně přidán s rolí **{group}**. "
-    )
-    verify_congrats_fekt = (
-        "Obor si zapiš v <#692086702382121010>\n\n"
-        "V <#692084608778633217> získáš další role pro zájmy\n"
-        "Obecné informace jsou v <#692084651849678938>.\n\n"
-        "Neboj se na cokoliv zeptat nebo někomu odpovědět, zahoď formality. FEKT tě vítá."
-    )
-    verify_congrats_teacher = (
-        "Obecné informace jsou v <#692084651849678938>; <#692084608778633217> slouží ke přidání různých zájmových místností. \n\n"
-        "Celý server je ale neformální, proto zvažte, do kterých konverzací se zapojíte. "
-        "Jaký režim si nastavíte v předmětové místnosti se svými studenty je ale na vás.\n"
-        "Jestli máte nějaké dotazy, stačí napsat zprávu někomu z MODs"
-    )
-    verify_congrats_guest = (
-        "V <#692084608778633217> získáš role pro zájmy\n"
-        "Obecné informace jsou v <#692084651849678938>.\n\n"
-        "Nemusíš se bát někomu odpovědět, formality zahoď. FEKT tě vítá."
-    )
-    verify_verify_format = "{user}, pro verifikaci použij: `" + prefix + "submit kód`"
-
-    verify_wrong_channel = "To zde použít nejde, {user}"
-
-    # VOTE
-    vote_format = (
-        "Použití vote:\n```" + prefix + "vote [datum] [čas] [otázka]\n"
-        "<emote> <odpověď 1>\n"
-        "<emoji> <odpověď 2>\n"
-        "...```\n"
-        "Datum je ve formátu `dd.MM.(yy)`, čas `hh:mm`.\n"
-        "Pouze čas použije dnešní datum, pouze datum použije čas 00:00.\n"
-        "Bez argumentů času bude hlasování funkční neustále.\n"
-        "(Indikace výherné možnosti přežije i vypnutí.)"
-    )
-    vote_not_emoji = "{not_emoji} není emoji. " + emote.sad
-    vote_bad_date = "Hlasování může skončit jen v budoucnosti. " + emote.objection
-
-    vote_winning = "Prozatím vyhrává možnost {winning_emoji} „{winning_option}“ s {votes} hlasy."
-    vote_winning_multiple = "Prozatím vyhrávají možnosti {winning_emojis} s {votes} hlasy."
-
-    vote_none = "Čekám na hlasy."
-
-    vote_result = "V hlasování „{question}“ vyhrála možnost {winning_emoji} „{winning_option}“ s {votes} hlasy."
-    vote_result_multiple = (
-        "V hlasování „{question}“ vyhrály možnosti {winning_emojis} s {votes} hlasy."
-    )
-    vote_result_none = "V hlasování „{question}“ nikdo nehlasoval. " + emote.sad
 
     review_format = "```" + prefix + "reviews [add|remove|<zkratka předmětu>]```"
     review_add_format_short = (
@@ -207,14 +90,6 @@ class Messages:
     review_remove_error = "Hodnocení předmětu nebylo nalezeno"
     review_add_denied = "{user}, na přidání hodnocení předmětu nemáš právo."
     subject_format = "```" + prefix + "subject [add|remove] <zkratka předmětu>```"
-
-    git_pr = "https://github.com/sinus-x/rubbergoddess/pulls"
-    git_issues = "https://github.com/sinus-x/rubbergoddess/issues"
-    uhoh = "uh oh"
-    question = ["nech mě " + emote.sad, "nech mě " + emote.angry, emote.angry, emote.ree]
-
-    name_day_cz = "Dnes má svátek {name} " + emote.happy
-    name_day_sk = "Dnes má meniny {name} " + emote.happy
 
     info = [
         [
@@ -265,18 +140,3 @@ class Messages:
     err_cooldown = "Tento příkaz nemůžeš zadávat tak často"
     err_extension_err = "Chyba rozšíření " + emote.ree
     err_bad_argument = "Chyba v parsování argumentu " + emote.sad
-
-    # VERIFY
-    verify_not_jail = "Verifikovat se jde jen v #jail."
-    verify_log = "**VERIFY**: {user} in {channel}: {message}"
-
-    # MEME
-    meme_hug_not_found = "Nikoho takového nevidím " + emote.sad
-
-    # STALKER
-    stalker_err_read = "Could not read from database."
-    stalker_err_update = "Could not update user entry."
-    stalker_err_new_entry_exists = "Given user ID is already present in the database."
-    stalker_err_new_entry_write = "Could not write to the database."
-    stalker_err_delete = "Could not delete user."
-    stalker_err_delete_not_found = "User could not be deleted because they are not in the database."

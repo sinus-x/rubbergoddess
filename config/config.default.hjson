@@ -55,6 +55,8 @@
 			base
 			# managed role and channel assignment, react-to-role functionality
 			faceshifter
+			# server verification
+			gatekeeper
 			# purge messages, duplicate subject channel for teacher
 			janitor
 			# see and manage karma
@@ -71,8 +73,6 @@
 			shop
 			# manage users and make database lookups
 			stalker
-			# add role to new users based on their e-mail
-			verify
 			# automatic voice channel creation
 			voice
 			# check against image reposts

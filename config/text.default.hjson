@@ -179,31 +179,6 @@
 		"help":              "Formát naleznete na https://wiki.roll20.net/Dice_Reference#Drop.2FKeep"
 	}
 
-	"verify": {
-		"verify format":         "Pro získání kódu použij příkaz podle toho, kam patříš:```\n{prefix}verify FEKT xlogin00\n{prefix}verify FUT xlogin00\n{prefix}verify e-mail (ideálně školní)```",
-		"mail sent success":     "> {command}\nV pořádku, {user}, poslala jsem ti ověřovací kód. Pro verifikaci použij: `{prefix}submit kód`.",
-
-		"no email":              "**Tvůj** e-mail, {user} ({channel} {emote})",
-		"login only":            "{user} Napiš jestli jsi přímo z FEKTu, nebo z VUT. ({channel} {emote})",
-		"wrong arguments":       "> **{login}**\n{user}, podívej se do {channel} na příklad. {emote}",
-		"login exists":          "{user}, něco se pokazilo. Napiš DM někomu z {role}.",
-		"mail already sent":     "{user}, e-mail jsem ti už jenou poslala. Kdyžtak napiš DM někomu z {role}.",
-		"already verified role": "{user}, tebe už znám... {role}?",
-		"already verified db":   "{user} už tu z záznamech mám... {role}?",
-		"kicked":                "{role}, {user} jsme vykopli a snaží se verifikovat.",
-		"banned":                "{role}, {user} jsme zabanovali a snaží se verifikovat.",
-
-		"submit format":     "{user}, pro verifikaci použij: `{prefix}submit kód`",
-		"no code":           "{user}, ten kód, který jsem ti poslala na e-mail {emote}",
-		"wrong code":        "{user}, zkontroluj si kód, nebyl správně napsaný {emote}",
-		"no code requested": "{user}, nemám tě v databázi, musíš si zažádat o verifikační kód.",
-		"verify manual":     "{role}, {user} asi nemá skupinu.",
-
-		"sucess public":         "{emote.welcome} Nový uživatel {user} byl úspěšně přidán s rolí **{group}**.",
-		"success private fekt":  "Gratuluji k verifikaci! Obor si zapiš v {programmes}.\n\nV {roles} získáš další role pro zájmy,\nobecné informace jsou v {info}.\n\nNeboj se na cokoliv zeptat nebo někomu odpovědět. FEKT tě vítá.",
-		"success private guest": "Gratuluji k verifikaci!\n\nV {roles} získáš role pro zájmy,\nobecné informace jsou v {info}.\n\nFEKT tě vítá."
-	}
-
 	"review": {
 		"no permission": "{user}, nemáš právo hodnotit předměty.",
 		"added":         "Hodnocení předmětu bylo úspěšně přidáno.",
