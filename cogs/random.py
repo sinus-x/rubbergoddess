@@ -17,7 +17,7 @@ class Random(rubbercog.Rubbercog):
     @commands.command()
     async def pick(self, ctx, *args):
         """"Pick an option"""
-        option = self.stanitise(random.choice(args), limit=50)
+        option = self.sanitise(random.choice(args), limit=50)
         if option is not None:
             await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
         await self.roomCheck(ctx)
@@ -30,15 +30,14 @@ class Random(rubbercog.Rubbercog):
         await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
         await self.roomCheck(ctx)
 
-    @commands.command(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def random(self, ctx, first: int, second: int = None):
         """Pick number from interval"""
         if second is None:
-            second = first
-            first = 0
+            second = 0
 
-        if second > first:
+        if first > second:
             first, second = second, first
 
         option = str(random.randint(first, second))

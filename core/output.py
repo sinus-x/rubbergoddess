@@ -194,7 +194,7 @@ class Event:
         self.channel = None
 
         self.user_template = "{user} in {location}: {message}"
-        self.sudo_template = "{user} in {location}: {message}"
+        self.sudo_template = "**SUDO** {user} in {location}: {message}"
 
     def getChannel(self):
         if self.channel is None:

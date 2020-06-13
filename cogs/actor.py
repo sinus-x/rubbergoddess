@@ -91,7 +91,7 @@ class Actor(rubbercog.Rubbercog):
         await self.event.sudo(
             ctx.author,
             ctx.channel,
-            f"Text sent to {channel.mention}:\n> _{ctx.message.content}\n> {m.jump_url}",
+            f"Text sent to {channel.mention}:\n> _{ctx.message.content}_\n> {m.jump_url}",
         )
 
     @send.command(name="image")
