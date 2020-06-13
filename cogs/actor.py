@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 from requests import get
 
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 
@@ -70,11 +70,7 @@ class Actor(rubbercog.Rubbercog):
     @commands.check(check.is_bot_owner)
     async def send(self, ctx):
         """Send post to a channel"""
-        await self.deleteCommand(ctx)
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
-            await self.deleteCommand(ctx)
-            return
+        await utils.send_help(ctx)
 
     @send.command(name="text")
     async def send_text(self, ctx, channel: discord.TextChannel, *, text: str):
@@ -101,8 +97,7 @@ class Actor(rubbercog.Rubbercog):
         channel: Target text channel
         filename: A filename
         """
-        if channel is None or text is None:
-            return await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
         now = time.monotonic()
         try:
@@ -123,10 +118,7 @@ class Actor(rubbercog.Rubbercog):
     @commands.check(check.is_mod)
     async def reactions(self, ctx):
         """Send post to a text channel"""
-        await self.deleteCommand(ctx)
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
-            return
+        await utils.send_help(ctx)
 
     @reactions.command(name="list")
     async def reactions_list(self, ctx):
@@ -182,6 +174,8 @@ class Actor(rubbercog.Rubbercog):
         message = "\n".join(result)
         await ctx.send(f"```\n{message}\n```")
 
+        await utils.delete(ctx)
+
     @reactions.command(name="usage", aliases=["stat", "stats", "statistics"])
     async def reactions_usage(self, ctx):
         """See reactions usage since start"""
@@ -205,11 +199,12 @@ class Actor(rubbercog.Rubbercog):
         embed.add_field(name=f"{total} in total", value="\n".join(content))
         await ctx.send(embed=embed, delete_after=config.delay_embed)
 
+        await utils.delete(ctx)
+
     @reactions.group(name="add", aliases=["edit"])
     async def reactions_add(self, ctx):
         """Add reaction trigger"""
-        if ctx.invoked_subcommand is None:
-            return await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
     @reactions_add.command(name="text")
     async def reactions_add_text(
@@ -223,7 +218,7 @@ class Actor(rubbercog.Rubbercog):
         response: "Response string" (in quotes)
         """
         if not self._check_match_string(match):
-            return await ctx.send_help(ctx.invoked_with)
+            await utils.send_help(ctx)
 
         name = discord.utils.escape_markdown(name)
         if name in self.reactions.keys():
@@ -240,9 +235,11 @@ class Actor(rubbercog.Rubbercog):
         await ctx.send(f"Reaction **{discord.utils.escape_markdown(name)}** added")
         await self.event.sudo(
             ctx.author,
-            ctx.location,
-            "New text reaction: `{name}` on `{trigger}`".format(name=name, trigger=trigger),
+            ctx.channel,
+            'New text reaction: `{name}` on "`{trigger}`"'.format(name=name, trigger=trigger),
         )
+
+        await utils.delete(ctx)
 
     @reactions_add.command(name="image", aliases=["img"])
     async def reactions_add_image(
@@ -276,9 +273,11 @@ class Actor(rubbercog.Rubbercog):
         await ctx.send(f"Media reaction **{name}** added")
         await self.event.sudo(
             ctx.author,
-            ctx.location,
+            ctx.channel,
             "New media reaction: `{name}` on `{trigger}`".format(name=name, trigger=trigger),
         )
+
+        await utils.delete(ctx)
 
     @reactions_add.command(name="condition", aliases=["cond"])
     async def reactions_add_condition(self, ctx, name: str, type: str, *, ids: str = None):
@@ -313,7 +312,9 @@ class Actor(rubbercog.Rubbercog):
         else:
             message = f"Reaction condition for `{name}`: "
             f"{type} has to match {', '.join(ids)}"
-        await self.event.sudo(ctx.author, ctx.location, message)
+        await self.event.sudo(ctx.author, ctx.channel, message)
+
+        await utils.delete(ctx)
 
     @reactions_add.command(name="comment")
     async def reactions_add_comment(self, ctx, name: str, *, comment: str):
@@ -329,6 +330,8 @@ class Actor(rubbercog.Rubbercog):
         self._save_reactions()
         await ctx.send(f"Comment for **{name}** set")
 
+        await utils.delete(ctx)
+
     @reactions.command(name="remove", aliases=["delete", "rm", "del"])
     async def reactions_remove(self, ctx, name: str):
         """Remove reaction trigger
@@ -342,14 +345,13 @@ class Actor(rubbercog.Rubbercog):
         return await ctx.send(f"Reaction **{name}** removed")
         await self.event.sudo(ctx.author, ctx.channel, f"Reaction `{name}` removed.")
 
+        await utils.delete(ctx)
+
     @commands.is_owner()
     @commands.group(name="image", aliases=["img", "images"])
     async def actor_image(self, ctx: commands.Context):
         """Manage images available to the bot"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
-            await self.deleteCommand(ctx)
-            return
+        await utils.send_help(ctx)
 
     @actor_image.command(name="list")
     async def actor_image_list(self, ctx: commands.Context):
@@ -364,6 +366,8 @@ class Actor(rubbercog.Rubbercog):
         if result == "":
             result = "(No images)"
         await ctx.send(f"```\n{result}\n```")
+
+        await utils.delete(ctx)
 
     @actor_image.command(name="download", aliases=["dl"])
     async def actor_image_download(self, ctx, url: str, filename: str):
@@ -395,6 +399,8 @@ class Actor(rubbercog.Rubbercog):
         os.remove(self.path + filename)
         await ctx.send("File deleted")
 
+        await utils.delete(ctx)
+
     @actor_image.command(name="show")
     async def actor_image_show(self, ctx, filename: str):
         """Show an image
@@ -403,14 +409,15 @@ class Actor(rubbercog.Rubbercog):
         """
         await self.send_image(ctx, ctx.channel, filename)
 
+        await utils.delete(ctx)
+
     @commands.cooldown(rate=1, per=600.0, type=commands.BucketType.default)
     @commands.check(check.is_bot_owner)
     @commands.check(check.is_in_modroom)
     @commands.group(name="change")
     async def change(self, ctx: commands.Context):
         """Change the bot"""
-        if ctx.invoked_subcommand is None:
-            return await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
     @change.command(name="avatar")
     async def change_avatar(self, ctx: commands.Context, path: str):

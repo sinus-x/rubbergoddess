@@ -1,8 +1,10 @@
 import git
+
 import discord
 from discord.ext import commands
 
 from core import config
+from core.text import text
 from config.messages import Messages
 
 
@@ -67,21 +69,6 @@ def fill_message(message_name, *args, **kwargs):
         raise ValueError("Invalid template {}".format(message_name))
 
 
-async def notify(ctx: commands.Context, msg: str):
-    """Show an embed.
-
-    A skinny version of rubbercog.throwNotification()
-    """
-    if ctx.message is None:
-        return
-    if msg is None:
-        msg = ""
-    embed = discord.Embed(title=ctx.message.content, color=config.color)
-    embed.add_field(name="Výsledek", value=msg, inline=False)
-    embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-    await ctx.send(embed=embed, delete_after=config.delay_embed)
-
-
 def seconds2str(time):
     time = int(time)
     D = 3600 * 24
@@ -104,3 +91,37 @@ def seconds2str(time):
     if s > 1:
         return f"{s} vteřiny"
     return "vteřinu"
+
+
+##
+## before_invoke(), after_invoke() functions
+##
+
+
+async def room_check(ctx: commands.Context):
+    if not hasattr(ctx, "channel") or not hasattr(ctx.channel, "id"):
+        return
+
+    if ctx.channel.id not in config.get("channels", "bot allowed"):
+        # we do not have `bot` variable, so we have to construct the botroom mention directly
+        await ctx.send(
+            text.fill(
+                "server",
+                "botroom redirect",
+                mention=ctx.author.mention,
+                channel=f"<#{config.get('chanels', 'botspam')}>",
+            )
+        )
+
+
+async def delete(ctx: commands.Context):
+    if ctx.message is not None:
+        await ctx.message.delete()
+
+
+async def send_help(ctx: commands.Context):
+    if not hasattr(ctx, "command") or not hasattr(ctx.command, "qualified_name"):
+        return
+    if ctx.invoked_subcommand is not None:
+        return
+    await ctx.send_help(ctx.command.qualified_name)

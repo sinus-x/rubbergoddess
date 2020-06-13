@@ -48,7 +48,7 @@
 	"server": {
 		"guild only":       "Tohle funguje jenom na VUT FEKT serveru",
 		"channel only":     "Tohle funguje jenom v {channel}",
-		"botroom redirect": "{user} {emote.sad} 👉 {channel}"
+		"botroom redirect": "{mention} {emote.sad} 👉 {channel}"
 	}
 
 	"admin": {
