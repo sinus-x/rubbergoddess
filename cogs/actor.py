@@ -439,16 +439,6 @@ class Actor(rubbercog.Rubbercog):
         await ctx.send(f"Dobře, od teď jsem **{name}**")
         await self.event.sudo(ctx.author, ctx.channel, f"New bot name set.")
 
-    @change.command(name="activity")
-    async def change_activity(self, ctx: commands.Context, type: str, name: str):
-        """Change bot's activity
-
-        type: streaming, playing, listening
-        name: The activity name
-        """
-        await self.throwNotification(ctx, text.get("error", "not implemented"))
-        await self.deleteCommand(ctx)
-
 
 def setup(bot):
     bot.add_cog(Actor(bot))
