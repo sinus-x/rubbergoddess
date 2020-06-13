@@ -74,8 +74,7 @@ class Errors(rubbercog.Rubbercog):
         # fmt: on
 
         # display error message
-        await self.throwError(ctx, error)
-        await self.log(ctx, "on_command_error", quote=True, msg=error)
+        await self.output.error(ctx, "", error)
 
         output = "Ignoring exception in command {}: \n\n".format(ctx.command)
         output += "".join(traceback.format_exception(type(error), error, error.__traceback__))
