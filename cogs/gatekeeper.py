@@ -50,7 +50,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         role = self._email_to_role(email)
 
         # generate code
-        code = self._generate_and_save_code(ctx.author, role=role)
+        code = self._add_user(ctx.author, login=email, role=role)
 
         # send mail
         await self._send_verification_email(ctx.author, email, code)
@@ -157,6 +157,7 @@ class Gatekeeper(rubbercog.Rubbercog):
                 raise exceptions.BadEmail(constraint=constraint)
 
         # domain not found, fallback to basic guest role
+        role_id = registered.get(".")
         constraint = list(constraints.values())[-1]
         match = re.fullmatch(constraint, username)
         # return
@@ -165,11 +166,11 @@ class Gatekeeper(rubbercog.Rubbercog):
         else:
             raise exceptions.BadEmail(constraint=constraint)
 
-    def _generate_and_save_code(self, member: discord.Member, role: discord.Role) -> str:
+    def _add_user(self, member: discord.Member, login: str, role: discord.Role) -> str:
         code_source = string.ascii_uppercase.replace("O", "").replace("I", "") + string.digits
         code = "".join(random.choices(code_source, k=8))
 
-        repo_u.save_code(code=code, discord_id=member.id, group=role.name)
+        repo_u.add(discord_id=member.id, login=login, group=role.name, code=code)
         return code
 
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
@@ -183,7 +184,7 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         richtext = text.get("gatekeeper", "html mail").format(
             # styling
-            color_bg=config.color,
+            color_bg="#54355F",
             color_fg="white",
             font_family="Arial,Verdana,sans-serif",
             # names
