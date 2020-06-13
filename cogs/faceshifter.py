@@ -227,7 +227,10 @@ class Faceshifter(rubbercog.Rubbercog):
     ## Helper functions
     ##
     async def _get_subject(self, location, shortcut: str) -> discord.TextChannel:
-        return discord.utils.get(location.guild.text_channels, name=shortcut)
+        db_subject = repo_s.get(shortcut)
+        if db_subject is not None:
+            return discord.utils.get(location.guild.text_channels, name=shortcut)
+        return
 
     async def _get_role(self, location, role: str) -> discord.Role:
         return discord.utils.get(location.guild.roles, name=role)
@@ -326,7 +329,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 break
         else:
             # they do not have neccesary role
-            await location.send(text.fill("deny subject", mention=member.mention))
+            await location.send(text.fill("faceshifter", "deny subject", mention=member.mention))
             return
 
         await channel.set_permissions(member, view_channel=True)
