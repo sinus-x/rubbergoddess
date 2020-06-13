@@ -140,7 +140,7 @@ class Stalker(rubbercog.Rubbercog):
 
     @commands.guild_only()
     @commands.group(aliases=["db"])
-    @commands.check(check.is_mod)
+    @commands.check(check.is_elevated)
     async def database(self, ctx: commands.Context):
         """Manage users"""
         await utils.send_help(ctx)
@@ -160,7 +160,7 @@ class Stalker(rubbercog.Rubbercog):
         group: A role from `roles_native` or `roles_guest` in config file
         """
         if member is None or login is None or group is None:
-            return utils.send_help(ctx)
+            return await utils.send_help(ctx)
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
