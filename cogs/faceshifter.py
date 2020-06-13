@@ -328,7 +328,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 break
         else:
             # they do not have neccesary role
-            await location.send(text.fill("deny subject", mention=member.mention))
+            await location.send(text.fill("faceshifter", "deny subject", mention=member.mention))
             return
 
         await channel.set_permissions(member, view_channel=True)
