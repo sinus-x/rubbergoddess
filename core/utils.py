@@ -3,7 +3,7 @@ import git
 import discord
 from discord.ext import commands
 
-from core import config
+from core.config import config
 from core.text import text
 from config.messages import Messages
 
@@ -109,7 +109,7 @@ async def room_check(ctx: commands.Context):
                 "server",
                 "botroom redirect",
                 mention=ctx.author.mention,
-                channel=f"<#{config.get('chanels', 'botspam')}>",
+                channel=f"<#{config.get('channels', 'botspam')}>",
             )
         )
 

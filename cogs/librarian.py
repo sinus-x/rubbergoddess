@@ -4,10 +4,10 @@ from datetime import date
 import discord
 from discord.ext import commands
 
+from core import rubbercog, utils
 from core.config import config
 from core.text import text
 from core.emote import emote
-from core import rubbercog
 
 
 class Librarian(rubbercog.Rubbercog):
@@ -50,7 +50,8 @@ class Librarian(rubbercog.Rubbercog):
         embed.add_field(name="Studijní", value="{} ({})".format(stud_type, stud_week))
         embed.add_field(name="Kalendářní", value="{} ({})".format(cal_type, cal_week))
         await ctx.send(embed=embed)
-        await self.deleteCommand(ctx)
+
+        await utils.delete(ctx)
 
     @commands.command(aliases=["pocasi", "pocasie"])
     async def weather(self, ctx, *args):
@@ -92,7 +93,8 @@ class Librarian(rubbercog.Rubbercog):
             await ctx.send("Rip token")
         else:
             await ctx.send("Město nenalezeno! " + emote.sad + " (" + res["message"] + ")")
-        await self.deleteCommand(ctx)
+
+        await utils.delete(ctx)
 
 
 def setup(bot):

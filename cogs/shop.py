@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import exceptions, rubbercog, check
+from core import exceptions, rubbercog, check, utils
 from core.config import config
 from core.text import text
 from repository import user_repo, karma_repo
@@ -28,15 +28,15 @@ class Shop(rubbercog.Rubbercog):
         if len(items) == 0:
             result += "(No items)"
         await ctx.send("```" + result + "```")
-        await self.deleteCommand(ctx)
+
+        await utils.delete(ctx)
 
     @commands.bot_has_permissions(manage_nicknames=True)
     @commands.check(check.is_verified)
     @commands.group(name="nickname")
     async def nickname(self, ctx):
         """Change your nickname"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
     @nickname.command(name="set")

@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
-from core import check, rubbercog
 from repository import user_repo
 
 repository = user_repo.UserRepository()
@@ -33,12 +33,11 @@ class Stalker(rubbercog.Rubbercog):
     @commands.group(name="whois", aliases=["gdo"])
     async def whois(self, ctx: commands.Context):
         """Get information about user"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+        await utils.send_help(ctx)
 
     @whois.command(name="member", aliases=["tag", "user", "id"])
     async def whois_member(
-        self, ctx: commands.Context, member: discord.Member = None, pin=None, log: bool = True
+        self, ctx: commands.Context, member: discord.Member = None, log: bool = True
     ):
         """Get information about guild member
 
@@ -46,20 +45,15 @@ class Stalker(rubbercog.Rubbercog):
         pin: A "pin" string that will prevent the embed from disappearing
         """
         if member is None:
-            await self.throwHelp(ctx)
-            return
+            return await utils.send_help(ctx)
 
-        # define variables
-        pin = self.parseArg(pin)
         # get user from database
         try:
             dbobj = repository.filterId(discord_id=member.id)[0]
         except IndexError:
             dbobj = None
 
-        t = "📌 " if pin else ""
-        t += "Whois lookup"
-        embed = discord.Embed(color=config.color, title=t, description=member.mention)
+        embed = discord.Embed(color=config.color, title="Whois lookup", description=member.mention)
         ni = discord.utils.escape_markdown(member.nick) if member.nick else None
         na = discord.utils.escape_markdown(member.name)
         n = f"**{na}** (nick **{ni}**)" if ni else f"**{na}**"
@@ -106,29 +100,22 @@ class Stalker(rubbercog.Rubbercog):
         )
 
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-        if pin:
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(embed=embed, delete_after=config.delay_embed)
-        if log:
-            await self.log(ctx, "Database entry lookup", quote=True)
-        await self.deleteCommand(ctx)
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+        await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
+
+        await utils.delete(ctx)
 
     @whois.command(name="login", aliases=["xlogin", "vutlogin"])
-    async def whois_login(
-        self, ctx: commands.Context, login: str = None, pin=None, log: bool = True
-    ):
+    @commands.check(check.is_elevated)
+    async def whois_login(self, ctx: commands.Context, login: str = None, log: bool = True):
         """Get information about xlogin
 
         login: A xlogin
-        pin: Optional. Pin if 'pin'
         """
         if login is None:
-            await self.throwHelp(ctx)
-            return
+            return await utils.send_help(ctx)
 
-        # define variables
-        pin = self.parseArg(pin)
         # get user from database
         try:
             dbobj = repository.filterLogin(login=login)[0]
@@ -137,30 +124,26 @@ class Stalker(rubbercog.Rubbercog):
             member = None
 
         if member:
-            await self.whois_member(ctx, member, pin=pin, log=True)
+            await self.whois_member(ctx, member, log=True)
             return
 
         t = "Whois lookup"
-        if pin:
-            t = "📌 " + t
         embed = discord.Embed(color=config.color, title=t)
         embed.add_field(name="Action unsuccessful", value="No user **{}** found.".format(login))
         embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-        if pin:
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(embed=embed, delete_after=config.delay_embed)
-        if log:
-            await self.log(ctx, "No xlogin found", quote=True)
-        await self.deleteCommand(ctx)
+
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+        await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
+
+        await utils.delete(ctx)
 
     @commands.guild_only()
     @commands.group(aliases=["db"])
     @commands.check(check.is_mod)
     async def database(self, ctx: commands.Context):
         """Manage users"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+        await utils.send_help(ctx)
 
     @database.command(name="add")
     async def database_add(
@@ -177,8 +160,7 @@ class Stalker(rubbercog.Rubbercog):
         group: A role from `roles_native` or `roles_guest` in config file
         """
         if member is None or login is None or group is None:
-            await self.throwHelp(ctx)
-            return
+            return utils.send_help(ctx)
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
@@ -212,8 +194,9 @@ class Stalker(rubbercog.Rubbercog):
             await member.add_roles(group)
 
         # display the result
-        await self.log(ctx, "Database entry added", quote=True)
         await self.whois_member(ctx, member, log=False)
+
+        await self.event.sudo(ctx.author, ctx.channel, f"New user {member} ({group.name})")
 
     @database.command(name="remove", aliases=["delete"])
     async def database_remove(
@@ -225,8 +208,7 @@ class Stalker(rubbercog.Rubbercog):
         force: "force" string. If omitted, show what will be deleted
         """
         if member is None:
-            await self.throwHelp(ctx)
-            return
+            return await self.send_help(ctx)
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
@@ -268,130 +250,113 @@ class Stalker(rubbercog.Rubbercog):
                 embed.add_field(name="No entry", value=text.get("db", "not found"), inline=False)
         embed.set_footer(text=ctx.author)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx)
+
+        await utils.delete(ctx)
 
     @database.group(name="update")
     async def database_update(self, ctx: commands.Context):
         """Set of functions to update database entries"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+        await utils.send_help(ctx)
 
     @database_update.command(name="login")
     async def database_update_login(
-        self, ctx: commands.Context, member: discord.Member = None, login: str = None
+        self, ctx: commands.Context, member: discord.Member, login: str
     ):
         """Update user's registered login
 
         member: A server member
         login: User's xlogin (FEKT, VUT) or e-mail
         """
-        if member is None or login is None:
-            await self.throwHelp(ctx)
-            return
-
         try:
             repository.update_login(discord_id=member.id, login=login)
             await ctx.send(text.get("db", "update success"))
-            await self.log(ctx, "Database entry updated (login)", quote=True)
-            await self.deleteCommand(ctx)
+            await self.event.sudo(ctx.author, ctx.channel, f"Login update for {member} ({login})")
+            await utils.delete(ctx)
         except Exception as e:
             await self.throwError(ctx, e)
 
     @database_update.command(name="group")
     async def database_update_group(
-        self, ctx: commands.Context, member: discord.Member = None, group: discord.Role = None
+        self, ctx: commands.Context, member: discord.Member, group: str
     ):
         """Update user's registered group
 
         member: A server member
-        group: A role from `roles_native` or `roles_guest` in config file
+        group: A role name
         """
-        if member is None or group is None:
-            await self.throwHelp(ctx)
-            return
-
         try:
             repository.update_group(discord_id=member.id, group=group)
             await ctx.send(text.get("db", "update success"))
-            await self.log(ctx, "Database entry updated (group)", quote=True)
+            await self.event.sudo(ctx.author, ctx.channel, f"Group update for {member} ({group})")
+            await utils.delete(ctx)
         except Exception as e:
             await self.throwError(ctx, e)
-        await self.deleteCommand(ctx)
 
     @database_update.command(name="status")
     async def database_update_status(
-        self, ctx: commands.Context, member: discord.Member = None, status: str = None
+        self, ctx: commands.Context, member: discord.Member, status: str
     ):
         """Update user's verification status
 
         member: A server member
         status: unknown, pending, verified, kicked, banned
         """
-        if member is None or status is None or status not in config.db_states:
-            await self.throwHelp(ctx)
-            return
-
         try:
             repository.update_status(discord_id=member.id, status=status)
             await ctx.send(text.get("db", "update success"))
-            await self.log(ctx, "Database entry updated (status)", quote=True)
+            await self.event.sudo(ctx.author, ctx.channel, f"Status update for {member} ({status})")
+            await utils.delete(ctx)
         except Exception as e:
             await self.throwError(ctx, e)
-        await self.deleteCommand(ctx)
 
     @database_update.command(name="comment")
     async def database_update_comment(
-        self, ctx: commands.Context, member: discord.Member = None, *args
+        self, ctx: commands.Context, member: discord.Member, *, comment: str
     ):
         """Update comment on user
 
         member: A server member
         args: Commentary on user
         """
-        if member is None:
-            await self.throwHelp(ctx)
-            return
-
-        comment = " ".join(args) if args else ""
         try:
             repository.update_comment(discord_id=member.id, comment=comment)
             await ctx.send(text.get("db", "update success"))
-            await self.log(ctx, "Database entry updated (comment)", quote=True)
+            await self.event.sudo(
+                ctx.author, ctx.channel, f"Comment update for {member} ({comment})"
+            )
+            await utils.delete(ctx)
         except Exception as e:
             await self.throwError(ctx, e)
-        await self.deleteCommand(ctx)
 
     @database.group(name="show")
     async def database_show(self, ctx: commands.Context):
         """Set of filter functions"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
+        await utils.send_help(ctx)
 
     @database_show.command(name="unverified")
-    async def database_show_unverified(self, ctx: commands.Context, pin=False):
+    async def database_show_unverified(self, ctx: commands.Context):
         """List users that have not yet requested verification code"""
-        await self._database_show_filter(ctx, "unverified", pin)
+        await self._database_show_filter(ctx, "unverified")
 
     @database_show.command(name="pending")
-    async def database_show_pending(self, ctx: commands.Context, pin=False):
+    async def database_show_pending(self, ctx: commands.Context):
         """List users that have not yet submitted the verification code"""
-        await self._database_show_filter(ctx, "pending", pin)
+        await self._database_show_filter(ctx, "pending")
 
     @database_show.command(name="kicked")
-    async def database_show_kicked(self, ctx: commands.Context, pin=False):
+    async def database_show_kicked(self, ctx: commands.Context):
         """List users that have been kicked"""
-        await self._database_show_filter(ctx, "kicked", pin)
+        await self._database_show_filter(ctx, "kicked")
 
     @database_show.command(name="banned")
-    async def database_show_banned(self, ctx: commands.Context, pin=False):
+    async def database_show_banned(self, ctx: commands.Context):
         """List users that have been banned"""
-        await self._database_show_filter(ctx, "banned", pin)
+        await self._database_show_filter(ctx, "banned")
 
     @commands.guild_only()
     @commands.command(name="today")
-    async def today(self, ctx: commands.Context, pin=False):
+    async def today(self, ctx: commands.Context):
         """Display the count of users that joined/were verified today"""
-        pin = self.parseArg(pin)
 
         # TODO count verified users with entry.roles
         ctr_usr_ver = 0  # noqa: F841
@@ -418,7 +383,7 @@ class Stalker(rubbercog.Rubbercog):
             await self.deleteCommand(ctx)
             return
 
-        embed = self._getEmbed(ctx, pin=pin)
+        embed = self._getEmbed(ctx)
         embed.add_field(name="Successful verifications", value="_(Not implemented)_")
         if ctr_usr_kic > 0:
             embed.add_field(name="Users kicked", value=ctr_usr_kic)
@@ -427,18 +392,16 @@ class Stalker(rubbercog.Rubbercog):
         if ctr_invites > 0:
             embed.add_field(name="Invites created", value=ctr_invites)
         embed.add_field(name="Messages pinned", value=ctr_msg_pin)
-        if pin:
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx)
+
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+        await utils.delete(ctx)
 
     @commands.guild_only()
     @commands.command(name="guild", aliases=["server"])
-    async def guild(self, ctx: commands.Context, pin=False):
+    async def guild(self, ctx: commands.Context):
         """Display general about guild"""
-        pin = self.parseArg(pin)
-        embed = self._getEmbed(ctx, pin=pin)
+        embed = self._getEmbed(ctx)
         g = self.getGuild()
 
         # guild
@@ -478,11 +441,8 @@ class Stalker(rubbercog.Rubbercog):
             value=f"Total count **{g.member_count}**, {g.premium_subscription_count} boosters",
         )
 
-        if pin:
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx)
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await utils.delete(ctx)
 
     async def _database_show_filter(self, ctx: commands.Context, status: str = None, pin=False):
         """Helper function for all databas_show_* functions"""
@@ -490,12 +450,11 @@ class Stalker(rubbercog.Rubbercog):
             self.throwHelp(ctx)
             return
 
-        pin = self.parseArg(pin)
         guild = self.bot.get_guild(config.guild_id)
 
         users = repository.filterStatus(status=status)
 
-        embed = self._getEmbed(ctx, pin=pin)
+        embed = self._getEmbed(ctx)
         embed.add_field(name="Result", value="{} users found".format(len(users)), inline=False)
         if users:
             embed.add_field(name="-" * 60, value="LIST:", inline=False)
@@ -510,11 +469,10 @@ class Stalker(rubbercog.Rubbercog):
             embed.add_field(
                 name=name, value="{}\nLast action on {}".format(self.dbobj2email(user), date)
             )
-        if pin:
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.deleteCommand(ctx)
+
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+        await utils.delete(ctx)
 
 
 def setup(bot):

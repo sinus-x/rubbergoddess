@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 from repository.subject_repo import SubjectRepository
@@ -40,9 +40,7 @@ class Faceshifter(rubbercog.Rubbercog):
     @commands.group(name="subject")
     async def subject(self, ctx):
         """Add or remove subject"""
-        await self.deleteCommand(ctx)
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
     @subject.command(name="add")
     async def subject_add(self, ctx, *, subjects: str):
@@ -66,6 +64,8 @@ class Faceshifter(rubbercog.Rubbercog):
                 await self._subject_add(ctx, ctx.author, channel)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
+        await utils.delete(ctx)
+
     @subject.command(name="remove")
     async def subject_remove(self, ctx, *, subjects: str):
         """Remove subject
@@ -88,14 +88,14 @@ class Faceshifter(rubbercog.Rubbercog):
                 await self._subject_remove(ctx, ctx.author, channel)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
+        await utils.delete(ctx)
+
     @commands.guild_only()
     @commands.check(check.is_verified)
     @commands.group(name="role", aliases=["programme"])
     async def role(self, ctx):
         """Add or remove role"""
-        await self.deleteCommand(ctx)
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
     @role.command(name="add")
     async def role_add(self, ctx, *, roles: str):
@@ -119,6 +119,8 @@ class Faceshifter(rubbercog.Rubbercog):
                 await self._role_add(ctx, ctx.author, guild_role)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
+        await utils.delete(ctx)
+
     @role.command(name="remove")
     async def role_remove(self, ctx, *, roles: str):
         """Remove role
@@ -140,6 +142,8 @@ class Faceshifter(rubbercog.Rubbercog):
             else:
                 await self._role_remove(ctx, ctx.author, guild_role)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
+
+        await utils.delete(ctx)
 
     ##
     ## Listeners

@@ -20,7 +20,8 @@ class Random(rubbercog.Rubbercog):
         option = self.sanitise(random.choice(args), limit=50)
         if option is not None:
             await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
-        await self.roomCheck(ctx)
+
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -28,7 +29,8 @@ class Random(rubbercog.Rubbercog):
         """Yes/No"""
         option = random.choice(text.get("random", "flip"))
         await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
-        await self.roomCheck(ctx)
+
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -42,6 +44,8 @@ class Random(rubbercog.Rubbercog):
 
         option = str(random.randint(first, second))
         await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
+
+        await utils.room_check(ctx)
 
 
 def setup(bot):

@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
-from core import check, rubbercog
 
 
 class Janitor(rubbercog.Rubbercog):
@@ -67,7 +67,7 @@ class Janitor(rubbercog.Rubbercog):
                 await msg.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
             await ctx.channel.send(embed=embed, delete_after=config.delay_embed)
 
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
 
     @commands.guild_only()
     @commands.check(check.is_elevated)
@@ -117,6 +117,8 @@ class Janitor(rubbercog.Rubbercog):
         ch = await channel.clone(name=channel.name + config.get("channels", "teacher suffix"))
         await ch.edit(position=channel.position + 1)
         await ctx.send(f"Created channel {ch.mention}")
+
+        await self.event.sudo(ctx.author, ctx.channel, f"Teacher channel {ch.name}")
 
 
 def setup(bot):

@@ -33,7 +33,7 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def verify(self, ctx, email: str):
         """Ask for verification code"""
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
 
         if "@" not in email or len(email.split("@")) > 2:
             raise exceptions.NotAnEmail()
@@ -80,7 +80,7 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def submit(self, ctx, code: str):
         """Submit verification code"""
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
 
         db_user = repo_u.get(ctx.author.id)
 
