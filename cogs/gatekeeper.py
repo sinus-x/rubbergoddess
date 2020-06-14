@@ -9,7 +9,7 @@ from email.mime.multipart import MIMEMultipart
 import discord
 from discord.ext import commands
 
-from core import check, exceptions, rubbercog, utils
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 from repository import user_repo
@@ -36,15 +36,15 @@ class Gatekeeper(rubbercog.Rubbercog):
         await utils.delete(ctx)
 
         if "@" not in email or len(email.split("@")) > 2:
-            raise exceptions.NotAnEmail()
+            raise NotAnEmail()
 
         # check the database for member ID
         if repo_u.get(ctx.author.id) is not None:
-            raise exceptions.IDAlreadyInDatabase()
+            raise IDAlreadyInDatabase()
 
         # check the database for email
         if repo_u.getByLogin(email) is not None:
-            raise exceptions.EmailAlreadyInDatabase()
+            raise EmailAlreadyInDatabase()
 
         # check e-mail format
         role = self._email_to_role(email)
@@ -85,15 +85,15 @@ class Gatekeeper(rubbercog.Rubbercog):
         db_user = repo_u.get(ctx.author.id)
 
         if db_user is None or db_user.status in ("unknown", "unverified") or db_user.code is None:
-            raise exceptions.SubmitWithoutCode()
+            raise SubmitWithoutCode()
 
         if db_user.status != "pending":
-            raise exceptions.ProblematicVerification(status=db_user.status)
+            raise ProblematicVerification(status=db_user.status, login=db_user.login)
 
         # repair the code
         code = code.replace("I", "1").replace("O", "0").upper()
         if code != db_user.code:
-            raise exceptions.WrongVerificationCode(ctx.author, code, db_user.code)
+            raise WrongVerificationCode(ctx.author, code, db_user.code)
 
         # user is verified now
         repo_u.save_verified(ctx.author.id)
@@ -154,7 +154,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             if match is not None:
                 return self.getGuild().get_role(role_id)
             else:
-                raise exceptions.BadEmail(constraint=constraint)
+                raise BadEmail(constraint=constraint)
 
         # domain not found, fallback to basic guest role
         role_id = registered.get(".")
@@ -164,7 +164,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         if match is not None:
             return self.getGuild().get_role(role_id)
         else:
-            raise exceptions.BadEmail(constraint=constraint)
+            raise BadEmail(constraint=constraint)
 
     def _add_user(self, member: discord.Member, login: str, role: discord.Role) -> str:
         code_source = string.ascii_uppercase.replace("O", "").replace("I", "") + string.digits
@@ -235,28 +235,95 @@ class Gatekeeper(rubbercog.Rubbercog):
         error = getattr(error, "original", error)
 
         # non-rubbergoddess exceptions are handled globally
-        if not isinstance(error, exceptions.RubbergoddessException):
+        if not isinstance(error, rubbercog.RubbercogException):
             return
 
         # fmt: off
         # exceptions with parameters
-        if isinstance(error, exceptions.ProblematicVerification):
+        if isinstance(error, ProblematicVerification):
             await self.output.error(ctx, text.fill(
                 "gatekeeper", "ProblematicVerification", status=error.status))
-        elif isinstance(error, exceptions.BadEmail):
+
+            await self.event.user(
+                ctx.author, ctx.location,
+                f"Problem with verification: {error.login}: {error.status}"
+            )
+
+        elif isinstance(error, BadEmail):
             await self.output.error(ctx, text.fill(
                 "gatekeeper", "BadEmail", constraint=error.constraint))
-        elif isinstance(error, exceptions.WrongVerificationCode):
+
+        elif isinstance(error, WrongVerificationCode):
             await self.output.error(ctx, text.fill(
                 "gatekeeper", "WrongVerificationCode", mention=ctx.author.mention))
-            # log event
-            message = f"Verification code mismatch: `{error.their}` != `{error.database}`"
-            await self.event.user(ctx.author, ctx.channel, message)
+
+            await self.event.user(
+                ctx.author, ctx.channel,
+                f"User ({error.login}) code mismatch: `{error.their}` != `{error.database}`"
+            )
+
         # exceptions without parameters
-        elif isinstance(error, exceptions.VerificationException):
+        elif isinstance(error, VerificationException):
             await self.output.error(ctx, text.get("gatekeeper", type(error).__name__))
         # fmt: on
 
 
 def setup(bot):
     bot.add_cog(Gatekeeper(bot))
+
+
+##
+## Exceptions
+##
+
+
+class VerificationException(rubbercog.RubbercogException):
+    pass
+
+
+class NotInDatabase(VerificationException):
+    pass
+
+
+class NotAnEmail(VerificationException):
+    pass
+
+
+class AlreadyInDatabase(VerificationException):
+    """This class is used for fine-grained exceptions below"""
+
+    pass
+
+
+class EmailAlreadyInDatabase(AlreadyInDatabase):
+    pass
+
+
+class IDAlreadyInDatabase(AlreadyInDatabase):
+    pass
+
+
+class BadEmail(VerificationException):
+    def __init__(self, message: str = None, constraint: str = None):
+        super().__init__(message)
+        self.constraint = constraint
+
+
+class SubmitWithoutCode(VerificationException):
+    pass
+
+
+class ProblematicVerification(VerificationException):
+    def __init__(self, status: str, login: str):
+        super().__init__()
+        self.status = status
+        self.login = login
+
+
+class WrongVerificationCode(VerificationException):
+    def __init__(self, member: discord.Member, login: str, their: str, database: str):
+        super().__init__()
+        self.member = member
+        self.login = login
+        self.their = their
+        self.database = database

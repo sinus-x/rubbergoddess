@@ -289,3 +289,13 @@ class Rubbercog(commands.Cog):
             match = re.findall(r"([a-zA-Z]+)(:)", text[i])[0][0]
             text[i] = text[i].replace(match, f"**{match}**", 1)
         return "\n".join(text)
+
+
+##
+## Exceptions
+##
+
+
+class RubbercogException(Exception):
+    def __init__(self, message: str = None):
+        self.message = message

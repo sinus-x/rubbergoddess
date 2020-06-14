@@ -27,9 +27,14 @@
 		"extension":            "Chyba rozšíření."
 	}
 
-	exception: {
-		RubbergoddessException:  Narazila jsem na neznámou chybu.
+	bot: {
+		debug:    debug
+		info:     info
+		warning:  upozornění
+		error:    chyba
+		critical: kritická chyba
 
+		RubbecogException:  Narazila jsem na neznámou chybu.
 	}
 
 	"db": {

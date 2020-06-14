@@ -2,7 +2,7 @@ import traceback
 
 from discord.ext import commands
 
-from core import exceptions, rubbercog, utils
+from core import rubbercog, utils
 from core.text import text
 from core.config import config
 
@@ -22,11 +22,11 @@ class Errors(rubbercog.Rubbercog):
         # https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exceptions
 
         # fmt: off
-        # rubbergoddess exceptions are handled in their cogs
-        if isinstance(error, exceptions.RubbergoddessException):
-            if type(error) is not exceptions.RubbergoddessException:
+        # cog exceptions are handled in their cogs
+        if isinstance(error, rubbercog.RubbercogException):
+            if type(error) is not rubbercog.RubbercogException:
                 return
-            return await self.output.error(ctx, text.fill("exception", "RubbergoddessException"), error)
+            return await self.output.error(ctx, text.get("bot", "RubbercogException"), error)
 
         # user interaction
         if isinstance(error, commands.MissingPermissions):
