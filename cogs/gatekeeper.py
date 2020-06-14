@@ -88,7 +88,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             raise SubmitWithoutCode()
 
         if db_user.status != "pending":
-            raise ProblematicVerification(status=db_user.status)
+            raise ProblematicVerification(status=db_user.status, login=db_user.login)
 
         # repair the code
         code = code.replace("I", "1").replace("O", "0").upper()
@@ -243,15 +243,25 @@ class Gatekeeper(rubbercog.Rubbercog):
         if isinstance(error, ProblematicVerification):
             await self.output.error(ctx, text.fill(
                 "gatekeeper", "ProblematicVerification", status=error.status))
+
+            await self.event.user(
+                ctx.author, ctx.location,
+                f"Problem with verification: {error.login}: {error.status}"
+            )
+
         elif isinstance(error, BadEmail):
             await self.output.error(ctx, text.fill(
                 "gatekeeper", "BadEmail", constraint=error.constraint))
+
         elif isinstance(error, WrongVerificationCode):
             await self.output.error(ctx, text.fill(
                 "gatekeeper", "WrongVerificationCode", mention=ctx.author.mention))
-            # log event
-            message = f"Verification code mismatch: `{error.their}` != `{error.database}`"
-            await self.event.user(ctx.author, ctx.channel, message)
+
+            await self.event.user(
+                ctx.author, ctx.channel,
+                f"User ({error.login}) code mismatch: `{error.their}` != `{error.database}`"
+            )
+
         # exceptions without parameters
         elif isinstance(error, VerificationException):
             await self.output.error(ctx, text.get("gatekeeper", type(error).__name__))
@@ -304,14 +314,16 @@ class SubmitWithoutCode(VerificationException):
 
 
 class ProblematicVerification(VerificationException):
-    def __init__(self, status: str):
+    def __init__(self, status: str, login: str):
         super().__init__()
         self.status = status
+        self.login = login
 
 
 class WrongVerificationCode(VerificationException):
-    def __init__(self, member: discord.Member, their: str, database: str):
+    def __init__(self, member: discord.Member, login: str, their: str, database: str):
         super().__init__()
         self.member = member
+        self.login = login
         self.their = their
         self.database = database
