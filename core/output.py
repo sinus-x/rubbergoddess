@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 
 from core.config import config
+from core.text import text
 
 
 def getTimestamp():
@@ -28,23 +29,23 @@ class Output:
 
     async def debug(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.DEBUG:
-            await self.send(source, "debug", message, error)
+            await self.send(source, text.get("logging", "debug"), message, error)
 
     async def info(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.INFO:
-            await self.send(source, "info", message, error)
+            await self.send(source, text.get("logging", "info"), message, error)
 
     async def warning(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.WARNING:
-            await self.send(source, "warning", message, error)
+            await self.send(source, text.get("logging", "warning"), message, error)
 
     async def error(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.ERROR:
-            await self.send(source, "error", message, error)
+            await self.send(source, text.get("logging", "error"), message, error)
 
     async def critical(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.CRITICAL:
-            await self.send(source, "critical", message, error)
+            await self.send(source, text.get("logging", "critical"), message, error)
 
     async def send(
         self,

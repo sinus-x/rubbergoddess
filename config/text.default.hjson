@@ -27,6 +27,14 @@
 		"extension":            "Chyba rozšíření."
 	}
 
+	logging: {
+		debug:    debug
+		info:     info
+		warning:  upozornění
+		error:    chyba
+		critical: kritická chyba
+	}
+
 	exception: {
 		RubbergoddessException:  Narazila jsem na neznámou chybu.
 
