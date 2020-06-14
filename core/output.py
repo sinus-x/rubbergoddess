@@ -29,23 +29,23 @@ class Output:
 
     async def debug(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.DEBUG:
-            await self.send(source, text.get("logging", "debug"), message, error)
+            await self.send(source, text.get("bot", "debug"), message, error)
 
     async def info(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.INFO:
-            await self.send(source, text.get("logging", "info"), message, error)
+            await self.send(source, text.get("bot", "info"), message, error)
 
     async def warning(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.WARNING:
-            await self.send(source, text.get("logging", "warning"), message, error)
+            await self.send(source, text.get("bot", "warning"), message, error)
 
     async def error(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.ERROR:
-            await self.send(source, text.get("logging", "error"), message, error)
+            await self.send(source, text.get("bot", "error"), message, error)
 
     async def critical(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.CRITICAL:
-            await self.send(source, text.get("logging", "critical"), message, error)
+            await self.send(source, text.get("bot", "critical"), message, error)
 
     async def send(
         self,

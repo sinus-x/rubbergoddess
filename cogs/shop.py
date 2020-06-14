@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import exceptions, rubbercog, check, utils
+from core import rubbercog, check, utils
 from core.config import config
 from core.text import text
 from repository import user_repo, karma_repo
@@ -66,7 +66,7 @@ class Shop(rubbercog.Rubbercog):
             )
 
         if "@" in nick:
-            raise exceptions.ForbiddenNicknameCharacter("@")
+            raise ForbiddenNicknameCharacter("@")
 
         # set nickname
         try:
@@ -118,19 +118,35 @@ class Shop(rubbercog.Rubbercog):
         error = getattr(error, "original", error)
 
         # non-rubbergoddess exceptions are handled globally
-        if not isinstance(error, exceptions.RubbergoddessException):
+        if not isinstance(error, rubbercog.RubbercogException):
             return
 
         # fmt: off
         # exceptions with parameters
-        if isinstance(error, exceptions.ForbiddenNicknameCharacter):
+        if isinstance(error, ForbiddenNicknameCharacter):
             await self.output.error(ctx, text.fill(
                 "shop", "ForbiddenNicknameCharacter", characters=error.forbidden))
+
         # exceptions without parameters
-        elif isinstance(error, exceptions.ShopException):
+        elif isinstance(error, ShopException):
             await self.output.error(ctx, text.get("shop", type(error).__name__))
         # fmt: on
 
 
 def setup(bot):
     bot.add_cog(Shop(bot))
+
+
+##
+## Exceptions
+##
+
+
+class ShopException(rubbercog.RubbercogException):
+    pass
+
+
+class ForbiddenNicknameCharacter(ShopException):
+    def __init__(self, forbidden: str):
+        super().__init__()
+        self.forbidden = forbidden
