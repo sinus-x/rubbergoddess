@@ -1,15 +1,16 @@
+import collections
 import hjson
 
 import discord
 from discord.ext import commands
 
-from core import check, exceptions, rubbercog, utils
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 
 
 class Howto(rubbercog.Rubbercog):
-    """Verify your account"""
+    """See information about school related topics"""
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -17,8 +18,8 @@ class Howto(rubbercog.Rubbercog):
         try:
             self.data = hjson.load(open("data/howto/howto.hjson"))
         except Exception as e:
-            print(e)
-            self.data = {}
+            print("Could not load HOWTO source")
+            self.data = collections.OrderedDict()
 
     ##
     ## Commands
@@ -27,20 +28,14 @@ class Howto(rubbercog.Rubbercog):
     @commands.check(check.is_verified)
     @commands.command()
     async def howto(self, ctx, category: str = None, subcategory: str = None):
-        if category is None:
-            # TODO Display known categories instead
-            return await utils.send_help(ctx)
-
-        if category in self.data and not subcategory:
-            data = self.data[category]
-        elif subcategory is not None and subcategory in data:
-            data = self.data[category][subcategory]
-        else:
-            raise HowtoException()
-
-        embed = discord.Embed(title="How to... " + category, color=config.color)
-        for key, value in data.items():
-            embed.add_field(name=key.upper(), value=value, inline=False)
+        """See information about school related topics"""
+        # temp
+        title = "How to..."
+        content = ""
+        embed = discord.Embed(title=title, color=config.color)
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        for name, value in self._format(content).items():
+            embed.add_field(name=name, value=value, inline=False)
         await ctx.send(embed=embed)
 
     ##
@@ -59,7 +54,7 @@ class Howto(rubbercog.Rubbercog):
         error = getattr(error, "original", error)
 
         # non-rubbergoddess exceptions are handled globally
-        if not isinstance(error, exceptions.RubbergoddessException):
+        if not isinstance(error, rubbercog.RubbercogException):
             return
 
         # fmt: off
@@ -76,5 +71,24 @@ def setup(bot):
     bot.add_cog(Howto(bot))
 
 
-class HowtoException(exceptions.RubbergoddessException):
+class HowtoException(rubbercog.RubbercogException):
     pass
+
+
+"""
+- eduroam / <class 'collections.OrderedDict'>
+  - android / <class 'str'>
+  - windows / <class 'str'>
+  - linux / <class 'str'>
+- horde / <class 'collections.OrderedDict'>
+  - login / <class 'str'>
+  - přeposílání / <class 'str'>
+- koleje / <class 'list'>
+- kolejnet / <class 'str'>
+- rozvrh / <class 'list'>
+- vpn / <class 'collections.OrderedDict'>
+  - android / <class 'str'>
+  - windows / <class 'str'>
+  - macOS   / <class 'str'>
+  - linux   / <class 'str'>
+"""
