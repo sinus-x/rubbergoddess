@@ -53,7 +53,7 @@ class Librarian(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
-    @commands.command(aliases=["pocasi", "pocasie"])
+    @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
     async def weather(self, ctx, *args):
         token = config.get("librarian", "weather token")
         city = "Brno"
