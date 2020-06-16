@@ -210,8 +210,7 @@ class Admin(rubbercog.Rubbercog):
             with open(path, "r") as f:
                 lines = f.readlines()
         except FileNotFoundError:
-            await self.throwNotification(ctx, "Log file not found")
-            await self.log(ctx, "Log not found", msg=path)
+            await self.output.error(ctx, "Log file not found")
             return None
 
         data = ""

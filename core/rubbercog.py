@@ -61,50 +61,6 @@ class Rubbercog(commands.Cog):
         return self.roles_native
 
     ##
-    ## DEPRECATED Helper functions
-    ##
-    def _getEmbedTitle(self, ctx: commands.Context):
-        """Helper function assembling title for embeds"""
-        if ctx.command is None:
-            return "(no command)"
-
-        path = (
-            " ".join((p.name) for p in ctx.command.parents[::-1]) + " "
-            if ctx.command.parents
-            else ""
-        )
-        return config.prefix + path + ctx.command.name
-
-    def _getEmbed(self, ctx: commands.Context, color: int = None, pin=False):
-        """Helper function for creating embeds
-
-        color: embed color
-        pin: whether to pin the embed or let it be deleted
-        """
-        if color not in config.colors:
-            color = config.color
-        if pin is not None and pin:
-            title = "📌 " + self._getEmbedTitle(ctx)
-        else:
-            title = self._getEmbedTitle(ctx)
-        description = "**{}**".format(ctx.command.cog_name) if ctx.command else ""
-
-        embed = discord.Embed(title=title, description=description, color=color)
-        if ctx.author is not None:
-            embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-        return embed
-
-    def _getCommandSignature(self, ctx: commands.Context):
-        """Return a 'cog:command_name' string"""
-        if not ctx.command:
-            return "UNKNOWN"
-        name = ctx.command.qualified_name.replace(" ", "_")
-        if not ctx.command.cog:
-            return name
-        else:
-            return "{}:{}".format(ctx.command.cog.qualified_name.lower(), name)
-
-    ##
     ## DEPRECATED Utils
     ##
     async def log(self, ctx, action: str, quote: bool = True, msg=None):
@@ -276,7 +232,6 @@ class Rubbercog(commands.Cog):
         else:
             await ctx.send(embed=embed)
         await self.deleteCommand(ctx, delay=0)
-        await self.log(ctx, self._getCommandSignature(ctx), quote=True, msg=err_type)
 
     # TODO This code is deprecated. Use self.output.info() instead
     async def throwNotification(self, ctx: commands.Context, msg: str, pin: bool = False):
