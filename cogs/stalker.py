@@ -138,6 +138,53 @@ class Stalker(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @whois.command(name="logins", aliases=["emails"])
+    @commands.check(check.is_elevated)
+    async def whois_logins(self, ctx, login_prefix: str):
+        """Filter database by login"""
+        users = repository.getByPrefix(prefix=login_prefix)
+
+        # parse data
+        items = []
+        template = "`{name:<10}` … {email}"
+        for user in users:
+            member = self.bot.get_user(user.discord_id)
+            name = member.name if member is not None else ""
+            if user.group == "FEKT" and "@" not in user.login:
+                email = user.login + "@stud.feec.vutbr.cz"
+            elif user.group == "VUT" and "@" not in user.login:
+                email = user.login + "@vutbr.cz"
+            else:
+                email = user.login
+            items.append(template.format(name=name, email=email))
+
+        # construct embed fields
+        fields = []
+        field = ""
+        for item in items:
+            if len(field + item) > 1000:
+                fields.append(field)
+                field = ""
+            field = field + "\n" + item
+        fields.append(field)
+
+        # create embed
+        embed = discord.Embed(
+            color=config.color,
+            title="Emails lookup",
+            description=f"Database contains {len(users)} result(s)",
+        )
+        for field in fields[:5]:  # there is a limit of 6000 characters in total
+            embed.add_field(name="\u200b", value=field)
+        if len(fields) > 5:
+            embed.add_field(name="Too many results", value="Some results were omitted")
+        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await self.event.sudo(ctx.author, ctx.channel, f"E-mail lookup: `{login_prefix}`")
+
+        await utils.delete(ctx)
+
     @commands.guild_only()
     @commands.group(aliases=["db"])
     @commands.check(check.is_elevated)

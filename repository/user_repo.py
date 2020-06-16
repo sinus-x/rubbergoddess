@@ -1,3 +1,5 @@
+from sqlalchemy.sql.expression import bindparam
+
 from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.verification import User
@@ -78,6 +80,10 @@ class UserRepository(BaseRepository):
     def getByLogin(self, login: str):
         """Get user from database"""
         return session.query(User).filter(User.login == login).one_or_none()
+
+    def getByPrefix(self, prefix: str):
+        """Get users from database"""
+        return session.query(User).filter(User.login.startswith(prefix)).all()
 
     # TODO Deprecated
     def filterId(self, discord_id: int = None):
