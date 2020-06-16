@@ -17,8 +17,8 @@
 
 ## About
 
-This FEKTwide Discord bot manages the verification process, karma and some other
-commands on VUT FEKT Discord server.
+This Discord bot manages verification process, users, karma and some other functionality on VUT FEKT
+Discord server.
 
 ### Related bots
 [Rubbergod]. Rubbergoddess is younger, but more mature sister -- originally forked, now independent.

@@ -139,6 +139,7 @@
 	delay: {
 		success:      3
 		"user error": 10
+		help:         30
 		"bot error":  60
 		verify:       900
 

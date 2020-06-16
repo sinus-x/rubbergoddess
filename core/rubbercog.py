@@ -61,7 +61,7 @@ class Rubbercog(commands.Cog):
         return self.roles_native
 
     ##
-    ## Helper functions
+    ## DEPRECATED Helper functions
     ##
     def _getEmbedTitle(self, ctx: commands.Context):
         """Helper function assembling title for embeds"""
@@ -105,7 +105,7 @@ class Rubbercog(commands.Cog):
             return "{}:{}".format(ctx.command.cog.qualified_name.lower(), name)
 
     ##
-    ## Utils
+    ## DEPRECATED Utils
     ##
     async def log(self, ctx, action: str, quote: bool = True, msg=None):
         """Log event"""
@@ -206,7 +206,7 @@ class Rubbercog(commands.Cog):
         if title is not None:
             pass
         elif hasattr(ctx, "command") and hasattr(ctx.command, "qualified_name"):
-            title = ctx.command.qualified_name
+            title = config.prefix + ctx.command.qualified_name
         else:
             title = "Rubbergoddess"
 

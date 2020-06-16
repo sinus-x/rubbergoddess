@@ -300,6 +300,7 @@ class Warden(rubbercog.Rubbercog):
             name=discord.utils.escape_markdown(message.author.display_name),
             value=prob,
         )
+        # TODO Use url= parameter
         embed = discord.Embed(title=t, color=config.color, description=d, url=message.jump_url)
         embed.add_field(name=f"**{author}**, {timestamp}", value=link, inline=False)
 

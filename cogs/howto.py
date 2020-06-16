@@ -30,13 +30,11 @@ class Howto(rubbercog.Rubbercog):
     async def howto(self, ctx, category: str = None, subcategory: str = None):
         """See information about school related topics"""
         # temp
-        title = "How to..."
         content = ""
-        embed = discord.Embed(title=title, color=config.color)
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        embed = self.embed(ctx=ctx)
         for name, value in self._format(content).items():
             embed.add_field(name=name, value=value, inline=False)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, delete_after=config.get("delay", "help"))
 
     ##
     ## Helper functions

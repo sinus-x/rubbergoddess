@@ -96,6 +96,7 @@ class Karma(rubbercog.Rubbercog):
                 await ctx.send(utils.fill_message("insufficient_rights", user=ctx.author.id))
 
         elif args[0] == "message":
+            # TODO On embed creation, use Embed(..., url=...) to link to the message
             try:
                 converter = commands.MessageConverter()
                 target_message = await converter.convert(ctx=ctx, argument=" ".join(args[1:]))

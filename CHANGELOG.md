@@ -8,6 +8,10 @@ configuration or database.
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
 expect in the future.
 
+### Developers
+
+- `self.embed()` function to make embed creation one-liner
+
 ## [0.3.0]
 ### Added
 - Gatekeeper cog
