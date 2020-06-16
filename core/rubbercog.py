@@ -163,6 +163,10 @@ class Rubbercog(commands.Cog):
         args = ["pin", "force"]
         return True if arg in args else False
 
+    ##
+    ## Utils
+    ##
+
     def getTimestamp(self):
         """Get yyyy-mm-dd HH:MM:SS string"""
         return datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
@@ -170,6 +174,69 @@ class Rubbercog(commands.Cog):
     def sanitise(self, string: str, *, limit: int = 500):
         """Return cleaned-up string ready for output"""
         return discord.utils.escape_markdown(string).replace("@", "")[:limit]
+
+    def embed(
+        self,
+        *,
+        ctx: commands.Context = None,
+        message: discord.Message = None,
+        author: discord.User = None,
+        title: str = None,
+        description: str = None,
+        color: int = None,
+        page: tuple = None,
+        url: str = None,
+    ) -> discord.Embed:
+        """Create embed
+
+        page: tuple in (current, total) format
+        """
+        # author
+        if hasattr(ctx, "author"):
+            author = ctx.author
+            footer_image = author.avatar_url
+        elif hasattr(message, "author"):
+            author = message.author
+            footer_image = author.avatar_url
+        else:
+            author = None
+            footer_image = discord.Embed.Empty
+
+        # title
+        if title is not None:
+            pass
+        elif hasattr(ctx, "command") and hasattr(ctx.command, "qualified_name"):
+            title = ctx.command.qualified_name
+        else:
+            title = "Rubbergoddess"
+
+        # description
+        if description is not None:
+            pass
+        elif hasattr(ctx, "cog_name"):
+            description = f"**{ctx.cog_name}**"
+        else:
+            description = ""
+
+        # color
+        if color is None:
+            color = config.color
+
+        # footer text
+        footer_content = []
+        if author is not None:
+            footer_content.append(str(author))
+        if page is not None:
+            footer_content.append(f"{page[0]}/{page[1]}")
+        footer_text = " | ".join(footer_content)
+
+        # create embed
+        embed = discord.Embed(title=title, description=description, color=color, url=url)
+        if footer_image is not discord.Embed.Empty or len(footer_text) > 0:
+            embed.set_footer(icon_url=footer_image, text=footer_text)
+
+        # done
+        return embed
 
     ##
     ## Embeds
