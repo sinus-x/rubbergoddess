@@ -104,7 +104,7 @@ class Shop(rubbercog.Rubbercog):
                 nick=discord.utils.escape_markdown(nick),
             )
         )
-        await self.event.user(ctx.author, ctx.channel, f"Nickname reset.")
+        await self.event.user(ctx.author, ctx.channel, "Nickname reset.")
 
     ##
     ## Error catching
