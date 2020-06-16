@@ -51,11 +51,11 @@ def is_in_botroom(ctx: commands.Context):
 
 
 def is_in_jail(ctx: commands.Context):
-    return ctx.channel.id == config.channel_jail
+    return ctx.channel.id == config.get("channels", "jail")
 
 
 def is_in_jail_or_dm(ctx: commands.Context):
-    return ctx.channel.id == config.channel_jail or isinstance(
+    return ctx.channel.id == config.get("channels", "jail") or isinstance(
         ctx.message.channel, discord.DMChannel
     )
 

@@ -1,14 +1,22 @@
+# User data
 backups/
-config/config.json
-config/emotes.py
+config/config.hjson
+config/emotes.hjson
+config/text.hjson
+
+# Development
 __pycache__
 .idea
 .venv/
+*/test.py
+
 # Bot data
 data/*
 !data/*/
 data/*/*
-# Development
-*/test.py
+
 # Sourcetrail
 *.srctrl*
+
+# Outdated
+config/emotes.py

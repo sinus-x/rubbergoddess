@@ -8,7 +8,7 @@
 		"higher permission":  "To nemůžu, máš vyšší oprávnění",
 
 		"no command":      "Takový příkaz neznám {emote.sad}",
-		"no requirements": "Nesplnili jste podmínky příkazu.",
+		"no requirements": "Nebyly splněny podmínky příkazu.",
 		"no user":         "Nikoho takového jsem nenašla {emote.sad}",
 		"nsfw required":   "To jde použít jen v NSFW kanálech.",
 
@@ -17,7 +17,7 @@
 		"concurrency":     "Tento příkaz už běží mockrát, limit je {number}/{bucket_type}.",
 		"extension":       "Chyba v rozšíření {emote.ree}",
 		"bad argument":    "Chyba v argumentu {emote.sad}",
-		"missing argument": "Chybí mi argument {argument} {emote.sad}",
+		"missing argument": "Chybí mi argument _{argument}_ {emote.sad}",
 		"argument parsing": "Chyba v parsování argument {emote.ree}",
 
 		"extension loaded":     "Rozšíření už je načteno.",
@@ -25,7 +25,18 @@
 		"extension failed":     "Načtení se nezdařilo.",
 		"extension not found":  "Takové rozšíření neexistuje.",
 		"extension":            "Chyba rozšíření."
-	},
+	}
+
+	bot: {
+		debug:    debug
+		info:     info
+		warning:  upozornění
+		error:    chyba
+		critical: kritická chyba
+
+		RubbecogException:  Narazila jsem na neznámou chybu.
+	}
+
 	"db": {
 		"read success":   "Záznam nalezen",
 		"read error":     "Nepodařilo se mi načíst databázi",
@@ -37,13 +48,13 @@
 		"delete error":   "Smazání uživatele z databáze se nezdařilo",
 		"not found":      "Nikoho takového jsem v databázi nenašla",
 		"duplicate":      "Takové ID už v databázi existuje"
-	},
+	}
 
 	"server": {
 		"guild only":       "Tohle funguje jenom na VUT FEKT serveru",
 		"channel only":     "Tohle funguje jenom v {channel}",
-		"botroom redirect": "{user} {emote.sad} 👉 {channel}"
-	},
+		"botroom redirect": "{mention} {emote.sad} 👉 {channel}"
+	}
 
 	"admin": {
 		"power fail":    "Ani jeden z definovaných kanálů jsem nenašla.",
@@ -55,7 +66,8 @@
 
 		"poweron botspam": "Jsem zpátky! {emote.happy}",
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
-	},
+	}
+
 	"faceshifter": {
 		"not subject": "{mention}, předmětovou místnost **{shortcut}** tu nemáme",
 		"not role": "{mention}, roli **{role}** tu nemáme",
@@ -66,7 +78,8 @@
 		"deny subject": "{mention}, předměty si můžou přidávat jen studenti VUT.",
 		"deny role": "{mention}, na to nemáš právo, nejsi z FEKTu.",
 		"deny high role": "{mention}, na to nemáš právo."
-	},
+	}
+
 	"karma": {
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 
@@ -90,7 +103,64 @@
 
 		"message help":       "`{prefix}karma message [url|id]",
 		"leaderboard offset": "Špatný offset, {user}, zadej kladné číslo."
-	},
+	}
+
+	gatekeeper: {
+		# success
+		"verify successful":  "{mention}, na e-mail **{email}** jsem ti poslala kód. Pro verifikaci použij `{prefix}submit kód`."
+		"verification public": Nový uživatel {mention} byl úspěšně přidán s rolí **{role}**.
+		"verification DM native": '''
+			Grauluji k verifikaci!
+
+			V {add_roles} si přidej obor a role zájmů, obené informace jsou v {info}.
+			'''
+		"verification DM guest": '''
+			Gratuluji k verifikaci!
+
+			V {add_roles} si můžeš přidat role pro zájmy, obcené informace jsou v {info}.
+			'''
+
+		# e-mail content
+		"plaintext mail":
+			'''
+			Tvůj verifikační kód pro {guild_name} Discord server je: {code}.
+			Ověříš se příkazem {prefix}submit {code}.
+
+			- {bot_name} (hash {git_hash})
+			'''
+		"html mail":
+			'''
+			<body style="background-color:{color_bg};margin:0;text-align:center;">
+			<div style="background-color:{color_bg};margin:0;padding:20px;text-align:center;">
+				<img src="{bot_avatar}" alt="{bot_name}" style="margin:0 auto;border-radius:100%;border:5px solid {color_fg};height:{bot_avatar_size};width:{bot_avatar_size};backtround-color:{color_bg};" />
+				<p style="display:block;color:{color_fg};font-family:{font_family};font-size:24px;">
+					<img src="{user_avatar}" alt="" style="height={user_avatar_size};width:{user_avatar_size};top:4px;margin-right:6px;border-radius:100%;border:2px solid {color_fg};display:inline;position:relative;background-color:{color_bg};">
+					<span>{user_name}</span>
+				</p>
+				<p style="display:block;color:{color_fg};font-family:{font_family};">Tvůj verifikační kód pro <span style="font-weight:bold;">{guild_name}</span> Discord server:</p>
+				<p style="color:{color_bg};font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:{color_fg};display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">{code}</p>
+				<p style="color:{color_fg};font-family:{font_family};margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:{color_bg};padding:5px 10px;font-family:monospace;background-color:{color_fg};border-radius:2px;">{prefix}submit {code}</span></p>
+				<p style="display:block;color:{color_fg};font-family:{font_family};">
+					<a style="color:{color_fg};text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">{bot_name}</a>
+					, hash {git_hash}</p>
+			</div>
+			</body>
+			'''
+
+		# Exceptions
+		VerificationException:   Chyba ve verifikaci.
+		# Exceptions: ?verify
+		NotAnEmail:              To není e-mail.
+		AlreadyInDatabase:       Ty už v databázi jsi.
+		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
+		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
+		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `{constraint}`.
+		# Exceptions: ?submit
+		SubmitWithoutCode:       Nejdřív musíš zažádat o kód.
+		ProblematicVerification: Hmm, {admin}, je tu pokus o verifikaci se záznamem {status}...
+		WrongVerificationCode:   Špatný kód, {mention}.
+	}
+
 	"roles": {
 		"role add denied":       "{user}, na přidání role {role} nemáš právo.",
 		"role remove denied":    "{user}, na odebrání role {role} nemáš právo.",
@@ -102,40 +172,13 @@
 		"not on server":   "Budu předpokládat, že myslíš role na VUT FEKT serveru.",
 		"not role":        "{user}, {not_role} není role.",
 		"invalid emote":   "{user}, {not_emote} pro roli {role} není emote."
-	},
-	"random": {
-		"roll help":         "`{prefix}roll x [y]`; x, y jsou celočíselná rozmezí.",
-		"roll error":        "{user}, zadej dvě celá čísla.",
-		"dice group error":  "Moc kostek v jedné skupině, maximum je {max}.",
-		"dice side error":   "Moc stěn na kostkách, maximum je {max}.",
-		"dice groups error": "Moc skupin kostek, maximum je {max}.",
-		"wrong syntax":      "Chybná syntax hodu ve skupině {group}.",
-		"help":              "Formát naleznete na https://wiki.roll20.net/Dice_Reference#Drop.2FKeep"
-	},
-	"verify": {
-		"verify format":         "Pro získání kódu použij příkaz podle toho, kam patříš:```\n{prefix}verify FEKT xlogin00\n{prefix}verify FUT xlogin00\n{prefix}verify e-mail (ideálně školní)```",
-		"mail sent success":     "> {command}\nV pořádku, {user}, poslala jsem ti ověřovací kód. Pro verifikaci použij: `{prefix}submit kód`.",
+	}
 
-		"no email":              "**Tvůj** e-mail, {user} ({channel} {emote})",
-		"login only":            "{user} Napiš jestli jsi přímo z FEKTu, nebo z VUT. ({channel} {emote})",
-		"wrong arguments":       "> **{login}**\n{user}, podívej se do {channel} na příklad. {emote}",
-		"login exists":          "{user}, něco se pokazilo. Napiš DM někomu z {role}.",
-		"mail already sent":     "{user}, e-mail jsem ti už jenou poslala. Kdyžtak napiš DM někomu z {role}.",
-		"already verified role": "{user}, tebe už znám... {role}?",
-		"already verified db":   "{user} už tu z záznamech mám... {role}?",
-		"kicked":                "{role}, {user} jsme vykopli a snaží se verifikovat.",
-		"banned":                "{role}, {user} jsme zabanovali a snaží se verifikovat.",
+	random: {
+		answer: "{mention}, asi {option}."
+		flip:   ["ano", "ne"]
+	}
 
-		"submit format":     "{user}, pro verifikaci použij: `{prefix}submit kód`",
-		"no code":           "{user}, ten kód, který jsem ti poslala na e-mail {emote}",
-		"wrong code":        "{user}, zkontroluj si kód, nebyl správně napsaný {emote}",
-		"no code requested": "{user}, nemám tě v databázi, musíš si zažádat o verifikační kód.",
-		"verify manual":     "{role}, {user} asi nemá skupinu.",
-
-		"sucess public":         "{emote.welcome} Nový uživatel {user} byl úspěšně přidán s rolí **{group}**.",
-		"success private fekt":  "Gratuluji k verifikaci! Obor si zapiš v {programmes}.\n\nV {roles} získáš další role pro zájmy,\nobecné informace jsou v {info}.\n\nNeboj se na cokoliv zeptat nebo někomu odpovědět. FEKT tě vítá.",
-		"success private guest": "Gratuluji k verifikaci!\n\nV {roles} získáš role pro zájmy,\nobecné informace jsou v {info}.\n\nFEKT tě vítá."
-	},
 	"review": {
 		"no permission": "{user}, nemáš právo hodnotit předměty.",
 		"added":         "Hodnocení předmětu bylo úspěšně přidáno.",
@@ -148,14 +191,17 @@
 		"no subject":       "Takový předmět neznám",
 		"wrong tier value": "Číselné hodnocení je známka z rozsahu 1-5",
 		"text too long":    "Maximální počet znaků je 1024"
-	},
+	}
+
 	"librarian": {
 		"nameday cz": "Dnes má svátek {name} {emote.happy}",
 		"nameday sk": "Dnes má meniny {name} {emote.happy}"
-	},
+	}
+
 	"meme": {
-		"???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
-	},
+		???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
+	}
+
 	"voice": {
 		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
 
@@ -164,20 +210,23 @@
 		"unlock error": "{user}, aktuální kanál není uzamklý.",
 		"rename empty": "{user}, zadej alespoň jeden platný znak.",
 		"rename long": "{user}, takové jméno je moc dlouhé."
-	},
+	}
+
 	"janitor": {
 		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
 		"hoarding warning": "Ahoj. Všimla jsem si, že máš na **{guild}** víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ.",
 
 		"teacher not subject": "{channel} není předmětová místnost."
-	},
+	}
+
 	"warden": {
 		"gif warning": "{user}, linkování externích obrázků nemám ráda. Snížila jsem ti karmu o {value}.",
 		"repost title": "Nápověda",
 		"repost description": "{name}, shoda **{value}**!",
 		"repost content": "Pokud obrázek je repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže.",
 		"repost cheating": "{mention}, v tomhle kanálu se kontrolují duplikáty. Posílej sem přílohy, ať si je můžu zaindexovat."
-	},
+	}
+
 	"shop": {
 		"no karma": "{author}, zatím nemáš žádnou karmu",
 		"not enough karma": "{author}, nemáš dost karmy. Chybí ti **{value}** bodů",
@@ -186,5 +235,8 @@
 
 		"no nick": "{author}, nemáš nastavenou žádnou přezdívku",
 		"nick removed": "{author}, přezdívku **{nick}** jsem ti odebrala"
+		# Exceptions
+		ShopException:              Chyba při transakci
+		ForbiddenNicknameCharacter: Jméno nesmí obsahovat {characters}
 	}
 }

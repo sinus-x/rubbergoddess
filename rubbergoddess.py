@@ -3,7 +3,7 @@ from datetime import datetime
 
 from discord.ext import commands
 
-from core import help, rubbercog
+from core import help, rubbercog, output
 from core.config import config
 from features import presence
 from repository.database import database
@@ -19,7 +19,7 @@ bot = commands.Bot(
 )
 
 presence = presence.Presence(bot)
-rubbercog = rubbercog.Rubbercog(bot)
+event = output.Event(bot)
 
 # fill DB with subjects shortcut, needed for reviews
 def load_subjects():
@@ -31,12 +31,7 @@ def load_subjects():
 @bot.event
 async def on_ready():
     """If Rubbergoddess is ready"""
-    if config.debug < 1:
-        login = f"Logged in [{config.get('bot', 'logging')}]: "
-    else:
-        login = (
-            f"Logged in [{config.get('bot', 'logging')}] with debug(" + str(config.debug) + "): "
-        )
+    login = f"Logged in [{config.get('bot', 'logging')}]: "
     print(login + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
     await presence.set_presence()
 
@@ -57,8 +52,7 @@ async def on_error(event, *args, **kwargs):
 async def load(ctx, extension):
     bot.load_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** načteno.")
-    await rubbercog.log(ctx, f"Cog {extension} loaded")
-    print(f"Cog {extension} loaded")
+    await event.sudo(ctx.author, ctx.channel, f"Loaded: {extension.upper()}")
 
 
 @bot.command()
@@ -66,8 +60,7 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     bot.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** odebráno.")
-    await rubbercog.log(ctx, f"Cog {extension} unloaded")
-    print(f"Cog {extension} unloaded")
+    await event.sudo(ctx.author, ctx.channel, f"Unloaded: {extension.upper()}")
 
 
 @bot.command()
@@ -75,8 +68,8 @@ async def unload(ctx, extension):
 async def reload(ctx, extension):
     bot.reload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
-    await rubbercog.log(ctx, f"Cog {extension} reloaded")
-    print(f"Cog {extension} reloaded")
+    await event.sudo(ctx.author, ctx.channel, f"Reloaded: {extension.upper()}")
+    print(f"Reloaded: {extension.upper()}")
     if "docker" in config.loader:
         await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
 
@@ -88,9 +81,9 @@ session.commit()  # Making sure
 load_subjects()
 
 bot.load_extension("cogs.errors")
-print("Meta ERRORS extension loaded.")
+print("Loaded: ERRORS (implicit)")
 for extension in config.extensions:
     bot.load_extension(f"cogs.{extension}")
-    print("{} extension loaded.".format(extension.upper()))
+    print(f"Loaded: {extension.upper()}")
 
 bot.run(config.key)

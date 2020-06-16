@@ -13,8 +13,7 @@ class Presence(BaseFeature):
         super().__init__(bot)
 
         self.activity = discord.Game(
-            start=datetime.datetime.utcnow(),
-            name=config.prefix + "goddess | " + utils.git_hash()[:7],
+            start=datetime.datetime.utcnow(), name=config.prefix + "help | " + utils.git_hash()[:7],
         )
 
     async def set_presence(self):

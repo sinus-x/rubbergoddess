@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
-from core import check, rubbercog
 
 
 class Janitor(rubbercog.Rubbercog):
@@ -27,12 +27,13 @@ class Janitor(rubbercog.Rubbercog):
             warn = False
 
         hoarders = []
+        limit_top = discord.utils.get(self.getGuild().roles, name="---PROGRAMMES")
+        limit_bottom = discord.utils.get(self.getGuild().roles, name="---INTERESTS")
+
         for member in self.getGuild().members:
             prog = []
             for role in member.roles:
-                if role < discord.utils.get(
-                    self.getGuild().roles, name="---FEKT"
-                ) and role > discord.utils.get(self.getGuild().roles, name="---"):
+                if role < limit_top and role > limit_bottom:
                     prog.append(role.name)
             if len(prog) > 1:
                 hoarders.append([member, prog])
@@ -66,68 +67,39 @@ class Janitor(rubbercog.Rubbercog):
                 await msg.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
             await ctx.channel.send(embed=embed, delete_after=config.delay_embed)
 
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
 
+    @commands.guild_only()
     @commands.check(check.is_elevated)
     @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
-    async def purge(self, ctx, limit=None, pinMode="pinSkip"):
+    async def purge(self, ctx, limit: int, pinMode: str):
         """Delete messages from current text channel
 
         limit: how many messages should be deleted
-        mode: pinSkip (default) | pinStop | pinIgnore
+        mode: pinSkip | pinStop | pinIgnore
         """
-        channel = ctx.channel
-        if not isinstance(channel, discord.TextChannel):
-            return await self.throwHelp(ctx)
+        if pinMode not in ("pinSkip", "pinStop", "pinIgnore"):
+            return await ctx.send_help(ctx.invoked_with)
 
-        if limit is None:
-            return await self.throwHelp(ctx)
-        else:
-            try:
-                limit = int(limit) + 1
-            except ValueError:
-                self.throwHelp(ctx)
+        messages = await ctx.channel.history(limit=limit).flatten()
 
-        if limit:
-            msgs = channel.history(limit=limit)
-        else:
-            msgs = channel.history()
-        ctr_del = 0
-        ctr_skip = 0
-        ctr_pin = 0
-        ctr_err = 0
-        async for m in msgs:
-            if m.pinned and pinMode == "pinStop":
+        total = 0
+        for message in messages:
+            if message.pinned and pinMode == "pinStop":
                 break
-            elif m.pinned and pinMode == "pinSkip":
-                ctr_skip += 1
+            elif message.pinned and pinMode == "pinSkip":
                 continue
-            elif m.pinned and pinMode == "pinIgnore":
-                ctr_pin += 1
-            try:
-                await m.delete()
-                ctr_del += 1
-            except discord.HTTPException:
-                ctr_err += 1
 
-        embed = discord.Embed(title="?purge", color=config.color)
-        embed.add_field(
-            name="Settings",
-            value="Channel **{}**, limit **{}**, pinMode **{}**".format(
-                channel, limit - 1 if limit else "none", pinMode if pinMode else "ignore"
-            ),
+            try:
+                await message.delete()
+                total += 1
+            except discord.HTTPException:
+                pass
+
+        await self.event.sudo(
+            ctx.author, ctx.channel, f"Purged {total} posts in {ctx.channel}",
         )
-        embed.add_field(
-            name="Result",
-            value="**{deleted}** removed (**{pinned}** were pinned), **{skipped}** skipped.\n"
-            "**{err}** errors occured.".format(
-                deleted=ctr_del - 1 + ctr_pin, skipped=ctr_skip, pinned=ctr_pin, err=ctr_err
-            ),
-        )
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-        channel = self.getGuild().get_channel(config.channel_botlog)
-        await channel.send(embed=embed)
 
     @commands.check(check.is_mod)
     @commands.bot_has_permissions(manage_channels=True)
@@ -145,6 +117,8 @@ class Janitor(rubbercog.Rubbercog):
         ch = await channel.clone(name=channel.name + config.get("channels", "teacher suffix"))
         await ch.edit(position=channel.position + 1)
         await ctx.send(f"Created channel {ch.mention}")
+
+        await self.event.sudo(ctx.author, ctx.channel, f"Teacher channel {ch.name}")
 
 
 def setup(bot):

@@ -1,8 +1,10 @@
 import git
+
 import discord
 from discord.ext import commands
 
-from core import config
+from core.config import config
+from core.text import text
 from config.messages import Messages
 
 
@@ -67,16 +69,59 @@ def fill_message(message_name, *args, **kwargs):
         raise ValueError("Invalid template {}".format(message_name))
 
 
-async def notify(ctx: commands.Context, msg: str):
-    """Show an embed.
+def seconds2str(time):
+    time = int(time)
+    D = 3600 * 24
+    H = 3600
+    M = 60
 
-    A skinny version of rubbercog.throwNotification()
-    """
-    if ctx.message is None:
+    d = (time - (time % D)) / D
+    h = (time - (time % H)) / H
+    m = (time - (time % M)) / M
+    s = time % 60
+
+    if d > 0:
+        return f"{d} d, {h:02}:{m:02}:{s:02}"
+    if h > 0:
+        return f"{h}:{m:02}:{s:02}"
+    if m > 0:
+        return f"{m}:{s:02}"
+    if s > 4:
+        return f"{s} vteřin"
+    if s > 1:
+        return f"{s} vteřiny"
+    return "vteřinu"
+
+
+##
+## before_invoke(), after_invoke() functions
+##
+
+
+async def room_check(ctx: commands.Context):
+    if not hasattr(ctx, "channel") or not hasattr(ctx.channel, "id"):
         return
-    if msg is None:
-        msg = ""
-    embed = discord.Embed(title=ctx.message.content, color=config.color)
-    embed.add_field(name="Výsledek", value=msg, inline=False)
-    embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
-    await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+    if ctx.channel.id not in config.get("channels", "bot allowed"):
+        # we do not have `bot` variable, so we have to construct the botroom mention directly
+        await ctx.send(
+            text.fill(
+                "server",
+                "botroom redirect",
+                mention=ctx.author.mention,
+                channel=f"<#{config.get('channels', 'botspam')}>",
+            )
+        )
+
+
+async def delete(ctx: commands.Context):
+    if ctx.message is not None:
+        await ctx.message.delete()
+
+
+async def send_help(ctx: commands.Context):
+    if not hasattr(ctx, "command") or not hasattr(ctx.command, "qualified_name"):
+        return
+    if ctx.invoked_subcommand is not None:
+        return
+    await ctx.send_help(ctx.command.qualified_name)

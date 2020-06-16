@@ -25,6 +25,7 @@ class Rubbercog(commands.Cog):
 
         self.output = output.Output(self.bot)
         self.console = output.Console(self.bot)
+        self.event = output.Event(self.bot)
 
     ##
     ## OBJECT GETTERS
@@ -144,7 +145,7 @@ class Rubbercog(commands.Cog):
             )
 
     # TODO Rename to deleteMessage()
-    async def deleteCommand(self, message, delay: int = 0):
+    async def deleteCommand(self, message, *, delay: int = 0):
         """Try to delete the context message.
 
         now: Do not wait for message delay
@@ -153,7 +154,7 @@ class Rubbercog(commands.Cog):
             if not isinstance(message, discord.Message):
                 message = message.message
             await message.delete(delay=delay)
-        except discord.HTTPException as err:
+        except discord.HTTPException:
             pass
 
     def parseArg(self, arg: str = None):
@@ -288,3 +289,13 @@ class Rubbercog(commands.Cog):
             match = re.findall(r"([a-zA-Z]+)(:)", text[i])[0][0]
             text[i] = text[i].replace(match, f"**{match}**", 1)
         return "\n".join(text)
+
+
+##
+## Exceptions
+##
+
+
+class RubbercogException(Exception):
+    def __init__(self, message: str = None):
+        self.message = message

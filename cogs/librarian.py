@@ -4,14 +4,16 @@ from datetime import date
 import discord
 from discord.ext import commands
 
+from core import rubbercog, utils
 from core.config import config
 from core.text import text
 from core.emote import emote
-from core import rubbercog
 
 
 class Librarian(rubbercog.Rubbercog):
     """Knowledge and information based commands"""
+
+    # TODO Move czech strings to text.default.json
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -37,7 +39,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["tyden", "týden", "tyzden", "týždeň"])
     async def week(self, ctx: commands.Context):
         """See if the current week is odd or even"""
-        starting_week = config.starting_week
+        starting_week = config.get("librarian", "starting week")
         cal_week = date.today().isocalendar()[1]
         stud_week = cal_week - starting_week
         even, odd = "sudý", "lichý"
@@ -48,11 +50,12 @@ class Librarian(rubbercog.Rubbercog):
         embed.add_field(name="Studijní", value="{} ({})".format(stud_type, stud_week))
         embed.add_field(name="Kalendářní", value="{} ({})".format(cal_type, cal_week))
         await ctx.send(embed=embed)
-        await self.deleteCommand(ctx)
 
-    @commands.command(aliases=["pocasi", "pocasie"])
+        await utils.delete(ctx)
+
+    @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
     async def weather(self, ctx, *args):
-        token = config.weather_token
+        token = config.get("librarian", "weather token")
         city = "Brno"
         if len(args) != 0:
             city = " ".join(map(str, args))
@@ -90,7 +93,8 @@ class Librarian(rubbercog.Rubbercog):
             await ctx.send("Rip token")
         else:
             await ctx.send("Město nenalezeno! " + emote.sad + " (" + res["message"] + ")")
-        await self.deleteCommand(ctx)
+
+        await utils.delete(ctx)
 
 
 def setup(bot):

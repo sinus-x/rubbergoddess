@@ -1,4 +1,4 @@
-import json
+import hjson
 
 
 class Emote:
@@ -12,9 +12,9 @@ class Emote:
         return None
 
     def __init__(self):
-        self.default = json.load(open("config/emotes.default.json", "r"))
+        self.default = hjson.load(open("config/emotes.default.hjson", "r"))
         try:
-            self.custom = json.load(open("config/emotes.json", "r"))
+            self.custom = hjson.load(open("config/emotes.hjson", "r"))
         except FileNotFoundError:
             self.custom = None
 

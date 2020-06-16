@@ -1,4 +1,4 @@
-import json
+import hjson
 import sys
 
 
@@ -18,8 +18,8 @@ class Config:
 
     def __init__(self):
         try:
-            self.d = json.load(open("config/config.default.json", "r"))
-            self.c = json.load(open("config/config.json", "r"))
+            self.d = hjson.load(open("config/config.default.hjson", "r"))
+            self.c = hjson.load(open("config/config.hjson", "r"))
         except FileNotFoundError:
             print("Error loading config files.")  # noqa: T001
             sys.exit(1)
@@ -46,8 +46,6 @@ class Config:
 
         ##
         ## CHANNELS
-        self.channel_jail     = self.get('channels', 'jail')
-        self.channel_jailinfo = self.get('channels', 'jail-info')
         self.channel_mods     = self.get('channels', 'mods')
         self.channel_botdev   = self.get('channels', 'botdev')
         self.channel_botlog   = self.get('channels', 'botlog')
@@ -100,17 +98,6 @@ class Config:
         self.karma_subjects     = self.get('karma cog', 'count subjects')
         self.karma_vote_limit   = self.get('karma cog', 'vote limit')
         self.karma_vote_time    = self.get('karma cog', 'vote time')
-
-        ##
-        ## LIBRARIAN COG
-        self.starting_week = self.get('librarian cog', 'starting week')
-        self.nameday_cz    = self.get('librarian cog', 'nameday cz')
-        self.nameday_sk    = self.get('librarian cog', 'nameday sk')
-        self.weather_token = self.get('librarian cog', 'weather token')
-
-        ##
-        ## WARDEN COG
-        self.rolehoarders = self.get('warden', 'rolehoarders')
 
         ##
         ## COMPATIBILITY

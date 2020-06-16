@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 from repository.subject_repo import SubjectRepository
@@ -40,9 +40,7 @@ class Faceshifter(rubbercog.Rubbercog):
     @commands.group(name="subject")
     async def subject(self, ctx):
         """Add or remove subject"""
-        await self.deleteCommand(ctx)
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
     @subject.command(name="add")
     async def subject_add(self, ctx, *, subjects: str):
@@ -60,11 +58,13 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not subject",
                     mention=ctx.author.mention,
                     shortcut=subject
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._subject_add(ctx, ctx.author, channel)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
+
+        await utils.delete(ctx)
 
     @subject.command(name="remove")
     async def subject_remove(self, ctx, *, subjects: str):
@@ -82,20 +82,20 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not subject",
                     mention=ctx.author.mention,
                     shortcut=subject
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._subject_remove(ctx, ctx.author, channel)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
+
+        await utils.delete(ctx)
 
     @commands.guild_only()
     @commands.check(check.is_verified)
     @commands.group(name="role", aliases=["programme"])
     async def role(self, ctx):
         """Add or remove role"""
-        await self.deleteCommand(ctx)
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.invoked_with)
+        await utils.send_help(ctx)
 
     @role.command(name="add")
     async def role_add(self, ctx, *, roles: str):
@@ -113,11 +113,13 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not role",
                     mention=ctx.author.mention,
                     role=role
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._role_add(ctx, ctx.author, guild_role)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
+
+        await utils.delete(ctx)
 
     @role.command(name="remove")
     async def role_remove(self, ctx, *, roles: str):
@@ -135,11 +137,13 @@ class Faceshifter(rubbercog.Rubbercog):
                     "not role",
                     mention=ctx.author.mention,
                     role=role
-                ))
+                ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
                 await self._role_remove(ctx, ctx.author, guild_role)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
+
+        await utils.delete(ctx)
 
     ##
     ## Listeners
@@ -269,7 +273,8 @@ class Faceshifter(rubbercog.Rubbercog):
                 await message.channel.send(
                     text.fill(
                         "faceshifter", "invalid role line", line=self.sanitise(line, limit=50)
-                    )
+                    ),
+                    delete_after=config.get("delay", "user error"),
                 )
                 return
         return result
@@ -357,14 +362,20 @@ class Faceshifter(rubbercog.Rubbercog):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send(text.fill("faceshifter", "deny role", mention=member.mention))
+                await location.send(
+                    text.fill("faceshifter", "deny role", mention=member.mention),
+                    delete_after=config.get("delay", "user error"),
+                )
                 return
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send(text.fill("faceshifter", "deny high role", mention=member.mention))
+            await location.send(
+                text.fill("faceshifter", "deny high role", mention=member.mention),
+                delete_after=config.get("delay", "user error"),
+            )
             return
 
         await member.add_roles(role)
@@ -378,14 +389,20 @@ class Faceshifter(rubbercog.Rubbercog):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send(text.fill("faceshifter", "deny role", mention=member.mention))
+                await location.send(
+                    text.fill("faceshifter", "deny role", mention=member.mention),
+                    delete_after=config.get("delay", "user error"),
+                )
                 return
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send(text.fill("faceshifter", "deny high role", mention=member.mention))
+            await location.send(
+                text.fill("faceshifter", "deny high role", mention=member.mention),
+                delete_after=config.get("delay", "user error"),
+            )
             return
 
         await member.remove_roles(role)

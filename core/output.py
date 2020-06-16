@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 
 from core.config import config
+from core.text import text
 
 
 def getTimestamp():
@@ -28,23 +29,23 @@ class Output:
 
     async def debug(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.DEBUG:
-            await self.send(source, "debug", message, error)
+            await self.send(source, text.get("bot", "debug"), message, error)
 
     async def info(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.INFO:
-            await self.send(source, "info", message, error)
+            await self.send(source, text.get("bot", "info"), message, error)
 
     async def warning(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.WARNING:
-            await self.send(source, "warning", message, error)
+            await self.send(source, text.get("bot", "warning"), message, error)
 
     async def error(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.ERROR:
-            await self.send(source, "error", message, error)
+            await self.send(source, text.get("bot", "error"), message, error)
 
     async def critical(self, source, message: str = None, error: Exception = None):
         if self.level <= logging.CRITICAL:
-            await self.send(source, "critical", message, error)
+            await self.send(source, text.get("bot", "critical"), message, error)
 
     async def send(
         self,
@@ -186,3 +187,37 @@ class Console:
 
         await self.getLogChannel().send(f"```{result}```")
         print(result)
+
+
+class Event:
+    def __init__(self, bot):
+        self.bot = bot
+        self.channel = None
+
+        self.user_template = "{user} in {location}: {message}"
+        self.sudo_template = "**SUDO** {user} in {location}: {message}"
+
+    def getChannel(self):
+        if self.channel is None:
+            self.channel = self.bot.get_channel(config.get("channels", "events"))
+        return self.channel
+
+    async def user(self, member: discord.Member, location: discord.abc.Messageable, message: str):
+        """Unprivileged events"""
+        # fmt: off
+        await self.getChannel().send(self.user_template.format(
+            user=str(member),
+            location=location.mention,
+            message=message.replace("@", "@\u200b"),
+        ))
+        # fmt: on
+
+    async def sudo(self, member: discord.Member, location: discord.abc.Messageable, message: str):
+        """Privileged events"""
+        # fmt: off
+        await self.getChannel().send(self.sudo_template.format(
+            user=str(member),
+            location=location.mention,
+            message=message.replace("@", "@\u200b"),
+        ))
+        # fmt: on

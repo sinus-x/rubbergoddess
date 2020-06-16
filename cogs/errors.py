@@ -1,35 +1,10 @@
-import datetime
 import traceback
 
 from discord.ext import commands
 
-from core import rubbercog
+from core import rubbercog, utils
 from core.text import text
 from core.config import config
-
-
-def seconds2str(time):
-    time = int(time)
-    D = 3600 * 24
-    H = 3600
-    M = 60
-
-    d = (time - (time % D)) / D
-    h = (time - (time % H)) / H
-    m = (time - (time % M)) / M
-    s = time % 60
-
-    if d > 0:
-        return f"{d} d, {h:02}:{m:02}:{s:02}"
-    if h > 0:
-        return f"{h}:{m:02}:{s:02}"
-    if m > 0:
-        return f"{m}:{s:02}"
-    if s > 4:
-        return f"{s} vteřin"
-    if s > 1:
-        return f"{s} vteřiny"
-    return "vteřinu"
 
 
 class Errors(rubbercog.Rubbercog):
@@ -46,64 +21,44 @@ class Errors(rubbercog.Rubbercog):
         # TODO Implement all exceptions
         # https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exceptions
 
+        # fmt: off
+        # cog exceptions are handled in their cogs
+        if isinstance(error, rubbercog.RubbercogException):
+            if type(error) is not rubbercog.RubbercogException:
+                return
+            return await self.output.error(ctx, text.get("bot", "RubbercogException"), error)
+
         # user interaction
         if isinstance(error, commands.MissingPermissions):
-            perms = ", ".join(error.missing_perms)
-            await self.output.error(
-                ctx, text.fill("error", "no user permission", permissions=perms)
-            )
-            return
-
+            perms = ", ".join(f"_{x}_" for x in error.missing_perms)
+            return await self.output.error(ctx, text.fill("error", "no user permission", permissions=perms))
         if isinstance(error, commands.BotMissingPermissions):
-            perms = ", ".join(error.missing_perms)
+            perms = ", ".join(f"_{x}_" for x in error.missing_perms)
             await self.output.error(ctx, text.fill("error", "no bot permission", permissions=perms))
             await self.console.error(ctx, "I'm missing permissions: " + perms)
             return
-
         if isinstance(error, commands.CommandOnCooldown):
-            time = seconds2str(error.retry_after)
-            await self.output.warning(ctx, text.fill("error", "cooldown", time=time))
-            return
-
+            time = utils.seconds2str(error.retry_after)
+            return await self.output.warning(ctx, text.fill("error", "cooldown", time=time))
         if isinstance(error, commands.MaxConcurrencyReached):
-            await self.output.warning(
-                ctx,
-                text.fill("error", "concurrency", number=error.number, bucket_type=error.per.name),
-            )
-
+            return await self.output.warning(ctx, text.fill("error", "concurrency", number=error.number, bucket_type=error.per.name))
         if isinstance(error, commands.NSFWChannelRequired):
-            await self.output.error("error", "nsfw required")
-            return
-
+            return await self.output.error("error", "nsfw required")
         if isinstance(error, commands.CheckFailure):
             # Should we send _which_ checks failed?
-            await self.output.warning(ctx, text.get("error", "no requirement"))
-            return
-
+            return await self.output.warning(ctx, text.get("error", "no requirements"))
         if isinstance(error, commands.BadArgument):
-            await self.output.warning(ctx, text.get("error", "bad argument"))
-            return
-
+            return await self.output.warning(ctx, text.get("error", "bad argument"))
         if isinstance(error, commands.ExpectedClosingQuoteError):
-            await self.output.warning(ctx, text.get("error", "bad argument"))
-            return
-
+            return await self.output.warning(ctx, text.get("error", "bad argument"))
         if isinstance(error, commands.CommandNotFound):
             return
-
         if isinstance(error, commands.MissingRequiredArgument):
-            await self.output.warning(
-                ctx, text.fill("error", "missing argument", argument=error.param.name)
-            )
-            return
-
+            return await self.output.warning(ctx, text.fill("error", "missing argument", argument=error.param.name))
         if isinstance(error, commands.ArgumentParsingError):
-            await self.output.warning(ctx, text.get("error", "argument parsing"))
-            return
-
-        elif isinstance(error, commands.CommandError):
-            await self.output.warning(ctx, text.get("error" "command"), error)
-            return
+            return await self.output.warning(ctx, text.get("error", "argument parsing"))
+        if isinstance(error, commands.CommandError):
+            return await self.output.warning(ctx, text.get("error" "command"), error)
 
         # cog loading
         elif isinstance(error, commands.ExtensionAlreadyLoaded):
@@ -119,8 +74,7 @@ class Errors(rubbercog.Rubbercog):
         # fmt: on
 
         # display error message
-        await self.throwError(ctx, error)
-        await self.log(ctx, "on_command_error", quote=True, msg=error)
+        await self.output.error(ctx, "", error)
 
         output = "Ignoring exception in command {}: \n\n".format(ctx.command)
         output += "".join(traceback.format_exception(type(error), error, error.__traceback__))

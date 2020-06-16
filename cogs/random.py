@@ -1,11 +1,10 @@
+import random
+
 import discord
 from discord.ext import commands
 
 from core import rubbercog, utils
-from logic import rng
-
-# Logic (functionality used by features or rubbergoddess directly)
-rng = rng.Rng()
+from core.text import text
 
 
 class Random(rubbercog.Rubbercog):
@@ -18,25 +17,35 @@ class Random(rubbercog.Rubbercog):
     @commands.command()
     async def pick(self, ctx, *args):
         """"Pick an option"""
-        option = rng.pick_option(discord.utils.escape_mentions(" ".join(args)))
-        if option:
-            await ctx.send("{} {}".format(option, utils.generate_mention(ctx.author.id)))
-        await self.roomCheck(ctx)
+        option = self.sanitise(random.choice(args), limit=50)
+        if option is not None:
+            await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
+
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def flip(self, ctx):
-        await ctx.send(rng.flip())
-        await self.roomCheck(ctx)
+        """Yes/No"""
+        option = random.choice(text.get("random", "flip"))
+        await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
+
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def roll(self, ctx):
-        # TODO: use
-        # https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html#basic-converters
-        # and only pass integers to the function?
-        await ctx.send(rng.generate_number(ctx.message))
-        await self.roomCheck(ctx)
+    async def random(self, ctx, first: int, second: int = None):
+        """Pick number from interval"""
+        if second is None:
+            second = 0
+
+        if first > second:
+            first, second = second, first
+
+        option = str(random.randint(first, second))
+        await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
+
+        await utils.room_check(ctx)
 
 
 def setup(bot):

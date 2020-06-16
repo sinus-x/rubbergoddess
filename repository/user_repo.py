@@ -8,40 +8,13 @@ from datetime import datetime
 class UserRepository(BaseRepository):
     # unknown - pending - verified - kicked - banned
 
-    def add_user(
-        self,
-        discord_id: int,
-        login: str = "xlogin00",
-        group: str = "GUEST",
-        status: str = "unknown",
-        code: str = "NONE",
-        comment: str = "",
+    def add(
+        self, discord_id: int, login: str, group: str, code: str,
     ):
         """Add new user"""
         session.add(
-            User(
-                login=login,
-                group=group,
-                status=status,
-                comment=comment,
-                discord_id=discord_id,
-                code=code,
-                changed=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            )
+            User(discord_id=discord_id, login=login, group=group, code=code, status="pending")
         )
-        session.commit()
-
-    def save_code(self, code: str, discord_id: int):
-        """Update a specified user with a new verification code"""
-        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
-        if not user:
-            self.add_user(discord_id)
-            user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
-        user.code = code
-        user.discord_id = discord_id
-        user.status = "pending"
-        user.comment = ""
-        user.changed = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         session.commit()
 
     def save_verified(self, discord_id: int):
@@ -101,6 +74,10 @@ class UserRepository(BaseRepository):
     def get(self, discord_id: int):
         """Get user from database"""
         return session.query(User).filter(User.discord_id == discord_id).one_or_none()
+
+    def getByLogin(self, login: str):
+        """Get user from database"""
+        return session.query(User).filter(User.login == login).one_or_none()
 
     # TODO Deprecated
     def filterId(self, discord_id: int = None):
