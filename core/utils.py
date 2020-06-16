@@ -3,6 +3,7 @@ import git
 import discord
 from discord.ext import commands
 
+from core import utils
 from core.config import config
 from core.text import text
 from config.messages import Messages
@@ -124,4 +125,4 @@ async def send_help(ctx: commands.Context):
         return
     if ctx.invoked_subcommand is not None:
         return
-    await ctx.send_help(ctx.command.qualified_name)
+    await utils.send_help(ctx)

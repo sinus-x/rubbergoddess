@@ -61,10 +61,10 @@ class Actor(rubbercog.Rubbercog):
 
     def _check_match_string(self, match: str):
         """Check if match string is valid"""
-        return match[:1].upper() in ["full", "any", "starts", "ends"]
+        return match.upper() in ["full", "any", "starts", "ends"]
 
     def _check_filename_extension(self, filename: str):
-        return filename.split(".") in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]
+        return filename.split(".")[-1] in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]
 
     @commands.group(name="send")
     @commands.check(check.is_bot_owner)
