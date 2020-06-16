@@ -134,7 +134,7 @@ class Actor(rubbercog.Rubbercog):
             )
 
             # trigger and response
-            line.append(" {trigger} -> {response}".format(
+            line.append(" \"{trigger}\" -> \"{response}\"".format(
                 trigger=value["trigger"],
                 response=value["response"],
             ))
@@ -181,10 +181,7 @@ class Actor(rubbercog.Rubbercog):
             for k, v in sorted(self.reactions_usage.items(), key=lambda item: item[1], reverse=True)
         }
 
-        embed = discord.Embed(
-            title="Bot reaction", description="Trigger statistics", color=config.color,
-        )
-
+        embed = self.embed(title="Bot reaction", description="Trigger statistics")
         content = []
         total = 0
         for reaction, count in items.items():
