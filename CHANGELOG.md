@@ -4,6 +4,11 @@ the biggest changes, most importantly those that need some kind of edits to
 configuration or database.
 
 ## [Unreleased]
+
+See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
+expect in the future.
+
+## [0.3.0]
 ### Added
 - Gatekeeper cog
 
@@ -52,6 +57,7 @@ ADD COLUMN name VARCHAR;
 ## [0.1.0]
 Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/Toaster192/rubbergod).
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...devel
+[0.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sinus-x/rubbergoddess/releases/tag/v0.1.0
