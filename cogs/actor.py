@@ -60,7 +60,7 @@ class Actor(rubbercog.Rubbercog):
 
     def _check_match_string(self, match: str):
         """Check if match string is valid"""
-        return match.upper() in ["full", "any", "starts", "ends"]
+        return match.lower() in ["full", "any", "starts", "ends"]
 
     def _check_filename_extension(self, filename: str):
         return filename.split(".")[-1] in ["jpg", "jpeg", "png", "webm", "mp4", "gif"]
@@ -79,7 +79,7 @@ class Actor(rubbercog.Rubbercog):
         message: Text
         """
         if channel is None or text is None:
-            return await ctx.send_help(ctx.invoked_with)
+            return await utils.send_help(ctx)
 
         m = await channel.send(text)
         await self.event.sudo(
