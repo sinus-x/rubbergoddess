@@ -20,7 +20,14 @@
 This FEKTwide Discord bot manages the verification process, karma and some other
 commands on VUT FEKT Discord server.
 
-[Rubbergod](https://github.com/Toaster192/rubbergod)'s younger but more mature sister. Originally forked, now independent.
+### Related bots
+[Rubbergod]. Rubbergoddess is younger, but more mature sister -- originally forked, now independent.
+
+[Amadeus], mantained by [Czechbol], is younger brother, sharing a lot of core code from before the
+v0.1.0 release. It complements Rubbergoddess with functions like vote, graph, latex or message
+leaderboards.
+
+[Wormhole]. Discord bot connecting multiple guilds with one shared chat.
 
 ## Installing and running the bot
 
@@ -28,8 +35,7 @@ See [wiki](https://github.com/sinus-x/rubbergoddess/wiki).
 
 ## Authors
 
-Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x) and
-[Czechbol](https://github.com/Czechbol).
+Rubbergoddess is mantained by [sinus-x] and [Czechbol].
 
 Original authors include [Toaster](https://github.com/toaster192),
 [Matthew](https://github.com/matejsoroka), [Fpmk](https://github.com/TheGreatfpmK),
@@ -42,3 +48,10 @@ This project is licensed under the GNU GPL v.3 License.
 
 Rubbergoddess image is a CC0 photography by Peter Sjo hosted on
 [unsplash.com](https://unsplash.com/photos/Nxy-6QwGMzA).
+
+
+[sinus-x]: https://github.com/sinus-x
+[Czechbol]: https://github.com/Czechbol
+[Rubbergod]: https://github.com/Toaster192/rubbergod
+[Amadeus]: https://github.com/Czechbol/Amadeus
+[Wormhole]: https://github.com/sinus-x/discord-wormhole
