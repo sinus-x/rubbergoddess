@@ -8,7 +8,6 @@ from requests import get
 
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 
 
 class Actor(rubbercog.Rubbercog):
@@ -82,7 +81,6 @@ class Actor(rubbercog.Rubbercog):
         if channel is None or text is None:
             return await ctx.send_help(ctx.invoked_with)
 
-        ch = self.getGuild().get_channel(config.channel_mods)
         m = await channel.send(text)
         await self.event.sudo(
             ctx.author,
@@ -104,7 +102,6 @@ class Actor(rubbercog.Rubbercog):
             async with ctx.typing():
                 m = await channel.send(file=discord.File(self.path + filename))
                 delta = time.monotonic() - now
-                ch = self.getGuild().get_channel(config.channel_mods)
                 await self.event.sudo(
                     ctx.author,
                     ctx.channel,
@@ -112,7 +109,7 @@ class Actor(rubbercog.Rubbercog):
                     f"> _{ctx.message.content}_\n> {m.jump_url}",
                 )
         except Exception as e:
-            await self.throwError(ctx, "Could not send media file", e)
+            await self.output.error(ctx, "Could not send media file", e)
 
     @commands.group(name="reactions", aliases=["reaction", "react"])
     @commands.check(check.is_mod)
@@ -426,7 +423,7 @@ class Actor(rubbercog.Rubbercog):
             avatar = img.read()
             await self.bot.user.edit(avatar=avatar)
             await ctx.send(content="Dobře, takhle teď budu vypadat:", file=discord.File(path))
-        await self.event.sudo(ctx.author, ctx.channel, f"New bot avatar set.")
+        await self.event.sudo(ctx.author, ctx.channel, "Bot avatar set.")
 
     @change.command(name="name")
     async def change_name(self, ctx: commands.Context, *args):
@@ -437,7 +434,7 @@ class Actor(rubbercog.Rubbercog):
         name = " ".join(args)
         await self.bot.user.edit(username=name)
         await ctx.send(f"Dobře, od teď jsem **{name}**")
-        await self.event.sudo(ctx.author, ctx.channel, f"New bot name set.")
+        await self.event.sudo(ctx.author, ctx.channel, "Bot name set.")
 
 
 def setup(bot):
