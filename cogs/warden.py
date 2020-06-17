@@ -108,6 +108,7 @@ class Warden(rubbercog.Rubbercog):
 
         for r in message.reactions:
             if r.emoji == "❎" and r.count > config.get("warden", "not duplicate limit"):
+                # TODO Remove all emojis added by bot
                 try:
                     orig = message.embeds[0].footer.text
                     orig = await message.channel.fetch_message(int(orig))

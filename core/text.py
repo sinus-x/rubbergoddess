@@ -31,8 +31,8 @@ class Text:
             return self._replace(result)
         return result
 
-    def fill(self, group: str, key: str, **kwargs):
-        result = self.get(group, key)
+    def fill(self, group: str, item: str, **kwargs):
+        result = self.get(group, item)
 
         if "nickname" in kwargs:
             kwargs["nickname"] = self._escape_user(kwargs["nickname"])
@@ -45,9 +45,9 @@ class Text:
         if "channel" in kwargs:
             kwargs["channel"] = self._mention_channel(kwargs["channel"])
 
-        for key in kwargs:
-            if "{" + key + "}" in result:
-                result = result.replace("{" + key + "}", str(kwargs[key]))
+        for item in kwargs:
+            if "{" + item + "}" in result:
+                result = result.replace("{" + item + "}", str(kwargs[item]))
         return result
 
     def _replace(self, string: str):
