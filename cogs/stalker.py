@@ -268,7 +268,9 @@ class Stalker(rubbercog.Rubbercog):
                 inline=False, name="Success", value=text.fill("db", "delete success", num=result)
             )
             embed.add_field(name="Warning", value="Roles and channel access haven't been removed")
-            await self.event.sudo(ctx, "User removed from database: " + member.name)
+            await self.event.sudo(
+                ctx.author, ctx.channel, "User removed from database: " + member.name
+            )
             # TODO remove all roles
         else:
             # simulate

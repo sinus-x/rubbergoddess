@@ -67,7 +67,7 @@ class Output:
         if error is not None:
             tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             if len(tr) > 1000:
-                tr = tr[-999:] + "…"
+                tr = "…" + tr[-999:]
             result += template_cont.format(error=error, traceback=tr)
 
         await source.send(result, delete_after=config.get("delay", "bot error"))
