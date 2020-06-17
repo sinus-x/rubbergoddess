@@ -10,7 +10,9 @@ expect in the future.
 
 ### Developers
 
-- `self.embed()` function to make embed creation one-liner
+- `Rubbercog.embed` function to make embed creation one-liner
+- Removed `Rubbercog.throw*` functions
+- Removed `Rubbercog.log` function
 
 ## [0.3.0]
 ### Added
