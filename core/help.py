@@ -1,5 +1,7 @@
 from discord.ext import commands
 
+from core.config import config
+
 
 class Paginator(commands.Paginator):
     def __init__(self):
@@ -66,18 +68,7 @@ class Help(commands.MinimalHelpCommand):
             fmt += ": " + command.short_doc
         self.paginator.add_line(fmt)
 
-    async def send_bot_help(self, mapping):
-        self.paginator.add_line(">>> ")
-        await super().send_bot_help(mapping)
-
-    async def send_command_help(self, command):
-        self.paginator.add_line(">>> ")
-        await super().send_command_help(command)
-
-    async def send_group_help(self, group):
-        self.paginator.add_line(">>> ")
-        await super().send_group_help(group)
-
-    async def send_cog_help(self, cog):
-        self.paginator.add_line(">>> ")
-        await super().send_cog_help(cog)
+    async def send_pages(self):
+        destination = self.get_destination()
+        for page in self.paginator.pages:
+            await destination.send(">>> " + page, delete_after=config.get("delay", "help"))
