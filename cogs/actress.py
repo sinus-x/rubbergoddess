@@ -18,6 +18,8 @@ class Actress(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
+        self.supported_formats = ("jpg", "jpeg", "png", "webm", "mp4", "gif")
+
         self.path = os.getcwd() + "/data/actress/"
         try:
             self.reactions = hjson.load(open(self.path + "reactions.hjson"))
@@ -45,7 +47,8 @@ class Actress(rubbercog.Rubbercog):
         await self.event.sudo(
             ctx.author,
             ctx.channel,
-            f"Text sent to {channel.mention}:\n" f"> _{content}_\n> {message.jump_url}",
+            f"Text sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
+            f"> _{content}_\n> <{message.jump_url}>",
         )
         await self.output.info(ctx, "Message sent.")
 
@@ -65,8 +68,8 @@ class Actress(rubbercog.Rubbercog):
                 await self.event.sudo(
                     ctx.author,
                     ctx.channel,
-                    f"Media file sent to {channel.mention} in {delta:.1f} seconds:\n"
-                    f"> _{ctx.message.content}_\n> {message.jump_url}",
+                    f"Media file sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
+                    f"> _{filename}_\n> <{message.jump_url}>",
                 )
         except Exception as e:
             await self.output.error(ctx, "Could not send media file", e)
@@ -195,6 +198,77 @@ class Actress(rubbercog.Rubbercog):
 
         await self.output.info(ctx, f"Reaction **{name}** removed.")
         await self.event.sudo(ctx.author, ctx.channel, f"Reaction **{name}** removed.")
+
+    @commands.is_owner()
+    @commands.group(name="image", aliases=["img", "images"])
+    async def image(self, ctx):
+        """Manage images available to the bot"""
+        await utils.send_help(ctx)
+
+    @image.command(name="list")
+    async def image_list(self, ctx):
+        """List available commands"""
+        files = os.listdir(self.path)
+        template = "`{size:>5} kB` … {filename}"
+        content = []
+        for file in files:
+            if file.split(".")[-1] not in self.supported_formats:
+                continue
+            size = int(os.path.getsize(self.path + file) / 1024)
+            content.append(template.format(size=size, filename=file))
+        if len(content) == 0:
+            content.append("No media files found")
+
+        embed = self.embed(ctx=ctx)
+        embed.add_field(name="\u200b", value="\n".join(content))
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+        await utils.delete(ctx)
+
+    @image.command(name="download", aliases=["dl"])
+    async def image_download(self, ctx, url: str, filename: str):
+        """Download new image
+
+        url: URL of the image
+        filename: Target filename
+        """
+        if filename.split(".")[-1] not in self.supported_formats:
+            return self.output.error(ctx, "Unsupported extension")
+        if "/" in filename or "\\" in filename or ".." in filename:
+            return self.output.error(ctx, "Invalid characters")
+
+        # TODO Check if file exists
+        with open(self.path + filename, "wb") as f:
+            response = get(url)
+            f.write(response.content)
+
+        await self.output.info(ctx, "Image successfully downloaded.")
+
+        await utils.delete(ctx)
+
+    @image.command(name="remove", aliases=["delete", "rm", "del"])
+    async def image_remove(self, ctx, filename: str):
+        """Remove image
+
+        filename: An image filename
+        """
+        if "/" in filename or "\\" in filename or ".." in filename:
+            return self.output.error(ctx, "Invalid characters")
+
+        os.remove(self.path + filename)
+        await self.output.info("File deleted")
+
+        await utils.delete(ctx)
+
+    @image.command(name="show")
+    async def image_show(self, ctx, filename: str):
+        """Show an image
+
+        filename: An image filename
+        """
+        await self.send_image(ctx, ctx.channel, filename)
+
+        await utils.delete(ctx)
 
     ##
     ## Listeners
