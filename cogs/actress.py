@@ -66,8 +66,35 @@ class Actress(rubbercog.Rubbercog):
     @react.command(name="list")
     async def react_list(self, ctx):
         """List current reactions"""
-        # TODO Implement scrolling embed
-        pass
+        try:
+            name = next(iter(self.reactions))
+            reaction = self.reactions[name]
+            embed = self.embed(ctx=ctx, description=f"**{name}**", page=(1, len(self.reactions)))
+        except StopIteration:
+            reaction = None
+            embed = self.embed(ctx=ctx, page=(0, 0))
+
+        if reaction is not None:
+            for key in ("type", "match", "sensitive"):
+                embed.add_field(name=key, value=reaction[key])
+            for key in ("triggers", "responses"):
+                value = "\n".join(reaction[key])
+                embed.add_field(name=key, value=value, inline=False)
+            if reaction["users"] is not None:
+                users = [self.bot.get_user(x) for x in reaction["users"]]
+                value = "\n".join(
+                    f"`{user.id}` {user.name if hasattr(user, 'name') else '_unknown_'}"
+                    for user in users
+                )
+                embed.add_field(name="users", value=value, inline=False)
+            if reaction["channels"] is not None:
+                channels = [self.bot.get_channel(x) for x in reaction["channels"]]
+                value = "\n".join(f"`{channel.id}` {channel.mention}" for channel in channels)
+                embed.add_field(name="channels", value=value, inline=False)
+            if reaction["counter"] is not None:
+                embed.add_field(name="countdown", value=str(reaction["counter"]))
+
+        await ctx.send(embed=embed)
 
     @react.command(name="add")
     async def react_add(self, ctx, name: str = None, *, parameters=None):
