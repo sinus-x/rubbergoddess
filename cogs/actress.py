@@ -72,29 +72,16 @@ class Actress(rubbercog.Rubbercog):
             embed = self.embed(ctx=ctx, description=f"**{name}**", page=(1, len(self.reactions)))
         except StopIteration:
             reaction = None
-            embed = self.embed(ctx=ctx, page=(0, 0))
+            embed = self.embed(ctx=ctx)
 
         if reaction is not None:
-            for key in ("type", "match", "sensitive"):
-                embed.add_field(name=key, value=reaction[key])
-            for key in ("triggers", "responses"):
-                value = "\n".join(reaction[key])
-                embed.add_field(name=key, value=value, inline=False)
-            if reaction["users"] is not None:
-                users = [self.bot.get_user(x) for x in reaction["users"]]
-                value = "\n".join(
-                    f"`{user.id}` {user.name if hasattr(user, 'name') else '_unknown_'}"
-                    for user in users
-                )
-                embed.add_field(name="users", value=value, inline=False)
-            if reaction["channels"] is not None:
-                channels = [self.bot.get_channel(x) for x in reaction["channels"]]
-                value = "\n".join(f"`{channel.id}` {channel.mention}" for channel in channels)
-                embed.add_field(name="channels", value=value, inline=False)
-            if reaction["counter"] is not None:
-                embed.add_field(name="countdown", value=str(reaction["counter"]))
+            embed = self.fill_reaction_embed(embed, reaction)
 
-        await ctx.send(embed=embed)
+        message = await ctx.send(embed=embed)
+
+        if len(self.reactions) > 1:
+            await message.add_reaction("◀")
+            await message.add_reaction("▶")
 
     @react.command(name="add")
     async def react_add(self, ctx, name: str = None, *, parameters=None):
@@ -116,6 +103,7 @@ class Actress(rubbercog.Rubbercog):
         elif name in self.reactions.keys():
             raise ReactionNameExists()
 
+        # TODO This may not save all the key-value pairs
         reaction = await self.parse_react_message(ctx.message, strict=True)
         self.reactions[name] = reaction
         self._save_reactions()
@@ -161,6 +149,52 @@ class Actress(rubbercog.Rubbercog):
     ##
     ## Listeners
     ##
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
+        # do we care?
+        if user.bot:
+            return  # TODO Remove reaction
+
+        if hasattr(reaction, "emoji"):
+            if str(reaction.emoji) == "◀":
+                page_delta = -1
+            elif str(reaction.emoji) == "▶":
+                page_delta = 1
+            else:
+                return  # TODO Remove reaction
+        else:
+            return  # TODO Remove reaction
+        if len(reaction.message.embeds) != 1:
+            return
+        embed = reaction.message.embeds[0]
+        if not embed.title.endswith("react list"):
+            return  # TODO Remove reaction
+        if embed.footer == discord.Embed.Empty or " | " not in embed.footer.text:
+            return  # TODO Remove reaction
+
+        # get page
+        footer = embed.footer.text.split(" | ")[-1]
+        page_current = int(footer.split("/")[0])
+        pages_total = int(footer.split("/")[1])
+
+        page = (page_current + page_delta) % len(self.reactions)
+
+        # update embed
+        bot_reaction_name = list(self.reactions.keys())[page + 1]
+        print(bot_reaction_name)
+        bot_reaction = self.reactions[bot_reaction_name]
+
+        print(f"New page is {page}")
+
+        embed = self.fill_reaction_embed(embed, bot_reaction)
+        await reaction.message.edit(embed=embed)
+
+        # remove reaction
+        try:
+            await reaction.remove(user)
+        except:
+            pass
 
     ##
     ## Helper functions
@@ -226,6 +260,33 @@ class Actress(rubbercog.Rubbercog):
                     raise discord.MissingRequiredArgument(param=key)
 
         return result
+
+    def fill_reaction_embed(self, embed: discord.Embed, reaction: dict) -> discord.Embed:
+        # reset any previous
+        embed.clear_fields()
+
+        print(reaction)
+
+        for key in ("type", "match", "sensitive"):
+            embed.add_field(name=key, value=reaction[key])
+        for key in ("triggers", "responses"):
+            value = "\n".join(reaction[key])
+            embed.add_field(name=key, value=value, inline=False)
+        if reaction["users"] is not None:
+            users = [self.bot.get_user(x) for x in reaction["users"]]
+            value = "\n".join(
+                f"`{user.id}` {user.name if hasattr(user, 'name') else '_unknown_'}"
+                for user in users
+            )
+            embed.add_field(name="users", value=value, inline=False)
+        if reaction["channels"] is not None:
+            channels = [self.bot.get_channel(x) for x in reaction["channels"]]
+            value = "\n".join(f"`{channel.id}` {channel.mention}" for channel in channels)
+            embed.add_field(name="channels", value=value, inline=False)
+        if reaction["counter"] is not None:
+            embed.add_field(name="countdown", value=str(reaction["counter"]))
+
+        return embed
 
     ##
     ## Error catching
