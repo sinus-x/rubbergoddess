@@ -9,7 +9,7 @@ from operator import itemgetter
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from cogs import creator, errors
 from core.text import text
 from core.config import config
@@ -36,9 +36,7 @@ class Sync(rubbercog.Rubbercog):
     @commands.check(check.is_in_modroom)
     async def sync(self, ctx: commands.Context):
         """Synchronization cog"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
-            return
+        await utils.send_help(ctx)
 
     @sync.command(name="roles")
     async def sync_roles(self, ctx: commands.Context):

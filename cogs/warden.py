@@ -7,7 +7,7 @@ from discord.ext import commands
 import dhash
 from PIL import Image
 
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from core.config import config
 from core.emote import emote
 from core.text import text
@@ -45,7 +45,7 @@ class Warden(rubbercog.Rubbercog):
 
         # repost check - disallow linking
         if "https://cdn.discordapp.com/" in message.content:
-            await self.deleteCommand(message)
+            await utils.delete(message)
             await message.channel.send(
                 text.fill("warden", "repost cheating", mention=message.author.mention)
             )
@@ -64,7 +64,7 @@ class Warden(rubbercog.Rubbercog):
                     text.fill("warden", "gif warning", user=message.author, value=penalty)
                 )
                 repo_k.update_karma_get(message.author, -1 * penalty)
-                await self.deleteCommand(message)
+                await utils.delete(message)
                 await self.console.debug(message, f"Removed message linking to {link}")
                 break
 

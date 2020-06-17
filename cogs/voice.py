@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from core.config import config
 from core.text import text
-from core import check, rubbercog
+from core import check, rubbercog, utils
 
 
 class Voice(rubbercog.Rubbercog):
@@ -24,14 +24,12 @@ class Voice(rubbercog.Rubbercog):
     @commands.group(name="voice")
     async def voice(self, ctx: commands.Context):
         """Manage your voice channel"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
-            return
+        await utils.send_help(ctx)
 
     @voice.command(name="lock", aliases=["close"])
     async def voice_lock(self, ctx: commands.Context):
         """Make current voice channel invisible"""
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
         v = self.getVoiceChannel(ctx)
         if v.id in self.locked:
             await ctx.send(
@@ -46,7 +44,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="unlock", aliases=["open"])
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
         v = self.getVoiceChannel(ctx)
         if v.id not in self.locked:
             await ctx.send(
@@ -61,7 +59,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="rename")
     async def voice_rename(self, ctx: commands.Context, *args):
         """Rename current voice channel"""
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
         name = " ".join(args)
         if len(name) <= 0:
             await ctx.send(

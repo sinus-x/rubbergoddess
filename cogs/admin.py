@@ -2,7 +2,7 @@ import subprocess
 
 from discord.ext import commands
 
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 
@@ -151,14 +151,14 @@ class Admin(rubbercog.Rubbercog):
                 file = await self._readFile(ctx, "rubbergoddess.log", docker=True)
 
         else:
-            await self.throwError(ctx, "Unsupported value for 'loader' config key")
+            await self.output.error(ctx, "Unsupported value for 'loader' config key")
             return
 
         if cmd:
             try:
                 stdout = subprocess.check_output(cmd + " | tail -n 40", shell=True).decode("utf-8")
             except subprocess.CalledProcessError as e:
-                await self.throwError(ctx, e)
+                await self.output.error(ctx, "Subprocess error", e)
                 return
         elif file is not None:
             stdout = file
@@ -168,7 +168,7 @@ class Admin(rubbercog.Rubbercog):
         output = list(stdout[0 + i : 1960 + i] for i in range(0, len(stdout), 1960))
         for o in output:
             await ctx.send("```{}```".format(o))
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
 
     @commands.check(check.is_mod)
     @commands.command()
@@ -193,7 +193,7 @@ class Admin(rubbercog.Rubbercog):
         # fmt: on
 
         await ctx.send(">>> " + "\n".join(lines), delete_after=config.delay_embed)
-        await self.deleteCommand(ctx)
+        await utils.delete(ctx)
 
     async def _readFile(self, ctx: commands.Context, file: str, docker: bool):
         """Read file

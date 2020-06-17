@@ -39,7 +39,7 @@ class Karma(rubbercog.Rubbercog):
         karma = self.karma
         if len(args) == 0:
             await ctx.send(karma.karma_get(ctx.author))
-            await self.roomCheck(ctx)
+            await utils.room_check(ctx)
 
         elif args[0] == "stalk":
             try:
@@ -50,12 +50,12 @@ class Karma(rubbercog.Rubbercog):
                 return
 
             await ctx.send(karma.karma_get(ctx.author, target_member))
-            await self.roomCheck(ctx)
+            await utils.room_check(ctx)
 
         elif args[0] == "get":
             try:
                 await karma.emoji_get_value(ctx.message)
-                await self.roomCheck(ctx)
+                await utils.room_check(ctx)
             except discord.errors.Forbidden:
                 return
 
@@ -116,7 +116,7 @@ class Karma(rubbercog.Rubbercog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, "get", "DESC", start)
-        await self.roomCheck(ctx)
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30.0, type=commands.BucketType.user)
     @commands.command()
@@ -127,7 +127,7 @@ class Karma(rubbercog.Rubbercog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, "get", "ASC", start)
-        await self.roomCheck(ctx)
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30.0, type=commands.BucketType.user)
     @commands.command()
@@ -138,7 +138,7 @@ class Karma(rubbercog.Rubbercog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, "give", "DESC", start)
-        await self.roomCheck(ctx)
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30.0, type=commands.BucketType.user)
     @commands.command()
@@ -149,7 +149,7 @@ class Karma(rubbercog.Rubbercog):
             await ctx.send(utils.fill_message("karma_lederboard_offser_error", user=ctx.author.id))
             return
         await self.karma.leaderboard(ctx.message.channel, "give", "ASC", start)
-        await self.roomCheck(ctx)
+        await utils.room_check(ctx)
 
     @leaderboard.error
     @bajkarboard.error

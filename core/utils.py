@@ -115,7 +115,7 @@ async def room_check(ctx: commands.Context):
 
 
 async def delete(ctx: commands.Context):
-    if ctx.message is not None:
+    if hasattr(ctx, "message"):
         await ctx.message.delete()
 
 
