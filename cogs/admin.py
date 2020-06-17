@@ -56,6 +56,11 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send(text.fill("admin", "power fail"))
         await self.event.sudo(ctx.author, ctx.channel, f"Power off: {reason}")
 
+    @power.command(name="disconnect")
+    async def power_disconnect(self, ctx):
+        """Close the connection to Discord servers"""
+        await self.bot.logout()
+
     @power.command(name="on")
     async def power_on(self, ctx):
         """Restore"""
