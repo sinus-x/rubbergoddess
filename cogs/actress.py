@@ -1,6 +1,7 @@
 import hjson
 import os
 import shlex
+import time
 from requests import get
 
 import discord
@@ -17,9 +18,9 @@ class Actress(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.path = os.getcwd() + "/data/actress/reactions.hjson"
+        self.path = os.getcwd() + "/data/actress/"
         try:
-            self.reactions = hjson.load(open(self.path))
+            self.reactions = hjson.load(open(self.path + "reactions.hjson"))
         except:
             self.reactions = {}
         self.usage = {}
@@ -27,35 +28,48 @@ class Actress(rubbercog.Rubbercog):
     ##
     ## Commands
     ##
+    @commands.is_owner()
+    @commands.group(name="send")
+    async def send(self, ctx):
+        """Send message to given channel"""
+        await utils.send_help(ctx)
 
-    """
-    ?send text <channel> <text>
-    ?send image <channel> <path>
+    @send.command(name="text")
+    async def send_text(self, ctx, channel: discord.TextChannel, content):
+        """Send a text to text channel
 
-    ?react list
-    ?react usage
-    ?react add <name>
-    type <image|text>
-    match <full|start|end|any>
-    caps <ignore|match>
-    triggers "t1" "t 2"
-    response "string"
-    users 0 1 2
-    channels 0 1 2
-    ?react remove <name>
-    ?react edit <name>
-    match <full|start|end|any>
-    caps <ignore|match>
-    triggers "t1" "t 2"
-    response "string"
+        channel: Target text channel
+        content: Text
+        """
+        message = await channel.send(text)
+        await self.event.sudo(
+            ctx.author,
+            ctx.channel,
+            f"Text sent to {channel.mention}:\n" f"> _{content}_\n> {message.jump_url}",
+        )
+        await self.output.info(ctx, "Message sent.")
 
-    ?image list
-    ?image download <url> <filename>
-    ?image show <filename>
+    @send.command(name="image")
+    async def send_image(self, ctx, channel: discord.TextChannel, filename):
+        """Send an image as a bot
 
-    ?change avatar
-    ?change name
-    """
+        channel: Target text channel
+        filename: A filename
+        """
+        now = time.monotonic()
+        try:
+            async with ctx.typing():
+                message = await channel.send(file=discord.File(self.path + filename))
+                delta = time.monotonic() - now
+                await self.output.info(ctx, f"Sent in {delta:.1f} seconds.")
+                await self.event.sudo(
+                    ctx.author,
+                    ctx.channel,
+                    f"Media file sent to {channel.mention} in {delta:.1f} seconds:\n"
+                    f"> _{ctx.message.content}_\n> {message.jump_url}",
+                )
+        except Exception as e:
+            await self.output.error(ctx, "Could not send media file", e)
 
     @commands.check(check.is_mod)
     @commands.group(name="react", aliases=["reaction", "reactions"])
@@ -81,6 +95,28 @@ class Actress(rubbercog.Rubbercog):
         if len(self.reactions) > 1:
             await message.add_reaction("◀")
             await message.add_reaction("▶")
+
+    @react.command(name="usage", aliases=["stat", "stats"])
+    async def react_usage(self, ctx):
+        """See reactions usage since start"""
+        items = {
+            k: v for k, v in sorted(self.usage.items(), key=lambda item: item[1], reverse=True)
+        }
+
+        embed = self.embed(ctx=ctx)
+        content = []
+        total = 0
+        template = "`{count:>2}` … **{reaction}**"
+        for reaction, count in items.items():
+            content.append(template.format(count=count, reaction=reaction))
+            total += count
+        if len(content) == 0:
+            content.append("Nothing yet.")
+
+        embed.add_field(name=f"{total} in total", value="\n".join(content))
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+
+        await utils.delete(ctx)
 
     @react.command(name="add")
     async def react_add(self, ctx, name: str = None, *, parameters=None):
