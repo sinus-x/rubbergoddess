@@ -207,7 +207,7 @@ class Event:
         # fmt: off
         await self.getChannel().send(self.user_template.format(
             user=str(member),
-            location=location.mention,
+            location=location.mention if hasattr(location, "mention") else type(location).__name__,
             message=message.replace("@", "@\u200b"),
         ))
         # fmt: on
@@ -217,7 +217,7 @@ class Event:
         # fmt: off
         await self.getChannel().send(self.sudo_template.format(
             user=str(member),
-            location=location.mention,
+            location=location.mention if hasattr(location, "mention") else type(location).__name__,
             message=message.replace("@", "@\u200b"),
         ))
         # fmt: on
