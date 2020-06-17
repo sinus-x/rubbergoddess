@@ -71,10 +71,11 @@
 	actress: {
 		# Exceptions
 		ActressException:         Neumím hrát.
-		ReactionException:        Chyba v manipulaci s reakcí.
+		ReactionException:        Problematická manipulace s reakcí.
 		ReactionNameExists:       Jméno s takovou reakcí už existuje.
 		ReactionNotFound:         Reakce s takovým jménem neexistuje.
-		ReactionParsingException: Chyba v překladu {value} pro klíč {key}.
+		InvalidReactionKey:       Nepodporovaný {key}.
+		ReactionParsingException: Špatná hodnota {value} pro klíč {key}.
 	}
 
 	"faceshifter": {
