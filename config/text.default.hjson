@@ -68,6 +68,15 @@
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
 	}
 
+	actress: {
+		# Exceptions
+		ActressException:         Neumím hrát.
+		ReactionException:        Chyba v manipulaci s reakcí.
+		ReactionNameExists:       Jméno s takovou reakcí už existuje.
+		ReactionNotFound:         Reakce s takovým jménem neexistuje.
+		ReactionParsingException: Chyba v překladu {value} pro klíč {key}.
+	}
+
 	"faceshifter": {
 		"not subject": "{mention}, předmětovou místnost **{shortcut}** tu nemáme",
 		"not role": "{mention}, roli **{role}** tu nemáme",
