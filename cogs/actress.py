@@ -1,5 +1,6 @@
 import hjson
 import os
+import random
 import shlex
 import time
 from requests import get
@@ -275,6 +276,72 @@ class Actress(rubbercog.Rubbercog):
     ##
 
     @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+
+        for name, reaction in self.reactions.items():
+            if reaction["sensitive"]:
+                text = message.content
+                triggers = reaction["triggers"]
+            else:
+                text = message.content.lower()
+                triggers = [x.lower() for x in reaction["triggers"]]
+
+            # check the type
+            if reaction["match"] == "full" and text not in triggers:
+                continue
+            if reaction["match"] == "any":
+                for trigger in triggers:
+                    if trigger in text:
+                        break
+                else:
+                    # trigger is not contained
+                    continue
+            if reaction["match"] == "start":
+                for trigger in triggers:
+                    if text.startswith(trigger):
+                        break
+                else:
+                    continue
+            if reaction["match"] == "end":
+                for trigger in triggers:
+                    if text.endswith(trigger):
+                        break
+                else:
+                    continue
+
+            # conditions
+            if "users" in reaction and message.author.id not in reaction["users"]:
+                continue
+            if "channels" in reaction and message.channel.id not in reaction["channels"]:
+                continue
+
+            # send
+            response = random.choice(reaction["responses"])
+            if reaction["type"] == "text":
+                await message.channel.send(response)
+            elif reaction["type"] == "image":
+                await message.channel.send(file=discord.File(self.path + response))
+
+            # log
+            if name in self.usage:
+                self.usage[name] += 1
+            else:
+                self.usage[name] = 1
+
+            # counter
+            if "counter" in reaction:
+                if reaction["counter"] > 1:
+                    self.reactions[name]["counter"] -= 1
+                else:
+                    # last usage, delete from config
+                    del self.reactions[name]
+                self._save_reactions()
+
+            break
+
+    @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         # do we care?
         if user.bot:
@@ -323,7 +390,7 @@ class Actress(rubbercog.Rubbercog):
     ## Helper functions
     ##
     def _save_reactions(self):
-        with open(self.path, "w", encoding="utf-8") as f:
+        with open(self.path + "reactions.hjson", "w", encoding="utf-8") as f:
             hjson.dump(self.reactions, f, ensure_ascii=False, indent="\t")
 
     ##
