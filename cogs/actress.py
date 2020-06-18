@@ -66,11 +66,11 @@ class Actress(rubbercog.Rubbercog):
                 message = await channel.send(file=discord.File(self.path + filename))
                 delta = time.monotonic() - now
                 await self.output.info(ctx, f"Sent in {delta:.1f} seconds.")
+                mention = channel.mention if hasattr(channel, "mention") else type(channel).__name__
                 await self.event.sudo(
                     ctx.author,
                     ctx.channel,
-                    f"Media file sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
-                    f"> _{filename}_\n> <{message.jump_url}>",
+                    f"Media file sent to {mention}:\n" f"> _{filename}_\n> <{message.jump_url}>",
                 )
         except Exception as e:
             await self.output.error(ctx, "Could not send media file", e)
@@ -92,7 +92,7 @@ class Actress(rubbercog.Rubbercog):
             embed = self.embed(ctx=ctx)
 
         if reaction is not None:
-            embed = self.fill_reaction_embed(embed, reaction)
+            embed = self.fill_reaction_embed(embed, name, reaction)
 
         message = await ctx.send(embed=embed)
 
@@ -238,7 +238,6 @@ class Actress(rubbercog.Rubbercog):
         if "/" in filename or "\\" in filename or ".." in filename:
             return self.output.error(ctx, "Invalid characters")
 
-        # TODO Check if file exists
         with open(self.path + filename, "wb") as f:
             response = get(url)
             f.write(response.content)
@@ -281,40 +280,8 @@ class Actress(rubbercog.Rubbercog):
             return
 
         for name, reaction in self.reactions.items():
-            if reaction["sensitive"]:
-                text = message.content
-                triggers = reaction["triggers"]
-            else:
-                text = message.content.lower()
-                triggers = [x.lower() for x in reaction["triggers"]]
-
-            # check the type
-            if reaction["match"] == "full" and text not in triggers:
-                continue
-            if reaction["match"] == "any":
-                for trigger in triggers:
-                    if trigger in text:
-                        break
-                else:
-                    # trigger is not contained
-                    continue
-            if reaction["match"] == "start":
-                for trigger in triggers:
-                    if text.startswith(trigger):
-                        break
-                else:
-                    continue
-            if reaction["match"] == "end":
-                for trigger in triggers:
-                    if text.endswith(trigger):
-                        break
-                else:
-                    continue
-
-            # conditions
-            if "users" in reaction and message.author.id not in reaction["users"]:
-                continue
-            if "channels" in reaction and message.channel.id not in reaction["channels"]:
+            # test
+            if not self._reaction_matches(message, reaction):
                 continue
 
             # send
@@ -337,6 +304,7 @@ class Actress(rubbercog.Rubbercog):
                 else:
                     # last usage, delete from config
                     del self.reactions[name]
+                    await self.console.info("Reaction removed: {name}")
                 self._save_reactions()
 
             break
@@ -345,7 +313,7 @@ class Actress(rubbercog.Rubbercog):
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         # do we care?
         if user.bot:
-            return  # TODO Remove reaction
+            return
 
         if hasattr(reaction, "emoji"):
             if str(reaction.emoji) == "◀":
@@ -353,16 +321,19 @@ class Actress(rubbercog.Rubbercog):
             elif str(reaction.emoji) == "▶":
                 page_delta = 1
             else:
-                return  # TODO Remove reaction
+                # invalid reaction
+                return await self._remove_reaction(reaction, user)
         else:
-            return  # TODO Remove reaction
+            # invalid reaction
+            return await self._remove_reaction(reaction, user)
+
         if len(reaction.message.embeds) != 1:
             return
         embed = reaction.message.embeds[0]
         if not embed.title.endswith("react list"):
-            return  # TODO Remove reaction
+            return await self._remove_reaction(reaction, user)
         if embed.footer == discord.Embed.Empty or " | " not in embed.footer.text:
-            return  # TODO Remove reaction
+            return await self._remove_reaction(reaction, user)
 
         # get page
         footer_text = embed.footer.text
@@ -376,15 +347,11 @@ class Actress(rubbercog.Rubbercog):
         bot_reaction_name = list(self.reactions.keys())[page]
         bot_reaction = self.reactions[bot_reaction_name]
 
-        embed = self.fill_reaction_embed(embed, bot_reaction)
+        embed = self.fill_reaction_embed(embed, bot_reaction_name, bot_reaction)
         embed.set_footer(text=footer_text, icon_url=embed.footer.icon_url)
         await reaction.message.edit(embed=embed)
 
-        # remove reaction
-        try:
-            await reaction.remove(user)
-        except:
-            pass
+        await self._remove_reaction(reaction, user)
 
     ##
     ## Helper functions
@@ -392,6 +359,51 @@ class Actress(rubbercog.Rubbercog):
     def _save_reactions(self):
         with open(self.path + "reactions.hjson", "w", encoding="utf-8") as f:
             hjson.dump(self.reactions, f, ensure_ascii=False, indent="\t")
+
+    async def _remove_reaction(self, reaction, user):
+        try:
+            await reaction.remove(user)
+        except:
+            pass
+
+    def _reaction_matches(self, message, reaction) -> bool:
+        # normalise
+        if reaction["sensitive"]:
+            text = message.content
+            triggers = reaction["triggers"]
+        else:
+            text = message.content.lower()
+            triggers = [x.lower() for x in reaction["triggers"]]
+
+        # check the type
+        if reaction["match"] == "full" and text not in triggers:
+            return False
+        if reaction["match"] == "any":
+            for trigger in triggers:
+                if trigger in text:
+                    break
+            else:
+                return False
+        if reaction["match"] == "start":
+            for trigger in triggers:
+                if text.startswith(trigger):
+                    break
+            else:
+                return False
+        if reaction["match"] == "end":
+            for trigger in triggers:
+                if text.endswith(trigger):
+                    break
+            else:
+                return False
+
+        # conditions
+        if "users" in reaction and message.author.id not in reaction["users"]:
+            return False
+        if "channels" in reaction and message.channel.id not in reaction["channels"]:
+            return False
+
+        return True
 
     ##
     ## Logic
@@ -460,10 +472,11 @@ class Actress(rubbercog.Rubbercog):
 
         return result
 
-    def fill_reaction_embed(self, embed: discord.Embed, reaction: dict) -> discord.Embed:
+    def fill_reaction_embed(self, embed: discord.Embed, name: str, reaction: dict) -> discord.Embed:
         # reset any previous
         embed.clear_fields()
 
+        embed.add_field(name="name", value=f"**{name}**")
         for key in ("triggers", "responses"):
             value = "\n".join(reaction[key])
             embed.add_field(name=key, value=value, inline=False)
