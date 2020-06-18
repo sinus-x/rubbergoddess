@@ -79,6 +79,7 @@
 		# ?image
 		"no files":   Žádné soubory jsem nenašla.
 		downloaded:   Soubor byl úspěšně stažen.
+		deleted:      Soubor byl úspěšně smazán.
 		BadExtension: Nepodporovaný formát.
 		BadCharacter: Název souboru podporuje nepodporované znaky.
 
