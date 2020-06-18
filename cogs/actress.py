@@ -51,9 +51,9 @@ class Actress(rubbercog.Rubbercog):
             f"Text sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
             f"> _{content}_\n> <{message.jump_url}>",
         )
-        await self.output.info(ctx, "Message sent.")
+        await self.output.info(ctx, text.get("actress", "text sent"))
 
-    @send.command(name="image")
+    @send.command(name="image", aliases=["file"])
     async def send_image(self, ctx, channel: discord.TextChannel, filename):
         """Send an image as a bot
 
@@ -65,7 +65,7 @@ class Actress(rubbercog.Rubbercog):
             async with ctx.typing():
                 message = await channel.send(file=discord.File(self.path + filename))
                 delta = time.monotonic() - now
-                await self.output.info(ctx, f"Sent in {delta:.1f} seconds.")
+                await self.output.info(ctx, text.fill("actress", "file sent", delta=delta))
                 mention = channel.mention if hasattr(channel, "mention") else type(channel).__name__
                 await self.event.sudo(
                     ctx.author,
@@ -73,7 +73,7 @@ class Actress(rubbercog.Rubbercog):
                     f"Media file sent to {mention}:\n" f"> _{filename}_\n> <{message.jump_url}>",
                 )
         except Exception as e:
-            await self.output.error(ctx, "Could not send media file", e)
+            await self.output.error(ctx, text.get("actress", "FileSendError"), e)
 
     @commands.check(check.is_mod)
     @commands.group(name="react", aliases=["reaction", "reactions"])
@@ -115,9 +115,11 @@ class Actress(rubbercog.Rubbercog):
             content.append(template.format(count=count, reaction=reaction))
             total += count
         if len(content) == 0:
-            content.append("Nothing yet.")
+            content.append(text.get("actress", "nothing"))
 
-        embed.add_field(name=f"{total} in total", value="\n".join(content))
+        embed.add_field(
+            name=text.fill("actress", "in total", count=total), value="\n".join(content)
+        )
         await ctx.send(embed=embed, delete_after=config.delay_embed)
 
         await utils.delete(ctx)
@@ -148,7 +150,7 @@ class Actress(rubbercog.Rubbercog):
         self.reactions[name] = reaction
         self._save_reactions()
 
-        await self.output.info(ctx, f"Reaction **{name}** added.")
+        await self.output.info(ctx, text.fill("actress", "reaction added", name=name))
         await self.event.sudo(ctx.author, ctx.channel, f"Reaction **{name}** added.")
 
     @react.command(name="edit")
@@ -183,7 +185,7 @@ class Actress(rubbercog.Rubbercog):
         self.reactions[name] = reaction
         self._save_reactions()
 
-        await self.output.info(ctx, f"Reaction **{name}** updated.")
+        await self.output.info(ctx, text.fill("actress", "reaction updated", name=name))
         await self.event.sudo(ctx.author, ctx.channel, f"Reaction **{name}** updated.")
 
     @react.command(name="remove")
@@ -197,7 +199,7 @@ class Actress(rubbercog.Rubbercog):
         del self.reactions[name]
         self._save_reactions()
 
-        await self.output.info(ctx, f"Reaction **{name}** removed.")
+        await self.output.info(ctx, text.fill("actress", "reaction removed", name=name))
         await self.event.sudo(ctx.author, ctx.channel, f"Reaction **{name}** removed.")
 
     @commands.is_owner()
@@ -218,7 +220,7 @@ class Actress(rubbercog.Rubbercog):
             size = int(os.path.getsize(self.path + file) / 1024)
             content.append(template.format(size=size, filename=file))
         if len(content) == 0:
-            content.append("No media files found")
+            content.append(text.get("actress", "no files"))
 
         embed = self.embed(ctx=ctx)
         embed.add_field(name="\u200b", value="\n".join(content))
@@ -234,15 +236,15 @@ class Actress(rubbercog.Rubbercog):
         filename: Target filename
         """
         if filename.split(".")[-1] not in self.supported_formats:
-            return self.output.error(ctx, "Unsupported extension")
+            return self.output.error(ctx, text.get("actress", "BadExtension"))
         if "/" in filename or "\\" in filename or ".." in filename:
-            return self.output.error(ctx, "Invalid characters")
+            return self.output.error(ctx, text.get("actress", "BadCharacter"))
 
         with open(self.path + filename, "wb") as f:
             response = get(url)
             f.write(response.content)
 
-        await self.output.info(ctx, "Image successfully downloaded.")
+        await self.output.info(ctx, text.get("actress", "downloaded"))
 
         await utils.delete(ctx)
 
@@ -253,10 +255,10 @@ class Actress(rubbercog.Rubbercog):
         filename: An image filename
         """
         if "/" in filename or "\\" in filename or ".." in filename:
-            return self.output.error(ctx, "Invalid characters")
+            return self.output.error(ctx, text.get("actress", "BadCharacter"))
 
         os.remove(self.path + filename)
-        await self.output.info("File deleted")
+        await self.output.info(text.get("actress", "deleted"))
 
         await utils.delete(ctx)
 
