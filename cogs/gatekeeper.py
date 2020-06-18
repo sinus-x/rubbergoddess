@@ -82,6 +82,10 @@ class Gatekeeper(rubbercog.Rubbercog):
         if "@" not in email or len(email.split("@")) > 2:
             raise NotAnEmail()
 
+        # check if user is in database
+        if repo_u.get(ctx.author.id) is None:
+            raise NotInDatabase()
+
         # check the database for email
         if repo_u.getByLogin(email) is not None:
             raise EmailAlreadyInDatabase()
@@ -99,7 +103,12 @@ class Gatekeeper(rubbercog.Rubbercog):
         db_user = repo_u.get(ctx.author.id)
 
         if db_user is None:
-            return await self.output.error("Not in database?!")
+            await self.console.error("User in `?reverify prove` is not in database.")
+            raise NotInDatabase()
+
+        if db_user.status != "quarantined":
+            await self.console.error("User in `?reverify prove` did not have `quarantined` status.")
+            raise UnexpectedReverify()
 
         if db_user.group == "FEKT" and "@" not in db_user.login:
             email = db_user.login + "@stud.feec.vutbr.cz"
@@ -114,7 +123,10 @@ class Gatekeeper(rubbercog.Rubbercog):
         # send mail
         await self._send_verification_email(ctx.author, email, code)
 
-        await self.output.info("Mail sent")
+        await ctx.send(
+            text.fill("gatekeeper", "reverify successful", mention=ctx.author.mention),
+            delete_after=config.get("delay", "verify"),
+        )
 
         await utils.delete(ctx)
 
@@ -127,7 +139,11 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         db_user = repo_u.get(ctx.author.id)
 
-        if db_user is None or db_user.status in ("unknown", "unverified") or db_user.code is None:
+        if (
+            db_user is None
+            or db_user.status in ("unknown", "unverified", "quarantined")
+            or db_user.code is None
+        ):
             raise SubmitWithoutCode()
 
         if db_user.status != "pending":
@@ -144,7 +160,10 @@ class Gatekeeper(rubbercog.Rubbercog):
         # add role
         unverified = await self._add_verify_roles(ctx.author, db_user)
         if unverified:
-            return await self.output.info(ctx, "User {mention} successfully reverified.")
+            return await ctx.send(
+                text.fill("gatekeeper", "reverification public", mention=ctx.author.mention),
+                delete_after=config.get("delay", "verify"),
+            )
 
         # send messages
         role_channel = self.getGuild().get_channel(config.get("channels", "bot_roles"))
@@ -351,8 +370,6 @@ class NotAnEmail(VerificationException):
 
 
 class AlreadyInDatabase(VerificationException):
-    """This class is used for fine-grained exceptions below"""
-
     pass
 
 
@@ -368,6 +385,10 @@ class BadEmail(VerificationException):
     def __init__(self, message: str = None, constraint: str = None):
         super().__init__(message)
         self.constraint = constraint
+
+
+class UnexpectedReverify(VerificationException):
+    pass
 
 
 class SubmitWithoutCode(VerificationException):
