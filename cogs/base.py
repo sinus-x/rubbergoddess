@@ -21,7 +21,7 @@ class Base(rubbercog.Rubbercog):
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - boottime
 
-        embed = self._getEmbed(ctx)
+        embed = self.embed(ctx)
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)

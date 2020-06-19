@@ -53,7 +53,8 @@ class Stalker(rubbercog.Rubbercog):
         except IndexError:
             dbobj = None
 
-        embed = discord.Embed(color=config.color, title="Whois lookup", description=member.mention)
+        embed = self.embed(ctx=ctx, description=member.mention)
+
         ni = discord.utils.escape_markdown(member.nick) if member.nick else None
         na = discord.utils.escape_markdown(member.name)
         n = f"**{na}** (nick **{ni}**)" if ni else f"**{na}**"
@@ -99,9 +100,7 @@ class Stalker(rubbercog.Rubbercog):
             inline=False, name="Roles", value=role_list if len(role_list) > 0 else "_none_"
         )
 
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-
         await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
 
         await utils.delete(ctx)
@@ -127,14 +126,53 @@ class Stalker(rubbercog.Rubbercog):
             await self.whois_member(ctx, member, log=True)
             return
 
-        t = "Whois lookup"
-        embed = discord.Embed(color=config.color, title=t)
+        embed = discord.embed(ctx=ctx)
         embed.add_field(name="Action unsuccessful", value="No user **{}** found.".format(login))
-        embed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
 
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-
         await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
+
+        await utils.delete(ctx)
+
+    @whois.command(name="logins", aliases=["emails"])
+    @commands.check(check.is_elevated)
+    async def whois_logins(self, ctx, login_prefix: str):
+        """Filter database by login"""
+        users = repository.getByPrefix(prefix=login_prefix)
+
+        # parse data
+        items = []
+        template = "`{name:<10}` … {email}"
+        for user in users:
+            member = self.bot.get_user(user.discord_id)
+            name = member.name if member is not None else ""
+            if user.group == "FEKT" and "@" not in user.login:
+                email = user.login + "@stud.feec.vutbr.cz"
+            elif user.group == "VUT" and "@" not in user.login:
+                email = user.login + "@vutbr.cz"
+            else:
+                email = user.login
+            items.append(template.format(name=name, email=email))
+
+        # construct embed fields
+        fields = []
+        field = ""
+        for item in items:
+            if len(field + item) > 1000:
+                fields.append(field)
+                field = ""
+            field = field + "\n" + item
+        fields.append(field)
+
+        # create embed
+        embed = self.embed(ctx=ctx, description=f"{len(users)} result(s)")
+        for field in fields[:5]:  # there is a limit of 6000 characters in total
+            embed.add_field(name="\u200b", value=field)
+        if len(fields) > 5:
+            embed.add_field(name="Too many results", value="Some results were omitted")
+
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await self.event.sudo(ctx.author, ctx.channel, f"E-mail lookup: `{login_prefix}`")
 
         await utils.delete(ctx)
 
@@ -169,8 +207,7 @@ class Stalker(rubbercog.Rubbercog):
         # try to write to database
         try:
             repository.filterId(discord_id=member.id)[0]
-            await self.throwError(ctx, text.get("db", "duplicate"))
-            return
+            return await self.output.error(ctx, text.get("db", "duplicate"))
         except IndexError:
             # no result is good, we won't have collision
             pass
@@ -183,9 +220,8 @@ class Stalker(rubbercog.Rubbercog):
                 status="verified",
                 code="MANUAL",
             )
-        except Exception:
-            await self.throwError(ctx, text.get("db", "write"))
-            return
+        except Exception as e:
+            return await self.output.error(ctx, text.get("db", "write"), e)
 
         # assign roles, if neccesary
         if verify not in member.roles:
@@ -208,7 +244,7 @@ class Stalker(rubbercog.Rubbercog):
         force: "force" string. If omitted, show what will be deleted
         """
         if member is None:
-            return await self.send_help(ctx)
+            return await utils.send_help(ctx)
 
         # define variables
         guild = self.bot.get_guild(config.guild_id)
@@ -219,27 +255,26 @@ class Stalker(rubbercog.Rubbercog):
                 result = repository.deleteId(discord_id=member.id)
             else:
                 result = repository.filterId(discord_id=member.id)
-        except Exception:
-            await self.throwError(ctx, text.get("db", "read"))
-            return
+        except Exception as e:
+            return await self.output.error(ctx, text.get("db", "read"), e)
 
-        t = self._getEmbedTitle(ctx)
         d = "Result" if force else "Simulation, run with `force` to apply"
         if force:
-            embed = discord.Embed(color=config.color_success, title=t, description=d)
+            embed = self.embed(description=d, color=config.color_success)
             # delete
             if result is None or result < 1:
-                await self.throwError(ctx, text.get("db", "delete error"))
-                return
+                return await self.output.error(ctx, text.get("db", "delete error"))
             embed.add_field(
                 inline=False, name="Success", value=text.fill("db", "delete success", num=result)
             )
             embed.add_field(name="Warning", value="Roles and channel access haven't been removed")
-            await self.log(ctx, "Database entry removed", quote=True)
+            await self.event.sudo(
+                ctx.author, ctx.channel, "User removed from database: " + member.name
+            )
             # TODO remove all roles
         else:
             # simulate
-            embed = discord.Embed(color=config.color_notify, title=t, description=d)
+            embed = discord.Embed(color=config.color_notify, description=d)
             for r in result:
                 embed.add_field(
                     inline=False,
@@ -248,7 +283,6 @@ class Stalker(rubbercog.Rubbercog):
                 )
             if len(result) < 1:
                 embed.add_field(name="No entry", value=text.get("db", "not found"), inline=False)
-        embed.set_footer(text=ctx.author)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
 
         await utils.delete(ctx)
@@ -273,7 +307,7 @@ class Stalker(rubbercog.Rubbercog):
             await self.event.sudo(ctx.author, ctx.channel, f"Login update for {member} ({login})")
             await utils.delete(ctx)
         except Exception as e:
-            await self.throwError(ctx, e)
+            await self.output.error(ctx, "Error updating entry", e)
 
     @database_update.command(name="group")
     async def database_update_group(
@@ -290,7 +324,7 @@ class Stalker(rubbercog.Rubbercog):
             await self.event.sudo(ctx.author, ctx.channel, f"Group update for {member} ({group})")
             await utils.delete(ctx)
         except Exception as e:
-            await self.throwError(ctx, e)
+            await self.output.error(ctx, "Error updating entry", e)
 
     @database_update.command(name="status")
     async def database_update_status(
@@ -307,7 +341,7 @@ class Stalker(rubbercog.Rubbercog):
             await self.event.sudo(ctx.author, ctx.channel, f"Status update for {member} ({status})")
             await utils.delete(ctx)
         except Exception as e:
-            await self.throwError(ctx, e)
+            await self.output.error(ctx, "Error updating entry", e)
 
     @database_update.command(name="comment")
     async def database_update_comment(
@@ -326,7 +360,7 @@ class Stalker(rubbercog.Rubbercog):
             )
             await utils.delete(ctx)
         except Exception as e:
-            await self.throwError(ctx, e)
+            await self.output.error(ctx, "Error updating entry", e)
 
     @database.group(name="show")
     async def database_show(self, ctx: commands.Context):
@@ -374,16 +408,12 @@ class Stalker(rubbercog.Rubbercog):
                     ctr_invites += 1
                 elif entry.action == discord.AuditLogAction.message_pin:
                     ctr_msg_pin += 1
-        except discord.Forbidden as err:
-            await self.throwError(ctx, err)
-            await self.deleteCommand(ctx)
-            return
-        except discord.HTTPException as err:
-            await self.throwError(ctx, err)
-            await self.deleteCommand(ctx)
+        except (discord.Forbidden, discord.HTTPException) as e:
+            await self.output.error(ctx, "Error getting the audit log", e)
+            await utils.delete(ctx)
             return
 
-        embed = self._getEmbed(ctx)
+        embed = self.embed(ctx)
         embed.add_field(name="Successful verifications", value="_(Not implemented)_")
         if ctr_usr_kic > 0:
             embed.add_field(name="Users kicked", value=ctr_usr_kic)
@@ -392,7 +422,6 @@ class Stalker(rubbercog.Rubbercog):
         if ctr_invites > 0:
             embed.add_field(name="Invites created", value=ctr_invites)
         embed.add_field(name="Messages pinned", value=ctr_msg_pin)
-
         await ctx.send(embed=embed, delete_after=config.delay_embed)
 
         await utils.delete(ctx)
@@ -401,7 +430,7 @@ class Stalker(rubbercog.Rubbercog):
     @commands.command(name="guild", aliases=["server"])
     async def guild(self, ctx: commands.Context):
         """Display general about guild"""
-        embed = self._getEmbed(ctx)
+        embed = self.embed(ctx)
         g = self.getGuild()
 
         # guild
@@ -447,19 +476,16 @@ class Stalker(rubbercog.Rubbercog):
     async def _database_show_filter(self, ctx: commands.Context, status: str = None, pin=False):
         """Helper function for all databas_show_* functions"""
         if status is None or status not in config.db_states:
-            self.throwHelp(ctx)
-            return
-
-        guild = self.bot.get_guild(config.guild_id)
+            return await utils.send_help(ctx)
 
         users = repository.filterStatus(status=status)
 
-        embed = self._getEmbed(ctx)
+        embed = self.embed(ctx)
         embed.add_field(name="Result", value="{} users found".format(len(users)), inline=False)
         if users:
             embed.add_field(name="-" * 60, value="LIST:", inline=False)
         for user in users:
-            member = discord.utils.get(guild.members, id=user.discord_id)
+            member = discord.utils.get(self.getGuild().members, id=user.discord_id)
             if member:
                 name = "**{}**, {}".format(member.name, member.id)
             else:

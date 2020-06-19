@@ -139,6 +139,7 @@
 	delay: {
 		success:      3
 		"user error": 10
+		help:         30
 		"bot error":  60
 		verify:       900
 
@@ -161,6 +162,8 @@
 	roles: {
 		# role assigned after successful verification
 		verify_id: 0
+		# when the summer break ends, make everyone reverify their account
+		quarantine_id: 0
 		# mod
 		mod_id: 0
 		# mods, submods, helpers, ...
