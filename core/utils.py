@@ -115,8 +115,11 @@ async def room_check(ctx: commands.Context):
 
 
 async def delete(ctx: commands.Context):
-    if ctx.message is not None:
-        await ctx.message.delete()
+    if hasattr(ctx, "message"):
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
 
 
 async def send_help(ctx: commands.Context):

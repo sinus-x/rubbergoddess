@@ -8,6 +8,16 @@ configuration or database.
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
 expect in the future.
 
+### Mods
+
+- ?reverify command and Quarantine channel for reverifying (update your configuration files)
+
+### Developers
+
+- `Rubbercog.embed` function to make embed creation one-liner
+- Removed `Rubbercog.throw*` functions
+- Removed `Rubbercog.log` function
+
 ## [0.3.0]
 ### Added
 - Gatekeeper cog

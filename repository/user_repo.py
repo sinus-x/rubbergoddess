@@ -1,3 +1,5 @@
+from sqlalchemy.sql.expression import bindparam
+
 from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.verification import User
@@ -5,8 +7,12 @@ from repository.database.verification import User
 from datetime import datetime
 
 
+def time() -> str:
+    return datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
+
 class UserRepository(BaseRepository):
-    # unknown - pending - verified - kicked - banned
+    # unknown - pending - verified - kicked - banned - quarantined
 
     def add(
         self, discord_id: int, login: str, group: str, code: str,
@@ -23,6 +29,24 @@ class UserRepository(BaseRepository):
         session.query(User).filter(User.discord_id == discord_id).update(
             {User.status: "verified", User.changed: ch}
         )
+        session.commit()
+
+    def update(
+        self,
+        discord_id: int,
+        *,
+        login: str = None,
+        group: str = None,
+        code: str = None,
+        status: str = None,
+    ):
+        """Update user entry"""
+        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
+        user.login = login or user.login
+        user.group = group or user.group
+        user.code = code or user.code
+        user.status = status or user.status
+        user.changed = time()
         session.commit()
 
     def update_login(self, discord_id: int, login: str):
@@ -78,6 +102,10 @@ class UserRepository(BaseRepository):
     def getByLogin(self, login: str):
         """Get user from database"""
         return session.query(User).filter(User.login == login).one_or_none()
+
+    def getByPrefix(self, prefix: str):
+        """Get users from database"""
+        return session.query(User).filter(User.login.startswith(prefix)).all()
 
     # TODO Deprecated
     def filterId(self, discord_id: int = None):

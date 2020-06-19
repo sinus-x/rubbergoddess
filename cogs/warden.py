@@ -7,7 +7,7 @@ from discord.ext import commands
 import dhash
 from PIL import Image
 
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from core.config import config
 from core.emote import emote
 from core.text import text
@@ -45,7 +45,7 @@ class Warden(rubbercog.Rubbercog):
 
         # repost check - disallow linking
         if "https://cdn.discordapp.com/" in message.content:
-            await self.deleteCommand(message)
+            await utils.delete(message)
             await message.channel.send(
                 text.fill("warden", "repost cheating", mention=message.author.mention)
             )
@@ -64,7 +64,7 @@ class Warden(rubbercog.Rubbercog):
                     text.fill("warden", "gif warning", user=message.author, value=penalty)
                 )
                 repo_k.update_karma_get(message.author, -1 * penalty)
-                await self.deleteCommand(message)
+                await utils.delete(message)
                 await self.console.debug(message, f"Removed message linking to {link}")
                 break
 
@@ -108,6 +108,7 @@ class Warden(rubbercog.Rubbercog):
 
         for r in message.reactions:
             if r.emoji == "❎" and r.count > config.get("warden", "not duplicate limit"):
+                # TODO Remove all emojis added by bot
                 try:
                     orig = message.embeds[0].footer.text
                     orig = await message.channel.fetch_message(int(orig))
@@ -300,6 +301,7 @@ class Warden(rubbercog.Rubbercog):
             name=discord.utils.escape_markdown(message.author.display_name),
             value=prob,
         )
+        # TODO Use url= parameter
         embed = discord.Embed(title=t, color=config.color, description=d, url=message.jump_url)
         embed.add_field(name=f"**{author}**, {timestamp}", value=link, inline=False)
 

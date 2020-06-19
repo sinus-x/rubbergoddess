@@ -68,6 +68,35 @@
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
 	}
 
+	actress: {
+		# ?send
+		"text sent":   Zpráva odeslána.
+		"file sent":   Soubor odeslán za {delta:.f} vteřin.
+		# ?react
+		"reaction added":   Nová reakce: **{name}**.
+		"reaction updated": Reakce **{name}** upravena.
+		"reaction removed": Reakce **{name}** odstraněna.
+		# ?image
+		"no files":   Žádné soubory jsem nenašla.
+		downloaded:   Soubor byl úspěšně stažen.
+		deleted:      Soubor byl úspěšně smazán.
+		BadExtension: Nepodporovaný formát.
+		BadCharacter: Název souboru podporuje nepodporované znaky.
+
+		# Embed
+		"nothing":  Zatím nic.
+		"in total": Celkem {count}
+
+		# Exceptions
+		ActressException:         Neumím hrát.
+		ReactionException:        Problematická manipulace s reakcí.
+		ReactionNameExists:       Jméno s takovou reakcí už existuje.
+		ReactionNotFound:         Reakce s takovým jménem neexistuje.
+		InvalidReactionKey:       Nepodporovaný {key}.
+		ReactionParsingException: Špatná hodnota {value} pro klíč {key}.
+		FileSendError:            Soubor se nepodařilo odeslat.
+	}
+
 	"faceshifter": {
 		"not subject": "{mention}, předmětovou místnost **{shortcut}** tu nemáme",
 		"not role": "{mention}, roli **{role}** tu nemáme",
@@ -109,6 +138,8 @@
 		# success
 		"verify successful":  "{mention}, na e-mail **{email}** jsem ti poslala kód. Pro verifikaci použij `{prefix}submit kód`."
 		"verification public": Nový uživatel {mention} byl úspěšně přidán s rolí **{role}**.
+		"reverify successful": "{mention}, na tvůj e-mail jsem ti poslala nový kód."
+		"reverification public": "Uživatel {mention} se úspěšně vrátil zprátky na server."
 		"verification DM native": '''
 			Grauluji k verifikaci!
 
@@ -149,12 +180,15 @@
 
 		# Exceptions
 		VerificationException:   Chyba ve verifikaci.
-		# Exceptions: ?verify
+		# Exceptions: ?verify/?reverify change
 		NotAnEmail:              To není e-mail.
 		AlreadyInDatabase:       Ty už v databázi jsi.
 		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
 		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
 		BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `{constraint}`.
+		# Exceptions: ?reverify prove
+		NotInDatabase:           Nejsi vůbec v databázi. {admin}?
+		UnexpectedReverify:      Nesedí mi záznam databáze. {admin}?
 		# Exceptions: ?submit
 		SubmitWithoutCode:       Nejdřív musíš zažádat o kód.
 		ProblematicVerification: Hmm, {admin}, je tu pokus o verifikaci se záznamem {status}...
@@ -238,5 +272,10 @@
 		# Exceptions
 		ShopException:              Chyba při transakci
 		ForbiddenNicknameCharacter: Jméno nesmí obsahovat {characters}
+	}
+
+	howto: {
+		# Exceptions
+		HowtoException: K tomu žádné informace nemám, {mention} {emote.sad}
 	}
 }

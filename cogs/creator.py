@@ -14,7 +14,7 @@ from discord.colour import Colour
 from cogs import errors
 from core.config import config
 from repository import user_repo
-from core import check, rubbercog
+from core import check, rubbercog, utils
 from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
@@ -166,9 +166,7 @@ class Creator(rubbercog.Rubbercog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def creator(self, ctx: commands.Context):
         """Guild building and management cog"""
-        if ctx.invoked_subcommand is None:
-            await self.throwHelp(ctx)
-            return
+        await utils.send_help(ctx)
 
     @creator.command(name="roles")
     async def creator_roles(self, ctx: commands.Context):
@@ -324,19 +322,16 @@ class Creator(rubbercog.Rubbercog):
     @creator.command(name="reset")
     async def creator_reset(self, ctx: commands.Context):
         """Delete channels, force reverification"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
         return
 
     @creator.command(name="channels")
     async def creator_channels(self, ctx: commands.Context):
         """Create server channels"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
         return
 
     @creator.command(name="subjects")
     async def creator_subjects(self, ctx: commands.Context):
         """Send react-to-role messages to #add-subjects"""
-        await self.throwNotification(ctx, messages.err_not_implemented)
         return
 
 

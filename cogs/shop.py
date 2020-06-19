@@ -21,13 +21,13 @@ class Shop(rubbercog.Rubbercog):
     async def shop(self, ctx):
         """Display prices for various services"""
         items = []
-        items.append(["nickname", self.price_nick])
+        template = "`{item:<12} … {price} k"
+        items.append(template.format(item="nickname", price=self.price_nick))
+        content = "\n".join(items)
 
-        result = f"{'item':<12} price\n" + "-" * 18 + "\n"
-        result += "\n".join([f"{x[0]:<12} {x[1]} k" for x in items])
-        if len(items) == 0:
-            result += "(No items)"
-        await ctx.send("```" + result + "```")
+        embed = self.embed(ctx)
+        embed.add_field(name="\u200b", value=content)
+        await ctx.send(embed=embed, delete_after=config.get("delay", "help"))
 
         await utils.delete(ctx)
 
@@ -49,7 +49,7 @@ class Shop(rubbercog.Rubbercog):
         """
         # stop if user does not have nickname set
         if ctx.author.nick is None and nick is None:
-            return await ctx.send_help(ctx.invoked_with)
+            return await utils.send_help(ctx)
 
         # check if user has karma
         user = repo_k.getMember(ctx.author.id)
@@ -104,7 +104,7 @@ class Shop(rubbercog.Rubbercog):
                 nick=discord.utils.escape_markdown(nick),
             )
         )
-        await self.event.user(ctx.author, ctx.channel, f"Nickname reset.")
+        await self.event.user(ctx.author, ctx.channel, "Nickname reset.")
 
     ##
     ## Error catching

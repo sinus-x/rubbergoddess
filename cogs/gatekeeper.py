@@ -33,8 +33,6 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def verify(self, ctx, email: str):
         """Ask for verification code"""
-        await utils.delete(ctx)
-
         if "@" not in email or len(email.split("@")) > 2:
             raise NotAnEmail()
 
@@ -66,15 +64,72 @@ class Gatekeeper(rubbercog.Rubbercog):
             delete_after=config.get("delay", "verify"),
         )
 
-    @commands.check(check.is_not_verified)
-    @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
-    @commands.command(hidden=True)
-    async def reverify(self, ctx):
-        """Ask for verification code"""
-        # TODO
-        pass
+        await utils.delete(ctx)
 
-    @commands.check(check.is_in_jail)
+    @commands.check(check.is_in_quarantine_or_dm)
+    @commands.check(check.is_quarantined)
+    @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
+    @commands.group(name="reverify")
+    async def reverify(self, ctx):
+        await utils.send_help(ctx)
+
+    @reverify.command(name="change", aliases=["update", "downgrade", "upgrade"])
+    async def reverify_change(self, ctx, email: str):
+        """Change your e-mail
+
+        email: Your new verification e-mail
+        """
+        if "@" not in email or len(email.split("@")) > 2:
+            raise NotAnEmail()
+
+        # check if user is in database
+        if repo_u.get(ctx.author.id) is None:
+            raise NotInDatabase()
+
+        # check the database for email
+        if repo_u.getByLogin(email) is not None:
+            raise EmailAlreadyInDatabase()
+
+        role = self._email_to_role(email)
+        repo_u.update(discord_id=ctx.author.id, group=role.name)
+
+        await self.output.info(ctx, "Mail changed")
+
+        await utils.delete(ctx)
+
+    @reverify.command(name="prove")
+    async def reverify_prove(self, ctx):
+        """Ask for verification code"""
+        db_user = repo_u.get(ctx.author.id)
+
+        if db_user is None:
+            await self.console.error("User in `?reverify prove` is not in database.")
+            raise NotInDatabase()
+
+        if db_user.status != "quarantined":
+            await self.console.error("User in `?reverify prove` did not have `quarantined` status.")
+            raise UnexpectedReverify()
+
+        if db_user.group == "FEKT" and "@" not in db_user.login:
+            email = db_user.login + "@stud.feec.vutbr.cz"
+        elif db_user.group == "VUT" and "@" not in db_user.login:
+            email = db_user.login + "@vutbr.cz"
+        else:
+            email = db_user.login
+
+        # generate new code
+        code = self._update_user(ctx.author)
+
+        # send mail
+        await self._send_verification_email(ctx.author, email, code)
+
+        await ctx.send(
+            text.fill("gatekeeper", "reverify successful", mention=ctx.author.mention),
+            delete_after=config.get("delay", "verify"),
+        )
+
+        await utils.delete(ctx)
+
     @commands.check(check.is_not_verified)
     @commands.cooldown(rate=3, per=120, type=commands.BucketType.user)
     @commands.command()
@@ -84,7 +139,11 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         db_user = repo_u.get(ctx.author.id)
 
-        if db_user is None or db_user.status in ("unknown", "unverified") or db_user.code is None:
+        if (
+            db_user is None
+            or db_user.status in ("unknown", "unverified", "quarantined")
+            or db_user.code is None
+        ):
             raise SubmitWithoutCode()
 
         if db_user.status != "pending":
@@ -99,7 +158,12 @@ class Gatekeeper(rubbercog.Rubbercog):
         repo_u.save_verified(ctx.author.id)
 
         # add role
-        await self._add_verify_roles(ctx.author, db_user)
+        unverified = await self._add_verify_roles(ctx.author, db_user)
+        if unverified:
+            return await ctx.send(
+                text.fill("gatekeeper", "reverification public", mention=ctx.author.mention),
+                delete_after=config.get("delay", "verify"),
+            )
 
         # send messages
         role_channel = self.getGuild().get_channel(config.get("channels", "bot_roles"))
@@ -173,6 +237,13 @@ class Gatekeeper(rubbercog.Rubbercog):
         repo_u.add(discord_id=member.id, login=login, group=role.name, code=code)
         return code
 
+    def _update_user(self, member: discord.Member) -> str:
+        code_source = string.ascii_uppercase.replace("O", "").replace("I", "") + string.digits
+        code = "".join(random.choices(code_source, k=8))
+
+        repo_u.update(discord_id=member.id, code=code, status="pending")
+        return code
+
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
         cleartext = text.get("gatekeeper", "plaintext mail").format(
             guild_name=self.getGuild().name,
@@ -203,8 +274,8 @@ class Gatekeeper(rubbercog.Rubbercog):
         )
 
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = "{guild_name} → {user_name}".format(
-            guild_name=self.getGuild().name, user_name=member.name
+        msg["Subject"] = text.fill(
+            "gatekeeper", "mail subject", guild_name=self.getGuild().name, user_name=member.name
         )
         msg["From"] = config.get("email", "address")
         msg["To"] = email
@@ -218,10 +289,19 @@ class Gatekeeper(rubbercog.Rubbercog):
             server.login(config.get("email", "address"), config.get("email", "password"))
             server.send_message(msg)
 
-    async def _add_verify_roles(self, member: discord.Member, db_user: object):
+    async def _add_verify_roles(self, member: discord.Member, db_user: object) -> bool:
+        """Return True if reverified"""
         verify = self.getVerifyRole()
+        quarantine = self.getGuild().get_role(config.get("roles", "quarantine_id"))
         group = discord.utils.get(self.getGuild().roles, name=db_user.group)
+
+        unverified = False
+        if quarantine in member.roles:
+            await member.remove_roles(quarantine, reason="Successful reverification")
+            unverified = True
+
         await member.add_roles(verify, group, reason="Successful verification")
+        return unverified
 
     ##
     ## Error catching
@@ -290,8 +370,6 @@ class NotAnEmail(VerificationException):
 
 
 class AlreadyInDatabase(VerificationException):
-    """This class is used for fine-grained exceptions below"""
-
     pass
 
 
@@ -307,6 +385,10 @@ class BadEmail(VerificationException):
     def __init__(self, message: str = None, constraint: str = None):
         super().__init__(message)
         self.constraint = constraint
+
+
+class UnexpectedReverify(VerificationException):
+    pass
 
 
 class SubmitWithoutCode(VerificationException):
