@@ -274,8 +274,8 @@ class Gatekeeper(rubbercog.Rubbercog):
         )
 
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = "{guild_name} → {user_name}".format(
-            guild_name=self.getGuild().name, user_name=member.name
+        msg["Subject"] = text.fill(
+            "gatekeeper", "mail subject", guild_name=self.getGuild().name, user_name=member.name
         )
         msg["From"] = config.get("email", "address")
         msg["To"] = email
