@@ -192,10 +192,10 @@
 		},
 		# if the e-mail can have more formats, you can enforce one of them
 		constraints: {
-			stud.feec.vutbr.cz: "x[a-z]{5}[0-9]{2}"
-			vutbr.cz:           "x[a-z]{5}[0-9]{2}"
+			stud.feec.vutbr.cz: "x[a-z]{5}[0-9][a-z0-9]"
+			vutbr.cz:           "x[a-z]{5}[0-9][a-z0-9]"
 			# the rest
-			.:                  "[a-zA-Z0-9]+"
+			.:                  "[a-z0-9]+"
 		}
 	}
 
