@@ -1,5 +1,5 @@
-import collections
 import hjson
+from collections import OrderedDict
 
 import discord
 from discord.ext import commands
@@ -18,8 +18,8 @@ class Howto(rubbercog.Rubbercog):
         try:
             self.data = hjson.load(open("data/howto/howto.hjson"))
         except Exception as e:
-            print("Could not load HOWTO source")
-            self.data = collections.OrderedDict()
+            self.console.error("__init__", "Could not load HOWTO source file.")
+            self.data = OrderedDict()
 
     ##
     ## Commands
@@ -27,18 +27,73 @@ class Howto(rubbercog.Rubbercog):
 
     @commands.check(check.is_verified)
     @commands.command()
-    async def howto(self, ctx, category: str = None, subcategory: str = None):
+    async def howto(self, ctx, *args):
         """See information about school related topics"""
-        # temp
-        content = ""
-        embed = self.embed(ctx=ctx)
-        for name, value in self._format(content).items():
-            embed.add_field(name=name, value=value, inline=False)
+        args = [x for x in args if len(x) > 0]
+
+        name = "\u200b"
+        content = self.data
+
+        # get the requested item
+        for directory in args:
+            if directory not in content.keys():
+                return await ctx.send("invalid topic: " + self.sanitise(directory, limit=20))
+            name = directory
+            content = content.get(name)
+
+        title = "{prefix}{command} {args}".format(
+            prefix=config.prefix,
+            command=ctx.command.qualified_name,
+            args=self.sanitise(" ".join(args), limit=30),
+        )
+        embed = self.embed(ctx=ctx, title=title)
+
+        # fill the embed
+        if isinstance(content, OrderedDict):
+            embed = self._add_listing(embed, name, content)
+        elif isinstance(content, list):
+            embed = self._add_list_content(embed, name, content)
+        elif isinstance(content, str):
+            embed = self._add_str_content(embed, name, content)
+        else:
+            return await ctx.send("Unsupported value for howto: " + self.sanitise(str(content)))
+
+        # done
         await ctx.send(embed=embed, delete_after=config.get("delay", "help"))
+        await utils.delete(ctx)
 
     ##
     ## Helper functions
     ##
+
+    def _add_listing(self, embed: discord.Embed, name: str, directory: OrderedDict):
+        """List items in howto directory
+
+        name: directory name
+        directory: howto category (HJSON {})
+        """
+        value = "\n".join(["→ " + x for x in directory.keys()])
+        embed.add_field(name=name, value=value)
+        return embed
+
+    def _add_list_content(self, embed: discord.Embed, name: str, item: list):
+        """Add item content to embed
+
+        name: item name
+        item: list
+        """
+        for i, step in enumerate(item):
+            embed.add_field(name=f"#{i+1}", value=step, inline=False)
+        return embed
+
+    def _add_str_content(self, embed: discord.Embed, name: str, item: str):
+        """Add item content to embed
+
+        name: item name
+        item: string
+        """
+        embed.add_field(name="\u200b", value=item)
+        return embed
 
     ##
     ## Error catching
@@ -71,22 +126,3 @@ def setup(bot):
 
 class HowtoException(rubbercog.RubbercogException):
     pass
-
-
-"""
-- eduroam / <class 'collections.OrderedDict'>
-  - android / <class 'str'>
-  - windows / <class 'str'>
-  - linux / <class 'str'>
-- horde / <class 'collections.OrderedDict'>
-  - login / <class 'str'>
-  - přeposílání / <class 'str'>
-- koleje / <class 'list'>
-- kolejnet / <class 'str'>
-- rozvrh / <class 'list'>
-- vpn / <class 'collections.OrderedDict'>
-  - android / <class 'str'>
-  - windows / <class 'str'>
-  - macOS   / <class 'str'>
-  - linux   / <class 'str'>
-"""
