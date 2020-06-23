@@ -37,7 +37,8 @@ class Howto(rubbercog.Rubbercog):
         # get the requested item
         for directory in args:
             if directory not in content.keys():
-                return await ctx.send("invalid topic: " + self.sanitise(directory, limit=20))
+                await utils.delete(ctx)
+                raise HowtoException()
             name = directory
             content = content.get(name)
 
@@ -53,10 +54,8 @@ class Howto(rubbercog.Rubbercog):
             embed = self._add_listing(embed, name, content)
         elif isinstance(content, list):
             embed = self._add_list_content(embed, name, content)
-        elif isinstance(content, str):
-            embed = self._add_str_content(embed, name, content)
         else:
-            return await ctx.send("Unsupported value for howto: " + self.sanitise(str(content)))
+            embed = self._add_str_content(embed, name, str(content))
 
         # done
         await ctx.send(embed=embed, delete_after=config.get("delay", "help"))
@@ -112,7 +111,7 @@ class Howto(rubbercog.Rubbercog):
 
         # fmt: off
         elif isinstance(error, HowtoException):
-            await self.output.error(ctx, text.fill(
+            await self.output.warning(ctx, text.fill(
                 "howto",
                 "HowtoException",
                 mention=ctx.author.mention

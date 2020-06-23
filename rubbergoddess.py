@@ -45,8 +45,8 @@ async def on_ready():
         hash=utils.git_hash()[:7],
     )
 
-    channel = bot.get_channel(config.get("channels", "events"))
     print(message)
+    channel = bot.get_channel(config.get("channels", "stdout"))
     await channel.send(f"```{message}```")
     await presence.set_presence()
 
