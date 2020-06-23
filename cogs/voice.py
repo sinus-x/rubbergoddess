@@ -7,6 +7,16 @@ from core.config import config
 from core.text import text
 from core import check, rubbercog, utils
 
+"""
+The renaming has some kind of problem.
+
+First time the function works as expected. When run again (both ?voice lock
+and ?voice rename), it freezes for several minutes and throws an NotFound
+error.
+
+I assume that it has to do something with caching inside of the library.
+"""
+
 
 class Voice(rubbercog.Rubbercog):
     """Manage voice channels"""
@@ -19,6 +29,10 @@ class Voice(rubbercog.Rubbercog):
     def getVoiceChannel(self, ctx: commands.Context):
         return ctx.author.voice.channel
 
+    ##
+    ## Commands
+    ##
+
     @commands.check(check.is_in_voice)
     @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
     @commands.group(name="voice")
@@ -26,40 +40,56 @@ class Voice(rubbercog.Rubbercog):
         """Manage your voice channel"""
         await utils.send_help(ctx)
 
-    @voice.command(name="lock", aliases=["close"])
+    @voice.command(name="lock", aliases=["close"], hidden=True)
     async def voice_lock(self, ctx: commands.Context):
         """Make current voice channel invisible"""
+        await ctx.send(text.fill("voice", "wip", mention=ctx.author.mention), delete_after=10)
         await utils.delete(ctx)
-        v = self.getVoiceChannel(ctx)
-        if v.id in self.locked:
+        return
+
+        channel = self.getVoiceChannel(ctx)
+        if channel.id in self.locked:
             await ctx.send(
-                delete_after=config.delay_embed,
+                delete_after=config.get("delay", "user error"),
                 content=text.fill("voice", "lock error", user=ctx.author),
             )
             return
-        await v.set_permissions(self.getVerifyRole(), overwrite=None)
-        await v.edit(name=v.name + " " + self.lock)
-        self.locked.append(v.id)
+        await channel.set_permissions(self.getVerifyRole(), overwrite=None)
+        channel_name = channel.name + " " + self.lock
+        await channel.edit(name=channel_name)
+        self.locked.append(channel.id)
 
-    @voice.command(name="unlock", aliases=["open"])
+        await utils.delete(ctx)
+
+    @voice.command(name="unlock", aliases=["open"], hidden=True)
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
+        await ctx.send(text.fill("voice", "wip", mention=ctx.author.mention), delete_after=10)
         await utils.delete(ctx)
-        v = self.getVoiceChannel(ctx)
-        if v.id not in self.locked:
+        return
+
+        channel = self.getVoiceChannel(ctx)
+        if channel.id not in self.locked:
             await ctx.send(
-                delete_after=config.delay_embed,
+                delete_after=config.get("delay", "user error"),
                 content=text.fill("voice", "unlock error", user=ctx.author),
             )
             return
-        await v.set_permissions(self.getVerifyRole(), view_channel=True)
-        await v.edit(name=v.name.replace(" " + self.lock, ""))
-        self.locked.remove(v.id)
+        await channel.set_permissions(self.getVerifyRole(), view_channel=True)
+        channel_name = channel.name.replace(" " + self.lock, "")
+        print("  to " + channel_name)
+        await channel.edit(name=channel_name)
+        self.locked.remove(channel.id)
 
-    @voice.command(name="rename")
+        await utils.delete(ctx)
+
+    @voice.command(name="rename", hidden=True)
     async def voice_rename(self, ctx: commands.Context, *args):
         """Rename current voice channel"""
+        await ctx.send(text.fill("voice", "wip", mention=ctx.author.mention), delete_after=10)
         await utils.delete(ctx)
+        return
+
         name = " ".join(args)
         if len(name) <= 0:
             await ctx.send(
@@ -79,6 +109,12 @@ class Voice(rubbercog.Rubbercog):
         if v.id in self.locked:
             name = name + " " + self.lock
         await v.edit(name=name)
+
+        await utils.delete(ctx)
+
+    ##
+    ## Listeners
+    ##
 
     @commands.Cog.listener()
     async def on_voice_state_update(
@@ -105,10 +141,10 @@ class Voice(rubbercog.Rubbercog):
             await after.set_permissions(user, view_channel=True)
             await nomic.set_permissions(user, read_messages=True)
 
-            await nomic.send(
-                delete_after=config.delay_embed,
-                content=text.fill("voice", "welcome", nickname=user),
-            )
+            # await nomic.send(
+            #     delete_after=config.delay_embed,
+            #     content=text.fill("voice", "welcome", nickname=user),
+            # )
 
         elif after is None:
             await before.set_permissions(user, overwrite=None)
@@ -119,6 +155,10 @@ class Voice(rubbercog.Rubbercog):
             await after.set_permissions(user, view_channel=True)
 
         await self.voiceCleanup()
+
+    ##
+    ## Logic
+    ##
 
     async def setVoiceName(self, channel: discord.VoiceChannel):
         """Set voice channel name"""
