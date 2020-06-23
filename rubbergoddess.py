@@ -3,7 +3,7 @@ from datetime import datetime
 
 from discord.ext import commands
 
-from core import help, rubbercog, output
+from core import help, rubbercog, output, utils
 from core.config import config
 from features import presence
 from repository.database import database
@@ -28,11 +28,26 @@ def load_subjects():
         review_repo.add_subject(subject)
 
 
+started = False
+
+
 @bot.event
 async def on_ready():
     """If Rubbergoddess is ready"""
-    login = f"Logged in [{config.get('bot', 'logging')}]: "
-    print(login + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+    global started
+    if started:
+        return
+    started = True
+
+    message = "Logged in [{level}]: {timestamp} (hash {hash})".format(
+        level=config.get("bot", "logging"),
+        timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+        hash=utils.git_hash()[:7],
+    )
+
+    print(message)
+    channel = bot.get_channel(config.get("channels", "stdout"))
+    await channel.send(f"```{message}```")
     await presence.set_presence()
 
 

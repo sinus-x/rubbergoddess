@@ -167,6 +167,9 @@ class Console:
         elif isinstance(source, commands.Command):
             position = source.qualified_name
 
+        elif isinstance(source, str):
+            position = source
+
         # parse error
         if error is not None:
             tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))

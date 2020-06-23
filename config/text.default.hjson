@@ -237,6 +237,8 @@
 	}
 
 	"voice": {
+		"wip": "{mention}, to teď nefunguje."
+
 		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
 
 		"lock": "🔒",
