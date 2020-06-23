@@ -8,6 +8,12 @@ configuration or database.
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
 expect in the future.
 
+## [0.4.0]
+
+### Added
+
+- Howto cog (data in `data/howto/howto.hjson`)
+
 ### Mods
 
 - ?reverify command and Quarantine channel for reverifying (update your configuration files)
@@ -67,7 +73,8 @@ ADD COLUMN name VARCHAR;
 ## [0.1.0]
 Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/Toaster192/rubbergod).
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.0...devel
+[0.4.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sinus-x/rubbergoddess/releases/tag/v0.1.0

@@ -57,6 +57,8 @@
 			faceshifter
 			# server verification
 			gatekeeper
+			# information cog
+			howto
 			# purge messages, duplicate subject channel for teacher
 			janitor
 			# see and manage karma
