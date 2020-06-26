@@ -314,7 +314,11 @@ class Actress(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         # do we care?
-        if user.bot:
+        if (
+            user.bot
+            or len(reaction.message.embeds) != 1
+            or reaction.message.embeds[0].title != f"{config.prefix}react list"
+        ):
             return
 
         if hasattr(reaction, "emoji"):
