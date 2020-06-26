@@ -46,7 +46,7 @@ class Librarian(rubbercog.Rubbercog):
         cal_type = even if cal_week % 2 == 0 else odd
         stud_type = even if stud_week % 2 == 0 else odd
 
-        embed = self.embed(ctx)
+        embed = self.embed(ctx=ctx)
         embed.add_field(name="Studijní", value="{} ({})".format(stud_type, stud_week))
         embed.add_field(name="Kalendářní", value="{} ({})".format(cal_type, cal_week))
         await ctx.send(embed=embed)
