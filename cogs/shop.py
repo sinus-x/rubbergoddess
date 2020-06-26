@@ -25,7 +25,7 @@ class Shop(rubbercog.Rubbercog):
         items.append(template.format(item="nickname", price=self.price_nick))
         content = "\n".join(items)
 
-        embed = self.embed(ctx)
+        embed = self.embed(ctx=ctx)
         embed.add_field(name="\u200b", value=content)
         await ctx.send(embed=embed, delete_after=config.get("delay", "help"))
 

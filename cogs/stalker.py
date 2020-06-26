@@ -413,7 +413,7 @@ class Stalker(rubbercog.Rubbercog):
             await utils.delete(ctx)
             return
 
-        embed = self.embed(ctx)
+        embed = self.embed(ctx=ctx)
         embed.add_field(name="Successful verifications", value="_(Not implemented)_")
         if ctr_usr_kic > 0:
             embed.add_field(name="Users kicked", value=ctr_usr_kic)
@@ -430,7 +430,7 @@ class Stalker(rubbercog.Rubbercog):
     @commands.command(name="guild", aliases=["server"])
     async def guild(self, ctx: commands.Context):
         """Display general about guild"""
-        embed = self.embed(ctx)
+        embed = self.embed(ctx=ctx)
         g = self.getGuild()
 
         # guild
@@ -480,7 +480,7 @@ class Stalker(rubbercog.Rubbercog):
 
         users = repository.filterStatus(status=status)
 
-        embed = self.embed(ctx)
+        embed = self.embed(ctx=ctx)
         embed.add_field(name="Result", value="{} users found".format(len(users)), inline=False)
         if users:
             embed.add_field(name="-" * 60, value="LIST:", inline=False)
