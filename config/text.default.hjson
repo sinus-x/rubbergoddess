@@ -233,7 +233,7 @@
 	}
 
 	"meme": {
-		???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
+		"???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
 	}
 
 	"voice": {
