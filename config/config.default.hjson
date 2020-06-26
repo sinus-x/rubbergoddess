@@ -48,7 +48,7 @@
 		# Cogs to load by default
 		extensions: [
 			# replying to programmed triggers, sending posts as a bot, change avatar or name
-			actor
+			actress
 			# send messages that the bot will be offline, display bot and host machine info
 			admin
 			# uptime, ping
