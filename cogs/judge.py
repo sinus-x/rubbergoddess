@@ -37,12 +37,12 @@ class Judge(rubbercog.Rubbercog):
             name += f" ({db_subject.category})"
 
         db_reviews = repo_r.get_subject_reviews(subject)
-        if len(db_reviews) == 0:
+        if db_reviews.count() == 0:
             embed = self.embed(ctx=ctx, description=name)
-            embed.add_field(title="no reviews", value="no one has reviewed this subject yet")
+            embed.add_field(name="no reviews", value="no one has reviewed this subject yet")
         else:
-            review = db_reviews[0]
-            embed = self.embed(ctx=ctx, description=name, page=(1, len(db_reviews)))
+            review = db_reviews[0].Review
+            embed = self.embed(ctx=ctx, description=name, page=(1, db_reviews.count()))
             # TODO Compute average mark
             embed.add_field(name="average mark", value="-1", inline=False)
             # TODO Check if user is anonymous
@@ -52,7 +52,7 @@ class Judge(rubbercog.Rubbercog):
             # TODO Translate
             embed.add_field(name="Date", value=review.date)
 
-            embed.add_field(name="Text", value=review.text, inline=False)
+            embed.add_field(name="Text", value=review.text_review, inline=False)
 
             embed.add_field(name="👍", value=f"{repo_r.get_votes_count(review.id, True)}")
             embed.add_field(name="👎", value=f"{repo_r.get_votes_count(review.id, False)}")
