@@ -92,6 +92,7 @@ class Judge(rubbercog.Rubbercog):
             repo_r.update_review(past_review.id, mark, anonymous, text)
 
         # send confirmation
+        await self.event.user(ctx.author, ctx.channel, f"Review by {ctx.author} added")
         await ctx.send("ok.")
 
     @review.command(name="remove")
@@ -105,6 +106,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send("no such review")
 
         repo_r.remove(review.id)
+        await self.event.user(ctx.author, ctx.channel, f"Review by {ctx.author} removed")
         await ctx.send("review removed.")
 
     @commands.check(check.is_mod)
@@ -114,9 +116,67 @@ class Judge(rubbercog.Rubbercog):
         await utils.send_help(ctx)
 
     @sudo_review.command(name="remove")
-    async def sudo_review_remove(self, ctx, subject: str, user: discord.User):
+    async def sudo_review_remove(self, ctx, id: int):
         """Remove someone's review"""
-        pass
+        db_review = repo_r.get(id)
+        if db_review is None:
+            return await ctx.send("no such review")
+
+        repo_r.remove(id)
+        await self.event.sudo(ctx.author, ctx.channel, f"Review {id} removed")
+        return await ctx.send("ok")
+
+    @commands.check(check.is_mod)
+    @commands.group(name="sudo_subject")
+    async def sudo_subject(self, ctx):
+        """Manage subjects"""
+        await utils.send_help(ctx)
+
+    @sudo_subject.command(name="add")
+    async def sudo_subject_add(self, ctx, subject: str, name: str, category: str):
+        """Add subject
+
+        subject: Subject code
+        name: Subject name
+        category: Subject faculty or other assignment
+        """
+        db_subject = repo_s.get(subject)
+        if db_subject is not None:
+            return await ctx.send("This subject is already defined")
+
+        repo_s.add(subject, name, category)
+        await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} added")
+        await ctx.send("ok")
+
+    @sudo_subject.command(name="update")
+    async def sudo_subject_update(self, ctx, subject: str, name: str, category: str):
+        """Update subject
+
+        subject: Subject code
+        name: Subject name
+        category: Subject faculty or other assignment
+        """
+        db_subject = repo_s.get(subject)
+        if db_subject is None:
+            return await ctx.send("No such subject")
+
+        repo_s.update(subject, name, category)
+        await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} updated")
+        await ctx.send("ok")
+
+    @sudo_subject.command(name="remove")
+    async def sudo_subject_remove(self, ctx, subject: str):
+        """Remove subject
+
+        subject: Subject code
+        """
+        db_subject = repo_s.get(subject)
+        if db_subject is None:
+            return await ctx.send("no such subject")
+
+        repo_s.remove(subject)
+        await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} removed")
+        await ctx.send("ok")
 
     ##
     ## Listeners
@@ -222,12 +282,12 @@ class Judge(rubbercog.Rubbercog):
         embed.clear_fields()
 
         # add content
-        embed.add_field(name=f"**ID**: {review.id}", value=f"⌀: {average:.1f}", inline=False)
+        embed.add_field(name=f"#{review.id}", value=f"⌀: {average:.1f}", inline=False)
 
         # TODO Translate
         name = self.bot.get_user(int(review.discord_id)) or "user left"
         if review.anonym:
-            name = "..."
+            name = "anonymous user"
         embed.add_field(name=name, value=review.date)
         embed.add_field(name="Mark", value=review.tier)
 
