@@ -62,13 +62,13 @@ class Errors(rubbercog.Rubbercog):
 
         # cog loading
         elif isinstance(error, commands.ExtensionAlreadyLoaded):
-            return await self.output.error(ctx, text.get("error", "extension loaded"), error)
+            return await self.output.error(ctx, text.get("error", "extension loaded"))
         elif isinstance(error, commands.ExtensionNotLoaded):
-            return await self.output.error(ctx, text.get("error", "extension not loaded"), error)
+            return await self.output.error(ctx, text.get("error", "extension not loaded"))
         elif isinstance(error, commands.ExtensionFailed):
             return await self.output.error(ctx, text.get("error", "extenson failed"), error)
         elif isinstance(error, commands.ExtensionNotFound):
-            return await self.output.error(ctx, text.get("error", "extension not found"), error)
+            return await self.output.error(ctx, text.get("error", "extension not found"))
         elif isinstance(error, commands.ExtensionError):
             return await self.output.error(ctx, text.get("error", "extension"), error)
         # fmt: on
