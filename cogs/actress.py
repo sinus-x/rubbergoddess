@@ -333,11 +333,7 @@ class Actress(rubbercog.Rubbercog):
             # invalid reaction
             return await self._remove_reaction(reaction, user)
 
-        if len(reaction.message.embeds) != 1:
-            return
         embed = reaction.message.embeds[0]
-        if not embed.title.endswith("react list"):
-            return await self._remove_reaction(reaction, user)
         if embed.footer == discord.Embed.Empty or " | " not in embed.footer.text:
             return await self._remove_reaction(reaction, user)
 
