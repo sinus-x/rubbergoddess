@@ -253,7 +253,7 @@ class Judge(rubbercog.Rubbercog):
 
         if vote:
             # apply vote
-            if str(user.id) == review.discord_id:
+            if user.id == review.discord_id:
                 return await self._remove_reaction(reaction, user)
             if vote_value == 0:
                 repo_r.remove_vote(review.id, str(user.id))
