@@ -177,6 +177,7 @@
 			</div>
 			</body>
 			'''
+		"mail subject": "{guild_name} → {user_name}"
 
 		# Exceptions
 		VerificationException:   Chyba ve verifikaci.
