@@ -337,6 +337,10 @@ class Actress(rubbercog.Rubbercog):
         if embed.footer == discord.Embed.Empty or " | " not in embed.footer.text:
             return await self._remove_reaction(reaction, user)
 
+        # allow only the author
+        if embed.footer.text.split(" | ")[0] != str(user):
+            return await self._remove_reaction(reaction, user)
+
         # get page
         footer_text = embed.footer.text
         pages = footer_text.split(" | ")[-1]
