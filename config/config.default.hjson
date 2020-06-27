@@ -62,7 +62,7 @@
 			# purge messages, duplicate subject channel for teacher
 			janitor
 			# see and manage karma
-			karma
+			karma_old
 			# nameday, weather
 			librarian
 			# hug
