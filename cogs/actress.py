@@ -38,13 +38,13 @@ class Actress(rubbercog.Rubbercog):
         await utils.send_help(ctx)
 
     @send.command(name="text")
-    async def send_text(self, ctx, channel: discord.TextChannel, content):
+    async def send_text(self, ctx, channel: discord.TextChannel, *, content: str):
         """Send a text to text channel
 
         channel: Target text channel
         content: Text
         """
-        message = await channel.send(text)
+        message = await channel.send(content)
         await self.event.sudo(
             ctx.author,
             ctx.channel,
