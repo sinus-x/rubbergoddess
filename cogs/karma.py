@@ -253,16 +253,34 @@ class Karma(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         """Karma add"""
-        pass
+        parsed_payload = await self._payloadToReaction(payload)
+        if parsed_payload is None:
+            return
+        channel, member, message, emote = parsed_payload
+
+        count = self.doCountKarma(member=member, message=message)
+        if not count:
+            return
+
+        repo_k.karma_emoji(message.author, member, emote)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         """Karma remove"""
-        pass
+        parsed_payload = await self._payloadToReaction(payload)
+        if parsed_payload is None:
+            return
+        channel, member, message, emote = parsed_payload
+
+        count = self.doCountKarma(member=member, message=message)
+        if not count:
+            return
+
+        repo_k.karma_emoji_remove(message.author, member, emote)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        """Scrolling"""
+        """Scrolling, vote"""
         pass
 
     ##
@@ -311,9 +329,62 @@ class Karma(rubbercog.Rubbercog):
             return int(str(emote).split(":")[2][:-1])
         return emote
 
+    async def _payloadToReaction(self, payload: discord.RawReactionActionEvent) -> tuple:
+        """Return (channel, member, message, emote)"""
+        channel = self.bot.get_channel(payload.channel_id)
+        if channel is None or not isinstance(channel, discord.TextChannel):
+            return
+
+        member = channel.guild.get_member(payload.user_id)
+        if member is None or member.bot:
+            return
+
+        try:
+            message = await channel.fetch_message(payload.message_id)
+        except discord.NotFound:
+            return
+        if message is None:
+            return
+
+        if payload.emoji.is_custom_emoji():
+            emote = payload.emoji.id
+        else:
+            emote = payload.emoji.name
+
+        return channel, member, message, emote
+
     ##
     ## Logic
     ##
+    def doCountKarma(self, *, member: discord.Member, message: discord.Message) -> bool:
+        """Return True only if the message should be counted"""
+        # do not count author's reactions
+        if member.id == message.author.id:
+            return False
+
+        # only count master and slave guilds
+        if message.guild.id not in (config.guild_id, config.slave_id):
+            return False
+
+        # do not count banned channels
+        if message.channel.id in config.get("karma", "banned channels"):
+            return False
+
+        # do not count banned roles
+        if config.get("karma", "banned roles") in map(lambda x: x.id, member.roles):
+            return False
+
+        # do not count banned strings
+        for word in config.get("karma", "banned words"):
+            if word in message.content:
+                return False
+
+        # optionally, do not count subject channels
+        if not config.get("karma", "count subjects"):
+            if repo_s.get(message.channel.name) is not None:
+                return False
+
+        return True
 
     ##
     ## Errors
