@@ -65,7 +65,7 @@ class Karma(rubbercog.Rubbercog):
         """See emote's karma"""
         if not self._isUnicode(emote):
             try:
-                emote_id = int(emote.split(":")[2][:-1])
+                emote_id = int(self._emoteToID(emote))
                 emote = await ctx.guild.fetch_emoji(emote_id)
             except (ValueError, IndexError):
                 return await utils.send_help(ctx)
@@ -85,15 +85,25 @@ class Karma(rubbercog.Rubbercog):
         emotes = await ctx.guild.fetch_emojis()
         content = []
 
-        emotes_positive = self._getEmoteList(emotes, repo_k.getEmotesByValue(1))
-        content.append(text.get("karma", "emotes_positive"))
-        content += self._emoteListToMessage(emotes, emotes_positive)
+        emotes_positive = self._getEmoteList(emotes, "1")
+        if len(emotes_positive) > 0:
+            content.append(text.get("karma", "emotes_positive"))
+            content += self._emoteListToMessage(emotes_positive, 10)
 
-        emotes_negative = self._getEmoteList(emotes, repo_k.getEmotesByValue(-1))
-        content.append(text.get("karma", "emotes_negative"))
-        content += self._emoteListToMessage(emotes, emotes_negative)
+        emotes_negative = self._getEmoteList(emotes, "-1")
+        if len(emotes_negative) > 0:
+            content.append(text.get("karma", "emotes_negative"))
+            content += self._emoteListToMessage(emotes_negative, 10)
 
-        for line in [x for x in content if len(x) > 0]:
+        emotes_nonvoted = self._getNonvotedEmoteList(emotes)
+        if len(emotes_nonvoted) > 0:
+            content.append(text.get("karma", "emotes_nonvoted"))
+            content += self._emoteListToMessage(emotes_nonvoted, 10)
+
+        if len(content) == 0:
+            content.append(text.get("karma", "no emotes"))
+
+        for line in [x for x in content if (x and len(x) > 0)]:
             await ctx.send(line)
 
     @commands.check(check.is_mod)
@@ -266,23 +276,22 @@ class Karma(rubbercog.Rubbercog):
             return False
         return demojized != text
 
-    def _getEmoteList(self, emotes: list, value: int) -> list:
+    def _getEmoteList(self, guild_emotes: list, value: int) -> list:
         db_emotes = repo_k.getEmotesByValue(value)
+
         result = []
+        for guild_emote in guild_emotes:
+            if str(guild_emote.id) in db_emotes:
+                result.append(guild_emote)
+        return result
 
-        # parse
-        for emote_id in db_emotes:
-            try:
-                emote = discord.utils.get(emotes, id=int(emote_id))
-                if emote is None:
-                    # removed
-                    repo_k.remove_emoji(emote_id)
-                    continue
-                result.append(emote)
-            except ValueError:
-                # emoji
-                result.append(emote_id)
+    def _getNonvotedEmoteList(self, guild_emotes: list) -> list:
+        db_emotes = [x.emoji_ID for x in repo_k.get_all_emojis()]
 
+        result = []
+        for guild_emote in guild_emotes:
+            if str(guild_emote.id) not in db_emotes:
+                result.append(guild_emote)
         return result
 
     def _emoteListToMessage(self, emotes: list, width: int) -> list:
@@ -298,8 +307,8 @@ class Karma(rubbercog.Rubbercog):
         return [r for r in result if len(r) > 0]
 
     def _emoteToID(self, emote: str):
-        if ":" in emote:
-            return int(emote.split(":")[2][:-1])
+        if ":" in str(emote):
+            return int(str(emote).split(":")[2][:-1])
         return emote
 
     ##

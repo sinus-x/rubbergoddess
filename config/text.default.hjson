@@ -115,12 +115,15 @@
 		stalk_positive: Rozdáno
 		stalk_negative: Odebráno
 
+		# ?karma emote/emotes
 		emote:           Hodnota {emote} je **{value}**.
 		emotes_positive: "Kladně ohodnocené emoty:"
 		emotes_negative: "Záporně ohodnocené emoty:"
+		emotes_nonvoted: "Neohodnocené emoty:"
 
 		"emote not found": "Takový emote jsem na serveru nenašla."
 		"emote not voted": "Emote není ohodnocen."
+		"no emotes":       "Žádné emoty jsem nenašla."
 
 		# ?karma message
 		"no message":   Zpráva nenalezena.
