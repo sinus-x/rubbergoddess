@@ -27,6 +27,7 @@ class Karma(rubbercog.Rubbercog):
         if ctx.invoked_subcommand is None:
             await self.karma_stalk(ctx, member=ctx.author)
 
+    @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="stalk")
     async def karma_stalk(self, ctx, member: discord.Member):
         """See someone's karma"""
@@ -56,6 +57,7 @@ class Karma(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
         await utils.delete(ctx)
 
+    @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emote", aliases=["emoji"])
     async def karma_emote(self, ctx, emote: str):
         """See emote's karma"""
@@ -74,6 +76,7 @@ class Karma(rubbercog.Rubbercog):
 
         await ctx.send(text.fill("karma", "emote", emote=str(emote), value=str(value)))
 
+    @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emotes", aliases=["emojis"])
     async def karma_emotes(self, ctx):
         """See karma for all emotes"""
@@ -104,6 +107,7 @@ class Karma(rubbercog.Rubbercog):
         repo_k.set_emoji_value(emote, value)
         await ctx.send(f"value of {emote} is now {value}")
 
+    @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="message")
     async def karma_message(self, ctx, link: str):
         """Get karma for given message"""
@@ -113,11 +117,9 @@ class Karma(rubbercog.Rubbercog):
         except Exception as error:
             return await self.output.error(ctx, "Message not found", error)
 
-        # TODO Add timestamp in local timezone
-        # message.created_at is at UTC
-        embed = self.embed(ctx=ctx, description=f"{message.author}",)
+        # TODO Add timestamp in local timezone, message.created_at is at UTC
+        embed = self.embed(ctx=ctx, description=f"{message.author}")
 
-        # should the karma be counted?
         # fmt: off
         count = True
         if message.channel.id in config.get("karma", "banned channels") \
@@ -251,6 +253,11 @@ class Karma(rubbercog.Rubbercog):
         result.append(line)
 
         return [r for r in result if len(r) > 0]
+
+    def _emoteToID(self, emote: str):
+        if ":" in emote:
+            return int(emote.split(":")[2][:-1])
+        return emote
 
     ##
     ## Logic

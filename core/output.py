@@ -68,6 +68,11 @@ class Output:
             tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             if len(tr) > 1000:
                 tr = "…" + tr[-999:]
+
+            # escape
+            error = discord.utils.escape_markdown(str(error)).replace("@", "@\u200b")
+            tr = tr.replace("```", "`\u200b`\u200b`")
+
             result += template_cont.format(error=error, traceback=tr)
 
         await source.send(result, delete_after=config.get("delay", "bot error"))

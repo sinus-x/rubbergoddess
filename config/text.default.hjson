@@ -130,15 +130,19 @@
 		embed_total:    Celková karma
 		embed_disabled: Karma se pro tuto zprávu nepočítá
 
+		# ?karma vote
+		"vote info":
+			'''
+			Hlasování o karma hodnotě {emote}.
+			Vyhodnocení proběhne za **{time}** minut, potřebný počet hlasů je **{limit}**.
+			'''
+		"vote failed": Hlasování o hodnotě {emote} skončilo neúspěšně z důvodu nedostatku hlasů.
+		"vote result": Hodnota {emote} je {value}.
+		"all rated":    "Karma hodnotu už mají všechny emotes.",
+
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 
 		"vote help":    "Žádný argument neočekávám. Prostě jen `{prefix}karma vote`",
-		"revote help":  "Čekám formát: `{prefix}krama revote [emote]`",
-		"vote message": "Hlasování o hodnotě {emote}",
-		"vote process": "Hlasování skončí za **{delay}** minut, minimální počet hlasů je **{count}**.",
-		"vote result":  "Výsledná hodnota pro {emote} je {value}",
-		"vote failed":  "Hlasování o hodnotě {emote} neprošlo.",
-		"all rated":    "Všechny guild emotes už mají hodnotu",
 
 
 		"user karma":      "Karma uživatele {user} je **{karma}** ({order} nejvyšší).\nRozdal **{pos}** pozitivní ({pos_order}.) a **{neg}** ({neg_order}.) karmy.",

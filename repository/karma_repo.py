@@ -53,13 +53,13 @@ class KarmaRepository(BaseRepository):
         """Returns a list of Karma_emoji objects."""
         return session.query(Karma_emoji)
 
-    def emoji_value(self, emoji_id):
+    def emoji_value(self, emoji_id: str):
         """Returns the value of an emoji.
         If the emoji has not been voted for, returns 0."""
         val = self.emoji_value_raw(emoji_id)
         return val if val is not None else 0
 
-    def emoji_value_raw(self, emoji_id):
+    def emoji_value_raw(self, emoji_id: str):
         """Returns the value of an emoji.
         If the emoji has not been voted for, returns None."""
         emoji = (
@@ -69,7 +69,7 @@ class KarmaRepository(BaseRepository):
         )
         return emoji.value if emoji else None
 
-    def set_emoji_value(self, emoji_id, value: int):
+    def set_emoji_value(self, emoji_id: str, value: int):
         emoji = Karma_emoji(emoji_ID=utils.str_emoji_id(emoji_id), value=str(value))
         # Merge == 'insert on duplicate key update'
         session.merge(emoji)
