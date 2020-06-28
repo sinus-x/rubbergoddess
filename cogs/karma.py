@@ -5,9 +5,10 @@ from emoji import demojize
 from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
-from repository import karma_repo
+from repository import karma_repo, subject_repo
 
 repo_k = karma_repo.KarmaRepository()
+repo_s = subject_repo.SubjectRepository()
 
 
 class Karma(rubbercog.Rubbercog):
@@ -106,7 +107,72 @@ class Karma(rubbercog.Rubbercog):
     @karma.command(name="message")
     async def karma_message(self, ctx, link: str):
         """Get karma for given message"""
-        pass
+        converter = commands.MessageConverter()
+        try:
+            message = await converter.convert(ctx=ctx, argument=link)
+        except Exception as error:
+            return await self.output.error(ctx, "Message not found", error)
+
+        # TODO Add timestamp in local timezone
+        # message.created_at is at UTC
+        embed = self.embed(ctx=ctx, description=f"{message.author}",)
+
+        # should the karma be counted?
+        # fmt: off
+        count = True
+        if message.channel.id in config.get("karma", "banned channels") \
+        or (
+            not config.get("karma", "count subjects")
+            and repo_s.get(message.channel.name) is not None
+        ):
+            count = False
+        for word in config.get("karma", "banned words"):
+            if word in message.content:
+                count = False
+                break
+        # fmt: on
+
+        output = {"negative": [], "neutral": [], "positive": []}
+        karma = 0
+
+        for reaction in message.reactions:
+            emote = reaction.emoji
+            value = repo_k.emoji_value_raw(emote)
+            if value == 1:
+                output["positive"].append(emote)
+                karma += reaction.count
+                async for user in reaction.users():
+                    if user.id == message.author.id:
+                        karma -= 1
+                        break
+            elif value == -1:
+                output["negative"].append(emote)
+                karma -= reaction.count
+                async for user in reaction.users():
+                    if user.id == message.author.id:
+                        karma += 1
+                        break
+            else:
+                output["neutral"].append(emote)
+
+        embed.add_field(name="Link", value=message.jump_url, inline=False)
+
+        if count:
+            for key, value in output.items():
+                if len(value) == 0:
+                    continue
+                emotes = " ".join(str(emote) for emote in value)
+                embed.add_field(name=text.get("karma", "embed_" + key), value=emotes)
+            # fmt: off
+            embed.add_field(
+                name=text.get("karma", "embed_total"),
+                value=f"**{karma}**",
+                inline=False,
+            )
+            # fmt: on
+        else:
+            embed.add_field(name="\u200b", value=text.get("karma", "embed_disabled"), inline=False)
+        await ctx.send(embed=embed)
 
     @commands.check(check.is_mod)
     @karma.command(name="give")

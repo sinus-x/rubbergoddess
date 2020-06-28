@@ -119,9 +119,16 @@
 		emotes_positive: "Kladně ohodnocené emoty:"
 		emotes_negative: "Záporně ohodnocené emoty:"
 
-		"emote not found": "Takový emote jsem na serveru nenašla.",
-		"emote not voted": "Emote není ohodnocen.",
+		"emote not found": "Takový emote jsem na serveru nenašla."
+		"emote not voted": "Emote není ohodnocen."
 
+		# ?karma message
+		"no message":   Zpráva nenalezena.
+		embed_positive: Kladné reakce
+		embed_negative: Záporné reakce
+		embed_neutral:  Neutrální reakce
+		embed_total:    Celková karma
+		embed_disabled: Karma se pro tuto zprávu nepočítá
 
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 

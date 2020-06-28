@@ -218,7 +218,7 @@
 		"pin limit": 5
 	},
 
-	"karma cog": {
+	karma: {
 		# IDs for roles that shouldn't have karma
 		"banned roles": []
 		# IDs for channels that shouldn't have karma
