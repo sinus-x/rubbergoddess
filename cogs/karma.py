@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 from emoji import demojize
@@ -96,16 +98,57 @@ class Karma(rubbercog.Rubbercog):
 
     @commands.check(check.is_mod)
     @karma.command(name="vote")
-    async def karma_vote(self, ctx, emote: str = None):
+    async def karma_vote(self, ctx, emote: str):
         """Vote for emote's karma value"""
-        pass
+        await utils.delete(ctx)
+
+        message = await ctx.send(
+            text.fill(
+                "karma",
+                "vote info",
+                emote=emote,
+                time=config.get("karma", "vote time"),
+                limit=config.get("karma", "vote limit"),
+            )
+        )
+        await message.add_reaction("☑️")
+        await message.add_reaction("0⃣")
+        await message.add_reaction("❎")
+
+        await asyncio.sleep(config.get("karma", "vote time") * 60)
+
+        # update cached message
+        message = await ctx.channel.fetch_message(message.id)
+
+        positive = 0
+        negative = 0
+        neutral = 0
+        for reaction in message.reactions:
+            if reaction.emoji == "☑️":
+                positive = reaction.count - 1
+            elif reaction.emoji == "❎":
+                negative = reaction.count - 1
+            elif reaction.emoji == "0⃣":
+                neutral = reaction.count - 1
+
+        if positive + negative + neutral < config.get("karma", "vote limit"):
+            return await ctx.send(text.fill("karma", "vote failed", emote=emote))
+
+        result = 0
+        if positive > negative + neutral:
+            result = 1
+        elif negative > positive + neutral:
+            result = -1
+
+        repo_k.set_emoji_value(str(self._emoteToID(emote)), result)
+        await ctx.send(text.fill("karma", "vote result", emote=emote, value=result))
 
     @commands.check(check.is_mod)
     @karma.command(name="set")
     async def karma_set(self, ctx, emote: discord.Emoji, value: int):
         """Set karma value without public vote"""
-        repo_k.set_emoji_value(emote, value)
-        await ctx.send(f"value of {emote} is now {value}")
+        repo_k.set_emoji_value(str(self._emoteToID(emote)), value)
+        await ctx.send(text.fill("karma", "emote", emote=emote, value=value))
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="message")
