@@ -109,7 +109,20 @@
 		"deny high role": "{mention}, na to nemáš právo."
 	}
 
-	"karma": {
+	karma: {
+		stalk_user:     Karma uživatele **{user}**
+		stalk_karma:    Karma
+		stalk_positive: Rozdáno
+		stalk_negative: Odebráno
+
+		emote:           Hodnota {emote} je **{value}**.
+		emotes_positive: "Kladně ohodnocené emoty:"
+		emotes_negative: "Záporně ohodnocené emoty:"
+
+		"emote not found": "Takový emote jsem na serveru nenašla.",
+		"emote not voted": "Emote není ohodnocen.",
+
+
 		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
 
 		"vote help":    "Žádný argument neočekávám. Prostě jen `{prefix}karma vote`",
@@ -120,8 +133,6 @@
 		"vote failed":  "Hlasování o hodnotě {emote} neprošlo.",
 		"all rated":    "Všechny guild emotes už mají hodnotu",
 
-		"emote not found": "Takový emote jsem na serveru nenašla.",
-		"emote not voted": "Emote není ohodnocen",
 
 		"user karma":      "Karma uživatele {user} je **{karma}** ({order} nejvyšší).\nRozdal **{pos}** pozitivní ({pos_order}.) a **{neg}** ({neg_order}.) karmy.",
 

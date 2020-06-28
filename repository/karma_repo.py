@@ -37,6 +37,10 @@ class KarmaRepository(BaseRepository):
             user.karma += value
         session.commit()
 
+    def getEmotesByValue(self, value: int):
+        emotes = session.query(Karma_emoji).filter(Karma_emoji.value == value)
+        return [emote.emoji_ID for emote in emotes]
+
     # FUNCTIONS BELOW PROBABLY NEED REWRITE
     # TREAT WITH CARE!
 
