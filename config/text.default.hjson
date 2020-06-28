@@ -141,22 +141,22 @@
 			'''
 		"vote failed": Hlasování o hodnotě {emote} skončilo neúspěšně z důvodu nedostatku hlasů.
 		"vote result": Hodnota {emote} je {value}.
-		"all rated":    "Karma hodnotu už mají všechny emotes.",
+		"all rated":    "Karma hodnotu už mají všechny emotes."
 
-		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
-
-		"vote help":    "Žádný argument neočekávám. Prostě jen `{prefix}karma vote`",
-
-
-		"user karma":      "Karma uživatele {user} je **{karma}** ({order} nejvyšší).\nRozdal **{pos}** pozitivní ({pos_order}.) a **{neg}** ({neg_order}.) karmy.",
-
-		"get help":           "`{prefix}karma get`: Vypíše všechny emotes s hodnotou\n`{prefix}karma get [emote]`: Vypíše hodnotu daného emotu.",
-		"give help":          "Správný formát je `{prefix}karma give [number] [user(s)]`",
+		# ?karma give
 		"give success given": "Karmu jsem úspěšně přidala.",
 		"give success taken": "Karmu jsem úspěšně odebrala.",
 
-		"message help":       "`{prefix}karma message [url|id]",
-		"leaderboard offset": "Špatný offset, {user}, zadej kladné číslo."
+		# ?leaderboard
+		leaderboard_desc: Karma, od nejúspěšnějších
+		leaderboard_asc:  Karma, od nejméně úspěšných
+		leaderboard_give: Rozdaná karma
+		leaderboard_take: Karma sebraná ostatním
+
+		leaderboard_1:    Top {num}
+		leaderboard_x:    Top {num} od pozice {offset}
+		leaderboard_user: Tvoje umístění
+
 	}
 
 	gatekeeper: {

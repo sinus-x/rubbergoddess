@@ -8,6 +8,7 @@ from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 from repository import karma_repo, subject_repo
+from repository.database.karma import Karma as DB_Karma
 
 repo_k = karma_repo.KarmaRepository()
 repo_s = subject_repo.SubjectRepository()
@@ -239,13 +240,20 @@ class Karma(rubbercog.Rubbercog):
 
     @commands.check(check.is_verified)
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
-    @commands.command(name="leaderboard", aliases=["karmaboard", "userboard"])
+    @commands.command(name="leaderboard", aliases=["karmaboard", "userboard", "board"])
     async def leaderboard(self, ctx, parameter: str = "desc"):
         """Karma leaderboard
 
         parameter: [desc (default) | asc | give | take]
         """
-        pass
+        if parameter not in ("desc", "asc", "give", "take"):
+            return await utils.send_help(ctx)
+
+        title = "leaderboard " + parameter
+        description = text.get("karma", "leaderboard_" + parameter)
+        embed = self.embed(ctx=ctx, title=title, description=description)
+        embed = self.fillLeaderboard(embed, member=ctx.author, order=parameter, offset=0)
+        await ctx.send(embed=embed)
 
     ##
     ## Listeners
@@ -385,6 +393,63 @@ class Karma(rubbercog.Rubbercog):
                 return False
 
         return True
+
+    def fillLeaderboard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
+        limit = 10
+        around = 2
+        template = "`{position:>2}` … `{karma:>5}` {username}"
+
+        # get repository parameters
+        column = "karma"
+        if order == "give":
+            column = "positive"
+        if order == "take":
+            column == "negative"
+
+        if order == "desc":
+            attr = DB_Karma.karma.desc()
+        elif order == "asc":
+            attr = DB_Karma.karma
+        elif order == "give":
+            attr = DB_Karma.positive.desc()
+        elif order == "take":
+            attr = DB_Karma.negative.desc()
+
+        # construct first field
+        value = []
+        board = repo_k.getLeaderboard(attr, offset, limit)
+
+        for i, db_user in enumerate(board, start=offset):
+            # fmt: off
+            user = self.bot.get_user(int(db_user.discord_id))
+            username = (
+                self.sanitise(user.display_name)
+                if hasattr(user, "display_name")
+                else "_unknown_"
+            )
+
+            if int(db_user.discord_id) == member.id:
+                username = f"**{username}**"
+
+            value.append(template.format(
+                position=i+1,
+                karma=getattr(db_user, column),
+                username=username,
+            ))
+            # fmt: on
+
+        if offset == 0:
+            name = text.fill("karma", "leaderboard_1", num=limit)
+        else:
+            name = text.fill("karma", "leaderboard_x", num=limit, offset=offset)
+        embed.add_field(name=name, value="\n".join(value))
+
+        # construct second field
+        # FIXME How to get user's position?
+        # value = []
+        # board = repo_k.getLeaderboard(attr, offset=user_position - around, limit=around*2+1)
+
+        return embed
 
     ##
     ## Errors
