@@ -45,7 +45,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             raise EmailAlreadyInDatabase()
 
         # check e-mail format
-        role = self._email_to_role(email)
+        role = await self._email_to_role(ctx, email)
 
         # generate code
         code = self._add_user(ctx.author, login=email, role=role)
@@ -90,7 +90,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         if repo_u.getByLogin(email) is not None:
             raise EmailAlreadyInDatabase()
 
-        role = self._email_to_role(email)
+        role = await self._email_to_role(ctx, email)
         repo_u.update(discord_id=ctx.author.id, group=role.name)
 
         await self.output.info(ctx, "Mail changed")
@@ -199,7 +199,7 @@ class Gatekeeper(rubbercog.Rubbercog):
     ##
     ## Helper functions
     ##
-    def _email_to_role(self, email: str) -> discord.Role:
+    async def _email_to_role(self, ctx, email: str) -> discord.Role:
         """Get role from email address"""
         registered = config.get("gatekeeper", "suffixes")
         constraints = config.get("gatekeeper", "constraints")
@@ -218,6 +218,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             if match is not None:
                 return self.getGuild().get_role(role_id)
             else:
+                await self.event.user(ctx.author, ctx.channel, f"Rejecting e-mail: {email}")
                 raise BadEmail(constraint=constraint)
 
         # domain not found, fallback to basic guest role
