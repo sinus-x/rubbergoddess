@@ -77,7 +77,6 @@ class Voice(rubbercog.Rubbercog):
             return
         await channel.set_permissions(self.getVerifyRole(), view_channel=True)
         channel_name = channel.name.replace(" " + self.lock, "")
-        print("  to " + channel_name)
         await channel.edit(name=channel_name)
         self.locked.remove(channel.id)
 

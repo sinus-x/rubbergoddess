@@ -1,25 +1,16 @@
 import datetime
-import re
 
 import discord
 from discord.ext.commands import Bot
 
 from core.config import config
-from core import utils
 from config.messages import Messages
 from features.base_feature import BaseFeature
-from features.review import Review
-from repository.karma_repo import KarmaRepository
-from repository.review_repo import ReviewRepository
-
-review_r = ReviewRepository()
 
 
 class Reaction(BaseFeature):
-    def __init__(self, bot: Bot, karma_repository: KarmaRepository):
+    def __init__(self, bot: Bot):
         super().__init__(bot)
-        self.karma_repo = karma_repository
-        self.review = Review(bot)
 
     async def add(self, payload):
         channel = self.bot.get_channel(payload.channel_id)
@@ -75,15 +66,3 @@ class Reaction(BaseFeature):
                         await message.pin()
                     except discord.HTTPException:
                         break
-
-    def pagination_next(self, emoji, page, max_page):
-        if emoji in ["▶", "🔽"]:
-            next_page = page + 1
-        elif emoji in ["◀", "🔼"]:
-            next_page = page - 1
-        elif emoji == "⏪":
-            next_page = 1
-        if 1 <= next_page <= max_page:
-            return next_page
-        else:
-            return 0

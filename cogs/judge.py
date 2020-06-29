@@ -242,11 +242,12 @@ class Judge(rubbercog.Rubbercog):
 
         # get page
         footer_text = embed.footer.text
-        pages = footer_text.split(" | ")[-1]
-        page_current = int(pages.split("/")[0]) - 1
+        if scroll:
+            pages = footer_text.split(" | ")[-1]
+            page_current = int(pages.split("/")[0]) - 1
 
-        page = (page_current + scroll_delta) % reviews.count()
-        footer_text = footer_text.replace(pages, f"{page+1}/{reviews.count()}")
+            page = (page_current + scroll_delta) % reviews.count()
+            footer_text = footer_text.replace(pages, f"{page+1}/{reviews.count()}")
 
         # get new review
         review = reviews[page].Review
