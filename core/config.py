@@ -91,15 +91,6 @@ class Config:
         self.pin_limit     = self.get('reaction cog', 'pin limit')
 
         ##
-        ## KARMA COG
-        self.karma_roles_ban    = self.get('karma cog', 'banned roles')
-        self.karma_channels_ban = self.get('karma cog', 'banned channels')
-        self.karma_string_ban   = self.get('karma cog', 'banned words')
-        self.karma_subjects     = self.get('karma cog', 'count subjects')
-        self.karma_vote_limit   = self.get('karma cog', 'vote limit')
-        self.karma_vote_time    = self.get('karma cog', 'vote time')
-
-        ##
         ## COMPATIBILITY
         self.noimitation = self.get('compatibility', 'ignored imitation channels')
 

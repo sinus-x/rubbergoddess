@@ -8,6 +8,12 @@ configuration or database.
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
 expect in the future.
 
+### Developers
+
+- Karma rewrite
+- Reaction rewrite
+- TODO `utils.remove_reaction(reaction, user)`
+
 ## [0.4.0]
 
 ### Added

@@ -109,29 +109,60 @@
 		"deny high role": "{mention}, na to nemáš právo."
 	}
 
-	"karma": {
-		"karma get missing": "{admin}, uklidila jsem za tebe karma hodnoty emotes",
+	karma: {
+		stalk_user:     Karma uživatele **{user}**
+		stalk_karma:    Karma
+		stalk_positive: Rozdáno
+		stalk_negative: Odebráno
 
-		"vote help":    "Žádný argument neočekávám. Prostě jen `{prefix}karma vote`",
-		"revote help":  "Čekám formát: `{prefix}krama revote [emote]`",
-		"vote message": "Hlasování o hodnotě {emote}",
-		"vote process": "Hlasování skončí za **{delay}** minut, minimální počet hlasů je **{count}**.",
-		"vote result":  "Výsledná hodnota pro {emote} je {value}",
-		"vote failed":  "Hlasování o hodnotě {emote} neprošlo.",
-		"all rated":    "Všechny guild emotes už mají hodnotu",
+		# ?karma emote/emotes
+		emote:           Hodnota {emote} je **{value}**.
+		emotes_positive: "Kladně ohodnocené emoty:"
+		emotes_negative: "Záporně ohodnocené emoty:"
+		emotes_nonvoted: "Neohodnocené emoty:"
 
-		"emote not found": "Takový emote jsem na serveru nenašla.",
-		"emote not voted": "Emote není ohodnocen",
+		"emote not found": "Takový emote jsem na serveru nenašla."
+		"emote not voted": "Emote není ohodnocen."
+		"no emotes":       "Žádné emoty jsem nenašla."
 
-		"user karma":      "Karma uživatele {user} je **{karma}** ({order} nejvyšší).\nRozdal **{pos}** pozitivní ({pos_order}.) a **{neg}** ({neg_order}.) karmy.",
+		# ?karma message
+		"no message":   Zpráva nenalezena.
+		embed_positive: Kladné reakce
+		embed_negative: Záporné reakce
+		embed_neutral:  Neutrální reakce
+		embed_total:    Celková karma
+		embed_disabled: Karma se pro tuto zprávu nepočítá
 
-		"get help":           "`{prefix}karma get`: Vypíše všechny emotes s hodnotou\n`{prefix}karma get [emote]`: Vypíše hodnotu daného emotu.",
-		"give help":          "Správný formát je `{prefix}karma give [number] [user(s)]`",
+		# ?karma vote
+		"vote info":
+			'''
+			Hlasování o karma hodnotě {emote}.
+			Vyhodnocení proběhne za **{time}** minut, potřebný počet hlasů je **{limit}**.
+			'''
+		"vote failed": Hlasování o hodnotě {emote} skončilo neúspěšně z důvodu nedostatku hlasů.
+		"vote result": Hodnota {emote} je {value}.
+		"all rated":    "Karma hodnotu už mají všechny emotes."
+
+		# ?karma give
 		"give success given": "Karmu jsem úspěšně přidala.",
 		"give success taken": "Karmu jsem úspěšně odebrala.",
 
-		"message help":       "`{prefix}karma message [url|id]",
-		"leaderboard offset": "Špatný offset, {user}, zadej kladné číslo."
+		# ?leaderboard
+		board_title:  Leaderboard
+		board_desc_t: "🏆"
+		board_desc_d: Karma, od nejúspěšnějších
+		board_asc_t:  "💩"
+		board_asc_d:  Karma, od nejméně úspěšných
+		board_give_t: "❤️"
+		board_give_d: Rozdaná karma
+		board_take_t: "💔"
+		board_take_d: Karma sebraná ostatním
+
+		# note: this value must have two words
+		board_1:    Top {num}
+		# note: this value must end with offset
+		board_x:    Top {num} od pozice {offset}
+		board_user: Tvoje umístění
 	}
 
 	gatekeeper: {
@@ -214,18 +245,32 @@
 		flip:   ["ano", "ne"]
 	}
 
-	"review": {
-		"no permission": "{user}, nemáš právo hodnotit předměty.",
-		"added":         "Hodnocení předmětu bylo úspěšně přidáno.",
-		"update":        "Pro aktualizaci zavolej reviews znovu.",
-		"removed":       "Hodnocení bylo odebráno.",
-		"not found":     "Takové hodnocení tu nemám.",
+	judge: {
+		"no subject":   "Takový předmět neznám."
+		# ?review subject
+		"no reviews":    "{mention}, předmět ještě žádné hodnocení nemá."
+		embed_title:     "Review: "
+		embed_no:        Recenze #{num}
+		embed_average:   Průměrná známka: {num}
+		embed_no_user:   Neznámý uživatel
+		embed_anonymous: Anonymní uživatel
+		embed_mark:      Známka
+		embed_text:      Text
 
-		"add help": "```{prefix}reviews add <zkratka> <známka 1-5> <Text recenze>```\nPříklad:\n```{prefix}reviews add bpc-kom 2 Text recenze```\nPro vytvoření anonymní recenze mi zprávu zašli do DM.",
+		# ?review add
+		"text too long": "Maximální počet znaků je 1024."
+		"wrong mark":    "Číselné hodnocení je známka, 1-5 jako ve škole."
+		"added":         "Hodnocení předmětu bylo úspěšně přidáno."
 
-		"no subject":       "Takový předmět neznám",
-		"wrong tier value": "Číselné hodnocení je známka z rozsahu 1-5",
-		"text too long":    "Maximální počet znaků je 1024"
+		# ?review remove
+		"no review":     "{mention}, takové hodnocení tu nemám."
+		"removed":       "Hodnocení bylo odebráno."
+
+		# ?sudo_subject
+		"subject exists":  Předmět už existuje.
+		"subject added":   Předmět přidán.
+		"subject updated": Předmět aktualizován.
+		"subject removed": Předmět odebrán.
 	}
 
 	"librarian": {

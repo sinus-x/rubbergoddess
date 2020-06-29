@@ -27,6 +27,9 @@ class KarmaRepository(BaseRepository):
         """Return user with given ID"""
         return session.query(Karma).filter(Karma.discord_id == member_id).one_or_none()
 
+    def getMemberCount(self):
+        return session.query(Karma).count()
+
     def updateMemberKarma(self, member_id: int, value: int):
         """Add karma to user"""
         # TODO This is duplicate for `update_karma_get`
@@ -36,6 +39,10 @@ class KarmaRepository(BaseRepository):
         else:
             user.karma += value
         session.commit()
+
+    def getEmotesByValue(self, value):
+        emotes = session.query(Karma_emoji).filter(Karma_emoji.value == value)
+        return [emote.emoji_ID for emote in emotes]
 
     # FUNCTIONS BELOW PROBABLY NEED REWRITE
     # TREAT WITH CARE!
@@ -49,13 +56,13 @@ class KarmaRepository(BaseRepository):
         """Returns a list of Karma_emoji objects."""
         return session.query(Karma_emoji)
 
-    def emoji_value(self, emoji_id):
+    def emoji_value(self, emoji_id: str):
         """Returns the value of an emoji.
         If the emoji has not been voted for, returns 0."""
         val = self.emoji_value_raw(emoji_id)
         return val if val is not None else 0
 
-    def emoji_value_raw(self, emoji_id):
+    def emoji_value_raw(self, emoji_id: str):
         """Returns the value of an emoji.
         If the emoji has not been voted for, returns None."""
         emoji = (
@@ -65,7 +72,7 @@ class KarmaRepository(BaseRepository):
         )
         return emoji.value if emoji else None
 
-    def set_emoji_value(self, emoji_id, value: int):
+    def set_emoji_value(self, emoji_id: str, value: int):
         emoji = Karma_emoji(emoji_ID=utils.str_emoji_id(emoji_id), value=str(value))
         # Merge == 'insert on duplicate key update'
         session.merge(emoji)
@@ -149,6 +156,5 @@ class KarmaRepository(BaseRepository):
         result = Karma_data(karma, positive, negative)
         return result
 
-    def get_leaderboard(self, atribute, offset=0):
-        leaderboard = session.query(Karma).order_by(atribute).offset(offset).limit(10)
-        return leaderboard
+    def getLeaderboard(self, order: str, offset: int = 0, limit: int = 10):
+        return session.query(Karma).order_by(order).offset(offset).limit(limit)

@@ -10,6 +10,9 @@ class ReviewRepository(BaseRepository):
     def __init__(self):
         super().__init__()
 
+    def get(self, id: int):
+        return session.query(Review).filter(Review.id == id).one_or_none()
+
     def get_subject_reviews(self, subject):
         return (
             session.query(

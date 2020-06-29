@@ -62,7 +62,7 @@
 			# purge messages, duplicate subject channel for teacher
 			janitor
 			# see and manage karma
-			karma
+			karma_old
 			# nameday, weather
 			librarian
 			# hug
@@ -211,14 +211,14 @@
 		"programme roles": [0]
 		# which role IDs are allowed to assign subjects
 		"subject roles": [0]
-	},
+	}
 
 	"reaction cog": {
 		# how many users have to react with 📌 to have their post pinned by the bot
 		"pin limit": 5
-	},
+	}
 
-	"karma cog": {
+	karma: {
 		# IDs for roles that shouldn't have karma
 		"banned roles": []
 		# IDs for channels that shouldn't have karma
@@ -232,7 +232,10 @@
 		# emote value vote
 		"vote limit": 5
 		"vote time":  120
-	},
+
+		"leaderboard limit": 2
+		"leaderboard around": 2
+	}
 
 	librarian: {
 		# Week the current semester started
