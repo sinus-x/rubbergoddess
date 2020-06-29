@@ -239,27 +239,32 @@ class Karma(rubbercog.Rubbercog):
         await ctx.send(text.get("karma", success))
 
     @commands.check(check.is_verified)
-    @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
-    @commands.command(name="leaderboard", aliases=["karmaboard", "userboard", "board"])
-    async def leaderboard(self, ctx, parameter: str = "desc"):
-        """Karma leaderboard
+    @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
+    @commands.command(aliases=["karmaboard"])
+    async def leaderboard(self, ctx, offset: int = 0):
+        """Karma leaderboard"""
+        await self.sendBoard(ctx, "desc", offset)
 
-        parameter: [desc (default) | asc | give | take]
-        """
-        if parameter not in ("desc", "asc", "give", "take"):
-            return await utils.send_help(ctx)
+    @commands.check(check.is_verified)
+    @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
+    @commands.command(aliases=["ishaboard"])
+    async def looserboard(self, ctx, offset: int = 0):
+        """Karma leaderboard, from the least"""
+        await self.sendBoard(ctx, "asc", offset)
 
-        title = (
-            text.get("karma", "board_title") + " " + text.get("karma", "board_" + parameter + "_t")
-        )
-        description = text.get("karma", "board_" + parameter + "_d")
-        page_count = int(repo_k.getMemberCount() / config.get("karma", "leaderboard limit"))
-        embed = self.embed(ctx=ctx, title=title, description=description, page=(1, page_count))
-        embed = self.fillLeaderboard(embed, member=ctx.author, order=parameter, offset=0)
-        message = await ctx.send(embed=embed)
+    @commands.check(check.is_verified)
+    @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
+    @commands.command()
+    async def givingboard(self, ctx, offset: int = 0):
+        """Karma leaderboard"""
+        await self.sendBoard(ctx, "give", offset)
 
-        await message.add_reaction("◀")
-        await message.add_reaction("▶")
+    @commands.check(check.is_verified)
+    @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
+    @commands.command(aliases=["stealingboard"])
+    async def takingboard(self, ctx, offset: int = 0):
+        """Karma leaderboard"""
+        await self.sendBoard(ctx, "take", offset)
 
     ##
     ## Listeners
@@ -297,12 +302,6 @@ class Karma(rubbercog.Rubbercog):
         """Scrolling, vote"""
         if user.bot:
             return
-
-        # fmt: off
-        if len(reaction.message.embeds) == 1 \
-        and reaction.message.embeds[0].title.startswith(text.get("karma", "board_title")):
-            await self.updateLeaderboard(reaction, user)
-        # fmt: on
 
         if reaction.message.channel.id == config.get("channels", "vote"):
             await self.checkVoteEmote(reaction, user)
@@ -416,7 +415,29 @@ class Karma(rubbercog.Rubbercog):
 
         return True
 
-    def fillLeaderboard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
+    async def sendBoard(self, ctx: commands.Context, parameter: str, offset: int):
+        """Send karma board
+
+        parameter: desc | asc | give | take
+        """
+        max_offset = repo_k.getMemberCount() - config.get("karma", "leaderboard limit")
+        if offset < 0:
+            offset = 0
+        elif offset > max_offset:
+            offset = max_offset
+
+        # fmt: off
+        title = "{title}  {ordering}".format(
+            title=text.get("karma", "board_title"),
+            ordering=text.get("karma", "board_" + parameter + "_t"),
+        )
+        # fmt: on
+        description = text.get("karma", "board_" + parameter + "_d")
+        embed = self.embed(ctx=ctx, title=title, description=description)
+        embed = self.fillBoard(embed, member=ctx.author, order=parameter, offset=offset)
+        await ctx.send(embed=embed)
+
+    def fillBoard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
         limit = config.get("karma", "leaderboard limit")
         # around = config.get("karma", "leaderboard around")
         template = "`{position:>2}` … `{karma:>5}` {username}"
@@ -465,7 +486,7 @@ class Karma(rubbercog.Rubbercog):
         if offset == 0:
             name = text.fill("karma", "board_1", num=limit)
         else:
-            name = text.fill("karma", "board_x", num=limit, offset=offset)
+            name = text.fill("karma", "board_x", num=limit, offset=offset + 1)
         embed.add_field(name=name, value="\n".join(value))
 
         # construct second field
@@ -474,60 +495,6 @@ class Karma(rubbercog.Rubbercog):
         # board = repo_k.getLeaderboard(attr, offset=user_position - around, limit=around*2+1)
 
         return embed
-
-    async def updateLeaderboard(self, reaction, user):
-        """Update the leaderboard with new content"""
-        if not hasattr(reaction, "emoji"):
-            return await self._remove_reaction(reaction, user)
-
-        if str(reaction.emoji) == "◀":
-            page_delta = -1
-        elif str(reaction.emoji) == "▶":
-            page_delta = 1
-        else:
-            return await self._remove_reaction(reaction, user)
-
-        embed = reaction.message.embeds[0]
-        if embed.footer == discord.Embed.Empty or " | " not in embed.footer.text:
-            return await self._remove_reaction(reaction, user)
-
-        # update footer
-        footer_text = embed.footer.text
-        pages = footer_text.split(" | ")[-1]
-        page_current = int(pages.split("/")[0]) - 1
-        pages_total = int(pages.split("/")[1])
-
-        page = (page_current + page_delta) % pages_total
-        footer_text = footer_text.replace(pages, f"{page+1}/{pages_total}")
-        embed.set_footer(text=footer_text, icon_url=embed.footer.icon_url)
-
-        # do not allow overscroll
-        if page < 0 or page > pages_total:
-            return await self._remove_reaction(reaction, user)
-
-        # get order
-        _order = embed.title.split(" ")[-1]
-        if _order == text.get("karma", "board_asc_t"):
-            order = "asc"
-        elif _order == text.get("karma", "board_give_t"):
-            order = "give"
-        elif _order == text.get("karma", "board_take_t"):
-            order = "take"
-        else:
-            order = "desc"
-
-        # get offset
-        field_title = embed.fields[0].name
-        if len(field_title.split(" ")) == 2:
-            offset = 0
-        else:
-            offset = int(field_title.split(" ")[-1])
-
-        offset += page_delta * config.get("karma", "leaderboard limit")
-
-        embed = self.fillLeaderboard(embed, member=user, order=order, offset=offset)
-
-        await reaction.message.edit(embed=embed)
 
     async def checkVoteEmote(self, reaction, user):
         """Check if the emote is vote emote"""
