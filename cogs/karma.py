@@ -249,11 +249,17 @@ class Karma(rubbercog.Rubbercog):
         if parameter not in ("desc", "asc", "give", "take"):
             return await utils.send_help(ctx)
 
-        title = "leaderboard " + parameter
-        description = text.get("karma", "leaderboard_" + parameter)
-        embed = self.embed(ctx=ctx, title=title, description=description)
+        title = (
+            text.get("karma", "board_title") + " " + text.get("karma", "board_" + parameter + "_t")
+        )
+        description = text.get("karma", "board_" + parameter + "_d")
+        page_count = int(repo_k.getMemberCount() / config.get("karma", "leaderboard limit"))
+        embed = self.embed(ctx=ctx, title=title, description=description, page=(1, page_count))
         embed = self.fillLeaderboard(embed, member=ctx.author, order=parameter, offset=0)
-        await ctx.send(embed=embed)
+        message = await ctx.send(embed=embed)
+
+        await message.add_reaction("◀")
+        await message.add_reaction("▶")
 
     ##
     ## Listeners
@@ -289,7 +295,17 @@ class Karma(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         """Scrolling, vote"""
-        pass
+        if user.bot:
+            return
+
+        # fmt: off
+        if len(reaction.message.embeds) == 1 \
+        and reaction.message.embeds[0].title.startswith(text.get("karma", "board_title")):
+            await self.updateLeaderboard(reaction, user)
+        # fmt: on
+
+        if reaction.message.channel.id == config.get("channels", "vote"):
+            await self.checkVoteEmote(reaction, user)
 
     ##
     ## Helper functions
@@ -361,6 +377,12 @@ class Karma(rubbercog.Rubbercog):
 
         return channel, member, message, emote
 
+    async def _remove_reaction(self, reaction, user):
+        try:
+            await reaction.remove(user)
+        except:
+            pass
+
     ##
     ## Logic
     ##
@@ -395,9 +417,11 @@ class Karma(rubbercog.Rubbercog):
         return True
 
     def fillLeaderboard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
-        limit = 10
-        around = 2
+        limit = config.get("karma", "leaderboard limit")
+        # around = config.get("karma", "leaderboard around")
         template = "`{position:>2}` … `{karma:>5}` {username}"
+
+        embed.clear_fields()
 
         # get repository parameters
         column = "karma"
@@ -439,9 +463,9 @@ class Karma(rubbercog.Rubbercog):
             # fmt: on
 
         if offset == 0:
-            name = text.fill("karma", "leaderboard_1", num=limit)
+            name = text.fill("karma", "board_1", num=limit)
         else:
-            name = text.fill("karma", "leaderboard_x", num=limit, offset=offset)
+            name = text.fill("karma", "board_x", num=limit, offset=offset)
         embed.add_field(name=name, value="\n".join(value))
 
         # construct second field
@@ -450,6 +474,68 @@ class Karma(rubbercog.Rubbercog):
         # board = repo_k.getLeaderboard(attr, offset=user_position - around, limit=around*2+1)
 
         return embed
+
+    async def updateLeaderboard(self, reaction, user):
+        """Update the leaderboard with new content"""
+        if not hasattr(reaction, "emoji"):
+            return await self._remove_reaction(reaction, user)
+
+        if str(reaction.emoji) == "◀":
+            page_delta = -1
+        elif str(reaction.emoji) == "▶":
+            page_delta = 1
+        else:
+            return await self._remove_reaction(reaction, user)
+
+        embed = reaction.message.embeds[0]
+        if embed.footer == discord.Embed.Empty or " | " not in embed.footer.text:
+            return await self._remove_reaction(reaction, user)
+
+        # update footer
+        footer_text = embed.footer.text
+        pages = footer_text.split(" | ")[-1]
+        page_current = int(pages.split("/")[0]) - 1
+        pages_total = int(pages.split("/")[1])
+
+        page = (page_current + page_delta) % pages_total
+        footer_text = footer_text.replace(pages, f"{page+1}/{pages_total}")
+        embed.set_footer(text=footer_text, icon_url=embed.footer.icon_url)
+
+        # do not allow overscroll
+        if page < 0 or page > pages_total:
+            return await self._remove_reaction(reaction, user)
+
+        # get order
+        _order = embed.title.split(" ")[-1]
+        if _order == text.get("karma", "board_asc_t"):
+            order = "asc"
+        elif _order == text.get("karma", "board_give_t"):
+            order = "give"
+        elif _order == text.get("karma", "board_take_t"):
+            order = "take"
+        else:
+            order = "desc"
+
+        # get offset
+        field_title = embed.fields[0].name
+        if len(field_title.split(" ")) == 2:
+            offset = 0
+        else:
+            offset = int(field_title.split(" ")[-1])
+
+        offset += page_delta * config.get("karma", "leaderboard limit")
+
+        embed = self.fillLeaderboard(embed, member=user, order=order, offset=offset)
+
+        await reaction.message.edit(embed=embed)
+
+    async def checkVoteEmote(self, reaction, user):
+        """Check if the emote is vote emote"""
+        if not hasattr(reaction, "emoji"):
+            return await self._remove_reaction(reaction, user)
+
+        if str(reaction.emoji) not in ("☑️", "0⃣", "❎"):
+            await self._remove_reaction(reaction, user)
 
     ##
     ## Errors

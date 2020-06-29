@@ -148,15 +148,21 @@
 		"give success taken": "Karmu jsem úspěšně odebrala.",
 
 		# ?leaderboard
-		leaderboard_desc: Karma, od nejúspěšnějších
-		leaderboard_asc:  Karma, od nejméně úspěšných
-		leaderboard_give: Rozdaná karma
-		leaderboard_take: Karma sebraná ostatním
+		board_title:  Leaderboard
+		board_desc_t: "🏆"
+		board_desc_d: Karma, od nejúspěšnějších
+		board_asc_t:  "💩"
+		board_asc_d:  Karma, od nejméně úspěšných
+		board_give_t: "❤️"
+		board_give_d: Rozdaná karma
+		board_take_t: "💔"
+		board_take_d: Karma sebraná ostatním
 
-		leaderboard_1:    Top {num}
-		leaderboard_x:    Top {num} od pozice {offset}
-		leaderboard_user: Tvoje umístění
-
+		# note: this value must have two words
+		board_1:    Top {num}
+		# note: this value must end with offset
+		board_x:    Top {num} od pozice {offset}
+		board_user: Tvoje umístění
 	}
 
 	gatekeeper: {

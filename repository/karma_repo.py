@@ -27,6 +27,9 @@ class KarmaRepository(BaseRepository):
         """Return user with given ID"""
         return session.query(Karma).filter(Karma.discord_id == member_id).one_or_none()
 
+    def getMemberCount(self):
+        return session.query(Karma).count()
+
     def updateMemberKarma(self, member_id: int, value: int):
         """Add karma to user"""
         # TODO This is duplicate for `update_karma_get`
