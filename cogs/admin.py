@@ -91,7 +91,7 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send(text.fill("admin", "poweron ok", channels=", ".join(visited)))
         else:
             await ctx.send(text.fill("admin", "power fail"))
-        await self.event.sudo(ctx.author, ctx.channel, f"Power on")
+        await self.event.sudo(ctx.author, ctx.channel, "Power on")
 
     @commands.command(name="status")
     @commands.check(check.is_mod)

@@ -1,13 +1,10 @@
 import datetime
-import re
-import traceback
 
 import discord
 from discord.ext import commands
 
 from core import output
 from core.config import config
-from core.text import text
 
 
 class Rubbercog(commands.Cog):

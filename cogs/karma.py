@@ -477,7 +477,7 @@ class Karma(rubbercog.Rubbercog):
                 username = f"**{username}**"
 
             value.append(template.format(
-                position=i+1,
+                position=i + 1,
                 karma=getattr(db_user, column),
                 username=username,
             ))

@@ -1,5 +1,3 @@
-from sqlalchemy.sql.expression import bindparam
-
 from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.verification import User

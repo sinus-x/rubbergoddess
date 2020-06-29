@@ -17,8 +17,8 @@ class Howto(rubbercog.Rubbercog):
 
         try:
             self.data = hjson.load(open("data/howto/howto.hjson"))
-        except Exception as e:
-            print("Howto init(): Could not load HOWTO source file.")
+        except:
+            print("Howto init(): Could not load HOWTO source file.")  # noqa: T001
             self.data = OrderedDict()
 
     ##
