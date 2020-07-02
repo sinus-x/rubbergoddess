@@ -121,13 +121,13 @@ class Warden(rubbercog.Rubbercog):
 
     async def saveMessageHashes(self, message: discord.Message):
         for f in message.attachments:
+            # FIXME Can we check that the file is image before downloading it?
             fp = BytesIO()
             await f.save(fp)
             try:
                 i = Image.open(fp)
-            except OSError as e:
+            except OSError:
                 # not an image
-                await self.console.error(message, "Error opening attachment", e)
                 continue
             h = dhash.dhash_int(i)
 

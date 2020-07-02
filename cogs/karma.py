@@ -35,12 +35,10 @@ class Karma(rubbercog.Rubbercog):
     async def karma_stalk(self, ctx, member: discord.Member):
         """See someone's karma"""
         k = repo_k.get_karma(member.id)
-        # fmt: off
         embed = self.embed(
             ctx=ctx,
             description=text.fill(
-                "karma", "stalk_user",
-                user=self.sanitise(member.display_name, limit=32)
+                "karma", "stalk_user", user=self.sanitise(member.display_name, limit=32)
             ),
         )
         embed.add_field(
@@ -56,7 +54,6 @@ class Karma(rubbercog.Rubbercog):
             name=text.get("karma", "stalk_negative"),
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
-        # fmt:on
         await ctx.send(embed=embed)
         await utils.delete(ctx)
 

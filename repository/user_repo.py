@@ -17,15 +17,21 @@ class UserRepository(BaseRepository):
     ):
         """Add new user"""
         session.add(
-            User(discord_id=discord_id, login=login, group=group, code=code, status="pending")
+            User(
+                discord_id=discord_id,
+                login=login,
+                group=group,
+                code=code,
+                status="pending",
+                changed=time(),
+            )
         )
         session.commit()
 
     def save_verified(self, discord_id: int):
         """Insert login with discord name into database"""
-        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         session.query(User).filter(User.discord_id == discord_id).update(
-            {User.status: "verified", User.changed: ch}
+            {User.status: "verified", User.changed: time()}
         )
         session.commit()
 
@@ -49,33 +55,29 @@ class UserRepository(BaseRepository):
 
     def update_login(self, discord_id: int, login: str):
         """Update status"""
-        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         session.query(User).filter(User.discord_id == discord_id).update(
-            {User.login: login, User.changed: ch}
+            {User.login: login, User.changed: time()}
         )
         session.commit()
 
     def update_group(self, discord_id: int, group: str):
         """Update status"""
-        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         session.query(User).filter(User.discord_id == discord_id).update(
-            {User.group: group, User.changed: ch}
+            {User.group: group, User.changed: time()}
         )
         session.commit()
 
     def update_status(self, discord_id: int, status: str, comment: str = ""):
         """Update status"""
-        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         session.query(User).filter(User.discord_id == discord_id).update(
-            {User.status: status, User.comment: comment, User.changed: ch}
+            {User.status: status, User.comment: comment, User.changed: time()}
         )
         session.commit()
 
     def update_comment(self, discord_id: int, comment: str):
         """Update comment"""
-        ch = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         session.query(User).filter(User.discord_id == discord_id).update(
-            {User.comment: comment, User.changed: ch}
+            {User.comment: comment, User.changed: time()}
         )
         session.commit()
 

@@ -192,10 +192,8 @@ class Gatekeeper(rubbercog.Rubbercog):
                 mention=ctx.author.mention,
                 role=db_user.group,
         ), delete_after=config.get("delay", "verify"))
-        await self.event.user(ctx.author, ctx.channel, "User verified.")
+        await self.event.user(ctx.author, ctx.channel, "User verified (**{db_user.group}**).")
         # fmt: on
-        if db_user.group == "TEACHER":
-            await self.event.user(ctx.author, ctx.channel, "New teacher")
 
     ##
     ## Helper functions
