@@ -33,6 +33,8 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def verify(self, ctx, email: str):
         """Ask for verification code"""
+        await utils.delete(ctx)
+
         if "@" not in email or len(email.split("@")) > 2:
             raise NotAnEmail()
 
@@ -64,8 +66,6 @@ class Gatekeeper(rubbercog.Rubbercog):
             delete_after=config.get("delay", "verify"),
         )
 
-        await utils.delete(ctx)
-
     @commands.check(check.is_in_quarantine_or_dm)
     @commands.check(check.is_quarantined)
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
@@ -79,6 +79,8 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         email: Your new verification e-mail
         """
+        await utils.delete(ctx)
+
         if "@" not in email or len(email.split("@")) > 2:
             raise NotAnEmail()
 
@@ -95,11 +97,11 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         await self.output.info(ctx, "Mail changed")
 
-        await utils.delete(ctx)
-
     @reverify.command(name="prove")
     async def reverify_prove(self, ctx):
         """Ask for verification code"""
+        await utils.delete(ctx)
+
         db_user = repo_u.get(ctx.author.id)
 
         if db_user is None:
@@ -127,8 +129,6 @@ class Gatekeeper(rubbercog.Rubbercog):
             text.fill("gatekeeper", "reverify successful", mention=ctx.author.mention),
             delete_after=config.get("delay", "verify"),
         )
-
-        await utils.delete(ctx)
 
     @commands.check(check.is_not_verified)
     @commands.cooldown(rate=3, per=120, type=commands.BucketType.user)
