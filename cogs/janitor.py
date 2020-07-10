@@ -21,10 +21,7 @@ class Janitor(rubbercog.Rubbercog):
 
         warn: Optional. Use "warn" string to send warnings, else just list the users
         """
-        if warn == "warn":
-            warn = True
-        else:
-            warn = False
+        warn = warn == "warn"
 
         hoarders = []
         limit_top = discord.utils.get(self.getGuild().roles, name="---PROGRAMMES")
@@ -73,11 +70,11 @@ class Janitor(rubbercog.Rubbercog):
     @commands.check(check.is_elevated)
     @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
-    async def purge(self, ctx, limit: int, pinMode: str):
+    async def purge(self, ctx, limit: int, pinMode: str = "pinSkip"):
         """Delete messages from current text channel
 
         limit: how many messages should be deleted
-        mode: pinSkip | pinStop | pinIgnore
+        mode: pinSkip (default) | pinStop | pinIgnore
         """
         if pinMode not in ("pinSkip", "pinStop", "pinIgnore"):
             return await ctx.send_help(ctx.invoked_with)
