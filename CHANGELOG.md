@@ -8,11 +8,33 @@ configuration or database.
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
 expect in the future.
 
+### Added
+
+- Judge cog: Replacement for Review
+- Karma cog: Complete rewrite
+- Meme: ?uwu
+- Random: ?picsum
+- Librarian: ?base64, ?hash
+- Warden: Preventing useless reactions
+
+### Removed
+
+- Review cog
+
+### Mods
+
+- Errors are sent to stdout channel, botdef only recieves an error stub
+
 ### Developers
 
 - Karma rewrite
 - Reaction rewrite
 - TODO `utils.remove_reaction(reaction, user)`
+- self.embed(): footer parameter
+
+### Maintenance
+
+- Bumped reqired discord.py version to 1.3.4
 
 ## [0.4.0]
 
