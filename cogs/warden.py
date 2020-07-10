@@ -44,7 +44,10 @@ class Warden(rubbercog.Rubbercog):
             return
 
         # repost check - disallow linking
-        if "https://cdn.discordapp.com/" in message.content:
+        if (
+            "https://cdn.discordapp.com/" in message.content
+            or "https://media.discordapp.com/" in message.content
+        ):
             await utils.delete(message)
             await message.channel.send(
                 text.fill("warden", "repost cheating", mention=message.author.mention)
@@ -112,22 +115,23 @@ class Warden(rubbercog.Rubbercog):
                 try:
                     orig = message.embeds[0].footer.text
                     orig = await message.channel.fetch_message(int(orig))
-                    # TODO Try to remove other bot's emoji, too
                     await orig.remove_reaction("♻️", self.bot.user)
+                    await orig.remove_reaction("🤷🏻", self.bot.user)
+                    await orig.remove_reaction("🤔", self.bot.user)
                 except Exception as e:
-                    await self.console.debug(message, "Could not remove ♻️", e)
+                    await self.console.debug(message, "Could not remove bot's reaction", e)
                     return
                 await message.delete()
 
     async def saveMessageHashes(self, message: discord.Message):
         for f in message.attachments:
+            # FIXME Can we check that the file is image before downloading it?
             fp = BytesIO()
             await f.save(fp)
             try:
                 i = Image.open(fp)
-            except OSError as e:
+            except OSError:
                 # not an image
-                await self.console.error(message, "Error opening attachment", e)
                 continue
             h = dhash.dhash_int(i)
 
@@ -221,6 +225,8 @@ class Warden(rubbercog.Rubbercog):
 
         if len(message.attachments) > 0 and len(hashes) == 0:
             await message.add_reaction("▶")
+            await asyncio.sleep(2)
+            await message.remove_reaction("▶", self.bot.user)
             return
 
         duplicates = {}

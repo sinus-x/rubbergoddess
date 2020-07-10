@@ -1,5 +1,6 @@
 import traceback
 
+import discord
 from discord.ext import commands
 
 from core import rubbercog, utils
@@ -76,18 +77,50 @@ class Errors(rubbercog.Rubbercog):
         # display error message
         await self.output.error(ctx, "", error)
 
-        output = "Ignoring exception in command {}: \n\n".format(ctx.command)
+        if isinstance(ctx.channel, discord.TextChannel):
+            location = f"{ctx.guild.name}/{ctx.channel.name} ({ctx.channel.id})"
+        else:
+            location = type(location).__name__
+        output = "{command} by {user} in {location}:\n".format(
+            command=config.prefix + self.sanitise(ctx.invoked_with),
+            user=str(ctx.author),
+            location=location,
+        )
         output += "".join(traceback.format_exception(type(error), error, error.__traceback__))
 
         # print traceback to stdout
         print(output)
 
         # send traceback to dedicated channel
-        channel = self.bot.get_channel(config.channel_botdev)
+        channel_stdout = self.bot.get_channel(config.get("channels", "stdout"))
         output = list(output[0 + i : 1960 + i] for i in range(0, len(output), 1960))
-        if channel is not None:
-            for message in output:
-                await channel.send("```\n{}```".format(message))
+        sent = []
+        for message in output:
+            m = await channel_stdout.send("```\n{}```".format(message))
+            sent.append(m)
+
+        # send notification to botdev
+        channel_botdev = self.bot.get_channel(config.channel_botdev)
+        embed = self.embed(ctx=ctx, color=discord.Color.from_rgb(255, 0, 0))
+        # fmt: off
+        footer = "{user} in {channel}".format(
+            user=ctx.author,
+            channel=ctx.channel.name
+            if isinstance(ctx.channel, discord.TextChannel)
+            else type(ctx.channel).__name__,
+        )
+
+        stack = output[-1]
+        if len(stack) > 255:
+            stack = "…" + stack[-255:]
+
+        embed.set_footer(text=footer, icon_url=embed.footer.icon_url)
+        embed.add_field(
+            name=type(error).__name__, value=f"```{stack}```", inline=False,
+        )
+        embed.add_field(name=f"Traceback link", value=sent[0].jump_url, inline=False)
+        await channel_botdev.send(embed=embed)
+        # fmt: on
 
 
 def setup(bot):

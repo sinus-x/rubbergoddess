@@ -210,22 +210,38 @@ class Event:
             self.channel = self.bot.get_channel(config.get("channels", "events"))
         return self.channel
 
-    async def user(self, member: discord.Member, location: discord.abc.Messageable, message: str):
+    async def user(self, member: discord.Member, location, message: str):
         """Unprivileged events"""
+        if isinstance(location, discord.abc.Messageable):
+            if hasattr(location, "mention"):
+                location = location.mention
+            else:
+                location = type(location).__name__
+        else:
+            location = str(location)
+
         # fmt: off
         await self.getChannel().send(self.user_template.format(
             user=str(member),
-            location=location.mention if hasattr(location, "mention") else type(location).__name__,
+            location=location,
             message=message.replace("@", "@\u200b"),
         ))
         # fmt: on
 
-    async def sudo(self, member: discord.Member, location: discord.abc.Messageable, message: str):
+    async def sudo(self, member: discord.Member, location, message: str):
         """Privileged events"""
+        if isinstance(location, discord.abc.Messageable):
+            if hasattr(location, "mention"):
+                location = location.mention
+            else:
+                location = type(location).__name__
+        else:
+            location = str(location)
+
         # fmt: off
         await self.getChannel().send(self.sudo_template.format(
             user=str(member),
-            location=location.mention if hasattr(location, "mention") else type(location).__name__,
+            location=location,
             message=message.replace("@", "@\u200b"),
         ))
         # fmt: on

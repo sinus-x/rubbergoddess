@@ -87,9 +87,11 @@ class Rubbercog(commands.Cog):
         """Get yyyy-mm-dd HH:MM:SS string"""
         return datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-    def sanitise(self, string: str, *, limit: int = 500):
+    def sanitise(self, string: str, *, limit: int = 500, markdown: bool = False):
         """Return cleaned-up string ready for output"""
-        return discord.utils.escape_markdown(string).replace("@", "")[:limit]
+        if not markdown:
+            string = discord.utils.escape_markdown(string)
+        return string.replace("@", "@\u200b")[:limit]
 
     def embed(
         self,
@@ -101,6 +103,7 @@ class Rubbercog(commands.Cog):
         description: str = None,
         color: int = None,
         page: tuple = None,
+        footer: str = None,
         url: str = None,
     ) -> discord.Embed:
         """Create embed
@@ -142,6 +145,8 @@ class Rubbercog(commands.Cog):
         footer_content = []
         if author is not None:
             footer_content.append(str(author))
+        if footer is not None:
+            footer_content.append(footer)
         if page is not None:
             footer_content.append(f"{page[0]}/{page[1]}")
         footer_text = " | ".join(footer_content)
@@ -150,6 +155,9 @@ class Rubbercog(commands.Cog):
         embed = discord.Embed(title=title, description=description, color=color, url=url)
         if footer_image is not discord.Embed.Empty or len(footer_text) > 0:
             embed.set_footer(icon_url=footer_image, text=footer_text)
+
+        # add footer timestamp
+        embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)
 
         # done
         return embed

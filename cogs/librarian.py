@@ -1,4 +1,6 @@
+import base64
 import requests
+import hashlib
 from datetime import date
 
 import discord
@@ -54,11 +56,9 @@ class Librarian(rubbercog.Rubbercog):
         await utils.delete(ctx)
 
     @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
-    async def weather(self, ctx, *args):
+    async def weather(self, ctx, *, city: str = "Brno"):
         token = config.get("librarian", "weather token")
-        city = "Brno"
-        if len(args) != 0:
-            city = " ".join(map(str, args))
+        city = city[:100]
         url = (
             "http://api.openweathermap.org/data/2.5/weather?q="
             + city
@@ -95,6 +95,54 @@ class Librarian(rubbercog.Rubbercog):
             await ctx.send("Město nenalezeno! " + emote.sad + " (" + res["message"] + ")")
 
         await utils.delete(ctx)
+        await utils.room_check(ctx)
+        await self.event.user(ctx.author, ctx.channel, f"Weather lookup: " + city)
+
+    @commands.command(aliases=["b64"])
+    async def base64(self, ctx, direction: str, *, data: str):
+        """Get base64 data
+
+        direction: [encode, e, -e; decode, d, -d]
+        text: string (under 1000 characters)
+        """
+        data = data[:1000]
+        if direction in ("encode", "e", "-e"):
+            direction = "encode"
+            result = base64.b64encode(data.encode("utf-8")).decode("utf-8")
+        elif direction in ("decode", "d", "-d"):
+            direction = "decode"
+            result = base64.b64decode(data.encode("utf-8")).decode("utf-8")
+        else:
+            return await utils.send_help(ctx)
+
+        quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
+        await ctx.send(f"**base64 {direction}** ({quote}):\n> ```{result}```")
+
+        await utils.room_check(ctx)
+        await self.event.user(ctx.author, ctx.channel, f"**b64 {direction}**: {quote}")
+
+    @commands.command()
+    async def hashlist(self, ctx):
+        """Get list of available hash functions"""
+        result = f"**hashlib**\n"
+        result += "> " + " ".join(sorted(hashlib.algorithms_available))
+
+        await ctx.send(result)
+
+    @commands.command()
+    async def hash(self, ctx, fn: str, *, data: str):
+        """Get hash function result
+
+        Run hashlist command to see available algorithms
+        """
+        if fn in hashlib.algorithms_available:
+            result = hashlib.new(fn, data.encode("utf-8")).hexdigest()
+        else:
+            return await ctx.send(text.get("librarian", "hash not found"))
+
+        quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
+        await ctx.send(f"**{fn}** ({quote}):\n> ```{result}```")
+        await self.event.user(ctx.author, ctx.channel, f"Hash **{fn}**: {quote}")
 
 
 def setup(bot):

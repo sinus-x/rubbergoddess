@@ -56,11 +56,6 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send(text.fill("admin", "power fail"))
         await self.event.sudo(ctx.author, ctx.channel, f"Power off: {reason}")
 
-    @power.command(name="disconnect")
-    async def power_disconnect(self, ctx):
-        """Close the connection to Discord servers"""
-        await self.bot.logout()
-
     @power.command(name="on")
     async def power_on(self, ctx):
         """Restore"""
@@ -179,25 +174,22 @@ class Admin(rubbercog.Rubbercog):
     @commands.command()
     async def config(self, ctx):
         """See configuration from 'bot' section"""
-        lines = []
-        lines.append("**RUBBERGODDESS CONFIGURATION**")
-        lines.append("")
+        embed = self.embed(ctx=ctx)
 
         # fmt: off
         # hosting
-        lines.append("**Host machine:** " + config.get('bot', 'host'))
-        lines.append("**Loader:** " + config.get('bot', 'loader'))
-        lines.append("")
+        embed.add_field(name="Host machine", value=config.get("bot", "host"))
+        embed.add_field(name="Loader", value=config.get("bot", "loader"))
         # logging
-        lines.append("**Logging:** " + config.get('bot', 'logging'))
-        lines.append("**Debug** (deprecated): " + str(config.get('bot', 'debug')))
-        lines.append("")
+        embed.add_field(name="Logging", value=config.get("bot", "logging"))
         # extensions
-        lines.append("**Extensions:** " +
-            ", ".join([x.lower() for x in config.get("bot", "extensions")]))
+        embed.add_field(
+            name="Default extensions",
+            value=", ".join([x.lower() for x in config.get("bot", "extensions")])
+        )
         # fmt: on
 
-        await ctx.send(">>> " + "\n".join(lines), delete_after=config.delay_embed)
+        await ctx.send(embed=embed, delete_after=config.delay_embed)
         await utils.delete(ctx)
 
     async def _readFile(self, ctx: commands.Context, file: str, docker: bool):

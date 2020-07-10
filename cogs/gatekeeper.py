@@ -33,6 +33,8 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.command()
     async def verify(self, ctx, email: str):
         """Ask for verification code"""
+        await utils.delete(ctx)
+
         if "@" not in email or len(email.split("@")) > 2:
             raise NotAnEmail()
 
@@ -48,7 +50,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         role = await self._email_to_role(ctx, email)
 
         # generate code
-        code = self._add_user(ctx.author, login=email, role=role)
+        code = await self._add_user(ctx.author, login=email, role=role)
 
         # send mail
         await self._send_verification_email(ctx.author, email, code)
@@ -64,8 +66,6 @@ class Gatekeeper(rubbercog.Rubbercog):
             delete_after=config.get("delay", "verify"),
         )
 
-        await utils.delete(ctx)
-
     @commands.check(check.is_in_quarantine_or_dm)
     @commands.check(check.is_quarantined)
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
@@ -79,6 +79,8 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         email: Your new verification e-mail
         """
+        await utils.delete(ctx)
+
         if "@" not in email or len(email.split("@")) > 2:
             raise NotAnEmail()
 
@@ -95,11 +97,11 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         await self.output.info(ctx, "Mail changed")
 
-        await utils.delete(ctx)
-
     @reverify.command(name="prove")
     async def reverify_prove(self, ctx):
         """Ask for verification code"""
+        await utils.delete(ctx)
+
         db_user = repo_u.get(ctx.author.id)
 
         if db_user is None:
@@ -118,7 +120,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             email = db_user.login
 
         # generate new code
-        code = self._update_user(ctx.author)
+        code = await self._update_user(ctx.author)
 
         # send mail
         await self._send_verification_email(ctx.author, email, code)
@@ -127,8 +129,6 @@ class Gatekeeper(rubbercog.Rubbercog):
             text.fill("gatekeeper", "reverify successful", mention=ctx.author.mention),
             delete_after=config.get("delay", "verify"),
         )
-
-        await utils.delete(ctx)
 
     @commands.check(check.is_not_verified)
     @commands.cooldown(rate=3, per=120, type=commands.BucketType.user)
@@ -192,9 +192,8 @@ class Gatekeeper(rubbercog.Rubbercog):
                 mention=ctx.author.mention,
                 role=db_user.group,
         ), delete_after=config.get("delay", "verify"))
+        await self.event.user(ctx.author, ctx.channel, "User verified (**{db_user.group}**).")
         # fmt: on
-        if db_user.group == "TEACHER":
-            await self.event.user(ctx.author, ctx.channel, "New teacher")
 
     ##
     ## Helper functions
@@ -218,7 +217,9 @@ class Gatekeeper(rubbercog.Rubbercog):
             if match is not None:
                 return self.getGuild().get_role(role_id)
             else:
-                await self.event.user(ctx.author, ctx.channel, f"Rejecting e-mail: {email}")
+                await self.event.user(
+                    ctx.author, ctx.channel, f"Rejecting e-mail: {self.sanitise(email)}"
+                )
                 raise BadEmail(constraint=constraint)
 
         # domain not found, fallback to basic guest role
@@ -229,20 +230,25 @@ class Gatekeeper(rubbercog.Rubbercog):
         if match is not None:
             return self.getGuild().get_role(role_id)
         else:
+            await self.event.user(
+                ctx.author, ctx.channel, f"Rejecting e-mail: {self.sanitise(email)}"
+            )
             raise BadEmail(constraint=constraint)
 
-    def _add_user(self, member: discord.Member, login: str, role: discord.Role) -> str:
+    async def _add_user(self, member: discord.Member, login: str, role: discord.Role) -> str:
         code_source = string.ascii_uppercase.replace("O", "").replace("I", "") + string.digits
         code = "".join(random.choices(code_source, k=8))
 
         repo_u.add(discord_id=member.id, login=login, group=role.name, code=code)
+        await self.event.user(member, "verify", f"Adding with role **{role.name}**, code `{code}`")
         return code
 
-    def _update_user(self, member: discord.Member) -> str:
+    async def _update_user(self, member: discord.Member) -> str:
         code_source = string.ascii_uppercase.replace("O", "").replace("I", "") + string.digits
         code = "".join(random.choices(code_source, k=8))
 
         repo_u.update(discord_id=member.id, code=code, status="pending")
+        await self.event.user(member, "verify", f"Updated with code `{code}`")
         return code
 
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
