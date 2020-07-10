@@ -151,6 +151,9 @@ class Rubbercog(commands.Cog):
         if footer_image is not discord.Embed.Empty or len(footer_text) > 0:
             embed.set_footer(icon_url=footer_image, text=footer_text)
 
+        # add footer timestamp
+        embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)
+
         # done
         return embed
 
