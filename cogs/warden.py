@@ -115,10 +115,11 @@ class Warden(rubbercog.Rubbercog):
                 try:
                     orig = message.embeds[0].footer.text
                     orig = await message.channel.fetch_message(int(orig))
-                    # TODO Try to remove other bot's emoji, too
                     await orig.remove_reaction("♻️", self.bot.user)
+                    await orig.remove_reaction("🤷🏻", self.bot.user)
+                    await orig.remove_reaction("🤔", self.bot.user)
                 except Exception as e:
-                    await self.console.debug(message, "Could not remove ♻️", e)
+                    await self.console.debug(message, "Could not remove bot's reaction", e)
                     return
                 await message.delete()
 
@@ -224,6 +225,8 @@ class Warden(rubbercog.Rubbercog):
 
         if len(message.attachments) > 0 and len(hashes) == 0:
             await message.add_reaction("▶")
+            await asyncio.sleep(2)
+            await message.remove_reaction("▶", self.bot.user)
             return
 
         duplicates = {}
