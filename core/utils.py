@@ -8,10 +8,6 @@ from core.text import text
 from config.messages import Messages
 
 
-def generate_mention(user_id):
-    return "<@" + str(user_id) + ">"
-
-
 def git_hash():
     repo = git.Repo(search_parent_directories=True)
     return repo.head.object.hexsha
@@ -54,6 +50,9 @@ def fill_message(message_name, *args, **kwargs):
     :return: filled template
     """
 
+    def generate_mention(user_id):
+        return "<@" + str(user_id) + ">"
+
     # Convert username/admin to a mention
     if "user" in kwargs:
         kwargs["user"] = generate_mention(kwargs["user"])
@@ -91,11 +90,6 @@ def seconds2str(time):
     if s > 1:
         return f"{s} vteřiny"
     return "vteřinu"
-
-
-##
-## before_invoke(), after_invoke() functions
-##
 
 
 async def room_check(ctx: commands.Context):

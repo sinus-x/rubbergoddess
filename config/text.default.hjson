@@ -273,16 +273,18 @@
 		"subject removed": Předmět odebrán.
 	}
 
-	"librarian": {
-		"nameday cz": "Dnes má svátek {name} {emote.happy}",
+	librarian: {
+		"nameday cz": "Dnes má svátek {name} {emote.happy}"
 		"nameday sk": "Dnes má meniny {name} {emote.happy}"
+
+		"hash not found": Takovou hashovací funkci neznám.
 	}
 
-	"meme": {
+	meme: {
 		"???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
 	}
 
-	"voice": {
+	voice: {
 		"wip": "{mention}, to teď nefunguje."
 
 		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
