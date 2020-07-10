@@ -66,6 +66,9 @@
 
 		"poweron botspam": "Jsem zpátky! {emote.happy}",
 		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
+
+		"not systemd":           Neběžím v systemd, takže to nebude fungovat.
+		"unavailable in docker": Běžím v dockeru, takže to nebude fungovat.
 	}
 
 	actress: {

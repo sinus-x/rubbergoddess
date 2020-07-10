@@ -94,8 +94,7 @@ class Admin(rubbercog.Rubbercog):
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
-            await self.output.error(ctx, "Neběžím přímo v systemd, takže to neumím")
-            return
+            return await ctx.send(text.get("admin", "not systemd"))
 
         stdout = None
         try:
@@ -112,60 +111,22 @@ class Admin(rubbercog.Rubbercog):
     @commands.command(name="journalctl")
     @commands.check(check.is_mod)
     @commands.check(check.is_in_modroom)
-    async def journalctl(self, ctx: commands.Context, target: str = None):
-        """See bot logs
-
-        target: Optional. [ bot (default) | cron ]
-        """
-        target = "cron" if target == "cron" else "bot"
+    async def journalctl(self, ctx: commands.Context):
+        """See bot logs"""
         cmd = None
-        file = None
-        stdout = None
-        """
-                standalone systemd docker systemd+docker
-        bot     YES        YES     YES    MIRROR
-        cron    YES        YES     MIRROR MIRROR         """
+        result = None
 
         if config.loader == "standalone":
-            if target == "bot":
-                file = await self._readFile(ctx, "rubbergoddess.log", docker=False)
-            elif target == "cron":
-                file = await self._readFile(ctx, "journalctl.log", docker=False)
-
+            result = await self._readFile(ctx, "rubbergoddess.log", docker=False)
         elif config.loader == "systemd":
-            if target == "bot":
-                cmd = "sudo journalctl -u rubbergoddess"
-            elif target == "cron":
-                file = await self._readFile(ctx, "journalctl.log", docker=False)
-
-        elif config.loader == "docker":
-            if target == "bot":
-                cmd = "docker logs rubbergoddess_bot_1"
-            elif target == "cron":
-                file = await self._readFile(ctx, "rubbergoddess.log", docker=True)
-
-        elif config.loader == "systemd+docker":
-            if target == "bot":
-                file = await self._readFile(ctx, "journalctl.log", docker=True)
-            elif target == "cron":
-                file = await self._readFile(ctx, "rubbergoddess.log", docker=True)
-
-        else:
-            await self.output.error(ctx, "Unsupported value for 'loader' config key")
-            return
-
-        if cmd:
+            cmd = "sudo journalctl -u rubbergoddess"
             try:
-                stdout = subprocess.check_output(cmd + " | tail -n 40", shell=True).decode("utf-8")
+                result = subprocess.check_output(cmd + " | tail -n 40", shell=True).decode("utf-8")
             except subprocess.CalledProcessError as e:
                 await self.output.error(ctx, "Subprocess error", e)
                 return
-        elif file is not None:
-            stdout = file
-        elif file is None:
-            return
 
-        output = list(stdout[0 + i : 1960 + i] for i in range(0, len(stdout), 1960))
+        output = list(result[0 + i : 1960 + i] for i in range(0, len(result), 1960))
         for o in output:
             await ctx.send("```{}```".format(o))
         await utils.delete(ctx)
@@ -185,7 +146,13 @@ class Admin(rubbercog.Rubbercog):
         # extensions
         embed.add_field(
             name="Default extensions",
-            value=", ".join([x.lower() for x in config.get("bot", "extensions")])
+            value=", ".join([x.lower() for x in sorted(config.get("bot", "extensions"))]),
+            inline=False,
+        )
+        embed.add_field(
+            name="Loaded extensions",
+            value=", ".join([x.lower() for x in sorted(self.bot.cogs.keys()) if x != "Errors"]),
+            inline=False,
         )
         # fmt: on
 
