@@ -103,6 +103,7 @@ class Rubbercog(commands.Cog):
         description: str = None,
         color: int = None,
         page: tuple = None,
+        footer: str = None,
         url: str = None,
     ) -> discord.Embed:
         """Create embed
@@ -144,6 +145,8 @@ class Rubbercog(commands.Cog):
         footer_content = []
         if author is not None:
             footer_content.append(str(author))
+        if footer is not None:
+            footer_content.append(footer)
         if page is not None:
             footer_content.append(f"{page[0]}/{page[1]}")
         footer_text = " | ".join(footer_content)

@@ -1,5 +1,7 @@
 import random
+import requests
 
+import discord
 from discord.ext import commands
 
 from core import rubbercog, utils
@@ -21,6 +23,8 @@ class Random(rubbercog.Rubbercog):
             await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
 
         await utils.room_check(ctx)
+        arg_list = " ".join([f"`{self.sanitise(x)}`" for x in args])[:1900]
+        await self.event.user(ctx.author, ctx.channel, f"Picked `{option}` from {arg_list}.")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -30,6 +34,7 @@ class Random(rubbercog.Rubbercog):
         await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
 
         await utils.room_check(ctx)
+        await self.event.user(ctx.author, ctx.channel, f"Picked `{option}`.")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -45,6 +50,40 @@ class Random(rubbercog.Rubbercog):
         await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
 
         await utils.room_check(ctx)
+        await self.event.user(ctx.author, ctx.channel, f"Picked {option} ({first}, {second}).")
+
+    @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
+    @commands.command(aliases=["unsplash"])
+    async def picsum(self, ctx, seed: str = None):
+        """Get random image from picsum.photos"""
+        size = "450/300"
+        url = "https://picsum.photos/"
+        if seed:
+            url += "seed/" + seed + "/"
+        url += f"{size}.jpg?random={ctx.message.id}"
+
+        # we cannot use the URL directly, because embed will contain other image than its thumbnail
+        image = requests.get(url)
+        if image.status_code != 200:
+            return await ctx.send(f"E{image.status_code}")
+
+        # get image info
+        # example url: https://i.picsum.photos/id/857/600/360.jpg?hmac=.....
+        image_id = image.url.split("/id/", 1)[1].split("/")[0]
+        image_info = requests.get(f"https://picsum.photos/id/{image_id}/info")
+        try:
+            image_url = image_info.json()["url"]
+            log_url = "<" + image_url + ">"
+        except:
+            image_url = discord.Embed.Empty
+            log_url = "with picsum ID " + image_id
+
+        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, description=image_url, footer=seed)
+        embed.set_image(url=image.url)
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)
+        await self.event.user(ctx.author, ctx.channel, f"Picked image {log_url} ({seed}).")
 
 
 def setup(bot):
