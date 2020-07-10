@@ -27,6 +27,8 @@ class Karma(rubbercog.Rubbercog):
     @commands.group(name="karma")
     async def karma(self, ctx):
         """Karma"""
+        await utils.delete(ctx)
+
         if ctx.invoked_subcommand is None:
             await self.karma_stalk(ctx, member=ctx.author)
 
@@ -55,7 +57,8 @@ class Karma(rubbercog.Rubbercog):
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
         await ctx.send(embed=embed)
-        await utils.delete(ctx)
+        await self.event.user(ctx.author, ctx.channel, f"Karma stalk on {member.name}.")
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emote", aliases=["emoji"])
@@ -75,6 +78,7 @@ class Karma(rubbercog.Rubbercog):
             return await ctx.send(text.get("karma", "emote not voted"))
 
         await ctx.send(text.fill("karma", "emote", emote=str(emote), value=str(value)))
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emotes", aliases=["emojis"])
@@ -104,12 +108,12 @@ class Karma(rubbercog.Rubbercog):
         for line in [x for x in content if (x and len(x) > 0)]:
             await ctx.send(line)
 
+        await utils.room_check(ctx)
+
     @commands.check(check.is_mod)
     @karma.command(name="vote")
     async def karma_vote(self, ctx, emote: str):
         """Vote for emote's karma value"""
-        await utils.delete(ctx)
-
         message = await ctx.send(
             text.fill(
                 "karma",
@@ -123,6 +127,7 @@ class Karma(rubbercog.Rubbercog):
         await message.add_reaction("0⃣")
         await message.add_reaction("❎")
 
+        await self.event.sudo(ctx.author, ctx.channel, f"Vote over value of {emote} started.")
         await asyncio.sleep(config.get("karma", "vote time") * 60)
 
         # update cached message
@@ -140,6 +145,7 @@ class Karma(rubbercog.Rubbercog):
                 neutral = reaction.count - 1
 
         if positive + negative + neutral < config.get("karma", "vote limit"):
+            await self.event.sudo(ctx.author, ctx.channel, f"Vote for {emote} failed.")
             return await ctx.send(text.fill("karma", "vote failed", emote=emote))
 
         result = 0
@@ -150,6 +156,7 @@ class Karma(rubbercog.Rubbercog):
 
         repo_k.set_emoji_value(str(self._emoteToID(emote)), result)
         await ctx.send(text.fill("karma", "vote result", emote=emote, value=result))
+        await self.event.sudo(ctx.author, ctx.channel, f"{emote} karma value voted as {result}.")
 
     @commands.check(check.is_mod)
     @karma.command(name="set")
@@ -157,6 +164,7 @@ class Karma(rubbercog.Rubbercog):
         """Set karma value without public vote"""
         repo_k.set_emoji_value(str(self._emoteToID(emote)), value)
         await ctx.send(text.fill("karma", "emote", emote=emote, value=value))
+        await self.event.sudo(ctx.author, ctx.channel, f"Karma of {emote} set to {value}.")
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="message")
@@ -168,7 +176,6 @@ class Karma(rubbercog.Rubbercog):
         except Exception as error:
             return await self.output.error(ctx, "Message not found", error)
 
-        # TODO Add timestamp in local timezone, message.created_at is at UTC
         embed = self.embed(ctx=ctx, description=f"{message.author}")
 
         # fmt: off
@@ -227,6 +234,8 @@ class Karma(rubbercog.Rubbercog):
             embed.add_field(name="\u200b", value=text.get("karma", "embed_disabled"), inline=False)
         await ctx.send(embed=embed)
 
+        await utils.room_check(ctx)
+
     @commands.check(check.is_mod)
     @karma.command(name="give")
     async def karma_give(self, ctx, member: discord.Member, value: int):
@@ -234,6 +243,7 @@ class Karma(rubbercog.Rubbercog):
         repo_k.update_karma(member=member, giver=ctx.author, emoji_value=value)
         success = "give success given" if value > 0 else "give success taken"
         await ctx.send(text.get("karma", success))
+        await self.event.sudo(ctx.author, ctx.channel, f"{member} got {value} karma points.")
 
     @commands.check(check.is_verified)
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
