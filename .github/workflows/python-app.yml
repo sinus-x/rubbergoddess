@@ -41,16 +41,10 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
 
-    - name: Check the code
+    - name: Check the code for errors
       run: |
-        echo "Run flake8 to find critical errors"
         flake8 . --count --select=BLK,E9,F70,F82 --statistics
 
-        echo "Check the code with black"
-        black . --check --line-length=100
-
-        echo "Run flake8 to find non-critical errors, while ignoring errors linked to black and our codestyle preferences"
-        flake8 . --count --exit-zero \
-        --ignore=E12,E20,E221,E222,E241,E251,E266,E271,E272,E30,E722,W50 \
-        --per-file-ignores="rubbergoddess.py:T001,F401 core/output.py:T001 cogs/errors.py:T001" \
-        --exclude=config/* --max-complexity=13 --max-line-length=110 --statistics
+    - name: Check the code for non-critical errors
+      run: |
+        flake8 . --exit-zero
