@@ -44,7 +44,10 @@ class Warden(rubbercog.Rubbercog):
             return
 
         # repost check - disallow linking
-        if "https://cdn.discordapp.com/" in message.content:
+        if (
+            "https://cdn.discordapp.com/" in message.content
+            or "https://media.discordapp.com/" in message.content
+        ):
             await utils.delete(message)
             await message.channel.send(
                 text.fill("warden", "repost cheating", mention=message.author.mention)
