@@ -1,4 +1,4 @@
-[<< Back to home](../index.md)
+← Back to [home](../index.md)
 
 # Rubbergoddess modules
 
@@ -62,4 +62,4 @@ Create voice channels as they are needed.
 
 Check attachments in specified channels for reposts.
 
-[<< Back to home](../index.md)
+← Back to [home](../index.md)
