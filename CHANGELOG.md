@@ -8,6 +8,12 @@ configuration or database.
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
 expect in the future.
 
+### Developers
+
+- `utils.remove_reaction(reaction, user)`
+
+## [0.5.0]
+
 ### Added
 
 - Judge cog: Replacement for Review
@@ -15,7 +21,7 @@ expect in the future.
 - Meme: ?uwu
 - Random: ?picsum
 - Librarian: ?base64, ?hash
-- Warden: Preventing useless reactions
+- Warden: Improved repost embed
 
 ### Removed
 
@@ -23,13 +29,12 @@ expect in the future.
 
 ### Mods
 
-- Errors are sent to stdout channel, botdef only recieves an error stub
+- Errors are sent to stdout channel, botdev only recieves an error stub
 
 ### Developers
 
 - Karma rewrite
 - Reaction rewrite
-- TODO `utils.remove_reaction(reaction, user)`
 - self.embed(): footer parameter
 
 ### Maintenance
@@ -101,7 +106,8 @@ ADD COLUMN name VARCHAR;
 ## [0.1.0]
 Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/Toaster192/rubbergod).
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.0...devel
+[0.5.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.1.0...v0.2.0
