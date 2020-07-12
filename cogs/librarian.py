@@ -96,7 +96,6 @@ class Librarian(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
         await utils.room_check(ctx)
-        await self.event.user(ctx.author, ctx.channel, f"Weather lookup: " + city)
 
     @commands.command(aliases=["b64"])
     async def base64(self, ctx, direction: str, *, data: str):
@@ -125,7 +124,6 @@ class Librarian(rubbercog.Rubbercog):
         await ctx.send(f"**base64 {direction}** ({quote}):\n> ```{result}```")
 
         await utils.room_check(ctx)
-        await self.event.user(ctx.author, ctx.channel, f"**b64 {direction}**: {quote}")
 
     @commands.command()
     async def hashlist(self, ctx):
@@ -148,7 +146,6 @@ class Librarian(rubbercog.Rubbercog):
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
         await ctx.send(f"**{fn}** ({quote}):\n> ```{result}```")
-        await self.event.user(ctx.author, ctx.channel, f"Hash **{fn}**: {quote}")
 
 
 def setup(bot):
