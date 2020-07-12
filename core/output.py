@@ -164,7 +164,7 @@ class Console:
             else:
                 location = "DM"
             author = str(source.author)
-            position = message.content[:50]
+            position = message[:50]
 
         elif isinstance(source, commands.Cog):
             position = source.name
@@ -176,7 +176,7 @@ class Console:
             position = source
 
         # parse error
-        if error is not None:
+        if error and len(error):
             tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             if len(tr) > 1000:
                 tr = tr[-999:] + "…"

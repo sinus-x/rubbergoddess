@@ -81,36 +81,65 @@ class Warden(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        """Delete duplicate embed if original is not a duplicate"""
+        """Handle 'This is a repost' embed"""
         if payload.channel_id not in config.get("warden", "deduplication channels"):
             return
         if payload.member.bot:
             return
+        if not hasattr(payload.emoji, "name") or payload.emoji.name not in ("🆗", "❎"):
+            return
+
         try:
-            message = (
+            embed_message = (
                 await self.getGuild()
                 .get_channel(payload.channel_id)
                 .fetch_message(payload.message_id)
             )
         except Exception as e:
-            await self.console.debug(self, "Message not found", e)
-            return
-        if not message or not message.author.bot:
+            return await self.console.debug(self, "Reaction's message not found", e)
+        if not embed_message or not embed_message.author.bot:
             return
 
-        for r in message.reactions:
-            if r.emoji == "❎" and r.count > config.get("warden", "not duplicate limit"):
-                # TODO Remove all emojis added by bot
+        try:
+            repost_message = embed_message.embeds[0].footer.text.split(" | ")[1]
+            repost_message = await embed_message.channel.fetch_message(int(repost_message))
+        except Exception as e:
+            return await self.console.debug(embed_message, "Could not find repost's original.")
+
+        for r in embed_message.reactions:
+            if r.emoji not in ("🆗", "❎"):
+                continue
+
+            if (
+                payload.emoji.name == "❎"
+                and r.emoji == "❎"
+                and r.count > config.get("warden", "not duplicate limit")
+            ):
+                # remove bot's reactions, it is not a repost
                 try:
-                    orig = message.embeds[0].footer.text
-                    orig = await message.channel.fetch_message(int(orig))
-                    await orig.remove_reaction("♻️", self.bot.user)
-                    await orig.remove_reaction("🤷🏻", self.bot.user)
-                    await orig.remove_reaction("🤔", self.bot.user)
+                    await repost_message.remove_reaction("♻️", self.bot.user)
+                    await repost_message.remove_reaction("🤷🏻", self.bot.user)
+                    await repost_message.remove_reaction("🤔", self.bot.user)
                 except Exception as e:
-                    await self.console.debug(message, "Could not remove bot's reaction", e)
+                    await self.console.debug(embed_message, "Could not remove bot's reaction", e)
                     return
-                await message.delete()
+                await embed_message.delete()
+
+            elif payload.emoji.name == "🆗" and r.emoji == "🆗":
+                # get original author's ID
+                repost_author_id = embed_message.embeds[0].footer.text.split(" | ")[0]
+                if str(repost_message.author.id) != repost_author_id:
+                    return await embed_message.remove_reaction("🆗", embed_message.author)
+                # contract the embed
+                info_field = embed_message.embeds[0].fields[0]
+                embed = discord.Embed()
+                embed.add_field(name=info_field.name, value=info_field.value)
+                embed.set_footer(text=embed_message.embeds[0].footer.text)
+                try:
+                    await embed_message.edit(embed=embed)
+                    await r.clear()
+                except discord.NotFound:
+                    pass
 
     async def saveMessageHashes(self, message: discord.Message):
         for f in message.attachments:
@@ -203,7 +232,7 @@ class Warden(rubbercog.Rubbercog):
         )
         # fmt: on
 
-    @scan.command(name="message")
+    @scan.command(name="message", hidden=True)
     async def scan_message(self, ctx, link):
         """Scan message attachments in whole database"""
         pass
@@ -296,7 +325,6 @@ class Warden(rubbercog.Rubbercog):
             name=discord.utils.escape_markdown(message.author.display_name),
             value=prob,
         )
-        # TODO Use url= parameter
         embed = discord.Embed(title=t, color=config.color, description=d, url=message.jump_url)
         embed.add_field(name=f"**{author}**, {timestamp}", value=link, inline=False)
 
@@ -308,9 +336,10 @@ class Warden(rubbercog.Rubbercog):
             )
             + "_",
         )
-        embed.set_footer(text=message.id)
+        embed.set_footer(text=f"{message.author.id} | {message.id}")
         m = await message.channel.send(embed=embed)
         await m.add_reaction("❎")
+        await m.add_reaction("🆗")
 
 
 def setup(bot):
