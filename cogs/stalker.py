@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from datetime import datetime
 
 from core import check, rubbercog, utils
 from core.config import config
@@ -287,144 +286,49 @@ class Stalker(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
-    @database.group(name="update")
-    async def database_update(self, ctx: commands.Context):
-        """Set of functions to update database entries"""
-        await utils.send_help(ctx)
+    @database.command(name="update")
+    async def database_update(self, ctx, member: discord.Member, key: str, *, value):
+        """Update user entry in database
 
-    @database_update.command(name="login")
-    async def database_update_login(
-        self, ctx: commands.Context, member: discord.Member, login: str
-    ):
-        """Update user's registered login
-
-        member: A server member
-        login: User's xlogin (FEKT, VUT) or e-mail
+        key: value
+        - login: e-mail
+        - group: one of the groups defined in gatekeeper mapping
+        - status: [unknown, pending, verified, kicked, banned, quarantined]
+        - comment: commentary on user
         """
-        try:
-            repository.update_login(discord_id=member.id, login=login)
-            await ctx.send(text.get("db", "update success"))
-            await self.event.sudo(ctx.author, ctx.channel, f"Login update for {member} ({login})")
-            await utils.delete(ctx)
-        except Exception as e:
-            await self.output.error(ctx, "Error updating entry", e)
+        if key not in ("login", "group", "status", "comment"):
+            raise commands.BadArgument("Invalid key.")
 
-    @database_update.command(name="group")
-    async def database_update_group(
-        self, ctx: commands.Context, member: discord.Member, group: str
-    ):
-        """Update user's registered group
+        if key == "login":
+            repository.update(member.id, login=value)
+        elif key == "group":
+            # get list of role names, defined in
+            role_ids = config.get("roles", "native") + config.get("roles", "guests")
+            role_names = [
+                x.name for x in [self.bot.get_role(x) for x in role_ids] if hasattr(x, "name")
+            ]
+            value = value.upper()
+            if value not in role_names:
+                raise commands.BadArgument("Invalid value.")
+            repository.update(member.id, group=value)
+        elif key == "status":
+            if value not in ("unknown", "pending", "verified", "kicked", "banned", "quarantined"):
+                raise commands.BadArgument("Invalid value.")
+        elif key == "comment":
+            repository.update(member.id, comment=value)
 
-        member: A server member
-        group: A role name
+        self.event.sudo(ctx.author, ctx.channel, f"Updated {member}: {key} = {value}.")
+
+    @database.command(name="show")
+    async def database_show(self, ctx, param: str):
+        """Filter users by parameter
+
+        param: [unverified, pending, kicked, banned]
         """
-        try:
-            repository.update_group(discord_id=member.id, group=group)
-            await ctx.send(text.get("db", "update success"))
-            await self.event.sudo(ctx.author, ctx.channel, f"Group update for {member} ({group})")
-            await utils.delete(ctx)
-        except Exception as e:
-            await self.output.error(ctx, "Error updating entry", e)
+        if param not in ("unverified", "pending", "kicked", "banned"):
+            return await utils.send_help(ctx)
 
-    @database_update.command(name="status")
-    async def database_update_status(
-        self, ctx: commands.Context, member: discord.Member, status: str
-    ):
-        """Update user's verification status
-
-        member: A server member
-        status: unknown, pending, verified, kicked, banned
-        """
-        try:
-            repository.update_status(discord_id=member.id, status=status)
-            await ctx.send(text.get("db", "update success"))
-            await self.event.sudo(ctx.author, ctx.channel, f"Status update for {member} ({status})")
-            await utils.delete(ctx)
-        except Exception as e:
-            await self.output.error(ctx, "Error updating entry", e)
-
-    @database_update.command(name="comment")
-    async def database_update_comment(
-        self, ctx: commands.Context, member: discord.Member, *, comment: str
-    ):
-        """Update comment on user
-
-        member: A server member
-        args: Commentary on user
-        """
-        try:
-            repository.update_comment(discord_id=member.id, comment=comment)
-            await ctx.send(text.get("db", "update success"))
-            await self.event.sudo(
-                ctx.author, ctx.channel, f"Comment update for {member} ({comment})"
-            )
-            await utils.delete(ctx)
-        except Exception as e:
-            await self.output.error(ctx, "Error updating entry", e)
-
-    @database.group(name="show")
-    async def database_show(self, ctx: commands.Context):
-        """Set of filter functions"""
-        await utils.send_help(ctx)
-
-    @database_show.command(name="unverified")
-    async def database_show_unverified(self, ctx: commands.Context):
-        """List users that have not yet requested verification code"""
-        await self._database_show_filter(ctx, "unverified")
-
-    @database_show.command(name="pending")
-    async def database_show_pending(self, ctx: commands.Context):
-        """List users that have not yet submitted the verification code"""
-        await self._database_show_filter(ctx, "pending")
-
-    @database_show.command(name="kicked")
-    async def database_show_kicked(self, ctx: commands.Context):
-        """List users that have been kicked"""
-        await self._database_show_filter(ctx, "kicked")
-
-    @database_show.command(name="banned")
-    async def database_show_banned(self, ctx: commands.Context):
-        """List users that have been banned"""
-        await self._database_show_filter(ctx, "banned")
-
-    @commands.guild_only()
-    @commands.command(name="today")
-    async def today(self, ctx: commands.Context):
-        """Display the count of users that joined/were verified today"""
-
-        # TODO count verified users with entry.roles
-        ctr_usr_ver = 0  # noqa: F841
-        ctr_usr_kic = 0
-        ctr_usr_ban = 0
-        ctr_invites = 0
-        ctr_msg_pin = 0
-        try:
-            async for entry in self.getGuild().audit_logs(after=datetime.now()):
-                if entry.action == discord.AuditLogAction.kick:
-                    ctr_usr_kic += 1
-                elif entry.action == discord.AuditLogAction.ban:
-                    ctr_usr_ban += 1
-                elif entry.action == discord.AuditLogAction.invite_create:
-                    ctr_invites += 1
-                elif entry.action == discord.AuditLogAction.message_pin:
-                    ctr_msg_pin += 1
-        except (discord.Forbidden, discord.HTTPException) as e:
-            await self.output.error(ctx, "Error getting the audit log", e)
-            await utils.delete(ctx)
-            return
-
-        embed = self.embed(ctx=ctx)
-        embed.add_field(name="Successful verifications", value="_(Not implemented)_")
-        if ctr_usr_kic > 0:
-            embed.add_field(name="Users kicked", value=ctr_usr_kic)
-        if ctr_usr_ban > 0:
-            embed.add_field(name="Users banned", value=ctr_usr_ban)
-        if ctr_invites > 0:
-            embed.add_field(name="Invites created", value=ctr_invites)
-        embed.add_field(name="Messages pinned", value=ctr_msg_pin)
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
-
-        await utils.delete(ctx)
+        await self._database_show_filter(ctx, param)
 
     @commands.guild_only()
     @commands.command(name="guild", aliases=["server"])

@@ -43,42 +43,16 @@ class UserRepository(BaseRepository):
         group: str = None,
         code: str = None,
         status: str = None,
+        comment: str = None,
     ):
         """Update user entry"""
-        user = session.query(User).filter(User.discord_id == discord_id).one_or_none()
+        user = session.query(User).filter(User.discord_id == discord_id).one()
         user.login = login or user.login
         user.group = group or user.group
         user.code = code or user.code
         user.status = status or user.status
+        user.comment = comment or user.comment
         user.changed = time()
-        session.commit()
-
-    def update_login(self, discord_id: int, login: str):
-        """Update status"""
-        session.query(User).filter(User.discord_id == discord_id).update(
-            {User.login: login, User.changed: time()}
-        )
-        session.commit()
-
-    def update_group(self, discord_id: int, group: str):
-        """Update status"""
-        session.query(User).filter(User.discord_id == discord_id).update(
-            {User.group: group, User.changed: time()}
-        )
-        session.commit()
-
-    def update_status(self, discord_id: int, status: str, comment: str = ""):
-        """Update status"""
-        session.query(User).filter(User.discord_id == discord_id).update(
-            {User.status: status, User.comment: comment, User.changed: time()}
-        )
-        session.commit()
-
-    def update_comment(self, discord_id: int, comment: str):
-        """Update comment"""
-        session.query(User).filter(User.discord_id == discord_id).update(
-            {User.comment: comment, User.changed: time()}
-        )
         session.commit()
 
     def is_not_verified(self, discord_id: int):
@@ -108,27 +82,27 @@ class UserRepository(BaseRepository):
         return session.query(User).filter(User.login.startswith(prefix)).all()
 
     # TODO Deprecated
-    def filterId(self, discord_id: int = None):
+    def filterId(self, discord_id: int):
         """Find user in database"""
         users = session.query(User).filter(User.discord_id == discord_id).all()
         return users
 
-    def deleteId(self, discord_id: int = None):
+    def deleteId(self, discord_id: int):
         users = session.query(User).filter(User.discord_id == discord_id).delete()
         session.commit()
         return users
 
-    def filterLogin(self, login: str = None):
+    def filterLogin(self, login: str):
         return session.query(User).filter(User.login == login).all()
 
-    def filterStatus(self, status: str = None):
+    def filterStatus(self, status: str):
         return session.query(User).filter(User.status == status).all()
 
-    def filterGroup(self, group: str = None):
+    def filterGroup(self, group: str):
         return session.query(User).filter(User.group == group).all()
 
-    def countStatus(self, status: str = None):
+    def countStatus(self, status: str):
         return session.query(User).filter(User.status == status).count()
 
-    def countGroup(self, group: str = None):
+    def countGroup(self, group: str):
         return session.query(User).filter(User.group == group).count()
