@@ -105,13 +105,19 @@ class Librarian(rubbercog.Rubbercog):
         direction: [encode, e, -e; decode, d, -d]
         text: string (under 1000 characters)
         """
+        if data is None or not len(data):
+            return await utils.send_help(ctx)
+
         data = data[:1000]
         if direction in ("encode", "e", "-e"):
             direction = "encode"
             result = base64.b64encode(data.encode("utf-8")).decode("utf-8")
         elif direction in ("decode", "d", "-d"):
             direction = "decode"
-            result = base64.b64decode(data.encode("utf-8")).decode("utf-8")
+            try:
+                result = base64.b64decode(data.encode("utf-8")).decode("utf-8")
+            except Exception as e:
+                return await ctx.send(f"> {e}")
         else:
             return await utils.send_help(ctx)
 
