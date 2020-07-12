@@ -233,7 +233,7 @@
 		"vote limit": 5
 		"vote time":  120
 
-		"leaderboard limit": 2
+		"leaderboard limit": 10
 		"leaderboard around": 2
 	}
 
