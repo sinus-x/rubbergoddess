@@ -1,6 +1,7 @@
 import logging
 import traceback
 from datetime import datetime
+from typing import Union
 
 import discord
 from discord.ext import commands
@@ -11,6 +12,9 @@ from core.text import text
 
 def getTimestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+# TODO Add own level so we do not need to use logging for just this
 
 
 class Output:
@@ -27,33 +31,60 @@ class Output:
     def bot(self, bot: discord.ext.commands.Bot):
         self.bot = bot
 
-    async def debug(self, source, message: str = None, error: Exception = None):
+    async def debug(
+        self,
+        source: Union[commands.Context, discord.Message],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.DEBUG:
             await self.send(source, text.get("bot", "debug"), message, error)
 
-    async def info(self, source, message: str = None, error: Exception = None):
+    async def info(
+        self,
+        source: Union[commands.Context, discord.Message],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.INFO:
             await self.send(source, text.get("bot", "info"), message, error)
 
-    async def warning(self, source, message: str = None, error: Exception = None):
+    async def warning(
+        self,
+        source: Union[commands.Context, discord.Message],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.WARNING:
             await self.send(source, text.get("bot", "warning"), message, error)
 
-    async def error(self, source, message: str = None, error: Exception = None):
+    async def error(
+        self,
+        source: Union[commands.Context, discord.Message],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.ERROR:
             await self.send(source, text.get("bot", "error"), message, error)
 
-    async def critical(self, source, message: str = None, error: Exception = None):
+    async def critical(
+        self,
+        source: Union[commands.Context, discord.Message],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.CRITICAL:
             await self.send(source, text.get("bot", "critical"), message, error)
 
     async def send(
         self,
-        source: discord.abc.Messageable,
+        source: Union[commands.Context, discord.Message],
         level: str,
         message: str = None,
         error: Exception = None,
     ):
+        """Send output to source channel"""
+
         template = ">>> **{level}**: {message}"
         template_cont = "\n{error} ```{traceback}```"
 
@@ -99,30 +130,55 @@ class Console:
     def bot(self, bot: discord.ext.commands.Bot):
         self.bot = bot
 
-    async def debug(self, source, message: str = None, error: Exception = None):
+    async def debug(
+        self,
+        source: Union[commands.Context, discord.Message, str],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.DEBUG:
             await self.send(source, "debug", message, error)
 
-    async def info(self, source, message: str = None, error: Exception = None):
+    async def info(
+        self,
+        source: Union[commands.Context, discord.Message, str],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.INFO:
             await self.send(source, "info", message, error)
 
-    async def warning(self, source, message: str = None, error: Exception = None):
+    async def warning(
+        self,
+        source: Union[commands.Context, discord.Message, str],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.WARNING:
             await self.send(source, "warning", message, error)
 
-    async def error(self, source, message: str = None, error: Exception = None):
+    async def error(
+        self,
+        source: Union[commands.Context, discord.Message, str],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.ERROR:
             await self.send(source, "error", message, error)
 
-    async def critical(self, source, message: str = None, error: Exception = None):
+    async def critical(
+        self,
+        source: Union[commands.Context, discord.Message, str],
+        message: str = None,
+        error: Exception = None,
+    ):
         if self.level <= logging.CRITICAL:
             await self.send(source, "critical", message, error)
 
     async def send(
         # fmt: off
         self,
-        source,
+        source: Union[commands.Context, discord.Message, str],
         level: str,
         message: str = None,
         error: Exception = None,
@@ -131,67 +187,52 @@ class Console:
         if self.getLogChannel() is None:
             return
 
-        template = (
-            "{timestamp} {level:>8} [{position}] {message}\n"
-            "{author} in {location}\n"
-            "{traceback}"
-        )
-        """
-        position ... command or message that have triggered the error
-        message  ... log event argument
-        author   ... author behind the log event
-        location ... physical location
-        """
+        template = "{timestamp} {level} [{command}] {message}\n{author}, {source_name}"
 
-        location = str(source)
-        author = "unknown author"
-        position = "unknown position"
-        message = message or ""
-        error = error or ""
-
-        # parse source
+        # command
         if isinstance(source, commands.Context):
-            if isinstance(source.channel, discord.TextChannel):
-                location = f"{source.channel.guild}/{source.channel.name}"
-            else:
-                location = "DM"
-            author = str(source.author)
-            position = source.invoked_with
-
-        elif isinstance(source, discord.Message):
-            if isinstance(source.channel, discord.TextChannel):
-                location = f"{source.channel.guild}/{source.channel.name}"
-            else:
-                location = "DM"
-            author = str(source.author)
-            position = message[:50]
-
-        elif isinstance(source, commands.Cog):
-            position = source.name
-
-        elif isinstance(source, commands.Command):
-            position = source.qualified_name
-
-        elif isinstance(source, str):
-            position = source
-
-        # parse error
-        if error and len(error):
-            tr = "".join(traceback.format_exception(type(error), error, error.__traceback__))
-            if len(tr) > 1000:
-                tr = tr[-999:] + "…"
+            command = source.invoked_with
         else:
-            tr = ""
+            command = "not a command"
+
+        # author
+        if hasattr(source, "author") and isinstance(source.author, discord.User):
+            author = f"{source.author} (ID {source.author.id})"
+        else:
+            author = "unknown author"
+
+        # source_name
+        if hasattr(source, "channel") and isinstance(source.channel, discord.TextChannel):
+            source_name = f"{source.channel.name} in {source.channel.guild}"
+        elif hasattr(source, "channel"):
+            source_name = type(source.channel).__name__
+        else:
+            source_name = "unknown location"
+
+        # message
+        if message is None and error is not None:
+            message = str(error)
+        elif message is None:
+            message = "no message"
+
+        # traceback
+        if error and len(error):
+            tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
+            if len(tb) > 1000:
+                tb = tb[-999:] + "…"
+        else:
+            tb = ""
 
         result = template.format(
             timestamp=getTimestamp(),
-            level=level,
-            position=position,
+            level=level.upper(),
+            command=command,
             message=message,
             author=author,
-            location=location,
-            traceback=tr,
+            source_name=source_name,
         )
+        if len(tb):
+            result += "\n" + tb
 
         await self.getLogChannel().send(f"```{result}```")
         print(result)
