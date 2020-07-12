@@ -24,7 +24,6 @@ class Random(rubbercog.Rubbercog):
 
         await utils.room_check(ctx)
         arg_list = " ".join([f"`{self.sanitise(x)}`" for x in args])[:1900]
-        await self.event.user(ctx.author, ctx.channel, f"Picked `{option}` from {arg_list}.")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -34,7 +33,6 @@ class Random(rubbercog.Rubbercog):
         await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
 
         await utils.room_check(ctx)
-        await self.event.user(ctx.author, ctx.channel, f"Picked `{option}`.")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -50,7 +48,6 @@ class Random(rubbercog.Rubbercog):
         await ctx.send(text.fill("random", "answer", mention=ctx.author.mention, option=option))
 
         await utils.room_check(ctx)
-        await self.event.user(ctx.author, ctx.channel, f"Picked {option} ({first}, {second}).")
 
     @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
     @commands.command(aliases=["unsplash"])
@@ -83,7 +80,6 @@ class Random(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
 
         await utils.room_check(ctx)
-        await self.event.user(ctx.author, ctx.channel, f"Picked image {log_url} ({seed}).")
 
 
 def setup(bot):

@@ -427,6 +427,9 @@ class Karma(rubbercog.Rubbercog):
 
         parameter: desc | asc | give | take
         """
+        # convert offset to be zero-base
+        offset -= 1
+
         max_offset = repo_k.getMemberCount() - config.get("karma", "leaderboard limit")
         if offset < 0:
             offset = 0

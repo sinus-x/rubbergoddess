@@ -80,7 +80,7 @@ class Errors(rubbercog.Rubbercog):
         if isinstance(ctx.channel, discord.TextChannel):
             location = f"{ctx.guild.name}/{ctx.channel.name} ({ctx.channel.id})"
         else:
-            location = type(location).__name__
+            location = type(ctx.channel).__name__
         output = "{command} by {user} in {location}:\n".format(
             command=config.prefix + self.sanitise(ctx.invoked_with),
             user=str(ctx.author),
