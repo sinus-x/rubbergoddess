@@ -42,13 +42,14 @@ class Meme(rubbercog.Rubbercog):
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])
-    async def uwu(self, ctx, *, message: str):
+    async def uwu(self, ctx, *, message: str = None):
         """UWUize message"""
         await utils.delete(ctx)
 
-        text = self.sanitise(self.uwuize(message), limit=1960, markdown=True)
-        if text is None:
-            return
+        if message is None:
+            text = "OwO!"
+        else:
+            text = self.sanitise(self.uwuize(message), limit=1960, markdown=True)
         await ctx.send(ctx.author.mention + " " + text)
 
     ##
@@ -61,9 +62,13 @@ class Meme(rubbercog.Rubbercog):
         result = []
 
         def uwuize_word(string: str) -> str:
-            if string.lower()[0] == "m" and len(string) > 2:
-                w = "W" if string[1].isupper() else "w"
-                string = string[0] + w + string[1:]
+            try:
+                if string.lower()[0] == "m" and len(string) > 2:
+                    w = "W" if string[1].isupper() else "w"
+                    string = string[0] + w + string[1:]
+            except:
+                # this is how we handle emojis
+                pass
             string = string.replace("r", "w").replace("R", "W")
             string = string.replace("l", "w").replace("L", "W")
 
