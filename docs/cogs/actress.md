@@ -54,6 +54,8 @@ triggers "uh oh"
 responses "uh oh"
 ```
 
+If the text contains `{mention}`, it will be replaced with author's tag.
+
 ### react edit (name)
 
 Mod only. Edit previously created reaction. Formatting is the same as for **react add**, no parameter is required.

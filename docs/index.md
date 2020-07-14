@@ -1,3 +1,5 @@
+**NOTE: THIS DOCUMENTATION IS NOT WORK IN PROGRESS. THERE MAY BE PAGES MISSING OR EMPTY.**
+
 ![Rubbergoddess](images/rubbergoddess-wide.jpeg)
 
 # Rubbergoddess
