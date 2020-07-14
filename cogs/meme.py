@@ -70,6 +70,7 @@ class Meme(rubbercog.Rubbercog):
                 # this is how we handle emojis
                 pass
             string = string.replace("r", "w").replace("R", "W")
+            string = string.replace("ř", "w").replace("Ř", "W")
             string = string.replace("l", "w").replace("L", "W")
 
             return string
