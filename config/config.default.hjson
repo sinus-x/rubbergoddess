@@ -179,6 +179,11 @@
 		guests: [0, 0, 0]
 	},
 
+	base: {
+		# how many users have to react with 📌 to have their post pinned by the bot
+		"pin limit": 5
+	}
+
 	gatekeeper: {
 		# email domain to role ID mapping
 		suffixes: {
@@ -211,11 +216,6 @@
 		"programme roles": [0]
 		# which role IDs are allowed to assign subjects
 		"subject roles": [0]
-	}
-
-	"reaction cog": {
-		# how many users have to react with 📌 to have their post pinned by the bot
-		"pin limit": 5
 	}
 
 	karma: {

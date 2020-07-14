@@ -3,9 +3,8 @@ from datetime import datetime
 
 from discord.ext import commands
 
-from core import help, rubbercog, output, utils
+from core import help, rubbercog, output, presence, utils
 from core.config import config
-from features import presence
 from repository.database import database
 from repository.database import session
 from repository.database.karma import Karma, Karma_emoji

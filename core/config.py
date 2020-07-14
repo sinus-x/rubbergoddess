@@ -87,10 +87,6 @@ class Config:
         self.roles_guest    = self.get('roles', 'guests')
 
         ##
-        ## REACTION COG
-        self.pin_limit     = self.get('reaction cog', 'pin limit')
-
-        ##
         ## COMPATIBILITY
         self.noimitation = self.get('compatibility', 'ignored imitation channels')
 

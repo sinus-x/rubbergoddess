@@ -171,14 +171,12 @@ class Faceshifter(rubbercog.Rubbercog):
         if message.channel.id in config.get("faceshifter", "react-to-role channels") \
         or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
             # make a list of current emotes
-            emotes = []
             emote_channel_list = await self._message_to_tuple_list(message)
             for emote_channel in emote_channel_list:
                 try:
                     await message.add_reaction(emote_channel[0])
                 except (discord.errors.Forbidden, discord.errors.HTTPException):
                     continue
-                emotes.append(emote_channel[0])
         # fmt: on
 
     @commands.Cog.listener()
