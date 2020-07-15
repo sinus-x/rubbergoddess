@@ -1,4 +1,4 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Gatekeeper
 
@@ -29,4 +29,4 @@ Submit user's verification code from recieved e-mail.
 This module has no commands only usable by privileged users.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)

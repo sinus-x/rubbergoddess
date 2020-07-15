@@ -1,4 +1,4 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Base
 
@@ -17,4 +17,4 @@ Get bot's [latency](https://discordpy.readthedocs.io/en/latest/ext/commands/api.
 This module has no commands only usable by privileged users.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)

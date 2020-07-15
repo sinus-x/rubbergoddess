@@ -1,4 +1,4 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Karma
 
@@ -59,4 +59,4 @@ Mod only. Set emoji's value.
 Mod only. Give (or take) user karma.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)

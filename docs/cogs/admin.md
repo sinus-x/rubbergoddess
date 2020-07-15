@@ -1,4 +1,4 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Admin
 
@@ -29,4 +29,4 @@ Mod only, mod room only. Display output from journalctl. Bot has to be run via s
 Mod only. Display some information from config file, such as host machine, loader, logging level and extensions.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)

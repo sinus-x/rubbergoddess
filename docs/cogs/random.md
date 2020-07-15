@@ -1,4 +1,4 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Random
 
@@ -26,4 +26,4 @@ Get random image from [picsum.photos](https://picsum.photos).
 This module has no commands only usable by privileged users.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)

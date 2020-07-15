@@ -15,7 +15,7 @@ This Discord bot manages verification process, users, karma and some other funct
 - Dynamic voice channels
 - ?pick, ?flip, ?picsum (random Unsplash picture)
 - ?weather, ?nameday
-- And more: see [full command list](cogs/index.md)
+- And more: see [module list](cogs/index.md)
 
 ## Related bots
 [Rubbergod], maintained by VUT FIT team. Rubbergoddess is younger, but more mature sister -- originally forked, now independent.
