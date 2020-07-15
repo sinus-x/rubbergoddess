@@ -6,7 +6,7 @@
 
 ### verify (e-mail)
 
-Non-verified only, jail channel only. Send an verification code to supplied e-mail address. Users get their role from their e-mail, this link is saved in [config](../config.md)'s `gatekeeper/suffixes` entry.
+Non-verified only, jail channel only. Send an verification code to supplied e-mail address. Users get their role from their e-mail, this link is saved in `gatekeeper/suffixes` config entry.
 
 ### reverify change (e-mail)
 
