@@ -1,5 +1,3 @@
-**NOTE: THESE DOCS ARE WORK IN PROGRESS. THERE MAY BE PAGES MISSING OR EMPTY.**
-
 ![Rubbergoddess](images/rubbergoddess-wide.jpeg)
 
 # Rubbergoddess
@@ -15,7 +13,12 @@ This Discord bot manages verification process, users, karma and some other funct
 - Dynamic voice channels
 - ?pick, ?flip, ?picsum (random Unsplash picture)
 - ?weather, ?nameday
-- And more: see [full command list](cogs/index.md)
+- And more: see [module list](cogs/index.md)
+
+## Additional docs
+
+- Installation instructions are at [project's wiki page][wiki]
+- [Database tables](database.md)
 
 ## Related bots
 [Rubbergod], maintained by VUT FIT team. Rubbergoddess is younger, but more mature sister -- originally forked, now independent.
@@ -38,6 +41,7 @@ Rubbergoddess image is a CC0 photography by Peter Sjo hosted on [unsplash.com](h
 
 
 [invite]: https://discord.com/invite/9N3cP2E
+[wiki]: https://github.com/sinus-x/rubbergoddess/wiki
 [sinus-x]: https://github.com/sinus-x
 [Czechbol]: https://github.com/Czechbol
 [Rubbergod]: https://github.com/Toaster192/rubbergod

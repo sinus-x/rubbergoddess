@@ -1,10 +1,10 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Random
 
 ## User commands
 
-### pick (option) (option: optional) (...)
+### pick (option) _(option) (...)_
 
 Pick between options.
 
@@ -12,11 +12,11 @@ Pick between options.
 
 Yes/No answer.
 
-### random (number) (number: optional)
+### random (number) _(number)_
 
 Pick number in given interval. If the second number is omitted, pick number between zero and given number.
 
-### picsum (seed: optional)
+### picsum _(seed)_
 
 Get random image from [picsum.photos](https://picsum.photos).
 
@@ -26,4 +26,4 @@ Get random image from [picsum.photos](https://picsum.photos).
 This module has no commands only usable by privileged users.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)

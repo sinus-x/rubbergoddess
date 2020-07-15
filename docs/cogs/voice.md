@@ -1,16 +1,12 @@
 ← Back to [module list](index.md) or [home](../index.md)
 
-# Base
+# Voice
+
+If user joins empty voice channel, the bot creates new one, so there is always free channel.
 
 ## User commands
 
-### uptime
-
-Display boot time and uptime.
-
-### ping
-
-Get bot's [latency](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?#discord.ext.commands.Bot.latency).
+This module has no commands usable by non-privileged users.
 
 ## Privileged commands
 

@@ -1,20 +1,19 @@
 ← Back to [module list](index.md) or [home](../index.md)
 
-# Base
+# Meme
 
 ## User commands
 
-### uptime
+### hug _(member)_
 
-Display boot time and uptime.
+Hug someone.
 
-### ping
+### uwu (text)
 
-Get bot's [latency](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?#discord.ext.commands.Bot.latency).
+Send UwUized message back.
 
 ## Privileged commands
 
 This module has no commands only usable by privileged users.
-
 
 ← Back to [module list](index.md) or [home](../index.md)

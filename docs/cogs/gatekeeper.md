@@ -1,4 +1,4 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Gatekeeper
 
@@ -6,7 +6,7 @@
 
 ### verify (e-mail)
 
-Non-verified only, jail channel only. Send an verification code to supplied e-mail address. Users get their role from their e-mail, this link is saved in [config](../config.md)'s `gatekeeper/suffixes` entry.
+Non-verified only, jail channel only. Send an verification code to supplied e-mail address. Users get their role from their e-mail, this link is saved in `gatekeeper/suffixes` config entry.
 
 ### reverify change (e-mail)
 
@@ -29,4 +29,4 @@ Submit user's verification code from recieved e-mail.
 This module has no commands only usable by privileged users.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)

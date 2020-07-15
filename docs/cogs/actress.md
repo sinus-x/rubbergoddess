@@ -1,4 +1,4 @@
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
 
 # Actress
 
@@ -81,4 +81,4 @@ Owner only. Delete an image.
 Owner only. Show given image. This is an alias for **send image (current channel) (filename)**.
 
 
-← Back to [home](../index.md) or [module list](index.md)
+← Back to [module list](index.md) or [home](../index.md)
