@@ -6,11 +6,11 @@ This module allows users to self-assign some roles via commands or react-to-role
 
 ## User commands
 
-### subject add (subject) (subject) (...)
+### subject add (subject) (subject: optional) (...)
 
 Add access to the subject's channel. User has to have role allowed to do this (see [config](../config.md)'s `faceshifter/subject roles` entry).
 
-### subject remove (subject) (subject) (...)
+### subject remove (subject) (subject: optional) (...)
 
 Remove access to the subject's channel.
 
@@ -20,7 +20,7 @@ Add requested role. If the role is below the bottom limiting role (named **---IN
 
 **programme add (...)** is an alias.
 
-### role remove (role) (role) (...)
+### role remove (role) (role: optional) (...)
 
 Remove requested role. Same rules apply as for **role add**.
 
