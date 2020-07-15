@@ -1,26 +1,27 @@
 # Rubbergoddess
 
 <p align="center">
+  <!-- Discord -->
+  <a href="https://discord.com/invite/9N3cP2E">
+    <img src="https://img.shields.io/badge/Home%20guild-VUT%20FEKT-success?style=flat-square" alt="VUT FEKT" />
+  </a>
   <!-- Build status -->
   <a href="https://github.com/sinus-x/rubbergoddess/actions?query=workflow%3ARubbergoddess">
-    <img src="https://github.com/sinus-x/rubbergoddess/workflows/Rubbergoddess/badge.svg?branch=master" alt="Build" />
+    <img src="https://img.shields.io/github/workflow/status/sinus-x/rubbergoddess/Rubbergoddess?style=flat-square" alt="Build" />
   </a>
   <!-- Mantained? -->
   <a href="https://github.com/sinus-x/rubbergoddess/graphs/commit-activity">
-    <img src="https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg" alt="Maintenance" />
+    <img src="https://img.shields.io/badge/mantained-yes-success?style=flat-square" alt="Mantained" />
   </a>
   <!-- License -->
   <a href="https://github.com/sinus-x/rubbergoddess/blob/master/LICENSE">
-    <img src="https://img.shields.io/badge/License-GPLv3-brightgreen.svg" alt="GPLv3 license" />
+    <img src="https://img.shields.io/badge/License-GPLv3-blue?style=flat-square" alt="GPLv3 license" />
   </a>
-  <!-- Versions -->
-  <a href="https://github.com/Rapptz/discord.py">
-    <img src="https://img.shields.io/badge/discord.py-v1.3.3-blue.svg" alt="Discord.py 1.3.3" />
-  </a>
-  <img src="https://img.shields.io/badge/python-3.7+-blue.svg" alt="Python 3.7+" />
+  <!-- Python version -->
+  <img src="https://img.shields.io/badge/python-3.7+-blue?style=flat-square" alt="Python 3.7+" />
   <!-- Black -->
   <a href="https://github.com/psf/black">
-    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Formatted with Black" />
+    <img src="https://img.shields.io/badge/code%20style-black-blue?style=flat-square" alt="Formatted with Black" />
   </a>
 </p>
 
