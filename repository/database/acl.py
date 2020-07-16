@@ -23,7 +23,7 @@ class ACL_rule(database.base):
     # fmt: off
     command  = Column(String, primary_key=True)
     users    = relationship("ACL_data")
-    groups   = relationship("ACL_group")
+    groups   = relationship("ACL_data")
     channels = relationship("ACL_data")
     # fmt: on
 

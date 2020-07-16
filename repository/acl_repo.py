@@ -58,6 +58,8 @@ class ACLRepository(BaseRepository):
         if cmd is None:
             return False
 
+        self.removeCommandConstraint(command, constraint=constraint, id=id)
+
         if constraint == "user":
             cmd.users.append(ACL_data(item_id=id, allow=allow))
         elif constraint == "channel":
