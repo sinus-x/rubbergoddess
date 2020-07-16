@@ -6,7 +6,7 @@ from repository import acl_repo
 repo = acl_repo.ACLRepository()
 
 
-def allow(ctx: commands.Context) -> bool:
+def check(ctx: commands.Context) -> bool:
     if ctx.author.id == config.author_id:
         return True
 
@@ -14,25 +14,19 @@ def allow(ctx: commands.Context) -> bool:
 
     acl_command = repo.getCommand(ctx.qualified_name)  # ??? Is it qualified name ???
     user_role_ids = [role.id for role in ctx.author.roles]
-    user_groups = [
-        group
-        for group in [repo.getGroupByRole(role.id) for role in ctx.author.roles]
-        if group is not None
-    ]
 
     ##
     ## Initiate variables
     ##
 
+    # The default is blocking: only deny where allow is False.
+    # If there is just one entry with allow set to True, only those will be accepted.
     allow_channel = False
     channels_strict = False
-    # The default is channel blocking, eg. specify channels that shouldn't have the command available.
-    # If there are channels that have access set to True, only those can be used.
-
     allow_group = False
     groups_strict = False
-    # The default is group blocking, eg. specify groups that shouldn't have access.
-    # If there are groups that have access set to True, only those can be used.
+
+    allow_user = False
 
     ##
     ## Resolve
@@ -40,30 +34,30 @@ def allow(ctx: commands.Context) -> bool:
 
     # get channel information
     for channel in acl_command.channels:
-        if channel.item_id == ctx.channel.id and channel.allow == False:
+        if ctx.channel.id == channel.item_id and channel.allow == False:
             return False
 
         if channel.allow == True:
             channels_strict = True
 
-        if channel.item_id == ctx.channel.id and channel.allow == True:
+        if ctx.channel.id == channel.item_id and channel.allow == True:
             allow_channel = True
 
-    if channels_strict and allow_channel != True:
+    if channels_strict and not allow_channel:
         return False
 
     # get user information
     for user in acl_command.users:
-        if user.item_id == ctx.author.id and user.allow == False:
+        if ctx.author.id == user.item_id and user.allow == False:
             return False
 
-        if user.item_id == ctx.author.id and user.allow == True:
+        if ctx.author.id == user.item_id and user.allow == True:
+            allow_user = True
             break
 
     # get group information
     for group in acl_command.groups:
-        if group.item_id in user_role_ids and group.allow == False:
-            return False
+        # do not return False if group.allow is False, there can be user override
 
         if group.allow == True:
             groups_strict = True
@@ -71,7 +65,8 @@ def allow(ctx: commands.Context) -> bool:
         if group.item_id in user_role_ids and group.allow == True:
             allow_group = True
 
-    if groups_strict and allow_group != True:
+    if groups_strict and not allow_group and not allow_user:
         return False
 
-    return allow_channel and allow_group
+    # we do not need to check channel, it has been filtered
+    return allow_user or allow_group
