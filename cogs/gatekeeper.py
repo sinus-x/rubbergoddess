@@ -38,6 +38,9 @@ class Gatekeeper(rubbercog.Rubbercog):
         if "@" not in email or len(email.split("@")) > 2:
             raise NotAnEmail()
 
+        if "xlogin00" in email:
+            raise PlaceholderEmail()
+
         # check the database for member ID
         if repo_u.get(ctx.author.id) is not None:
             raise IDAlreadyInDatabase()
@@ -373,6 +376,10 @@ class NotInDatabase(VerificationException):
 
 
 class NotAnEmail(VerificationException):
+    pass
+
+
+class PlaceholderEmail(VerificationException):
     pass
 
 
