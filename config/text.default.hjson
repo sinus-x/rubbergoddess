@@ -217,6 +217,7 @@
 		VerificationException:   Chyba ve verifikaci.
 		# Exceptions: ?verify/?reverify change
 		NotAnEmail:              To není e-mail.
+		PlaceholderEmail:        `xlogin00` je tam jen na ukázku, potřebuji tvůj osobní xlogin.
 		AlreadyInDatabase:       Ty už v databázi jsi.
 		EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
 		IDAlreadyInDatabase:     Tvůj účet už v databázi je.
