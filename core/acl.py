@@ -13,6 +13,7 @@ def allow(ctx: commands.Context) -> bool:
     # TODO Take into account DMs
 
     acl_command = repo.getCommand(ctx.qualified_name)  # ??? Is it qualified name ???
+    user_role_ids = [role.id for role in ctx.author.roles]
     user_groups = [
         group
         for group in [repo.getGroupByRole(role.id) for role in ctx.author.roles]
@@ -25,12 +26,16 @@ def allow(ctx: commands.Context) -> bool:
 
     allow_channel = False
     channels_strict = False
-    # The default is channel blocking, eg. specify channels that shouldn't have
-    # the command available.
+    # The default is channel blocking, eg. specify channels that shouldn't have the command available.
     # If there are channels that have access set to True, only those can be used.
 
+    allow_group = False
+    groups_strict = False
+    # The default is group blocking, eg. specify groups that shouldn't have access.
+    # If there are groups that have access set to True, only those can be used.
+
     ##
-    ## Resolve discord ID-based access
+    ## Resolve
     ##
 
     # get channel information
@@ -43,7 +48,6 @@ def allow(ctx: commands.Context) -> bool:
 
         if channel.item_id == ctx.channel.id and channel.allow == True:
             allow_channel = True
-            break
 
     if channels_strict and allow_channel != True:
         return False
@@ -56,11 +60,18 @@ def allow(ctx: commands.Context) -> bool:
         if user.item_id == ctx.author.id and user.allow == True:
             break
 
-    ##
-    ## Resolve groups
-    ##
+    # get group information
+    for group in acl_command.groups:
+        if group.item_id in user_role_ids and group.allow == False:
+            return False
 
-    groups = []
-    for group in user_groups:
-        # check it and check its parents -- if the role is in acl_command.groups, add to list
-        pass
+        if group.allow == True:
+            groups_strict = True
+
+        if group.item_id in user_role_ids and group.allow == True:
+            allow_group = True
+
+    if groups_strict and allow_group != True:
+        return False
+
+    return allow_channel and allow_group
