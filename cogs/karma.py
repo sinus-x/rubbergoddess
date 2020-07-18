@@ -516,6 +516,9 @@ class Karma(rubbercog.Rubbercog):
         if not hasattr(reaction, "emoji"):
             return await self._remove_reaction(reaction, user)
 
+        if not reaction.message.content.startswith(text.get("karma", "vote info")[:25]):
+            return
+
         if str(reaction.emoji) not in ("☑️", "0⃣", "❎"):
             await self._remove_reaction(reaction, user)
 
