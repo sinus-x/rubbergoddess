@@ -176,7 +176,7 @@
 		"reverification public": "Uživatel {mention} se úspěšně vrátil zprátky na server."
 		# note: you probably want to change this in text.hjson file
 		"verification DM native": '''
-			Grauluji k verifikaci!
+			Gratuluji k verifikaci!
 			'''
 		# note: you probably want to change this in text.hjson file
 		"verification DM guest": '''

@@ -251,6 +251,9 @@ class Event:
             self.channel = self.bot.get_channel(config.get("channels", "events"))
         return self.channel
 
+    # TODO Rewrite so it takes only one parameter
+    # Union[ctx: commands.Context, message: discord.message, member: discord.Member]
+
     async def user(self, member: discord.Member, location, message: str):
         """Unprivileged events"""
         if isinstance(location, discord.abc.Messageable):
