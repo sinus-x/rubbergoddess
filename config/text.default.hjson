@@ -121,6 +121,7 @@
 		# ?karma emote/emotes
 		emote:           Hodnota {emote} je **{value}**.
 		emotes_positive: "Kladně ohodnocené emoty:"
+		emotes_neutral:  "Neutrálně hodnocené emoty:"
 		emotes_negative: "Záporně ohodnocené emoty:"
 		emotes_nonvoted: "Neohodnocené emoty:"
 

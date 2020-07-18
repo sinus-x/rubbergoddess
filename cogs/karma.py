@@ -84,12 +84,18 @@ class Karma(rubbercog.Rubbercog):
     async def karma_emotes(self, ctx):
         """See karma for all emotes"""
         emotes = await ctx.guild.fetch_emojis()
+        emotes = [e for e in emotes if not e.animated]
         content = []
 
         emotes_positive = self._getEmoteList(emotes, "1")
         if len(emotes_positive) > 0:
             content.append(text.get("karma", "emotes_positive"))
             content += self._emoteListToMessage(emotes_positive, 10)
+
+        emotes_neutral = self._getEmoteList(emotes, "0")
+        if len(emotes_neutral) > 0:
+            content.append(text.get("karma", "emotes_neutral"))
+            content += self._emoteListToMessage(emotes_neutral, 10)
 
         emotes_negative = self._getEmoteList(emotes, "-1")
         if len(emotes_negative) > 0:
