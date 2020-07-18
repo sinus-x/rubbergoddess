@@ -57,7 +57,6 @@ class Karma(rubbercog.Rubbercog):
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
         await ctx.send(embed=embed)
-        await self.event.user(ctx.author, ctx.channel, f"Karma stalk on {member.name}.")
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
