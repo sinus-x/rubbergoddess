@@ -54,13 +54,13 @@ class Stalker(rubbercog.Rubbercog):
 
         embed = self.embed(ctx=ctx, description=member.mention)
 
-        ni = discord.utils.escape_markdown(member.nick) if member.nick else None
-        na = discord.utils.escape_markdown(member.name)
-        n = f"**{na}** (nick **{ni}**)" if ni else f"**{na}**"
         embed.add_field(
             name="Discord user data",
-            value="{name}\n{d_id}\nMember since {date}".format(
-                name=n, d_id=member.id, date=member.joined_at.strftime("%Y-%m-%d")
+            value="{name}\n{d_id}\nAccount since {a_date}\nMember since {m_date}".format(
+                name=f"**{self.sanitise(member.display_name)}** ({str(member)})",
+                d_id=member.id,
+                a_date=utils.id_to_datetime(member.id).strftime("%Y-%m-%d"),
+                m_date=member.joined_at.strftime("%Y-%m-%d"),
             ),
         )
 
@@ -100,7 +100,8 @@ class Stalker(rubbercog.Rubbercog):
         )
 
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
+        if member.id != ctx.author.id:
+            await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
 
         await utils.delete(ctx)
 
