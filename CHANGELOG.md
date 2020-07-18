@@ -12,6 +12,10 @@ expect in the future.
 
 - `utils.remove_reaction(reaction, user)`
 
+### Maintenance
+
+- text: config/text.default.hjson: karma/emotes_neutral
+
 ## [0.5.0]
 
 ### Added

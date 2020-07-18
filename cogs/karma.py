@@ -57,7 +57,6 @@ class Karma(rubbercog.Rubbercog):
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
         await ctx.send(embed=embed)
-        await self.event.user(ctx.author, ctx.channel, f"Karma stalk on {member.name}.")
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
@@ -85,12 +84,18 @@ class Karma(rubbercog.Rubbercog):
     async def karma_emotes(self, ctx):
         """See karma for all emotes"""
         emotes = await ctx.guild.fetch_emojis()
+        emotes = [e for e in emotes if not e.animated]
         content = []
 
         emotes_positive = self._getEmoteList(emotes, "1")
         if len(emotes_positive) > 0:
             content.append(text.get("karma", "emotes_positive"))
             content += self._emoteListToMessage(emotes_positive, 10)
+
+        emotes_neutral = self._getEmoteList(emotes, "0")
+        if len(emotes_neutral) > 0:
+            content.append(text.get("karma", "emotes_neutral"))
+            content += self._emoteListToMessage(emotes_neutral, 10)
 
         emotes_negative = self._getEmoteList(emotes, "-1")
         if len(emotes_negative) > 0:
@@ -510,6 +515,9 @@ class Karma(rubbercog.Rubbercog):
         """Check if the emote is vote emote"""
         if not hasattr(reaction, "emoji"):
             return await self._remove_reaction(reaction, user)
+
+        if not reaction.message.content.startswith(text.get("karma", "vote info")[:25]):
+            return
 
         if str(reaction.emoji) not in ("☑️", "0⃣", "❎"):
             await self._remove_reaction(reaction, user)

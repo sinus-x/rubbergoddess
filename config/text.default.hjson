@@ -121,6 +121,7 @@
 		# ?karma emote/emotes
 		emote:           Hodnota {emote} je **{value}**.
 		emotes_positive: "Kladně ohodnocené emoty:"
+		emotes_neutral:  "Neutrálně hodnocené emoty:"
 		emotes_negative: "Záporně ohodnocené emoty:"
 		emotes_nonvoted: "Neohodnocené emoty:"
 
@@ -174,15 +175,13 @@
 		"verification public": Nový uživatel {mention} byl úspěšně přidán s rolí **{role}**.
 		"reverify successful": "{mention}, na tvůj e-mail jsem ti poslala nový kód."
 		"reverification public": "Uživatel {mention} se úspěšně vrátil zprátky na server."
+		# note: you probably want to change this in text.hjson file
 		"verification DM native": '''
-			Grauluji k verifikaci!
-
-			V {add_roles} si přidej obor a role zájmů, obené informace jsou v {info}.
+			Gratuluji k verifikaci!
 			'''
+		# note: you probably want to change this in text.hjson file
 		"verification DM guest": '''
 			Gratuluji k verifikaci!
-
-			V {add_roles} si můžeš přidat role pro zájmy, obcené informace jsou v {info}.
 			'''
 
 		# e-mail content

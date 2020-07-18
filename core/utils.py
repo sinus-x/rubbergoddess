@@ -1,4 +1,5 @@
 import git
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -22,6 +23,10 @@ def git_pull():
     repo = git.Repo(search_parent_directories=True)
     cmd = repo.git
     return cmd.pull()
+
+
+def id_to_datetime(snowflake_id: int):
+    return datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
 
 
 def str_emoji_id(emoji):
@@ -93,7 +98,7 @@ def seconds2str(time):
 
 
 async def room_check(ctx: commands.Context):
-    if not hasattr(ctx, "channel") or not hasattr(ctx.channel, "id"):
+    if not isinstance(ctx.channel, discord.TextChannel):
         return
 
     if ctx.channel.id not in config.get("channels", "bot allowed"):

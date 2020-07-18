@@ -171,23 +171,13 @@ class Gatekeeper(rubbercog.Rubbercog):
         # send messages
         role_channel = self.getGuild().get_channel(config.get("channels", "bot_roles"))
         info_channel = self.getGuild().get_channel(config.get("channels", "info"))
-        # fmt: off
         for role_id in config.get("roles", "native"):
             if role_id in [x.id for x in ctx.author.roles]:
-                await ctx.author.send(text.fill(
-                    "gatekeeper",
-                    "verification DM native",
-                    add_roles=role_channel.mention,
-                    info=info_channel.mention,
-                ))
+                await ctx.author.send(text.get("gatekeeper", "verification DM native"))
                 break
         else:
-            await ctx.author.send(text.fill(
-                "gatekeeper",
-                "verification DM guest",
-                add_roles=role_channel.mention,
-                info=info_channel.mention,
-            ))
+            await ctx.author.send(text.get("gatekeeper", "verification DM guest"))
+        # fmt: off
         # announce the verification
         await ctx.channel.send(text.fill(
                 "gatekeeper",
@@ -195,8 +185,13 @@ class Gatekeeper(rubbercog.Rubbercog):
                 mention=ctx.author.mention,
                 role=db_user.group,
         ), delete_after=config.get("delay", "verify"))
-        await self.event.user(ctx.author, ctx.channel, f"User verified (**{db_user.group}**).")
         # fmt: on
+
+        await self.event.user(
+            ctx.author,
+            ctx.channel,
+            f"User {ctx.author.id} verified with group **{db_user.group}**.",
+        )
 
     ##
     ## Helper functions
@@ -243,7 +238,9 @@ class Gatekeeper(rubbercog.Rubbercog):
         code = "".join(random.choices(code_source, k=8))
 
         repo_u.add(discord_id=member.id, login=login, group=role.name, code=code)
-        await self.event.user(member, "verify", f"Adding with role **{role.name}**, code `{code}`")
+        await self.event.user(
+            member, "verify", f"Adding {member.id} to database(**{role.name}**, code `{code}`)."
+        )
         return code
 
     async def _update_user(self, member: discord.Member) -> str:
@@ -251,7 +248,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         code = "".join(random.choices(code_source, k=8))
 
         repo_u.update(discord_id=member.id, code=code, status="pending")
-        await self.event.user(member, "verify", f"Updated with code `{code}`")
+        await self.event.user(member, "verify", f"{member.id} updated with code `{code}`")
         return code
 
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
