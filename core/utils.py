@@ -93,7 +93,7 @@ def seconds2str(time):
 
 
 async def room_check(ctx: commands.Context):
-    if not hasattr(ctx, "channel") or not hasattr(ctx.channel, "id"):
+    if not isinstance(ctx.channel, discord.TextChannel):
         return
 
     if ctx.channel.id not in config.get("channels", "bot allowed"):
