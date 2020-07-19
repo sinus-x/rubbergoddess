@@ -5,8 +5,7 @@ configuration or database.
 
 ## [Unreleased]
 
-See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
-expect in the future.
+See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
 ### Added
 
