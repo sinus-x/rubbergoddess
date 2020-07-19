@@ -116,8 +116,10 @@ class Faceshifter(rubbercog.Rubbercog):
                 ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
-                await self._role_add(ctx, ctx.author, guild_role)
-        await ctx.send(ctx.author.mention + " ✅", delete_after=3)
+                result = await self._role_add(ctx, ctx.author, guild_role)
+
+        if result:
+            await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
         await utils.delete(ctx)
 
@@ -187,19 +189,23 @@ class Faceshifter(rubbercog.Rubbercog):
             return
         channel, message, member, emoji = payload
         emote_channel_list = await self._message_to_tuple_list(message)
+        remove_reaction = False
         for emote_channel in emote_channel_list:
             if str(emoji) == emote_channel[0]:
                 # try both subject and role
                 subject = await self._get_subject(channel, emote_channel[1])
                 if subject is not None:
-                    await self._subject_add(message.channel, member, subject)
+                    result = await self._subject_add(message.channel, member, subject)
                     break
                 role = await self._get_role(channel, emote_channel[1])
                 if role is not None:
-                    await self._role_add(message.channel, member, role)
+                    result = await self._role_add(message.channel, member, role)
                     break
         else:
             # another emote was added
+            result = False
+
+        if not result:
             try:
                 await message.remove_reaction(emoji, member)
             except:
@@ -268,11 +274,11 @@ class Faceshifter(rubbercog.Rubbercog):
                 # do not send errors if message is in #add-* channel
                 if message.channel.id in config.get("faceshifter", "react-to-role channels"):
                     return
-                await message.channel.send(
+                await self._send(
+                    message.channel,
                     text.fill(
                         "faceshifter", "invalid role line", line=self.sanitise(line, limit=50)
                     ),
-                    delete_after=config.get("delay", "user error"),
                 )
                 return
         return result
@@ -324,20 +330,23 @@ class Faceshifter(rubbercog.Rubbercog):
         location: discord.abc.Messageable,
         member: discord.Member,
         channel: discord.TextChannel,
-    ):
+    ) -> bool:
         # check permission
         for subject_role in config.get("faceshifter", "subject roles"):
             if subject_role in [r.id for r in member.roles]:
                 break
         else:
             # they do not have neccesary role
-            await location.send(text.fill("faceshifter", "deny subject", mention=member.mention))
-            return
+            await self._send(
+                location, text.fill("faceshifter", "deny subject", mention=member.mention)
+            )
+            return False
 
         await channel.set_permissions(member, view_channel=True)
         teacher_channel = self._get_teacher_channel(channel)
         if teacher_channel is not None:
             await teacher_channel.set_permissions(member, view_channel=True)
+        return True
 
     async def _subject_remove(
         self,
@@ -353,30 +362,41 @@ class Faceshifter(rubbercog.Rubbercog):
 
     async def _role_add(
         self, location: discord.abc.Messageable, member: discord.Member, role: discord.Role
-    ):
+    ) -> bool:
         if role < self.getLimitProgrammes(location) and role > self.getLimitInterests(location):
             # role is programme, check if user has permission
             for programme_role in config.get("faceshifter", "programme roles"):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send(
-                    text.fill("faceshifter", "deny role", mention=member.mention),
-                    delete_after=config.get("delay", "user error"),
+                await self._send(
+                    location, text.fill("faceshifter", "deny role", mention=member.mention),
                 )
-                return
+                return False
+
+            # check if user already doesn't have some programme role
+            for user_role in member.roles:
+                # fmt: off
+                if user_role < self.getLimitProgrammes(location) \
+                and user_role > self.getLimitInterests(location):
+                    await self._send(
+                        location, text.fill("faceshifter", "deny second role", mention=member.mention),
+                    )
+                    return False
+                # fmt: on
+
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send(
-                text.fill("faceshifter", "deny high role", mention=member.mention),
-                delete_after=config.get("delay", "user error"),
+            await self._send(
+                location, text.fill("faceshifter", "deny high role", mention=member.mention),
             )
-            return
+            return False
 
         await member.add_roles(role)
+        return True
 
     async def _role_remove(
         self, location: discord.abc.Messageable, member: discord.Member, role: discord.Role
@@ -387,9 +407,8 @@ class Faceshifter(rubbercog.Rubbercog):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await location.send(
-                    text.fill("faceshifter", "deny role", mention=member.mention),
-                    delete_after=config.get("delay", "user error"),
+                await self._send(
+                    location, text.fill("faceshifter", "deny role", mention=member.mention),
                 )
                 return
         elif role < self.getLimitInterests(location):
@@ -397,13 +416,20 @@ class Faceshifter(rubbercog.Rubbercog):
             pass
         else:
             # role is limit itself or something above programmes
-            await location.send(
-                text.fill("faceshifter", "deny high role", mention=member.mention),
-                delete_after=config.get("delay", "user error"),
+            return await self._send(
+                location, text.fill("faceshifter", "deny high role", mention=member.mention)
             )
-            return
 
         await member.remove_roles(role)
+
+    async def _send(self, location: discord.abc.Messageable, text=text):
+        # fmt: off
+        if isinstance(location, discord.TextChannel) \
+        and location.id in config.get("faceshifter", "react-to-role channels"):
+            return
+        # fmt: on
+
+        await location.send(text, delete_after=config.get("delay", "user error"))
 
 
 def setup(bot):
