@@ -10,6 +10,10 @@ Send messages and attachments as Rubbergoddess. Use dynamic replies, so the bot 
 
 Prepare server for bot going offline (lock the jail and notify users that verification will be unavailable). Display systemd status or bot config.
 
+## [Animals](animals.md)
+
+Elite channel for users with animal as their avatar image.
+
 ## [Base](base.md)
 
 Basic bot information: uptime, ping.
