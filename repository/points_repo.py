@@ -26,5 +26,11 @@ class PointsRepository(BaseRepository):
         )
         return result[0] + 1 if result else None
 
-    def getAll(self):
-        return session.query(Points).all()
+    def getUsers(self, order: str, limit: int = 10, offset: int = 0):
+        if order == "desc":
+            order = Points.points.desc()
+        elif order == "asc":
+            order = Points.points.asc()
+        else:
+            raise Exception("Invalid order: " + order)
+        return session.query(Points).order_by(order).offset(offset).limit(limit)
