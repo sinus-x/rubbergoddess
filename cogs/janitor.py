@@ -94,9 +94,7 @@ class Janitor(rubbercog.Rubbercog):
             except discord.HTTPException:
                 pass
 
-        await self.event.sudo(
-            ctx.author, ctx.channel, f"Purged {total} posts in {ctx.channel}",
-        )
+        await self.event.sudo(ctx, f"Purged {total} posts in {ctx.channel}")
 
     @commands.check(check.is_mod)
     @commands.bot_has_permissions(manage_channels=True)
@@ -115,7 +113,7 @@ class Janitor(rubbercog.Rubbercog):
         await ch.edit(position=channel.position + 1)
         await ctx.send(f"Created channel {ch.mention}")
 
-        await self.event.sudo(ctx.author, ctx.channel, f"Teacher channel {ch.name}")
+        await self.event.sudo(ctx, f"Teacher channel {ch.name}")
 
 
 def setup(bot):

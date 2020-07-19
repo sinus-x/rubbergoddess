@@ -84,7 +84,7 @@ class Shop(rubbercog.Rubbercog):
                 value=self.price_nick,
             )
         )
-        await self.event.user(ctx.author, ctx.channel, f"Nickname changed to {nick}.")
+        await self.event.user(ctx, f"Nickname changed to {nick}.")
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
     @nickname.command(name="unset")
@@ -104,7 +104,7 @@ class Shop(rubbercog.Rubbercog):
                 nick=discord.utils.escape_markdown(nick),
             )
         )
-        await self.event.user(ctx.author, ctx.channel, "Nickname reset.")
+        await self.event.user(ctx, "Nickname reset.")
 
     ##
     ## Error catching

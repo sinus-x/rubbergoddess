@@ -1,5 +1,6 @@
 import git
 from datetime import datetime
+from typing import List
 
 import discord
 from discord.ext import commands
@@ -113,10 +114,41 @@ async def room_check(ctx: commands.Context):
         )
 
 
-async def delete(ctx: commands.Context):
-    if hasattr(ctx, "message"):
+async def send(
+    target: discord.abc.Messageable,
+    text: str = None,
+    *,
+    embed: discord.Embed = None,
+    delete_after: float = None,
+    nonce: int = None,
+    file: discord.File = None,
+    files: List[discord.File] = None,
+):
+    # fmt: off
+    if not isinstance(target, discord.TextChannel) \
+    or (
+        isinstance(target, discord.TextChannel) and \
+        target.id in config.get("channels", "bot allowed")
+    ):
+        delete_after = None
+
+    await target.send(
+        text=text,
+        embed=embed,
+        delete_after=delete_after,
+        nonce=nonce,
+        file=file,
+        files=files,
+    )
+    # fmt: on
+
+
+async def delete(thing):
+    if hasattr(thing, "message"):
+        thing = thing.message
+    if isinstance(thing, discord.Message):
         try:
-            await ctx.message.delete()
+            await thing.message.delete()
         except discord.Forbidden:
             pass
 

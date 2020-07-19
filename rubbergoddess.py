@@ -66,7 +66,7 @@ async def on_error(event, *args, **kwargs):
 async def load(ctx, extension):
     bot.load_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** načteno.")
-    await event.sudo(ctx.author, ctx.channel, f"Loaded: {extension.upper()}")
+    await event.sudo(ctx, f"Loaded: {extension.upper()}")
     print(f"Loaded: {extension.upper()}")
 
 
@@ -75,7 +75,7 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     bot.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** odebráno.")
-    await event.sudo(ctx.author, ctx.channel, f"Unloaded: {extension.upper()}")
+    await event.sudo(ctx, f"Unloaded: {extension.upper()}")
     print(f"Unloaded: {extension.upper()}")
 
 
@@ -84,7 +84,7 @@ async def unload(ctx, extension):
 async def reload(ctx, extension):
     bot.reload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
-    await event.sudo(ctx.author, ctx.channel, f"Reloaded: {extension.upper()}")
+    await event.sudo(ctx, f"Reloaded: {extension.upper()}")
     print(f"Reloaded: {extension.upper()}")
     if "docker" in config.loader:
         await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")

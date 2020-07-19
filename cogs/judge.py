@@ -92,9 +92,7 @@ class Judge(rubbercog.Rubbercog):
             repo_r.update_review(past_review.id, mark, anonymous, text)
 
         # send confirmation
-        await self.event.user(
-            ctx.author, ctx.channel, f"Review by {ctx.author} for {subject} added"
-        )
+        await self.event.user(ctx, f"Review by {ctx.author} for {subject} added")
         return await ctx.send(text.get("judge", "added"))
 
     @review.command(name="remove")
@@ -108,9 +106,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(text.fill("judge", "no review", mention=ctx.author.mention))
 
         repo_r.remove(review.id)
-        await self.event.user(
-            ctx.author, ctx.channel, f"Review by {ctx.author} for {subject} removed"
-        )
+        await self.event.user(ctx, f"Review by {ctx.author} for {subject} removed")
         return await ctx.send(text.get("judge", "removed"))
 
     @commands.check(check.is_mod)
@@ -127,7 +123,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(text.fill("judge", "no review", mention=ctx.author.mention))
 
         repo_r.remove(id)
-        await self.event.sudo(ctx.author, ctx.channel, f"Review {id} removed")
+        await self.event.sudo(ctx, f"Review {id} removed")
         return await ctx.send(text.get("judge", "removed"))
 
     @commands.check(check.is_mod)
@@ -149,7 +145,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(text.get("judge", "subject exists"))
 
         repo_s.add(subject, name, category)
-        await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} added")
+        await self.event.sudo(ctx, f"Subject {subject} added")
         await ctx.send(text.get("judge", "subject added"))
 
     @sudo_subject.command(name="update")
@@ -165,7 +161,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(text.get("judge", "no subject"))
 
         repo_s.update(subject, name, category)
-        await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} updated")
+        await self.event.sudo(ctx, f"Subject {subject} updated")
         await ctx.send(text.get("judge", "subject updated"))
 
     @sudo_subject.command(name="remove")
@@ -179,7 +175,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(text.get("judge", "no subject"))
 
         repo_s.remove(subject)
-        await self.event.sudo(ctx.author, ctx.channel, f"Subject {subject} removed")
+        await self.event.sudo(ctx, f"Subject {subject} removed")
         await ctx.send(text.get("judge", "subject removed"))
 
     ##

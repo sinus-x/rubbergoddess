@@ -15,6 +15,7 @@ expect in the future.
 ### Developers
 
 - `utils.remove_reaction(reaction, user)`
+- `event.user()` and `event.sudo()` signatures changed
 
 ### Maintenance
 

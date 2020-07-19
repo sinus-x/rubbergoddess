@@ -54,7 +54,7 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send(text.fill("admin", "poweroff ok", channels=", ".join(visited)))
         else:
             await ctx.send(text.fill("admin", "power fail"))
-        await self.event.sudo(ctx.author, ctx.channel, f"Power off: {reason}")
+        await self.event.sudo(ctx, f"Power off: {reason}")
 
     @power.command(name="on")
     async def power_on(self, ctx):
@@ -86,7 +86,7 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send(text.fill("admin", "poweron ok", channels=", ".join(visited)))
         else:
             await ctx.send(text.fill("admin", "power fail"))
-        await self.event.sudo(ctx.author, ctx.channel, "Power on")
+        await self.event.sudo(ctx, "Power on")
 
     @commands.command(name="status")
     @commands.check(check.is_mod)
