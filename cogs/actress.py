@@ -46,8 +46,7 @@ class Actress(rubbercog.Rubbercog):
         """
         message = await channel.send(content)
         await self.event.sudo(
-            ctx.author,
-            ctx.channel,
+            ctx,
             f"Text sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
             f"> _{content}_\n> <{message.jump_url}>",
         )
@@ -68,8 +67,7 @@ class Actress(rubbercog.Rubbercog):
                 await self.output.info(ctx, text.fill("actress", "file sent", delta=delta))
                 mention = channel.mention if hasattr(channel, "mention") else type(channel).__name__
                 await self.event.sudo(
-                    ctx.author,
-                    ctx.channel,
+                    ctx,
                     f"Media file sent to {mention}:\n" f"> _{filename}_\n> <{message.jump_url}>",
                 )
         except Exception as e:
@@ -151,7 +149,7 @@ class Actress(rubbercog.Rubbercog):
         self._save_reactions()
 
         await self.output.info(ctx, text.fill("actress", "reaction added", name=name))
-        await self.event.sudo(ctx.author, ctx.channel, f"Reaction **{name}** added.")
+        await self.event.sudo(ctx, f"Reaction **{name}** added.")
 
     @react.command(name="edit")
     async def react_edit(self, ctx, name: str = None, *, parameters=None):
@@ -186,7 +184,7 @@ class Actress(rubbercog.Rubbercog):
         self._save_reactions()
 
         await self.output.info(ctx, text.fill("actress", "reaction updated", name=name))
-        await self.event.sudo(ctx.author, ctx.channel, f"Reaction **{name}** updated.")
+        await self.event.sudo(ctx, f"Reaction **{name}** updated.")
 
     @react.command(name="remove")
     async def react_remove(self, ctx, name: str = None):
@@ -200,7 +198,7 @@ class Actress(rubbercog.Rubbercog):
         self._save_reactions()
 
         await self.output.info(ctx, text.fill("actress", "reaction removed", name=name))
-        await self.event.sudo(ctx.author, ctx.channel, f"Reaction **{name}** removed.")
+        await self.event.sudo(ctx, f"Reaction **{name}** removed.")
 
     @commands.is_owner()
     @commands.group(name="image", aliases=["img", "images"])

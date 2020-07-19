@@ -101,7 +101,7 @@ class Stalker(rubbercog.Rubbercog):
 
         await ctx.send(embed=embed, delete_after=config.delay_embed)
         if member.id != ctx.author.id:
-            await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
+            await self.event.user(ctx, f"Database lookup for {member}")
 
         await utils.delete(ctx)
 
@@ -130,7 +130,7 @@ class Stalker(rubbercog.Rubbercog):
         embed.add_field(name="Action unsuccessful", value="No user **{}** found.".format(login))
 
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.event.user(ctx.author, ctx.channel, f"Database lookup for {member}")
+        await self.event.user(ctx, f"Database lookup for {member}")
 
         await utils.delete(ctx)
 
@@ -172,7 +172,7 @@ class Stalker(rubbercog.Rubbercog):
             embed.add_field(name="Too many results", value="Some results were omitted")
 
         await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await self.event.sudo(ctx.author, ctx.channel, f"E-mail lookup: `{login_prefix}`")
+        await self.event.sudo(ctx, f"E-mail lookup: `{login_prefix}`")
 
         await utils.delete(ctx)
 
@@ -232,7 +232,7 @@ class Stalker(rubbercog.Rubbercog):
         # display the result
         await self.whois_member(ctx, member, log=False)
 
-        await self.event.sudo(ctx.author, ctx.channel, f"New user {member} ({group.name})")
+        await self.event.sudo(ctx, f"New user {member} ({group.name})")
 
     @database.command(name="remove", aliases=["delete"])
     async def database_remove(
@@ -268,9 +268,7 @@ class Stalker(rubbercog.Rubbercog):
                 inline=False, name="Success", value=text.fill("db", "delete success", num=result)
             )
             embed.add_field(name="Warning", value="Roles and channel access haven't been removed")
-            await self.event.sudo(
-                ctx.author, ctx.channel, "User removed from database: " + member.name
-            )
+            await self.event.sudo(ctx, "User removed from database: " + member.name)
             # TODO remove all roles
         else:
             # simulate
@@ -318,7 +316,7 @@ class Stalker(rubbercog.Rubbercog):
         elif key == "comment":
             repository.update(member.id, comment=value)
 
-        self.event.sudo(ctx.author, ctx.channel, f"Updated {member}: {key} = {value}.")
+        self.event.sudo(ctx, f"Updated {member}: {key} = {value}.")
 
     @database.command(name="show")
     async def database_show(self, ctx, param: str):

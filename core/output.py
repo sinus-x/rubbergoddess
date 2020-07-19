@@ -251,41 +251,42 @@ class Event:
             self.channel = self.bot.get_channel(config.get("channels", "events"))
         return self.channel
 
-    # TODO Rewrite so it takes only one parameter
-    # Union[ctx: commands.Context, message: discord.message, member: discord.Member]
-
-    async def user(self, member: discord.Member, location, message: str):
-        """Unprivileged events"""
-        if isinstance(location, discord.abc.Messageable):
-            if hasattr(location, "mention"):
-                location = location.mention
+    def _identifier(
+        source: Union[commands.Context, discord.Message, discord.User, discord.Member, str]
+    ):
+        if hasattr(source, "channel"):
+            # ctx, message
+            if hasattr(source.channel, "mention"):
+                # channel
+                location = source.channel.mention
             else:
+                # dm
                 location = type(location).__name__
+            identifier = f"{str(source.author)} in {location}"
+        elif isinstance(source, discord.User):
+            # user or member
+            identifier = f"{str(source)}"
         else:
-            location = str(location)
+            # str
+            identifier = source
+        return identifier
 
-        # fmt: off
-        await self.getChannel().send(self.user_template.format(
-            user=str(member),
-            location=location,
-            message=message.replace("@", "@\u200b"),
-        ))
-        # fmt: on
+    async def user(
+        self,
+        source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
+        message: str,
+    ):
+        """Non-privileged events"""
+        await self.getChannel().send(
+            "**USER** " + self._identifier() + ": " + message.replace("@", "@\u200b")
+        )
 
-    async def sudo(self, member: discord.Member, location, message: str):
+    async def sudo(
+        self,
+        source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
+        message: str,
+    ):
         """Privileged events"""
-        if isinstance(location, discord.abc.Messageable):
-            if hasattr(location, "mention"):
-                location = location.mention
-            else:
-                location = type(location).__name__
-        else:
-            location = str(location)
-
-        # fmt: off
-        await self.getChannel().send(self.sudo_template.format(
-            user=str(member),
-            location=location,
-            message=message.replace("@", "@\u200b"),
-        ))
-        # fmt: on
+        await self.getChannel().send(
+            "**SUDO** " + self._identifier() + ": " + message.replace("@", "@\u200b")
+        )

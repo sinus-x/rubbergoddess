@@ -64,11 +64,11 @@ class Animals(rubbercog.Rubbercog):
         for r in reaction.message.reactions:
             if r.emoji == "☑️" and r.count > config.get("animals", "limit"):
                 await member.add_roles(self.getRole())
-                await self.event.user(member, self.getChannel(), "New animal!")
+                await self.event.user(member, "New animal!")
                 break
             elif r.emoji == "❎" and r.count > config.get("animals", "limit"):
                 await member.remove_roles(self.getRole())
-                await self.event.user(member, self.getChannel(), "Animal left.")
+                await self.event.user(member, "Animal left.")
                 break
         else:
             return

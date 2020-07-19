@@ -188,9 +188,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         # fmt: on
 
         await self.event.user(
-            ctx.author,
-            ctx.channel,
-            f"User {ctx.author.id} verified with group **{db_user.group}**.",
+            ctx, f"User {ctx.author.id} verified with group **{db_user.group}**.",
         )
 
     ##
@@ -215,9 +213,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             if match is not None:
                 return self.getGuild().get_role(role_id)
             else:
-                await self.event.user(
-                    ctx.author, ctx.channel, f"Rejecting e-mail: {self.sanitise(email)}"
-                )
+                await self.event.user(ctx, f"Rejecting e-mail: {self.sanitise(email)}")
                 raise BadEmail(constraint=constraint)
 
         # domain not found, fallback to basic guest role
@@ -228,9 +224,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         if match is not None:
             return self.getGuild().get_role(role_id)
         else:
-            await self.event.user(
-                ctx.author, ctx.channel, f"Rejecting e-mail: {self.sanitise(email)}"
-            )
+            await self.event.user(ctx, f"Rejecting e-mail: {self.sanitise(email)}")
             raise BadEmail(constraint=constraint)
 
     async def _add_user(self, member: discord.Member, login: str, role: discord.Role) -> str:
@@ -239,7 +233,7 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         repo_u.add(discord_id=member.id, login=login, group=role.name, code=code)
         await self.event.user(
-            member, "verify", f"Adding {member.id} to database(**{role.name}**, code `{code}`)."
+            member, f"Adding {member.id} to database(**{role.name}**, code `{code}`)."
         )
         return code
 
@@ -248,7 +242,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         code = "".join(random.choices(code_source, k=8))
 
         repo_u.update(discord_id=member.id, code=code, status="pending")
-        await self.event.user(member, "verify", f"{member.id} updated with code `{code}`")
+        await self.event.user(member, f"{member.id} updated with code `{code}`")
         return code
 
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
@@ -332,7 +326,7 @@ class Gatekeeper(rubbercog.Rubbercog):
                 "gatekeeper", "ProblematicVerification", status=error.status))
 
             await self.event.user(
-                ctx.author, ctx.location,
+                ctx,
                 f"Problem with verification: {error.login}: {error.status}"
             )
 
@@ -345,7 +339,7 @@ class Gatekeeper(rubbercog.Rubbercog):
                 "gatekeeper", "WrongVerificationCode", mention=ctx.author.mention))
 
             await self.event.user(
-                ctx.author, ctx.channel,
+                ctx,
                 f"User ({error.login}) code mismatch: `{error.their}` != `{error.database}`"
             )
 
