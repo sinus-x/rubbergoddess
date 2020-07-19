@@ -262,7 +262,7 @@ class Event:
             else:
                 # dm
                 location = type(location).__name__
-            identifier = f"{str(source.author)} in {location}"
+            identifier = f"{discord.utils.escape_markdown(str(source.author))} in {location}"
         elif isinstance(source, discord.User):
             # user or member
             identifier = f"{str(source)}"
