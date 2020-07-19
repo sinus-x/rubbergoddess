@@ -8,13 +8,18 @@ configuration or database.
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
 expect in the future.
 
+### Added
+
+- Animals cog: Elite club for users with animal avatar
+
 ### Developers
 
 - `utils.remove_reaction(reaction, user)`
 
 ### Maintenance
 
-- text: config/text.default.hjson: karma/emotes_neutral
+- config/text.default.hjson: karma/emotes_neutral
+- config/text.default.hjson: faceshifter/deny second role
 
 ## [0.5.0]
 

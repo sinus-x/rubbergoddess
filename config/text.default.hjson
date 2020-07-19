@@ -109,6 +109,7 @@
 
 		"deny subject": "{mention}, předměty si můžou přidávat jen studenti VUT.",
 		"deny role": "{mention}, na to nemáš právo, nejsi z FEKTu.",
+		"deny second role": "{mention}, vyber si jen jeden program."
 		"deny high role": "{mention}, na to nemáš právo."
 	}
 
@@ -329,5 +330,9 @@
 	howto: {
 		# Exceptions
 		HowtoException: K tomu žádné informace nemám, {mention} {emote.sad}
+	}
+
+	animals: {
+		title: Je to zvíře?
 	}
 }
