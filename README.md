@@ -25,44 +25,39 @@
   </a>
 </p>
 
-![Rubbergoddess](https://repository-images.githubusercontent.com/238499660/ec829180-4868-11ea-948c-199e65da1347)
+![Rubbergoddess](docs/images/rubbergoddess-wide.jpeg)
 
 ## About
 
-This Discord bot manages verification process, users, karma and some other functionality on VUT FEKT
-Discord server.
+This bot takes care of user management, karma and other functions on [VUT FEKT][invite] Discord server.
 
-### Related bots
-[Rubbergod]. Rubbergoddess is younger, but more mature sister -- originally forked, now independent.
+## Resources
 
-[Amadeus], mantained by [Czechbol], is younger brother, sharing a lot of core code from before the
-v0.1.0 release. It complements Rubbergoddess with functions like vote, graph, latex or message
-leaderboards.
+- [Installation and setup](https://github.com/sinus-x/rubbergoddess/wiki) on project Wiki
+- [Management and commands](https://sinus-x.github.io/rubbergoddess/) on GitHub Pages
+- You can read [the changelog](CHANGELOG.md) to learn about past and upcoming changes
+
+## Related bots
+[Amadeus], mantained by [Czechbol], is younger brother, sharing a lot of core code from before the v0.1.0 release. It complements Rubbergoddess with functions like vote, graph, latex or message leaderboards.
 
 [Wormhole]. Discord bot connecting multiple guilds with one shared chat.
 
-## Installing and running the bot
-
-See [wiki](https://github.com/sinus-x/rubbergoddess/wiki).
+[Rubbergod] is bot mantained by the FIT team; Rubbergoddess is his younger, but more mature sister. Her un-forking is marked by the first, v0.1.0 release.
 
 ## Authors
 
-Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x), with
-occasional help from [Czechbol](https://github.com/Czechbol).
+Rubbergoddess is mantained by [sinus-x](https://github.com/sinus-x), with occasional help from [Czechbol](https://github.com/Czechbol).
 
-Original (Rubbergod) authors include [Toaster](https://github.com/toaster192),
-[Matthew](https://github.com/matejsoroka), [Fpmk](https://github.com/TheGreatfpmK),
-[peter](https://github.com/peterdragun), [Urumasi](https://github.com/Urumasi)
-or [Leo](https://github.com/ondryaso).
+Original (Rubbergod) authors include [Toaster](https://github.com/toaster192), [Matthew](https://github.com/matejsoroka), [Fpmk](https://github.com/TheGreatfpmK), [peter](https://github.com/peterdragun), [Urumasi](https://github.com/Urumasi) or [Leo](https://github.com/ondryaso).
 
 ## License
 
 This project is licensed under the GNU GPL v.3 License.
 
-Rubbergoddess image is a CC0 photography by Peter Sjo hosted on
-[unsplash.com](https://unsplash.com/photos/Nxy-6QwGMzA).
+Rubbergoddess image is a CC0 photography by Peter Sjo hosted on [unsplash.com](https://unsplash.com/photos/Nxy-6QwGMzA).
 
 
+[invite]: https://discord.com/invite/9N3cP2E
 [sinus-x]: https://github.com/sinus-x
 [Czechbol]: https://github.com/Czechbol
 [Rubbergod]: https://github.com/Toaster192/rubbergod
