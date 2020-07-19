@@ -121,6 +121,13 @@ async def delete(ctx: commands.Context):
             pass
 
 
+async def remove_reaction(reaction, user):
+    try:
+        await reaction.remove(user)
+    except:
+        pass
+
+
 async def send_help(ctx: commands.Context):
     if not hasattr(ctx, "command") or not hasattr(ctx.command, "qualified_name"):
         return

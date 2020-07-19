@@ -67,6 +67,7 @@ async def load(ctx, extension):
     bot.load_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** načteno.")
     await event.sudo(ctx.author, ctx.channel, f"Loaded: {extension.upper()}")
+    print(f"Loaded: {extension.upper()}")
 
 
 @bot.command()
@@ -75,6 +76,7 @@ async def unload(ctx, extension):
     bot.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** odebráno.")
     await event.sudo(ctx.author, ctx.channel, f"Unloaded: {extension.upper()}")
+    print(f"Unloaded: {extension.upper()}")
 
 
 @bot.command()
