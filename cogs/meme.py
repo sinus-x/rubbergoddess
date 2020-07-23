@@ -16,12 +16,6 @@ class Meme(rubbercog.Rubbercog):
         super().__init__(bot)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
-    @commands.command(name="???", aliases=["??"])
-    async def question(self, ctx):
-        """What?"""
-        await ctx.send(random.choice(text.get("meme", "???")))
-
-    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def hug(self, ctx, user: discord.Member = None):
         """Hug someone!
