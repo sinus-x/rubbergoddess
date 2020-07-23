@@ -63,7 +63,7 @@ class Actress(rubbercog.Rubbercog):
         try:
             async with ctx.typing():
                 message = await channel.send(file=discord.File(self.path + filename))
-                delta = time.monotonic() - now
+                delta = str(int(time.monotonic() - now))
                 await self.output.info(ctx, text.fill("actress", "file sent", delta=delta))
                 mention = channel.mention if hasattr(channel, "mention") else type(channel).__name__
                 await self.event.sudo(

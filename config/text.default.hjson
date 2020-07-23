@@ -74,7 +74,7 @@
 	actress: {
 		# ?send
 		"text sent":   Zpráva odeslána.
-		"file sent":   Soubor odeslán za {delta:.f} vteřin.
+		"file sent":   Soubor odeslán za {delta} vteřin.
 		# ?react
 		"reaction added":   Nová reakce: **{name}**.
 		"reaction updated": Reakce **{name}** upravena.
@@ -144,6 +144,7 @@
 			Hlasování o karma hodnotě {emote}.
 			Vyhodnocení proběhne za **{time}** minut, potřebný počet hlasů je **{limit}**.
 			'''
+		"all emojis voted": Všechny emoji na serveru **{guild}** už jste ohodnotili.
 		"vote failed": Hlasování o hodnotě {emote} skončilo neúspěšně z důvodu nedostatku hlasů.
 		"vote result": Hodnota {emote} je {value}.
 		"all rated":    "Karma hodnotu už mají všechny emotes."
@@ -278,9 +279,24 @@
 	}
 
 	librarian: {
+		# nameday
 		"nameday cz": "Dnes má svátek {name} {emote.happy}"
 		"nameday sk": "Dnes má meniny {name} {emote.happy}"
 
+		# weather
+		"w_description": "{name}, {country}"
+		"w_temperature": Teplota
+		"w_temperature_value": "{real} °C _(pocitová {feel} °C)_"
+		"w_humidity":       Vlhkost
+		"w_clouds":         Oblačnost
+		"w_visibility":     Viditelnost
+		"w_wind":           Vítr
+		# weather errors
+		"place not found": Pro takové místo nemám předpověď.
+		"weather token":   Chybný token.
+		"place error":     Chyba při získávání informací (_{message}_)
+
+		# hash
 		"hash not found": Takovou hashovací funkci neznám.
 	}
 
@@ -311,7 +327,7 @@
 		"gif warning": "{user}, linkování externích obrázků nemám ráda. Snížila jsem ti karmu o {value}.",
 		"repost title": "Nápověda",
 		"repost description": "{name}, shoda **{value}**!",
-		"repost content": "Pokud je obrázek repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže.",
+		"repost content": "Pokud je obrázek repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže.\nPokud jsi autor a jde o repost, klikni na 🆗.",
 	}
 
 	"shop": {

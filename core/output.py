@@ -243,16 +243,13 @@ class Event:
         self.bot = bot
         self.channel = None
 
-        self.user_template = "{user} in {location}: {message}"
-        self.sudo_template = "**SUDO** {user} in {location}: {message}"
-
     def getChannel(self):
         if self.channel is None:
             self.channel = self.bot.get_channel(config.get("channels", "events"))
         return self.channel
 
     def _identifier(
-        source: Union[commands.Context, discord.Message, discord.User, discord.Member, str]
+        self, source: Union[commands.Context, discord.Message, discord.User, discord.Member, str]
     ):
         if hasattr(source, "channel"):
             # ctx, message
@@ -262,7 +259,11 @@ class Event:
             else:
                 # dm
                 location = type(location).__name__
-            identifier = f"{discord.utils.escape_markdown(str(source.author))} in {location}"
+            if hasattr(source, "author"):
+                author = str(source.author)
+            else:
+                author = "unknown"
+            identifier = f"{discord.utils.escape_markdown(author)} in {location}"
         elif isinstance(source, discord.User):
             # user or member
             identifier = f"{str(source)}"
@@ -278,7 +279,7 @@ class Event:
     ):
         """Non-privileged events"""
         await self.getChannel().send(
-            "**USER** " + self._identifier() + ": " + message.replace("@", "@\u200b")
+            "**USER** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
         )
 
     async def sudo(
@@ -288,5 +289,5 @@ class Event:
     ):
         """Privileged events"""
         await self.getChannel().send(
-            "**SUDO** " + self._identifier() + ": " + message.replace("@", "@\u200b")
+            "**SUDO** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
         )

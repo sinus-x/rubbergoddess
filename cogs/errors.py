@@ -82,7 +82,7 @@ class Errors(rubbercog.Rubbercog):
         else:
             location = type(ctx.channel).__name__
         output = "{command} by {user} in {location}:\n".format(
-            command=config.prefix + self.sanitise(ctx.invoked_with),
+            command=config.prefix + ctx.command.qualified_name,
             user=str(ctx.author),
             location=location,
         )
