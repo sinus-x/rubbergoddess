@@ -117,8 +117,19 @@ class Karma(rubbercog.Rubbercog):
 
     @commands.check(check.is_mod)
     @karma.command(name="vote")
-    async def karma_vote(self, ctx, emote: str):
+    async def karma_vote(self, ctx, emote: str = None):
         """Vote for emote's karma value"""
+        if emote is None:
+            emojis = await ctx.guild.fetch_emojis()
+            emojis = [e for e in emojis if not e.animated]
+            nonvoted = self._getNonvotedEmoteList(emojis)
+
+            if len(nonvoted) == 0:
+                return await ctx.author.send(
+                    text.fill("karma", "all emojis voted", guild=ctx.guild.name)
+                )
+            emote = nonvoted[0]
+
         message = await ctx.send(
             text.fill(
                 "karma",
@@ -128,6 +139,10 @@ class Karma(rubbercog.Rubbercog):
                 limit=config.get("karma", "vote limit"),
             )
         )
+        # set default of zero, so we can run the command multiple times
+        repo_k.set_emoji_value(str(self._emoteToID(emote)), 0)
+
+        # add options and vote
         await message.add_reaction("☑️")
         await message.add_reaction("0⃣")
         await message.add_reaction("❎")

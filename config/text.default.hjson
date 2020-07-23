@@ -144,6 +144,7 @@
 			Hlasování o karma hodnotě {emote}.
 			Vyhodnocení proběhne za **{time}** minut, potřebný počet hlasů je **{limit}**.
 			'''
+		"all emojis voted": Všechny emoji na serveru **{guild}** už jste ohodnotili.
 		"vote failed": Hlasování o hodnotě {emote} skončilo neúspěšně z důvodu nedostatku hlasů.
 		"vote result": Hodnota {emote} je {value}.
 		"all rated":    "Karma hodnotu už mají všechny emotes."
