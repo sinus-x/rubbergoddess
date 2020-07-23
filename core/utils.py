@@ -133,7 +133,7 @@ async def send(
         delete_after = None
 
     await target.send(
-        text=text,
+        content=text,
         embed=embed,
         delete_after=delete_after,
         nonce=nonce,
@@ -148,7 +148,7 @@ async def delete(thing):
         thing = thing.message
     if isinstance(thing, discord.Message):
         try:
-            await thing.message.delete()
+            await thing.delete()
         except discord.Forbidden:
             pass
 

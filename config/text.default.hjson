@@ -74,7 +74,7 @@
 	actress: {
 		# ?send
 		"text sent":   Zpráva odeslána.
-		"file sent":   Soubor odeslán za {delta:.f} vteřin.
+		"file sent":   Soubor odeslán za {delta} vteřin.
 		# ?react
 		"reaction added":   Nová reakce: **{name}**.
 		"reaction updated": Reakce **{name}** upravena.

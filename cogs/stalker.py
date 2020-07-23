@@ -316,7 +316,7 @@ class Stalker(rubbercog.Rubbercog):
         elif key == "comment":
             repository.update(member.id, comment=value)
 
-        self.event.sudo(ctx, f"Updated {member}: {key} = {value}.")
+        await self.event.sudo(ctx, f"Updated {member}: {key} = {value}.")
 
     @database.command(name="show")
     async def database_show(self, ctx, param: str):

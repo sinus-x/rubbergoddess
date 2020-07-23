@@ -187,6 +187,7 @@ class Judge(rubbercog.Rubbercog):
         if (
             user.bot
             or len(reaction.message.embeds) != 1
+            or not isinstance(reaction.message.embeds[0].title, str)
             or not reaction.message.embeds[0].title.startswith(text.get("judge", "embed_title"))
         ):
             return
