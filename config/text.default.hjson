@@ -278,9 +278,24 @@
 	}
 
 	librarian: {
+		# nameday
 		"nameday cz": "Dnes má svátek {name} {emote.happy}"
 		"nameday sk": "Dnes má meniny {name} {emote.happy}"
 
+		# weather
+		"w_description": "{name}, {country}"
+		"w_temperature": Teplota
+		"w_temperature_value": "{real} °C _(pocitová {feel} °C)_"
+		"w_humidity":       Vlhkost
+		"w_clouds":         Oblačnost
+		"w_visibility":     Viditelnost
+		"w_wind":           Vítr
+		# weather errors
+		"place not found": Pro takové místo nemám předpověď.
+		"weather token":   Chybný token.
+		"place error":     Chyba při získávání informací (_{message}_)
+
+		# hash
 		"hash not found": Takovou hashovací funkci neznám.
 	}
 

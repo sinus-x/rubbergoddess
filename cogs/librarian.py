@@ -56,45 +56,106 @@ class Librarian(rubbercog.Rubbercog):
         await utils.delete(ctx)
 
     @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
-    async def weather(self, ctx, *, city: str = "Brno"):
+    async def weather(self, ctx, *, place: str = "Brno"):
         token = config.get("librarian", "weather token")
-        city = city[:100]
+        place = place[:100]
         url = (
-            "http://api.openweathermap.org/data/2.5/weather?q="
-            + city
+            "https://api.openweathermap.org/data/2.5/weather?q="
+            + place
             + "&units=metric&lang=cz&appid="
             + token
         )
         res = requests.get(url).json()
 
-        if str(res["cod"]) == "200":
-            description = "Aktuální počasí v městě " + res["name"] + ", " + res["sys"]["country"]
-            embed = discord.Embed(title="Počasí", description=description)
-            image = "http://openweathermap.org/img/w/" + res["weather"][0]["icon"] + ".png"
-            embed.set_thumbnail(url=image)
-            weather = res["weather"][0]["main"] + " (" + res["weather"][0]["description"] + ")"
-            temp = str(res["main"]["temp"]) + "°C"
-            feels_temp = str(res["main"]["feels_like"]) + "°C"
-            humidity = str(res["main"]["humidity"]) + "%"
-            wind = str(res["wind"]["speed"]) + "m/s"
-            clouds = str(res["clouds"]["all"]) + "%"
-            visibility = str(res["visibility"] / 1000) + " km" if "visibility" in res else "bez dat"
-            embed.add_field(name="Počasí", value=weather, inline=False)
-            embed.add_field(name="Teplota", value=temp, inline=True)
-            embed.add_field(name="Pocitová teplota", value=feels_temp, inline=True)
-            embed.add_field(name="Vlhkost", value=humidity, inline=True)
-            embed.add_field(name="Vítr", value=wind, inline=True)
-            embed.add_field(name="Oblačnost", value=clouds, inline=True)
-            embed.add_field(name="Viditelnost", value=visibility, inline=True)
-            await ctx.send(embed=embed)
-        elif str(res["cod"]) == "404":
-            await ctx.send("Město nenalezeno")
-        elif str(res["cod"]) == "401":
-            await ctx.send("Rip token")
-        else:
-            await ctx.send("Město nenalezeno! " + emote.sad + " (" + res["message"] + ")")
+        """ Example response
+        {
+            "coord":{
+                "lon":16.61,
+                "lat":49.2
+            },
+            "weather":[
+                {
+                    "id":800,
+                    "temp_maixn":"Clear",
+                    "description":"jasno",
+                    "icon":"01d"
+                }
+            ],
+            "base":"stations",
+            "main":{
+                "temp":21.98,
+                "feels_like":19.72,
+                "temp_min":20.56,
+                "temp_max":23,
+                "pressure":1013,
+                "humidity":53
+            },
+            "visibility":10000,
+            "wind":{
+                "speed":4.1,
+                "deg":50
+            },
+            "clouds":{
+                "all":0
+            },
+            "dt":1595529518,
+            "sys":{
+                "type":1,
+                "id":6851,
+                "country":"CZ",
+                "sunrise":1595474051,
+                "sunset":1595529934
+            },
+            "timezone":7200,
+            "id":3078610,
+            "name":"Brno",
+            "cod":200
+        }
+        """
 
-        await utils.delete(ctx)
+        if str(res["cod"]) == "404":
+            return await ctx.send(text.get("librarian", "place not found"))
+        elif str(res["cod"]) == "401":
+            return await ctx.send(text.get("librarian", "weather token"))
+        elif str(res["cod"]) != "200":
+            return await ctx.send(text.fill("librarian", "place error", message=res["message"]))
+
+        title = res["weather"][0]["description"]
+        description = text.fill(
+            "librarian", "w_description", name=res["name"], country=res["sys"]["country"]
+        )
+        if description.endswith("CZ"):
+            description = description[:-4]
+        embed = self.embed(ctx=ctx, title=title[0].upper() + title[1:], description=description)
+        embed.set_thumbnail(
+            url="https://openweathermap.org/img/w/{}.png".format(res["weather"][0]["icon"])
+        )
+
+        embed.add_field(
+            name=text.get("librarian", "w_temperature"),
+            value=text.fill(
+                "librarian",
+                "w_temperature_value",
+                real=round(res["main"]["temp"], 1),
+                feel=round(res["main"]["feels_like"], 1),
+            ),
+            inline=False,
+        )
+
+        embed.add_field(
+            name=text.get("librarian", "w_humidity"), value=str(res["main"]["humidity"]) + " %",
+        )
+        embed.add_field(
+            name=text.get("librarian", "w_clouds"), value=(str(res["clouds"]["all"]) + " %")
+        )
+        if "visibility" in res:
+            embed.add_field(
+                name=text.get("librarian", "w_visibility"),
+                value=f"{int(res['visibility']/1000)} km",
+            )
+        embed.add_field(name=text.get("librarian", "w_wind"), value=f"{res['wind']['speed']} m/s")
+
+        await utils.send(ctx, embed=embed)
         await utils.room_check(ctx)
 
     @commands.command(aliases=["b64"])
