@@ -307,8 +307,9 @@ class Warden(rubbercog.Rubbercog):
         else:
             t = "To je možná repost"
             await message.add_reaction("🤷🏻")
+
         prob = "{:.1f} %".format((1 - hamming / 128) * 100)
-        timestamp = original.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = utils.id_to_datetime(original.attachment_id).strftime("%Y-%m-%d %H:%M:%S")
 
         src_chan = self.getGuild().get_channel(original.channel_id)
         try:
