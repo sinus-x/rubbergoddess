@@ -109,8 +109,8 @@ ADD COLUMN name VARCHAR;
 ## [0.1]
 Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/Toaster192/rubbergod).
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.0...devel
-[0.6]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.3...v0.6.0
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...devel
+[0.6]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.3...v0.6.1
 [0.5]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.2...v0.5.3
 [0.4]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...v0.4.2
 [0.3]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.2...v0.3.0

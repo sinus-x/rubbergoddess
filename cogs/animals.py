@@ -21,7 +21,7 @@ class Animals(rubbercog.Rubbercog):
 
     def getRole(self):
         if self.role is None:
-            self.role = self.getChannel().guild.get_role("animals", "role")
+            self.role = self.getChannel().guild.get_role(config.get("animals", "role"))
         return self.role
 
     ##
@@ -32,6 +32,8 @@ class Animals(rubbercog.Rubbercog):
     ## Listeners
     ##
 
+    # TODO Only act if Gatekeeper is not active
+    #      Else, check for verify role being added
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await self.check(member)
@@ -41,6 +43,7 @@ class Animals(rubbercog.Rubbercog):
         if before.avatar_url != after.avatar_url:
             await self.check(after)
 
+    # TODO rewrite to on_raw_reaction_add
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         """Vote"""
@@ -65,14 +68,16 @@ class Animals(rubbercog.Rubbercog):
             if r.emoji == "☑️" and r.count > config.get("animals", "limit"):
                 await member.add_roles(self.getRole())
                 await self.event.user(member, "New animal!")
+                await self.getChannel().send(text.fill("animals", "join", mention=member.mention))
                 break
             elif r.emoji == "❎" and r.count > config.get("animals", "limit"):
                 await member.remove_roles(self.getRole())
                 await self.event.user(member, "Animal left.")
+                await self.getChannel().send(text.fill("animals", "leave", mention=member.mention))
                 break
         else:
             return
-        await utils.delete(reaction)
+        await utils.delete(reaction.message)
 
     ##
     ## Logic
@@ -83,10 +88,19 @@ class Animals(rubbercog.Rubbercog):
         embed = self.embed(
             title=text.get("animals", "title"), description=f"{str(member)} | {member.id}"
         )
+        embed.add_field(
+            name="\u200b",
+            value=text.fill("animals", "required", limit=config.get("animals", "limit")),
+        )
         embed.set_image(url=member.avatar_url)
         message = await self.getChannel().send(embed=embed)
         await message.add_reaction("☑️")
         await message.add_reaction("❎")
+        try:
+            await message.pin()
+        except Exception as e:
+            await self.event.user(member, "Could not pin Animal check embed.")
+            await self.console.warning("animals", "Could not unpin embed", e)
 
 
 def setup(bot):

@@ -233,7 +233,7 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         repo_u.add(discord_id=member.id, login=login, group=role.name, code=code)
         await self.event.user(
-            member, f"Adding {member.id} to database(**{role.name}**, code `{code}`)."
+            member, f"Adding {member.id} to database (**{role.name}**, code `{code}`)."
         )
         return code
 
