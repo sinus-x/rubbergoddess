@@ -32,6 +32,8 @@ class Animals(rubbercog.Rubbercog):
     ## Listeners
     ##
 
+    # TODO Only act if Gatekeeper is not active
+    #      Else, check for verify role being added
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await self.check(member)
@@ -41,6 +43,7 @@ class Animals(rubbercog.Rubbercog):
         if before.avatar_url != after.avatar_url:
             await self.check(after)
 
+    # TODO rewrite to on_raw_reaction_add
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         """Vote"""

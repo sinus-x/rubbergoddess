@@ -216,7 +216,7 @@ class Console:
             message = "no message"
 
         # traceback
-        if error and len(error):
+        if error and len(error.__traceback__):
             tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             if len(tb) > 1000:
                 tb = tb[-999:] + "…"
@@ -264,7 +264,7 @@ class Event:
             else:
                 author = "unknown"
             identifier = f"{discord.utils.escape_markdown(author)} in {location}"
-        elif isinstance(source, discord.User):
+        elif isinstance(source, discord.User) or isinstance(source, discord.Member):
             # user or member
             identifier = f"{str(source)}"
         else:
