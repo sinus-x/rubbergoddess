@@ -348,10 +348,4 @@
 		HowtoException: K tomu žádné informace nemám, {mention} {emote.sad}
 	}
 
-	animals: {
-		title:    Je to zvíře?
-		required: Je třeba {limit} reakcí pro danou odpověď.
-		join:     Máme tu nové zvířátko: {mention} {emote.happy}
-		leave:    "{mention} zvířátko není {emote.sad}"
-	}
 }

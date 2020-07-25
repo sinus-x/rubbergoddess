@@ -1,0 +1,6 @@
+{
+	channel: 0
+	role:    0
+
+	limit: 5
+}

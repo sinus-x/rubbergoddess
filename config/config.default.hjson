@@ -271,15 +271,6 @@
 		nickname: 500
 	},
 
-	animals: {
-		# animal-kingdom channel. only users with animal in their avatar are allowed
-		channel: 0
-		# animal-kingdom role
-		role:    0
-		# vote limit
-		limit:   5
-	}
-
 	compatibility: {
 		# Do not send the same emote as other bot here
 		"ignored imitation channels": []
