@@ -3,6 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogConfig
 from core import rubbercog, utils
 from core.config import config
 
@@ -14,6 +15,8 @@ class Base(rubbercog.Rubbercog):
 
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
+
+        self.config = CogConfig("base")
 
     ##
     ## Commands
@@ -29,9 +32,7 @@ class Base(rubbercog.Rubbercog):
         embed = self.embed(ctx=ctx)
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
-
-        await utils.delete(ctx)
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def ping(self, ctx):
@@ -62,7 +63,7 @@ class Base(rubbercog.Rubbercog):
             if message.pinned:
                 return await reaction.clear()
 
-            if reaction.count < config.get("base", "pin limit"):
+            if reaction.count < self.config.get("pins"):
                 return
 
             users = await reaction.users().flatten()
@@ -81,7 +82,3 @@ class Base(rubbercog.Rubbercog):
                 await reaction.clear()
             except discord.HTTPException:
                 break
-
-
-def setup(bot):
-    bot.add_cog(Base(bot))
