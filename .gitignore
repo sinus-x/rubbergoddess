@@ -3,12 +3,15 @@ backups/
 config/config.hjson
 config/emotes.hjson
 config/text.hjson
+# v0.7+
+cogs/*/config.hjson
+cogs/*/text.hjson
 
 # Development
 __pycache__
 .idea
 .venv/
-*/test.py
+*/test*
 
 # Bot data
 data/*
