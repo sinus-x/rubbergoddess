@@ -8,9 +8,9 @@ from requests import get
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 
 
 class Actress(rubbercog.Rubbercog):
@@ -19,8 +19,10 @@ class Actress(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.supported_formats = ("jpg", "jpeg", "png", "webm", "mp4", "gif")
+        self.config = CogConfig("actress")
+        self.text = CogText("actress")
 
+        self.supported_formats = ("jpg", "jpeg", "png", "webm", "mp4", "gif")
         self.path = os.getcwd() + "/data/actress/"
         try:
             self.reactions = hjson.load(open(self.path + "reactions.hjson"))
@@ -50,7 +52,7 @@ class Actress(rubbercog.Rubbercog):
             f"Text sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
             f"> _{content}_\n> <{message.jump_url}>",
         )
-        await self.output.info(ctx, text.get("actress", "text sent"))
+        await self.output.info(ctx, self.text.get("send_text"))
 
     @send.command(name="image", aliases=["file"])
     async def send_image(self, ctx, channel: discord.TextChannel, filename):
@@ -64,14 +66,15 @@ class Actress(rubbercog.Rubbercog):
             async with ctx.typing():
                 message = await channel.send(file=discord.File(self.path + filename))
                 delta = str(int(time.monotonic() - now))
-                await self.output.info(ctx, text.fill("actress", "file sent", delta=delta))
+                await self.output.info(ctx, self.text.get("send_file", delta=delta))
+
                 mention = channel.mention if hasattr(channel, "mention") else type(channel).__name__
                 await self.event.sudo(
                     ctx,
                     f"Media file sent to {mention}:\n" f"> _{filename}_\n> <{message.jump_url}>",
                 )
         except Exception as e:
-            await self.output.error(ctx, text.get("actress", "FileSendError"), e)
+            await self.output.error(ctx, self.text.get("FileSendError"), e)
 
     @commands.check(check.is_mod)
     @commands.group(name="react", aliases=["reaction", "reactions"])
@@ -113,11 +116,9 @@ class Actress(rubbercog.Rubbercog):
             content.append(template.format(count=count, reaction=reaction))
             total += count
         if len(content) == 0:
-            content.append(text.get("actress", "nothing"))
+            content.append(self.text.get("embed", "nothing"))
 
-        embed.add_field(
-            name=text.fill("actress", "in total", count=total), value="\n".join(content)
-        )
+        embed.add_field(name=self.text.get("embed", "total", count=total), value="\n".join(content))
         await ctx.send(embed=embed, delete_after=config.delay_embed)
 
         await utils.delete(ctx)
@@ -148,7 +149,7 @@ class Actress(rubbercog.Rubbercog):
         self.reactions[name] = reaction
         self._save_reactions()
 
-        await self.output.info(ctx, text.fill("actress", "reaction added", name=name))
+        await self.output.info(ctx, self.text.get("reaction_add", name=name))
         await self.event.sudo(ctx, f"Reaction **{name}** added.")
 
     @react.command(name="edit")
@@ -183,7 +184,7 @@ class Actress(rubbercog.Rubbercog):
         self.reactions[name] = reaction
         self._save_reactions()
 
-        await self.output.info(ctx, text.fill("actress", "reaction updated", name=name))
+        await self.output.info(ctx, self.text.get("reaction_edit", name=name))
         await self.event.sudo(ctx, f"Reaction **{name}** updated.")
 
     @react.command(name="remove")
@@ -197,7 +198,7 @@ class Actress(rubbercog.Rubbercog):
         del self.reactions[name]
         self._save_reactions()
 
-        await self.output.info(ctx, text.fill("actress", "reaction removed", name=name))
+        await self.output.info(ctx, self.text.get("reaction_remove", name=name))
         await self.event.sudo(ctx, f"Reaction **{name}** removed.")
 
     @commands.is_owner()
@@ -218,11 +219,11 @@ class Actress(rubbercog.Rubbercog):
             size = int(os.path.getsize(self.path + file) / 1024)
             content.append(template.format(size=size, filename=file))
         if len(content) == 0:
-            content.append(text.get("actress", "no files"))
+            content.append(self.text.get("image", "no_files"))
 
         embed = self.embed(ctx=ctx)
         embed.add_field(name="\u200b", value="\n".join(content))
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await utils.send(ctx, embed=embed)
 
         await utils.delete(ctx)
 
@@ -234,15 +235,15 @@ class Actress(rubbercog.Rubbercog):
         filename: Target filename
         """
         if filename.split(".")[-1] not in self.supported_formats:
-            return self.output.error(ctx, text.get("actress", "BadExtension"))
+            return self.output.error(ctx, self.text.get("bad_extension"))
         if "/" in filename or "\\" in filename or ".." in filename:
-            return self.output.error(ctx, text.get("actress", "BadCharacter"))
+            return self.output.error(ctx, self.text.get("bad_character"))
 
         with open(self.path + filename, "wb") as f:
             response = get(url)
             f.write(response.content)
 
-        await self.output.info(ctx, text.get("actress", "downloaded"))
+        await self.output.info(ctx, self.text.get("image", "downloaded"))
 
         await utils.delete(ctx)
 
@@ -253,10 +254,10 @@ class Actress(rubbercog.Rubbercog):
         filename: An image filename
         """
         if "/" in filename or "\\" in filename or ".." in filename:
-            return self.output.error(ctx, text.get("actress", "BadCharacter"))
+            return self.output.error(ctx, self.text.get("image", "bad_character"))
 
         os.remove(self.path + filename)
-        await self.output.info(text.get("actress", "deleted"))
+        await self.output.info(self.text.get("image", "deleted"))
 
         await utils.delete(ctx)
 
@@ -279,6 +280,12 @@ class Actress(rubbercog.Rubbercog):
         if message.author.bot:
             return
 
+        # fmt: off
+        if hasattr(message.channel, "id") \
+        and message.channel.id in self.config.get("ignored_channels"):
+            return
+        # fmt: on
+
         for name, reaction in self.reactions.items():
             # test
             if not self._reaction_matches(message, reaction):
@@ -287,7 +294,7 @@ class Actress(rubbercog.Rubbercog):
             # send
             response = random.choice(reaction["responses"])
             if reaction["type"] == "text":
-                await message.channel.send(response.replace("{mention}", message.author.mention))
+                await message.channel.send(response.replace("((mention))", message.author.mention))
             elif reaction["type"] == "image":
                 await message.channel.send(file=discord.File(self.path + response))
 
@@ -326,18 +333,18 @@ class Actress(rubbercog.Rubbercog):
                 page_delta = 1
             else:
                 # invalid reaction
-                return await self._remove_reaction(reaction, user)
+                return await utils.remove_reaction(reaction, user)
         else:
             # invalid reaction
-            return await self._remove_reaction(reaction, user)
+            return await utils.remove_reaction(reaction, user)
 
         embed = reaction.message.embeds[0]
         if embed.footer == discord.Embed.Empty or " | " not in embed.footer.text:
-            return await self._remove_reaction(reaction, user)
+            return await utils.remove_reaction(reaction, user)
 
         # allow only the author
         if embed.footer.text.split(" | ")[0] != str(user):
-            return await self._remove_reaction(reaction, user)
+            return await utils.remove_reaction(reaction, user)
 
         # get page
         footer_text = embed.footer.text
@@ -355,7 +362,7 @@ class Actress(rubbercog.Rubbercog):
         embed.set_footer(text=footer_text, icon_url=embed.footer.icon_url)
         await reaction.message.edit(embed=embed)
 
-        await self._remove_reaction(reaction, user)
+        await utils.remove_reaction(reaction, user)
 
     ##
     ## Helper functions
@@ -519,19 +526,15 @@ class Actress(rubbercog.Rubbercog):
         # fmt: off
         # exceptions with parameters
         if isinstance(error, InvalidReactionKey):
-            await self.output.error(ctx, text.fill(
-                "actress", "InvalidReactionKey", key=error.key))
+            await self.output.error(ctx, self.text.get(
+                "InvalidReactionKey", key=error.key))
         elif isinstance(error, ReactionParsingException):
-            await self.output.error(ctx, text.fill(
-                "actress", "ReactionParsingException", key=error.key, value=error.value))
+            await self.output.error(ctx, self.text.get(
+                "ReactionParsingException", key=error.key, value=error.value))
         # exceptions without parameters
         elif isinstance(error, ActressException):
-            await self.output.error(ctx, text.get("actress", type(error).__name__))
+            await self.output.error(ctx, self.text.get(type(error).__name__))
         # fmt: on
-
-
-def setup(bot):
-    bot.add_cog(Actress(bot))
 
 
 class ActressException(rubbercog.RubbercogException):

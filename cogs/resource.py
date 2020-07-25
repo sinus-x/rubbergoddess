@@ -26,8 +26,9 @@ class CogConfig:
                             self.config[key][subkey] = custom[key][subkey]
                 elif key in custom.keys():
                     self.config[key] = custom[key]
-        except Exception as e:
-            print(e)  # noqa
+        except:
+            # there is no custom config
+            pass
 
     def get(self, *args):
         result = self.config
@@ -58,8 +59,9 @@ class CogText:
                             self.config[key][subkey] = custom[key][subkey]
                 elif key in custom.keys():
                     self.config[key] = custom[key]
-        except Exception as e:
-            print(e)  # noqa
+        except:
+            # there is no custom config
+            pass
 
     def get(self, *args, **kwargs):
         # get string
