@@ -2,6 +2,7 @@ import subprocess
 
 from discord.ext import commands
 
+from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
@@ -12,6 +13,9 @@ class Admin(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.config = CogConfig("admin")
+        self.text = CogText("admin")
 
     @commands.group(name="power")
     @commands.is_owner()
@@ -29,7 +33,7 @@ class Admin(rubbercog.Rubbercog):
         if reason is None:
             reason = ""
         else:
-            reason = " " + text.fill("admin", "poweroff reason", reason=reason)
+            reason = " " + self.text.get("power_off", "reason", reason=reason)
 
         jail = self.getGuild().get_channel(config.get("channels", "jail"))
         everyone = self.getGuild().default_role
@@ -39,22 +43,22 @@ class Admin(rubbercog.Rubbercog):
 
         if jail is not None:
             # send message
-            await jail.send(text.get("admin", "poweroff jail") + reason)
+            await jail.send(self.text.get("power_off", "jail") + reason)
             # switch to read-only
             await jail.set_permissions(everyone, send_messages=False, reason="?power off")
             visited.append(jail.mention)
 
         if botspam is not None:
             # send message
-            await botspam.send(text.get("admin", "poweroff botspam") + reason)
+            await botspam.send(self.text.get("power_off", "botspam") + reason)
             visited.append(botspam.mention)
 
         # send confirmation message
         if len(visited) > 0:
-            await ctx.send(text.fill("admin", "poweroff ok", channels=", ".join(visited)))
+            await ctx.send(self.text.get("power_off", "ok", channels=", ".join(visited)))
         else:
-            await ctx.send(text.fill("admin", "power fail"))
-        await self.event.sudo(ctx, f"Power off: {reason}")
+            await ctx.send(self.text.get("power_fail"))
+        await self.event.sudo(ctx, "Power off" + f": {reason}." if len(reason) else ".")
 
     @power.command(name="on")
     async def power_on(self, ctx):
@@ -69,7 +73,7 @@ class Admin(rubbercog.Rubbercog):
             # remove the message
             messages = await jail.history(limit=10).flatten()
             for message in messages:
-                if message.content.startswith(text.get("admin", "poweroff jail")):
+                if message.content.startswith(self.text.get("power_off", "jail")):
                     await message.delete()
                     break
             # switch to read-write
@@ -78,15 +82,15 @@ class Admin(rubbercog.Rubbercog):
 
         if botspam is not None:
             # send message
-            await botspam.send(text.get("admin", "poweron botspam"))
+            await botspam.send(self.text.get("power_on", "botspam"))
             visited.append(botspam.mention)
 
         # send confirmation message
         if len(visited) > 0:
-            await ctx.send(text.fill("admin", "poweron ok", channels=", ".join(visited)))
+            await ctx.send(self.text.get("power_on", "ok", channels=", ".join(visited)))
         else:
-            await ctx.send(text.fill("admin", "power fail"))
-        await self.event.sudo(ctx, "Power on")
+            await ctx.send(self.text.get("power_fail"))
+        await self.event.sudo(ctx, "Power on.")
 
     @commands.command(name="status")
     @commands.check(check.is_mod)
@@ -94,7 +98,7 @@ class Admin(rubbercog.Rubbercog):
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
-            return await ctx.send(text.get("admin", "not systemd"))
+            return await ctx.send(self.text.get("systemd_only"))
 
         stdout = None
         try:
@@ -117,7 +121,7 @@ class Admin(rubbercog.Rubbercog):
         result = None
 
         if config.loader == "standalone":
-            result = await self._readFile(ctx, "rubbergoddess.log", docker=False)
+            result = await self._readFile(ctx, "rubbergoddess.log")
         elif config.loader == "systemd":
             cmd = "sudo journalctl -u rubbergoddess"
             try:
@@ -139,37 +143,41 @@ class Admin(rubbercog.Rubbercog):
 
         # fmt: off
         # hosting
-        embed.add_field(name="Host machine", value=config.get("bot", "host"))
-        embed.add_field(name="Loader", value=config.get("bot", "loader"))
+        embed.add_field(
+            name=self.text.get("config_embed", "host"),
+            value=config.get("bot", "host")
+        )
+        embed.add_field(
+            name=self.text.get("config_embed", "loader"),
+            value=config.get("bot", "loader")
+        )
         # logging
-        embed.add_field(name="Logging", value=config.get("bot", "logging"))
+        embed.add_field(
+            name=self.text.get("config_embed", "log_level"),
+            value=config.get("bot", "logging")
+        )
         # extensions
         embed.add_field(
-            name="Default extensions",
-            value=", ".join([x.lower() for x in sorted(config.get("bot", "extensions"))]),
+            name=self.text.get("config_embed", "default_cogs"),
+            value=", ".join([
+                x.lower()
+                for x
+                in sorted(config.get("bot", "extensions").append("errors"))
+            ]),
             inline=False,
         )
         embed.add_field(
-            name="Loaded extensions",
-            value=", ".join([x.lower() for x in sorted(self.bot.cogs.keys()) if x != "Errors"]),
+            name=self.text.get("config_embed", "loaded_cogs"),
+            value=", ".join([x.lower() for x in sorted(self.bot.cogs.keys())]),
             inline=False,
         )
         # fmt: on
 
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await ctx.send(embed=embed)
         await utils.delete(ctx)
 
-    async def _readFile(self, ctx: commands.Context, file: str, docker: bool):
-        """Read file
-
-        file: path to file
-        docker: [ True | False ] Read from docker filesystem?
-        """
-        if docker:
-            path = "/rubbergoddess/" + file
-        else:
-            path = file
-
+    async def _readFile(self, ctx: commands.Context, path: str):
+        """Read file"""
         try:
             with open(path, "r") as f:
                 lines = f.readlines()
