@@ -79,6 +79,7 @@ class Karma(rubbercog.Rubbercog):
         await ctx.send(text.fill("karma", "emote", emote=str(emote), value=str(value)))
         await utils.room_check(ctx)
 
+    @commands.guild_only()
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emotes", aliases=["emojis"])
     async def karma_emotes(self, ctx):
@@ -115,6 +116,7 @@ class Karma(rubbercog.Rubbercog):
 
         await utils.room_check(ctx)
 
+    @commands.guild_only()
     @commands.check(check.is_mod)
     @karma.command(name="vote")
     async def karma_vote(self, ctx, emote: str = None):
