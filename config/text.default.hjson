@@ -35,50 +35,6 @@
 		"botroom redirect": "{mention} {emote.sad} 👉 {channel}"
 	}
 
-	"admin": {
-		"power fail":    "Ani jeden z definovaných kanálů jsem nenašla.",
-
-		"poweroff reason":  "Důvod:\n> {reason}",
-		"poweroff jail":    "Dočasně nejde provádět verifikaci, jsem offline. Prosím, zkus to později.",
-		"poweroff botspam": "Teď budu chvíli offline.",
-		"poweroff ok":      "Ví o tom kanály {channels}. Můžeme.",
-
-		"poweron botspam": "Jsem zpátky! {emote.happy}",
-		"poweron ok":      "Jsem připravená, ví o tom kanály {channels}."
-
-		"not systemd":           Neběžím v systemd, takže to nebude fungovat.
-		"unavailable in docker": Běžím v dockeru, takže to nebude fungovat.
-	}
-
-	actress: {
-		# ?send
-		"text sent":   Zpráva odeslána.
-		"file sent":   Soubor odeslán za {delta} vteřin.
-		# ?react
-		"reaction added":   Nová reakce: **{name}**.
-		"reaction updated": Reakce **{name}** upravena.
-		"reaction removed": Reakce **{name}** odstraněna.
-		# ?image
-		"no files":   Žádné soubory jsem nenašla.
-		downloaded:   Soubor byl úspěšně stažen.
-		deleted:      Soubor byl úspěšně smazán.
-		BadExtension: Nepodporovaný formát.
-		BadCharacter: Název souboru podporuje nepodporované znaky.
-
-		# Embed
-		"nothing":  Zatím nic.
-		"in total": Celkem {count}
-
-		# Exceptions
-		ActressException:         Neumím hrát.
-		ReactionException:        Problematická manipulace s reakcí.
-		ReactionNameExists:       Jméno s takovou reakcí už existuje.
-		ReactionNotFound:         Reakce s takovým jménem neexistuje.
-		InvalidReactionKey:       Nepodporovaný {key}.
-		ReactionParsingException: Špatná hodnota {value} pro klíč {key}.
-		FileSendError:            Soubor se nepodařilo odeslat.
-	}
-
 	"faceshifter": {
 		"not subject": "{mention}, předmětovou místnost **{shortcut}** tu nemáme",
 		"not role": "{mention}, roli **{role}** tu nemáme",

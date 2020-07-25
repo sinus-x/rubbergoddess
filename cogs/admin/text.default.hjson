@@ -16,7 +16,7 @@
 	systemd_only:  Neběžím v systemd, takže to nebude fungovat.
 	not_in_docker: Běžím v dockeru, takže to nebude fungovat.
 
-	config: {
+	config_embed: {
 		host:         Server
 		loader:       Zavaděč
 		log_level:    Úroveň logování
