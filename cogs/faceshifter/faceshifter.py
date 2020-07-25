@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
@@ -14,6 +15,10 @@ class Faceshifter(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.config = CogConfig("faceshifter")
+        self.text = CogText("faceshifter")
+
         self.limit_programmes = None
         self.limit_interests = None
 
@@ -53,9 +58,8 @@ class Faceshifter(rubbercog.Rubbercog):
             channel = await self._get_subject(ctx, subject)
             if channel is None:
                 # fmt: off
-                await ctx.send(text.fill(
-                    "faceshifter",
-                    "not subject",
+                await ctx.send(self.text.get(
+                    "not_subject",
                     mention=ctx.author.mention,
                     shortcut=subject
                 ), delete_after=config.get("delay", "user error"))
@@ -77,9 +81,8 @@ class Faceshifter(rubbercog.Rubbercog):
             channel = await self._get_subject(ctx, subject)
             if channel is None:
                 # fmt: off
-                await ctx.send(text.fill(
-                    "faceshifter",
-                    "not subject",
+                await ctx.send(self.text.get(
+                    "not_subject",
                     mention=ctx.author.mention,
                     shortcut=subject
                 ), delete_after=config.get("delay", "user error"))
@@ -108,9 +111,8 @@ class Faceshifter(rubbercog.Rubbercog):
             guild_role = await self._get_role(ctx, role)
             if guild_role is None:
                 # fmt: off
-                await ctx.send(text.fill(
-                    "faceshifter",
-                    "not role",
+                await ctx.send(self.text.get(
+                    "not_role",
                     mention=ctx.author.mention,
                     role=role
                 ), delete_after=config.get("delay", "user error"))
@@ -134,9 +136,8 @@ class Faceshifter(rubbercog.Rubbercog):
             guild_role = await self._get_role(ctx, role)
             if guild_role is None:
                 # fmt: off
-                await ctx.send(text.fill(
-                    "faceshifter",
-                    "not role",
+                await ctx.send(self.text.get(
+                    "not_role",
                     mention=ctx.author.mention,
                     role=role
                 ), delete_after=config.get("delay", "user error"))
@@ -154,8 +155,8 @@ class Faceshifter(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_message(self, message):
         # fmt: off
-        if message.channel.id in config.get("faceshifter", "react-to-role channels") \
-        or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
+        if message.channel.id in self.config.get("r2r_channels") \
+        or message.content.startswith(self.config.get("r2r_prefix")):
             emote_channel_list = await self._message_to_tuple_list(message)
             for emote_channel in emote_channel_list:
                 try:
@@ -166,12 +167,12 @@ class Faceshifter(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload: discord.RawMessageUpdateEvent):
-        # fmt: off
         message_channel = self.bot.get_channel(payload.channel_id)
         message = await message_channel.fetch_message(payload.message_id)
 
-        if message.channel.id in config.get("faceshifter", "react-to-role channels") \
-        or message.content.startswith(config.get("faceshifter", "react-to-role prefix")):
+        # fmt: off
+        if message.channel.id in self.config.get("r2r_channels") \
+        or message.content.startswith(self.config.get("r2r_prefix")):
             # make a list of current emotes
             emote_channel_list = await self._message_to_tuple_list(message)
             for emote_channel in emote_channel_list:
@@ -250,15 +251,13 @@ class Faceshifter(rubbercog.Rubbercog):
         try:
             content = content.rstrip().split("\n")
         except ValueError:
-            await message.channel.send(text.get("faceshifter", "role help"))
+            await message.channel.send(self.text.get("role_help"))
             return
 
         # check every line
         result = []
         for i, line in enumerate(content):
-            if i == 0 and line == config.get("faceshifter", "react-to-role prefix").replace(
-                "\n", ""
-            ):
+            if i == 0 and line == self.config.get("r2r_prefix").replace("\n", ""):
                 # invoked via message prefix, skip the first line
                 continue
             try:
@@ -272,13 +271,11 @@ class Faceshifter(rubbercog.Rubbercog):
                 result.append((emote, target))
             except:
                 # do not send errors if message is in #add-* channel
-                if message.channel.id in config.get("faceshifter", "react-to-role channels"):
+                if message.channel.id in self.config.get("r2r_channels"):
                     return
                 await self._send(
                     message.channel,
-                    text.fill(
-                        "faceshifter", "invalid role line", line=self.sanitise(line, limit=50)
-                    ),
+                    self.text.fill("invalid_role_line", line=self.sanitise(line, limit=50)),
                 )
                 return
         return result
@@ -298,8 +295,8 @@ class Faceshifter(rubbercog.Rubbercog):
         # halt if not react-to-role message
         # fmt: off
         if (
-            channel.id not in config.get("faceshifter", "react-to-role channels")
-            and not message.content.startswith(config.get("faceshifter", "react-to-role prefix"))
+            channel.id not in self.config.get("r2r_channels")
+            and not message.content.startswith(self.config.get("r2r_prefix"))
         ):
             return
         # fmt: on
@@ -319,7 +316,7 @@ class Faceshifter(rubbercog.Rubbercog):
     def _get_teacher_channel(self, subject: discord.TextChannel) -> discord.TextChannel:
         return discord.utils.get(
             subject.guild.text_channels,
-            name=subject.name + config.get("channels", "teacher suffix"),
+            name=subject.name + self.config.get("channels", "teacher suffix"),
         )
 
     ##
@@ -332,14 +329,12 @@ class Faceshifter(rubbercog.Rubbercog):
         channel: discord.TextChannel,
     ) -> bool:
         # check permission
-        for subject_role in config.get("faceshifter", "subject roles"):
+        for subject_role in self.config.get("subject_roles"):
             if subject_role in [r.id for r in member.roles]:
                 break
         else:
             # they do not have neccesary role
-            await self._send(
-                location, text.fill("faceshifter", "deny subject", mention=member.mention)
-            )
+            await self._send(location, self.text.get("deny_subject", mention=member.mention))
             return False
 
         await channel.set_permissions(member, view_channel=True)
@@ -365,13 +360,11 @@ class Faceshifter(rubbercog.Rubbercog):
     ) -> bool:
         if role < self.getLimitProgrammes(location) and role > self.getLimitInterests(location):
             # role is programme, check if user has permission
-            for programme_role in config.get("faceshifter", "programme roles"):
+            for programme_role in self.config.get("programme_roles"):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await self._send(
-                    location, text.fill("faceshifter", "deny role", mention=member.mention),
-                )
+                await self._send(location, self.text.get("deny_programme", mention=member.mention))
                 return False
 
             # check if user already doesn't have some programme role
@@ -380,7 +373,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 if user_role < self.getLimitProgrammes(location) \
                 and user_role > self.getLimitInterests(location):
                     await self._send(
-                        location, text.fill("faceshifter", "deny second role", mention=member.mention),
+                        location, self.text.get("deny_second_programme", mention=member.mention),
                     )
                     return False
                 # fmt: on
@@ -390,9 +383,7 @@ class Faceshifter(rubbercog.Rubbercog):
             pass
         else:
             # role is limit itself or something above programmes
-            await self._send(
-                location, text.fill("faceshifter", "deny high role", mention=member.mention),
-            )
+            await self._send(location, self.text.get("deny_high_role", mention=member.mention))
             return False
 
         await member.add_roles(role)
@@ -403,13 +394,11 @@ class Faceshifter(rubbercog.Rubbercog):
     ):
         if role < self.getLimitProgrammes(location) and role > self.getLimitInterests(location):
             # role is programme, check if user has permission
-            for programme_role in config.get("faceshifter", "programme roles"):
+            for programme_role in self.config.get("programme_roles"):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await self._send(
-                    location, text.fill("faceshifter", "deny role", mention=member.mention),
-                )
+                await self._send(location, self.text.get("deny_programme", mention=member.mention))
                 return
         elif role < self.getLimitInterests(location):
             # role is below interests limit, continue
@@ -417,7 +406,7 @@ class Faceshifter(rubbercog.Rubbercog):
         else:
             # role is limit itself or something above programmes
             return await self._send(
-                location, text.fill("faceshifter", "deny high role", mention=member.mention)
+                location, self.text.get("deny_high_role", mention=member.mention)
             )
 
         await member.remove_roles(role)
@@ -425,12 +414,8 @@ class Faceshifter(rubbercog.Rubbercog):
     async def _send(self, location: discord.abc.Messageable, text=text):
         # fmt: off
         if isinstance(location, discord.TextChannel) \
-        and location.id in config.get("faceshifter", "react-to-role channels"):
+        and location.id in self.config.get("r2r_channels"):
             return
         # fmt: on
 
         await location.send(text, delete_after=config.get("delay", "user error"))
-
-
-def setup(bot):
-    bot.add_cog(Faceshifter(bot))

@@ -35,19 +35,6 @@
 		"botroom redirect": "{mention} {emote.sad} 👉 {channel}"
 	}
 
-	"faceshifter": {
-		"not subject": "{mention}, předmětovou místnost **{shortcut}** tu nemáme",
-		"not role": "{mention}, roli **{role}** tu nemáme",
-
-		"role help": "Špatný formát\n>>> Role\n🐈 cat-role\n🦜 parrot-channel",
-		"invalid role line": "Řádek obsahuje chybu: _{line}_",
-
-		"deny subject": "{mention}, předměty si můžou přidávat jen studenti VUT.",
-		"deny role": "{mention}, na to nemáš právo, nejsi z FEKTu.",
-		"deny second role": "{mention}, vyber si jen jeden program."
-		"deny high role": "{mention}, na to nemáš právo."
-	}
-
 	karma: {
 		stalk_user:     Karma uživatele **{user}**
 		stalk_karma:    Karma
