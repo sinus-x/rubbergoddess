@@ -58,6 +58,9 @@ class Errors(rubbercog.Rubbercog):
             await self.output.error(ctx, self.text.get("RubbercogException"), error)
             return False
 
+        if type(error) == commands.CommandNotFound:
+            return
+
         # Exceptions with parameters
         if type(error) == commands.MissingRequiredArgument:
             await self.output.warning(ctx, self.text.get("MissingRequiredArgument", param=error.param.name))
