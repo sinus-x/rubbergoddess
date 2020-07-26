@@ -69,11 +69,13 @@ class Animals(rubbercog.Rubbercog):
 
         for r in reaction.message.reactions:
             if r.emoji == "☑️" and r.count > self.config.get("limit"):
+                # TODO Call in try:, they may have left
                 await member.add_roles(self.getRole())
                 await self.event.user(member, "New animal!")
                 await self.getChannel().send(self.text.get("join", mention=member.mention))
                 break
             elif r.emoji == "❎" and r.count > self.config.get("limit"):
+                # TODO Call in try:, they may have left
                 await member.remove_roles(self.getRole())
                 # TODO Log event only if user had `animal` role
                 await self.event.user(member, "Animal left.")

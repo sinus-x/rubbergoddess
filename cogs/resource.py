@@ -72,17 +72,26 @@ class CogText:
             else:
                 raise ValueError(f"`{'/'.join(args)}` is not valid text file argument.")
 
-        # apply emojis
-        emojis = re.findall(r"\(\(emoji\.([a-z]+)\)\)", result)
-        for emoji in emojis:
-            result = result.replace(f"((emoji.{emoji}))", emote.get(emoji))
+        def replace(result: str):
+            # apply emojis
+            emojis = re.findall(r"\(\(emoji\.([a-z]+)\)\)", result)
+            for emoji in emojis:
+                result = result.replace(f"((emoji.{emoji}))", emote.get(emoji))
 
-        # apply kwargs
-        for key, value in kwargs.items():
-            string = "((" + key + "))"
-            if string in result:
-                result = result.replace(string, str(value))
-            else:
-                raise ValueError(f"Requested string `{'/'.join(args)}` does not have key `{key}`.")
+            # apply kwargs
+            for key, value in kwargs.items():
+                replacement = "((" + key + "))"
+                if replacement in result:
+                    result = result.replace(replacement, str(value))
+                else:
+                    raise ValueError(
+                        f"Requested string `{'/'.join(args)}` does not have key `{key}`."
+                    )
+            return result
+
+        if type(result) == str:
+            result = replace(result)
+        elif type(result) == list:
+            result = [replace(x) for x in result]
 
         return result
