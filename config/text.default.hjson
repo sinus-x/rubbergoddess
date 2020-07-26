@@ -149,13 +149,6 @@
 		"rename long": "{user}, takové jméno je moc dlouhé."
 	}
 
-	"janitor": {
-		"no hoarders":      "Vše v pořádku, nikoho jsem nenašla.",
-		"hoarding warning": "Ahoj. Všimla jsem si, že máš na **{guild}** víc než jednu roli programu. Aby byl celý server přehlednější, nech si jenom tu jednu, co studuješ.",
-
-		"teacher not subject": "{channel} není předmětová místnost."
-	}
-
 	"warden": {
 		"gif warning": "{user}, linkování externích obrázků nemám ráda. Snížila jsem ti karmu o {value}.",
 		"repost title": "Nápověda",

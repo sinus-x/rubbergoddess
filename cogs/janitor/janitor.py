@@ -1,3 +1,5 @@
+import time
+
 import discord
 from discord.ext import commands
 
@@ -86,6 +88,7 @@ class Janitor(rubbercog.Rubbercog):
         if pinMode not in ("pinSkip", "pinStop", "pinIgnore"):
             return await ctx.send_help(ctx.invoked_with)
 
+        now = time.monotonic()
         messages = await ctx.channel.history(limit=limit).flatten()
 
         total = 0
@@ -101,7 +104,8 @@ class Janitor(rubbercog.Rubbercog):
             except discord.HTTPException:
                 pass
 
-        await self.event.sudo(ctx, f"Purged {total} posts.")
+        delta = str(int(time.monotonic() - now))
+        await self.event.sudo(ctx, f"Purged {total} posts in {delta}s.")
 
     @commands.check(check.is_mod)
     @commands.bot_has_permissions(manage_channels=True)
