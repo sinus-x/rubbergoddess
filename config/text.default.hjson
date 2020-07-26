@@ -203,10 +203,4 @@
 		ShopException:              Chyba při transakci
 		ForbiddenNicknameCharacter: Jméno nesmí obsahovat {characters}
 	}
-
-	howto: {
-		# Exceptions
-		HowtoException: K tomu žádné informace nemám, {mention} {emote.sad}
-	}
-
 }

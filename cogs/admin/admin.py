@@ -14,7 +14,6 @@ class Admin(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.config = CogConfig("admin")
         self.text = CogText("admin")
 
     @commands.group(name="power")

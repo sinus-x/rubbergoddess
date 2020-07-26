@@ -4,7 +4,11 @@
 	power_off: {
 		jail:    Dočasně nejde provádět verifikaci, jsem offline. Prosím, zkus to později.
 		botspam: Teď budu chvíli offline.
-		reason:  Důvod:\n> ((reason))
+		reason:
+			'''
+			Důvod:
+			> ((reason))
+			'''
 		ok:      Ví o tom kanály ((channels)). Můžeme.
 	}
 

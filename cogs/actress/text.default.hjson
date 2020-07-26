@@ -26,7 +26,7 @@
 	ReactionException:        Problematická manipulace s reakcí.
 	ReactionNameExists:       Reakce s takovým jménem už existuje.
 	ReactionNotFound:         Reakce s takovým jménem neexistuje.
-	InvalidReactionKey:       Nepodporovaný klíč ((key)).
-	ReactionParsingException: Špatná hodnota ((value)) pro klíč ((key)).
+	InvalidReactionKey:       Nepodporovaný klíč **((key))**.
+	ReactionParsingException: Špatná hodnota **((value))** pro klíč **((key))**.
 	FileSendError:            Soubor se nepodařilo odeslat.
 }

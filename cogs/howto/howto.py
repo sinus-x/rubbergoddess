@@ -4,9 +4,9 @@ from collections import OrderedDict
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 
 
 class Howto(rubbercog.Rubbercog):
@@ -14,6 +14,8 @@ class Howto(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.text = CogText("howto")
 
         try:
             self.data = hjson.load(open("data/howto/howto.hjson"))
@@ -58,8 +60,9 @@ class Howto(rubbercog.Rubbercog):
             embed = self._add_str_content(embed, name, str(content))
 
         # done
-        await ctx.send(embed=embed, delete_after=config.get("delay", "help"))
+        await ctx.send(embed=embed)
         await utils.delete(ctx)
+        await utils.room_check(ctx)
 
     ##
     ## Helper functions
@@ -111,16 +114,10 @@ class Howto(rubbercog.Rubbercog):
 
         # fmt: off
         elif isinstance(error, HowtoException):
-            await self.output.warning(ctx, text.fill(
-                "howto",
-                "HowtoException",
-                mention=ctx.author.mention
-            ))
+            await self.output.warning(
+                ctx, self.text.get("HowtoException", mention=ctx.author.mention)
+            )
         # fmt: on
-
-
-def setup(bot):
-    bot.add_cog(Howto(bot))
 
 
 class HowtoException(rubbercog.RubbercogException):
