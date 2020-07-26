@@ -167,18 +167,6 @@
 		guests: [0, 0, 0]
 	},
 
-	faceshifter: {
-		# where to look for "<emote> <channel>/<role>" pattern
-		"react-to-role channels": [],
-		# how to start the react-to-role ouside of specified channels
-		"react-to-role prefix": "Role\n",
-
-		# which role IDs are allowed to assign programmes
-		"programme roles": [0]
-		# which role IDs are allowed to assign subjects
-		"subject roles": [0]
-	}
-
 	"voice cog": {
 		# Wordlist for automatic voice channel name generation
 		adjectives: ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]

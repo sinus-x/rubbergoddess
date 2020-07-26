@@ -1,11 +1,4 @@
 {
-	error: {
-		# cogs/shop.py
-		"higher permission":  "To nemůžu, máš vyšší oprávnění"
-		# cogs/meme.py
-		"no user":         "Nikoho takového jsem nenašla {emote.sad}"
-	}
-
 	bot: {
 		debug:    debug
 		info:     info
@@ -48,15 +41,6 @@
 		"invalid emote":   "{user}, {not_emote} pro roli {role} není emote."
 	}
 
-	random: {
-		answer: "{mention}, asi {option}."
-		flip:   ["ano", "ne"]
-	}
-
-	meme: {
-		"???": ["???", "Nech mě {emote.sad}", "Nech mě", "{emote.angry}", "{emote.sad}"]
-	}
-
 	voice: {
 		"wip": "{mention}, to teď nefunguje."
 
@@ -74,18 +58,5 @@
 		"repost title": "Nápověda",
 		"repost description": "{name}, shoda **{value}**!",
 		"repost content": "Pokud je obrázek repost, dej mu ♻️.\nJestli není, klikni tady na ❎ a při {limit} takových reakcích se toho upozornění smaže.\nPokud jsi autor a jde o repost, klikni na 🆗.",
-	}
-
-	"shop": {
-		"no karma": "{author}, zatím nemáš žádnou karmu",
-		"not enough karma": "{author}, nemáš dost karmy. Chybí ti **{value}** bodů",
-
-		"new nick": "{author}, za {value} karma bodů jsem ti nastavila přezdívku na **{nick}**",
-
-		"no nick": "{author}, nemáš nastavenou žádnou přezdívku",
-		"nick removed": "{author}, přezdívku **{nick}** jsem ti odebrala"
-		# Exceptions
-		ShopException:              Chyba při transakci
-		ForbiddenNicknameCharacter: Jméno nesmí obsahovat {characters}
 	}
 }

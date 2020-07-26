@@ -3,8 +3,8 @@ import random
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
-from core.text import text
 from core.emote import emote
 from core.config import config
 
@@ -20,19 +20,20 @@ class Meme(rubbercog.Rubbercog):
     async def hug(self, ctx, user: discord.Member = None):
         """Hug someone!
 
-        user: Discord user. If none, the bot will hug yourself."""
+        user: Discord user. If none, the bot will hug yourself.
+        """
         if user is None:
             user = ctx.author
         elif user == self.bot.user:
             await ctx.send(emote.hug_left)
             return
 
-        await ctx.send(emote.hug_right + f" **{discord.utils.escape_markdown(user.display_name)}**")
+        await ctx.send(emote.hug_right + f" **{self.sanitise(user.display_name)}**")
 
     @hug.error
     async def hugError(self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            await ctx.send(text.get("error", "no user"))
+            await ctx.send(self.text.get("cannot_hug"))
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])
@@ -76,7 +77,3 @@ class Meme(rubbercog.Rubbercog):
             result += " OwO"
 
         return result
-
-
-def setup(bot):
-    bot.add_cog(Meme(bot))
