@@ -9,6 +9,7 @@ from email.mime.multipart import MIMEMultipart
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
@@ -23,6 +24,9 @@ class Gatekeeper(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
+        self.text = CogText("gatekeeper")
+        self.config = CogConfig("gatekeeper")
+
     ##
     ## Commands
     ##
@@ -35,10 +39,10 @@ class Gatekeeper(rubbercog.Rubbercog):
         """Ask for verification code"""
         await utils.delete(ctx)
 
-        if "@" not in email or len(email.split("@")) > 2:
+        if email.count("@") != 1:
             raise NotAnEmail()
 
-        if "xlogin00" in email:
+        if self.config.get("placeholder") in email:
             raise PlaceholderEmail()
 
         # check the database for member ID
@@ -59,8 +63,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         await self._send_verification_email(ctx.author, email, code)
         anonymised = "[redacted]@" + email.split("@")[1]
         await ctx.send(
-            text.fill(
-                "gatekeeper",
+            self.text.get(
                 "verify successful",
                 mention=ctx.author.mention,
                 email=anonymised,
@@ -98,6 +101,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         role = await self._email_to_role(ctx, email)
         repo_u.update(discord_id=ctx.author.id, group=role.name)
 
+        # TODO To text hjson
         await self.output.info(ctx, "Mail changed")
 
     @reverify.command(name="prove")
@@ -129,7 +133,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         await self._send_verification_email(ctx.author, email, code)
 
         await ctx.send(
-            text.fill("gatekeeper", "reverify successful", mention=ctx.author.mention),
+            self.text.get("reverify successful", mention=ctx.author.mention),
             delete_after=config.get("delay", "verify"),
         )
 
@@ -164,7 +168,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         unverified = await self._add_verify_roles(ctx.author, db_user)
         if unverified:
             return await ctx.send(
-                text.fill("gatekeeper", "reverification public", mention=ctx.author.mention),
+                self.text.fill("reverification public", mention=ctx.author.mention),
                 delete_after=config.get("delay", "verify"),
             )
 
@@ -173,14 +177,13 @@ class Gatekeeper(rubbercog.Rubbercog):
         info_channel = self.getGuild().get_channel(config.get("channels", "info"))
         for role_id in config.get("roles", "native"):
             if role_id in [x.id for x in ctx.author.roles]:
-                await ctx.author.send(text.get("gatekeeper", "verification DM native"))
+                await ctx.author.send(self.text.get("verification DM native"))
                 break
         else:
-            await ctx.author.send(text.get("gatekeeper", "verification DM guest"))
+            await ctx.author.send(self.text.get("verification DM guest"))
         # fmt: off
         # announce the verification
-        await ctx.channel.send(text.fill(
-                "gatekeeper",
+        await ctx.channel.send(self.text.get(
                 "verification public",
                 mention=ctx.author.mention,
                 role=db_user.group,
@@ -196,8 +199,8 @@ class Gatekeeper(rubbercog.Rubbercog):
     ##
     async def _email_to_role(self, ctx, email: str) -> discord.Role:
         """Get role from email address"""
-        registered = config.get("gatekeeper", "suffixes")
-        constraints = config.get("gatekeeper", "constraints")
+        registered = self.config.get("suffixes")
+        constraints = self.config.get("constraints")
         username = email.split("@")[0]
 
         for domain, role_id in list(registered.items())[:-1]:
@@ -246,7 +249,7 @@ class Gatekeeper(rubbercog.Rubbercog):
         return code
 
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
-        cleartext = text.get("gatekeeper", "plaintext mail").format(
+        cleartext = self.text.get("plaintext mail").format(
             guild_name=self.getGuild().name,
             code=code,
             bot_name=self.bot.user.name,
@@ -254,7 +257,8 @@ class Gatekeeper(rubbercog.Rubbercog):
             prefix=config.prefix,
         )
 
-        richtext = text.get("gatekeeper", "html mail").format(
+        richtext = self.text.get(
+            "html mail",
             # styling
             color_bg="#54355F",
             color_fg="white",
@@ -275,19 +279,21 @@ class Gatekeeper(rubbercog.Rubbercog):
         )
 
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = text.fill(
-            "gatekeeper", "mail subject", guild_name=self.getGuild().name, user_name=member.name
+        msg["Subject"] = self.text.get(
+            "mail subject", guild_name=self.getGuild().name, user_name=member.name
         )
-        msg["From"] = config.get("email", "address")
+        msg["From"] = self.config.get("email", "address")
         msg["To"] = email
-        msg["Bcc"] = config.get("email", "address")
+        msg["Bcc"] = self.config.get("email", "address")
         msg.attach(MIMEText(cleartext, "plain"))
         msg.attach(MIMEText(richtext, "html"))
 
-        with smtplib.SMTP(config.get("email", "server"), config.get("email", "port")) as server:
+        with smtplib.SMTP(
+            self.config.get("email", "server"), self.config.get("email", "port")
+        ) as server:
             server.starttls()
             server.ehlo()
-            server.login(config.get("email", "address"), config.get("email", "password"))
+            server.login(self.config.get("email", "address"), self.config.get("email", "password"))
             server.send_message(msg)
 
     async def _add_verify_roles(self, member: discord.Member, db_user: object) -> bool:
@@ -298,10 +304,10 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         unverified = False
         if quarantine in member.roles:
-            await member.remove_roles(quarantine, reason="Successful reverification")
+            await member.remove_roles(quarantine, reason="Reverification")
             unverified = True
 
-        await member.add_roles(verify, group, reason="Successful verification")
+        await member.add_roles(verify, group, reason="Verification")
         return unverified
 
     ##
@@ -322,8 +328,10 @@ class Gatekeeper(rubbercog.Rubbercog):
         # fmt: off
         # exceptions with parameters
         if isinstance(error, ProblematicVerification):
-            await self.output.error(ctx, text.fill(
-                "gatekeeper", "ProblematicVerification", status=error.status))
+            await self.output.warning(
+                ctx,
+                self.text.get("ProblematicVerification", status=error.status)
+            )
 
             await self.event.user(
                 ctx,
@@ -331,12 +339,16 @@ class Gatekeeper(rubbercog.Rubbercog):
             )
 
         elif isinstance(error, BadEmail):
-            await self.output.error(ctx, text.fill(
-                "gatekeeper", "BadEmail", constraint=error.constraint))
+            await self.output.warning(
+                ctx,
+                self.text.get("BadEmail", constraint=error.constraint)
+            )
 
         elif isinstance(error, WrongVerificationCode):
-            await self.output.error(ctx, text.fill(
-                "gatekeeper", "WrongVerificationCode", mention=ctx.author.mention))
+            await self.output.warning(
+                ctx,
+                self.text.get("WrongVerificationCode", mention=ctx.author.mention)
+            )
 
             await self.event.user(
                 ctx,
@@ -345,12 +357,8 @@ class Gatekeeper(rubbercog.Rubbercog):
 
         # exceptions without parameters
         elif isinstance(error, VerificationException):
-            await self.output.error(ctx, text.get("gatekeeper", type(error).__name__))
+            await self.output.error(ctx, self.text.get(type(error).__name__))
         # fmt: on
-
-
-def setup(bot):
-    bot.add_cog(Gatekeeper(bot))
 
 
 ##

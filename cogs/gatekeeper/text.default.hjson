@@ -1,0 +1,60 @@
+{
+	# success
+	"verify successful":  "((mention)), na e-mail **((email))** jsem ti poslala kód. Pro verifikaci použij `((prefix))submit kód`."
+	"verification public": Nový uživatel ((mention)) byl úspěšně přidán s rolí **((role))**.
+	"reverify successful": "((mention)), na tvůj e-mail jsem ti poslala nový kód."
+	"reverification public": "Uživatel ((mention)) se úspěšně vrátil zprátky na server."
+	# note: you probably want to change this in text.hjson file
+	"verification DM native": '''
+		Gratuluji k verifikaci!
+		'''
+	# note: you probably want to change this in text.hjson file
+	"verification DM guest": '''
+		Gratuluji k verifikaci!
+		'''
+
+	# e-mail content
+	"plaintext mail":
+		'''
+		Tvůj verifikační kód pro ((guild_name)) Discord server je: ((code)).
+		Ověříš se příkazem ((prefix))submit ((code)).
+
+		- ((bot_name)) (hash ((git_hash)))
+		'''
+	"html mail":
+		'''
+		<body style="background-color:((color_bg));margin:0;text-align:center;">
+		<div style="background-color:((color_bg));margin:0;padding:20px;text-align:center;">
+			<img src="((bot_avatar))" alt="((bot_name))" style="margin:0 auto;border-radius:100%;border:5px solid ((color_fg));height:((bot_avatar_size));width:((bot_avatar_size));backtround-color:((color_bg));" />
+			<p style="display:block;color:((color_fg));font-family:((font_family));font-size:24px;">
+				<img src="((user_avatar))" alt="" style="height=((user_avatar_size));width:((user_avatar_size));top:4px;margin-right:6px;border-radius:100%;border:2px solid ((color_fg));display:inline;position:relative;background-color:((color_bg));">
+				<span>((user_name))</span>
+			</p>
+			<p style="display:block;color:((color_fg));font-family:((font_family));">Tvůj verifikační kód pro <span style="font-weight:bold;">((guild_name))</span> Discord server:</p>
+			<p style="color:((color_bg));font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:((color_fg));display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">((code))</p>
+			<p style="color:((color_fg));font-family:((font_family));margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:((color_bg));padding:5px 10px;font-family:monospace;background-color:((color_fg));border-radius:2px;">((prefix))submit ((code))</span></p>
+			<p style="display:block;color:((color_fg));font-family:((font_family));">
+				<a style="color:((color_fg));text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">((bot_name))</a>
+				, hash ((git_hash))</p>
+		</div>
+		</body>
+		'''
+	"mail subject": "((guild_name)) → ((user_name))"
+
+	# Exceptions
+	VerificationException:   Chyba ve verifikaci.
+	# Exceptions: ?verify/?reverify change
+	NotAnEmail:              To není e-mail.
+	PlaceholderEmail:        `xlogin00` je tam jen na ukázku, potřebuji tvůj osobní xlogin.
+	AlreadyInDatabase:       Ty už v databázi jsi.
+	EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
+	IDAlreadyInDatabase:     Tvůj účet už v databázi je.
+	BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `((constraint))`.
+	# Exceptions: ?reverify prove
+	NotInDatabase:           Nejsi vůbec v databázi. ((admin))?
+	UnexpectedReverify:      Nesedí mi záznam databáze. ((admin))?
+	# Exceptions: ?submit
+	SubmitWithoutCode:       Nejdřív musíš zažádat o kód.
+	ProblematicVerification: Hmm, ((admin)), je tu pokus o verifikaci se záznamem ((status))...
+	WrongVerificationCode:   Špatný kód, ((mention)).
+}
