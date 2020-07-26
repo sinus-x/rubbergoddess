@@ -179,14 +179,6 @@
 		"subject roles": [0]
 	}
 
-	librarian: {
-		# Week the current semester started
-		"starting week": 0
-
-		# token for openweathermap.com
-		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
-	},
-
 	"voice cog": {
 		# Wordlist for automatic voice channel name generation
 		adjectives: ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]

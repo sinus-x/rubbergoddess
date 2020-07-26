@@ -6,9 +6,9 @@ from datetime import date
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
 from core.config import config
-from core.text import text
 from core.emote import emote
 
 
@@ -20,6 +20,9 @@ class Librarian(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
+        self.config = CogConfig("librarian")
+        self.text = CogText("librarian")
+
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
         url = f"http://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
@@ -27,7 +30,7 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(text.fill("librarian", "nameday cz", name=", ".join(names)))
+        await ctx.send(self.text.get("nameday", "cs", name=", ".join(names)))
 
     @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
@@ -36,28 +39,32 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(text.fill("librarian", "nameday sk", name=", ".join(names)))
+        await ctx.send(self.text.get("nameday", "sk", name=", ".join(names)))
 
     @commands.command(aliases=["tyden", "týden", "tyzden", "týždeň"])
     async def week(self, ctx: commands.Context):
         """See if the current week is odd or even"""
-        starting_week = config.get("librarian", "starting week")
         cal_week = date.today().isocalendar()[1]
-        stud_week = cal_week - starting_week
-        even, odd = "sudý", "lichý"
+        stud_week = cal_week - self.config.get("starting_week")
+        even, odd = self.text.get("week", "even"), self.text.get("week", "odd")
         cal_type = even if cal_week % 2 == 0 else odd
         stud_type = even if stud_week % 2 == 0 else odd
 
         embed = self.embed(ctx=ctx)
-        embed.add_field(name="Studijní", value="{} ({})".format(stud_type, stud_week))
-        embed.add_field(name="Kalendářní", value="{} ({})".format(cal_type, cal_week))
+        embed.add_field(
+            name=self.text.get("week", "study"), value="{} ({})".format(stud_type, stud_week)
+        )
+        embed.add_field(
+            name=self.text.get("week", "calendar"), value="{} ({})".format(cal_type, cal_week)
+        )
         await ctx.send(embed=embed)
 
         await utils.delete(ctx)
+        await utils.room_check(ctx)
 
     @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
     async def weather(self, ctx, *, place: str = "Brno"):
-        token = config.get("librarian", "weather token")
+        token = self.config.get("librarian", "weather token")
         place = place[:100]
         url = (
             "https://api.openweathermap.org/data/2.5/weather?q="
@@ -114,15 +121,15 @@ class Librarian(rubbercog.Rubbercog):
         """
 
         if str(res["cod"]) == "404":
-            return await ctx.send(text.get("librarian", "place not found"))
+            return await ctx.send(self.text.get("weather", "place_not_found"))
         elif str(res["cod"]) == "401":
-            return await ctx.send(text.get("librarian", "weather token"))
+            return await ctx.send(self.text.get("weather", "token"))
         elif str(res["cod"]) != "200":
-            return await ctx.send(text.fill("librarian", "place error", message=res["message"]))
+            return await ctx.send(self.text.get("weather", "place_error", message=res["message"]))
 
         title = res["weather"][0]["description"]
-        description = text.fill(
-            "librarian", "w_description", name=res["name"], country=res["sys"]["country"]
+        description = self.text.get(
+            "weather", "description", name=res["name"], country=res["sys"]["country"]
         )
         if description.endswith("CZ"):
             description = description[:-4]
@@ -132,10 +139,10 @@ class Librarian(rubbercog.Rubbercog):
         )
 
         embed.add_field(
-            name=text.get("librarian", "w_temperature"),
-            value=text.fill(
-                "librarian",
-                "w_temperature_value",
+            name=self.text.get("weather", "temperature"),
+            value=self.text.get(
+                "weather",
+                "temperature_value",
                 real=round(res["main"]["temp"], 1),
                 feel=round(res["main"]["feels_like"], 1),
             ),
@@ -143,17 +150,17 @@ class Librarian(rubbercog.Rubbercog):
         )
 
         embed.add_field(
-            name=text.get("librarian", "w_humidity"), value=str(res["main"]["humidity"]) + " %",
+            name=self.text.get("weather", "humidity"), value=str(res["main"]["humidity"]) + " %",
         )
         embed.add_field(
-            name=text.get("librarian", "w_clouds"), value=(str(res["clouds"]["all"]) + " %")
+            name=self.text.get("weather", "clouds"), value=(str(res["clouds"]["all"]) + " %")
         )
         if "visibility" in res:
             embed.add_field(
-                name=text.get("librarian", "w_visibility"),
+                name=self.text.get("weather", "visibility"),
                 value=f"{int(res['visibility']/1000)} km",
             )
-        embed.add_field(name=text.get("librarian", "w_wind"), value=f"{res['wind']['speed']} m/s")
+        embed.add_field(name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s")
 
         await utils.send(ctx, embed=embed)
         await utils.room_check(ctx)
@@ -203,11 +210,7 @@ class Librarian(rubbercog.Rubbercog):
         if fn in hashlib.algorithms_available:
             result = hashlib.new(fn, data.encode("utf-8")).hexdigest()
         else:
-            return await ctx.send(text.get("librarian", "hash not found"))
+            return await ctx.send(self.text.get("invalid_hash"))
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
         await ctx.send(f"**{fn}** ({quote}):\n> ```{result}```")
-
-
-def setup(bot):
-    bot.add_cog(Librarian(bot))
