@@ -13,7 +13,7 @@
 	}
 
 	weather: {
-		place_not_found: Pro takové místo nemám předpověď.
+		place_not_found: Takové místo neznám.
 		bad_token:       Chybný token.
 		place_error:     Chyba při získávání informací (`((message))`)
 

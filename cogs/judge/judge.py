@@ -3,7 +3,6 @@ from discord.ext import commands
 
 from cogs.resource import CogText
 from core import check, rubbercog, utils
-from core.text import text
 from repository import review_repo, subject_repo
 
 repo_r = review_repo.ReviewRepository()

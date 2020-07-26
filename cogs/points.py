@@ -4,9 +4,7 @@ import random
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog, utils
-from core.config import config
-from core.text import text
+from core import rubbercog, utils
 from repository.points_repo import PointsRepository
 
 repo_p = PointsRepository()

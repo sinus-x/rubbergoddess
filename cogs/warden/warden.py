@@ -106,7 +106,7 @@ class Warden(rubbercog.Rubbercog):
         try:
             repost_message = embed_message.embeds[0].footer.text.split(" | ")[1]
             repost_message = await embed_message.channel.fetch_message(int(repost_message))
-        except Exception as e:
+        except:
             return await self.console.debug(embed_message, "Could not find repost's original.")
 
         for r in embed_message.reactions:

@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import check, rubbercog, utils
+from core import check, rubbercog
 from core.config import config
 
 

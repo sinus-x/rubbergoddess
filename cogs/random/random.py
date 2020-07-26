@@ -69,10 +69,8 @@ class Random(rubbercog.Rubbercog):
         image_info = requests.get(f"https://picsum.photos/id/{image_id}/info")
         try:
             image_url = image_info.json()["url"]
-            log_url = "<" + image_url + ">"
         except:
             image_url = discord.Embed.Empty
-            log_url = "with picsum ID " + image_id
 
         embed = self.embed(ctx=ctx, title=discord.Embed.Empty, description=image_url, footer=seed)
         embed.set_image(url=image.url)

@@ -1,5 +1,3 @@
-import datetime
-
 from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.image import Image

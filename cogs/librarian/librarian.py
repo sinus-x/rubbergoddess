@@ -3,13 +3,10 @@ import requests
 import hashlib
 from datetime import date
 
-import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
-from core.config import config
-from core.emote import emote
 
 
 class Librarian(rubbercog.Rubbercog):
@@ -196,7 +193,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command()
     async def hashlist(self, ctx):
         """Get list of available hash functions"""
-        result = f"**hashlib**\n"
+        result = "**hashlib**\n"
         result += "> " + " ".join(sorted(hashlib.algorithms_available))
 
         await ctx.send(result)

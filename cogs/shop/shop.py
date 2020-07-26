@@ -3,7 +3,6 @@ from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, check, utils
-from core.config import config
 from repository import user_repo, karma_repo
 
 repo_u = user_repo.UserRepository()

@@ -7,5 +7,5 @@ class Points(database.base):
 
     # fmt: off
     user_id = Column(BigInteger, primary_key=True)
-    points  = Column(BigInteger)
+    points  = Column(Integer)
     # fmt: on

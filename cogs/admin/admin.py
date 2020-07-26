@@ -2,7 +2,7 @@ import subprocess
 
 from discord.ext import commands
 
-from cogs.resource import CogConfig, CogText
+from cogs.resource import CogText
 from core import check, rubbercog, utils
 from core.config import config
 

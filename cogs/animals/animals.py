@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import rubbercog, utils
 
 
 class Animals(rubbercog.Rubbercog):
@@ -10,6 +10,7 @@ class Animals(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
         self.config = CogConfig("animals")
         self.text = CogText("animals")
 

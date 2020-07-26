@@ -70,7 +70,7 @@ class Errors(rubbercog.Rubbercog):
             await self.output.warning(ctx, self.text.get("CommandOnCooldown", time=time))
             return False
         if type(error) == commands.MaxConcurrencyReached:
-            await self.output.warning(ctx,self.text.get("MaxConcurrencyReached", num=error.number, per=error.per.name))
+            await self.output.warning(ctx, self.text.get("MaxConcurrencyReached", num=error.number, per=error.per.name))
             return False
         if type(error) == commands.MissingRole:
             # TODO Is !r OK, or should we use error.missing_role.name?

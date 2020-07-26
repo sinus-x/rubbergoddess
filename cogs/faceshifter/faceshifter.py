@@ -189,7 +189,7 @@ class Faceshifter(rubbercog.Rubbercog):
             return
         channel, message, member, emoji = payload
         emote_channel_list = await self._message_to_tuple_list(message)
-        remove_reaction = False
+        result = None
         for emote_channel in emote_channel_list:
             if str(emoji) == emote_channel[0]:
                 # try both subject and role
@@ -203,7 +203,7 @@ class Faceshifter(rubbercog.Rubbercog):
                     break
         else:
             # another emote was added
-            result = False
+            result = None
 
         if not result:
             try:

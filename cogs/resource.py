@@ -2,7 +2,6 @@ import re
 from collections import OrderedDict
 
 import hjson
-import discord
 
 from core.emote import emote
 

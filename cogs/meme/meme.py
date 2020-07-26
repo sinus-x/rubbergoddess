@@ -1,12 +1,9 @@
-import random
-
 import discord
 from discord.ext import commands
 
-from cogs.resource import CogConfig, CogText
+from cogs.resource import CogText
 from core import rubbercog, utils
 from core.emote import emote
-from core.config import config
 
 
 class Meme(rubbercog.Rubbercog):
@@ -14,6 +11,8 @@ class Meme(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.text = CogText("meme")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()

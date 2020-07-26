@@ -29,7 +29,7 @@ per-file-ignores =
 	# print (logging)
 	core/output.py:T001
 	# print (logging), line too long
-	cogs/errors.py:T001,E501
+	cogs/errors/errors.py:T001,E501
 exclude =
 	# .py files in this directory are deprecated
 	config/*,

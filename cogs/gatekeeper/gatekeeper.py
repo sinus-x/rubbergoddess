@@ -172,8 +172,6 @@ class Gatekeeper(rubbercog.Rubbercog):
             )
 
         # send messages
-        role_channel = self.getGuild().get_channel(config.get("channels", "bot_roles"))
-        info_channel = self.getGuild().get_channel(config.get("channels", "info"))
         for role_id in config.get("roles", "native"):
             if role_id in [x.id for x in ctx.author.roles]:
                 await ctx.author.send(self.text.get("verification DM native"))

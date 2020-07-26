@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig
-from core import rubbercog, utils
+from core import rubbercog
 from core.config import config
 
 boottime = datetime.datetime.now().replace(microsecond=0)
