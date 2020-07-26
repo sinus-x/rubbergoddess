@@ -5,7 +5,7 @@
 	"write error":    "Zápis do databáze se nepodařil",
 	"update success": "Aktualizace záznamu proběhla v pořádku",
 	"update error":   "Aktualizace záznamu v databázi se mi nepovedla",
-	"delete success": "Uživatele ({num}) jsem z databáze smazala",
+	"delete success": "Uživatele (((num))) jsem z databáze smazala",
 	"delete error":   "Smazání uživatele z databáze se nezdařilo",
 	"not found":      "Nikoho takového jsem v databázi nenašla",
 	"duplicate":      "Takové ID už v databázi existuje"

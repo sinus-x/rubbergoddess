@@ -165,18 +165,5 @@
 
 		# Which roles are considered as visiting
 		guests: [0, 0, 0]
-	},
-
-	warden: {
-		# Where the images should be checked for duplicities. (memes etc)
-		"deduplication channels": []
-
-		# How many people have to react to embed for it to dissapear
-		"not duplicate limit": 5
-
-		# Look for these strings in messages
-		"penalty strings": ["giphy.com", "tenor.com", "imgur.com", "gfycat.com"]
-		# Remove karma is strings above are found
-		"penalty value": 2
 	}
 }

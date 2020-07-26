@@ -7,10 +7,10 @@ from discord.ext import commands
 import dhash
 from PIL import Image
 
+from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
 from core.emote import emote
-from core.text import text
 from repository import image_repo, karma_repo
 
 dhash.force_pil()
@@ -26,13 +26,16 @@ class Warden(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
+        self.config = CogConfig("warden")
+        self.text = CogText("warden")
+
         self.limit_full = 3
         self.limit_hard = 7
         self.limit_soft = 14
 
     def doCheckRepost(self, message: discord.Message):
         return (
-            message.channel.id in config.get("warden", "deduplication channels")
+            message.channel.id in self.config.get("deduplication channels")
             and message.attachments is not None
             and len(message.attachments) > 0
             and not message.author.bot
@@ -49,11 +52,11 @@ class Warden(rubbercog.Rubbercog):
                 await self.checkDuplicate(message)
 
         # gif check
-        for link in config.get("warden", "penalty strings"):
+        for link in self.config.get("penalty strings"):
             if link in message.content:
-                penalty = config.get("warden", "penalty value")
+                penalty = self.config.get("penalty value")
                 await message.channel.send(
-                    text.fill("warden", "gif warning", user=message.author, value=penalty)
+                    self.text.get("gif warning", mention=message.author, value=penalty)
                 )
                 repo_k.update_karma_get(message.author, -1 * penalty)
                 await utils.delete(message)
@@ -82,7 +85,7 @@ class Warden(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Handle 'This is a repost' embed"""
-        if payload.channel_id not in config.get("warden", "deduplication channels"):
+        if payload.channel_id not in self.config.get("deduplication channels"):
             return
         if payload.member.bot:
             return
@@ -113,7 +116,7 @@ class Warden(rubbercog.Rubbercog):
             if (
                 payload.emoji.name == "❎"
                 and r.emoji == "❎"
-                and r.count > config.get("warden", "not duplicate limit")
+                and r.count > self.config.get("not duplicate limit")
             ):
                 # remove bot's reactions, it is not a repost
                 try:
@@ -320,8 +323,7 @@ class Warden(rubbercog.Rubbercog):
             link = "404 " + emote.sad
             author = "_??? (404)_"
 
-        d = text.fill(
-            "warden",
+        d = self.text.get(
             "repost description",
             name=discord.utils.escape_markdown(message.author.display_name),
             value=prob,
@@ -330,11 +332,9 @@ class Warden(rubbercog.Rubbercog):
         embed.add_field(name=f"**{author}**, {timestamp}", value=link, inline=False)
 
         embed.add_field(
-            name=text.get("warden", "repost title"),
+            name=self.text.get("repost title"),
             value="_"
-            + text.fill(
-                "warden", "repost content", limit=config.get("warden", "not duplicate limit")
-            )
+            + self.text.get("repost content", limit=self.config.get("not duplicate limit"))
             + "_",
         )
         embed.set_footer(text=f"{message.author.id} | {message.id}")
