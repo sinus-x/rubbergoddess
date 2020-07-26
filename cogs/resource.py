@@ -36,7 +36,7 @@ class CogConfig:
             if arg in result:
                 result = result[arg]
             else:
-                raise ValueError(f"`{'/'.join(args)}` is not valid config argument.")
+                raise ValueError(f"`{'/'.join(args)}` is not valid argument for given config file.")
         return result
 
 
@@ -70,7 +70,7 @@ class CogText:
             if arg in result:
                 result = result[arg]
             else:
-                raise ValueError(f"`{'/'.join(args)}` is not valid text file argument.")
+                raise ValueError(f"`{'/'.join(args)}` is not valid argument for given text file.")
 
         def replace(result: str):
             # apply emojis

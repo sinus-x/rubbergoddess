@@ -79,10 +79,6 @@ class Config:
         self.roles_native   = self.get('roles', 'native')
         self.roles_guest    = self.get('roles', 'guests')
 
-        ##
-        ## COMPATIBILITY
-        self.noimitation = self.get('compatibility', 'ignored imitation channels')
-
         # fmt: on
 
     # fmt: off

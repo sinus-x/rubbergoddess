@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 from repository import user_repo
 
 repository = user_repo.UserRepository()
@@ -14,6 +14,8 @@ class Stalker(rubbercog.Rubbercog):
 
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
+
+        self.text = CogText("stalker")
 
     def dbobj2email(self, dbobj):
         if dbobj is not None:
@@ -28,16 +30,14 @@ class Stalker(rubbercog.Rubbercog):
             return email
         return
 
-    @commands.check(check.is_verified)
+    @commands.check(check.is_elevated)
     @commands.group(name="whois", aliases=["gdo"])
     async def whois(self, ctx: commands.Context):
         """Get information about user"""
         await utils.send_help(ctx)
 
     @whois.command(name="member", aliases=["tag", "user", "id"])
-    async def whois_member(
-        self, ctx: commands.Context, member: discord.Member = None, log: bool = True
-    ):
+    async def whois_member(self, ctx: commands.Context, member: discord.Member = None):
         """Get information about guild member
 
         member: A guild member
@@ -106,7 +106,6 @@ class Stalker(rubbercog.Rubbercog):
         await utils.delete(ctx)
 
     @whois.command(name="login", aliases=["xlogin", "vutlogin"])
-    @commands.check(check.is_elevated)
     async def whois_login(self, ctx: commands.Context, login: str = None, log: bool = True):
         """Get information about xlogin
 
@@ -207,13 +206,13 @@ class Stalker(rubbercog.Rubbercog):
         # try to write to database
         try:
             repository.filterId(discord_id=member.id)[0]
-            return await self.output.error(ctx, text.get("db", "duplicate"))
+            return await self.output.error(ctx, self.text.get("duplicate"))
         except IndexError:
             # no result is good, we won't have collision
             pass
 
         try:
-            repository.add_user(
+            repository.add(
                 discord_id=member.id,
                 login=login,
                 group=group.name,
@@ -221,7 +220,7 @@ class Stalker(rubbercog.Rubbercog):
                 code="MANUAL",
             )
         except Exception as e:
-            return await self.output.error(ctx, text.get("db", "write"), e)
+            return await self.output.error(ctx, self.text.get("write"), e)
 
         # assign roles, if neccesary
         if verify not in member.roles:
@@ -230,7 +229,7 @@ class Stalker(rubbercog.Rubbercog):
             await member.add_roles(group)
 
         # display the result
-        await self.whois_member(ctx, member, log=False)
+        await self.whois_member(ctx, member)
 
         await self.event.sudo(ctx, f"New user {member} ({group.name})")
 
@@ -256,16 +255,18 @@ class Stalker(rubbercog.Rubbercog):
             else:
                 result = repository.filterId(discord_id=member.id)
         except Exception as e:
-            return await self.output.error(ctx, text.get("db", "read"), e)
+            return await self.output.error(ctx, self.text.get("read"), e)
 
         d = "Result" if force else "Simulation, run with `force` to apply"
         if force:
             embed = self.embed(description=d, color=config.color_success)
             # delete
             if result is None or result < 1:
-                return await self.output.error(ctx, text.get("db", "delete error"))
+                return await self.output.error(ctx, self.text.get("delete error"))
             embed.add_field(
-                inline=False, name="Success", value=text.fill("db", "delete success", num=result)
+                inline=False,
+                name="Success",
+                value=self.text.get("db", "delete success", num=result),
             )
             embed.add_field(name="Warning", value="Roles and channel access haven't been removed")
             await self.event.sudo(ctx, "User removed from database: " + member.name)
@@ -280,7 +281,7 @@ class Stalker(rubbercog.Rubbercog):
                     value=discord.utils.get(guild.members, id=int(r.discord_id)).mention,
                 )
             if len(result) < 1:
-                embed.add_field(name="No entry", value=text.get("db", "not found"), inline=False)
+                embed.add_field(name="No entry", value=self.text.get("not found"), inline=False)
         await ctx.send(embed=embed, delete_after=config.delay_embed)
 
         await utils.delete(ctx)
@@ -402,7 +403,3 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(embed=embed, delete_after=config.delay_embed)
 
         await utils.delete(ctx)
-
-
-def setup(bot):
-    bot.add_cog(Stalker(bot))

@@ -61,16 +61,16 @@
 			howto
 			# purge messages, duplicate subject channel for teacher
 			janitor
+			# allow students to review their subjects
+			judge
 			# see and manage karma
-			karma_old
+			karma
 			# nameday, weather
 			librarian
 			# hug
 			meme
 			# pick, flip, roll
 			random
-			# allow students to review their subjects
-			review
 			# allow users to buy stuff for their karma
 			shop
 			# manage users and make database lookups
@@ -167,14 +167,6 @@
 		guests: [0, 0, 0]
 	},
 
-	"voice cog": {
-		# Wordlist for automatic voice channel name generation
-		adjectives: ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]
-		nouns: ["cat", "dog", "elephant", "horse", "mouse", "fish",
-                "octopus", "cockroach", "butterfly", "owl", "fox", "tiger",
-                "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
-	},
-
 	warden: {
 		# Where the images should be checked for duplicities. (memes etc)
 		"deduplication channels": []
@@ -186,15 +178,5 @@
 		"penalty strings": ["giphy.com", "tenor.com", "imgur.com", "gfycat.com"]
 		# Remove karma is strings above are found
 		"penalty value": 2
-	},
-
-	shop: {
-		# Karma points needed to change the nickname
-		nickname: 500
-	},
-
-	compatibility: {
-		# Do not send the same emote as other bot here
-		"ignored imitation channels": []
 	}
 }

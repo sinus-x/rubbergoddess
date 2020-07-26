@@ -41,18 +41,6 @@
 		"invalid emote":   "{user}, {not_emote} pro roli {role} není emote."
 	}
 
-	voice: {
-		"wip": "{mention}, to teď nefunguje."
-
-		"welcome": "{nickname}, aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `{prefix}voice`.",
-
-		"lock": "🔒",
-		"lock error": "{user}, aktuální kanál už je uzamklý.",
-		"unlock error": "{user}, aktuální kanál není uzamklý.",
-		"rename empty": "{user}, zadej alespoň jeden platný znak.",
-		"rename long": "{user}, takové jméno je moc dlouhé."
-	}
-
 	"warden": {
 		"gif warning": "{user}, linkování externích obrázků nemám ráda. Snížila jsem ti karmu o {value}.",
 		"repost title": "Nápověda",

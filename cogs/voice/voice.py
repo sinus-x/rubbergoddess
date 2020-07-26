@@ -3,8 +3,8 @@ import random
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogConfig, CogText
 from core.config import config
-from core.text import text
 from core import check, rubbercog, utils
 
 """
@@ -23,7 +23,11 @@ class Voice(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
-        self.lock = text.get("voice", "lock")
+
+        self.config = CogConfig("voice")
+        self.text = CogText("voice")
+
+        self.lock = self.text.get("lock")
         self.locked = []
 
     def getVoiceChannel(self, ctx: commands.Context):
@@ -33,6 +37,7 @@ class Voice(rubbercog.Rubbercog):
     ## Commands
     ##
 
+    @commands.guild_only()
     @commands.check(check.is_in_voice)
     @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
     @commands.group(name="voice")
@@ -43,7 +48,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="lock", aliases=["close"], hidden=True)
     async def voice_lock(self, ctx: commands.Context):
         """Make current voice channel invisible"""
-        await ctx.send(text.fill("voice", "wip", mention=ctx.author.mention), delete_after=10)
+        await ctx.send(self.text.get("wip", mention=ctx.author.mention), delete_after=10)
         await utils.delete(ctx)
         return
 
@@ -51,7 +56,9 @@ class Voice(rubbercog.Rubbercog):
         if channel.id in self.locked:
             await ctx.send(
                 delete_after=config.get("delay", "user error"),
-                content=text.fill("voice", "lock error", user=ctx.author),
+                content=self.text.get(
+                    "lock_error", nickname=self.sanitise(ctx.author.display_name)
+                ),
             )
             return
         await channel.set_permissions(self.getVerifyRole(), overwrite=None)
@@ -64,7 +71,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="unlock", aliases=["open"], hidden=True)
     async def voice_unlock(self, ctx: commands.Context):
         """Make current voice channel visible"""
-        await ctx.send(text.fill("voice", "wip", mention=ctx.author.mention), delete_after=10)
+        await ctx.send(self.text.get("wip", mention=ctx.author.mention), delete_after=10)
         await utils.delete(ctx)
         return
 
@@ -72,7 +79,9 @@ class Voice(rubbercog.Rubbercog):
         if channel.id not in self.locked:
             await ctx.send(
                 delete_after=config.get("delay", "user error"),
-                content=text.fill("voice", "unlock error", user=ctx.author),
+                content=self.text.get(
+                    "unlock_error", nickname=self.sanitise(ctx.author.display_name)
+                ),
             )
             return
         await channel.set_permissions(self.getVerifyRole(), view_channel=True)
@@ -85,7 +94,7 @@ class Voice(rubbercog.Rubbercog):
     @voice.command(name="rename", hidden=True)
     async def voice_rename(self, ctx: commands.Context, *args):
         """Rename current voice channel"""
-        await ctx.send(text.fill("voice", "wip", mention=ctx.author.mention), delete_after=10)
+        await ctx.send(self.text.get("wip", mention=ctx.author.mention), delete_after=10)
         await utils.delete(ctx)
         return
 
@@ -93,13 +102,17 @@ class Voice(rubbercog.Rubbercog):
         if len(name) <= 0:
             await ctx.send(
                 delete_after=config.delay_embed,
-                content=text.fill("voice", "rename empty", user=ctx.author),
+                content=self.text.get(
+                    "rename_empty", nickname=self.sanitise(ctx.author.display_name)
+                ),
             )
             return
         if len(name) > 25:
             await ctx.send(
                 delete_after=config.delay_embed,
-                content=text.fill("voice", "rename long", user=ctx.author),
+                content=self.text.get(
+                    "rename_long", nickname=self.sanitise(ctx.author.display_name)
+                ),
             )
             return
 
@@ -165,8 +178,8 @@ class Voice(rubbercog.Rubbercog):
             await channel.edit(name="Empty")
             return
 
-        adjs = config.get("voice cog", "adjectives")
-        nouns = config.get("voice cog", "nouns")
+        adjs = self.config.get("adjectives")
+        nouns = self.config.get("nouns")
         name = "{} {}".format(random.choice(adjs), random.choice(nouns))
         await channel.edit(name=name)
 
@@ -204,7 +217,3 @@ class Voice(rubbercog.Rubbercog):
         if len(voices.voice_channels) == 1:
             await nomic.purge()
             self.locked = []
-
-
-def setup(bot):
-    bot.add_cog(Voice(bot))

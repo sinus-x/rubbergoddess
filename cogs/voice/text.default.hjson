@@ -1,0 +1,11 @@
+{
+	wip: ((mention)), to teď nefunguje.
+
+	welcome: ((nickname)), aktuální kanál můžeš přejmenovat nebo zamknout. Příkaz pro tuto místnost je `((prefix))voice`.
+
+	lock: "🔒",
+	lock_error:   **((nickname))**, aktuální kanál už je uzamklý.
+	unlock_error: **((nickname))**, aktuální kanál není uzamklý.
+	rename_empty: **((nickname))**, zadej alespoň jeden platný znak.
+	rename_long:  **((nickname))**, takové jméno je moc dlouhé.
+}
