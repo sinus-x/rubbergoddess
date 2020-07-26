@@ -60,7 +60,7 @@ class Errors(rubbercog.Rubbercog):
 
         # Exceptions with parameters
         if type(error) == commands.MissingRequiredArgument:
-            await self.output.warning(ctx, self.text.get("MissingRequiredArgument", param=error.param))
+            await self.output.warning(ctx, self.text.get("MissingRequiredArgument", param=error.param.name))
             return False
         if type(error) == commands.CommandOnCooldown:
             time = utils.seconds2str(error.retry_after)
@@ -97,15 +97,14 @@ class Errors(rubbercog.Rubbercog):
         if type(error) == commands.BadUnionArgument:
             await self.output.warning(ctx, self.text.get("BadUnionArgument", param=error.param.name))
             return False
-
-        # The rest of client exceptions
-        if isinstance(error, commands.ClientException):
-            await self.output.warning(ctx, self.text.get(type(error).__name__))
-            return False
-
         # All cog-related errors
         if isinstance(error, commands.ExtensionError):
             await self.output.error(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
+            return False
+
+        # The rest of client exceptions
+        if isinstance(error, commands.CommandError) or isinstance(error, discord.ClientException):
+            await self.output.warning(ctx, self.text.get(type(error).__name__))
             return False
 
         # DiscordException, non-critical errors
@@ -126,7 +125,7 @@ class Errors(rubbercog.Rubbercog):
         else:
             location = type(ctx.channel).__name__
 
-        output = "{command} by {user} in {location}".format(
+        output = "{command} by {user} in {location}\n".format(
             command=config.prefix + ctx.command.qualified_name,
             user=str(ctx.author),
             location=location,
@@ -149,7 +148,7 @@ class Errors(rubbercog.Rubbercog):
             if isinstance(ctx.channel, discord.TextChannel)
             else type(ctx.channel).__name__
         )
-        embed.set_footer(text=footer, icon_url=embed.footer_icon_url)
+        embed.set_footer(text=footer, icon_url=ctx.author.avatar_url)
 
         stack = output[-1]
         if len(stack) > 255:

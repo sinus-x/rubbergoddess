@@ -22,7 +22,7 @@ class CogConfig:
                 # allow two layers
                 if isinstance(value, OrderedDict) or isinstance(value, dict):
                     for subkey in value.keys():
-                        if subkey in custom[key]:
+                        if key in custom.keys() and subkey in custom[key].keys():
                             self.config[key][subkey] = custom[key][subkey]
                 elif key in custom.keys():
                     self.config[key] = custom[key]
@@ -55,7 +55,7 @@ class CogText:
                 # allow two layers
                 if isinstance(value, OrderedDict) or isinstance(value, dict):
                     for subkey in value.keys():
-                        if subkey in custom[key]:
+                        if key in custom.keys() and subkey in custom[key].keys():
                             self.config[key][subkey] = custom[key][subkey]
                 elif key in custom.keys():
                     self.config[key] = custom[key]

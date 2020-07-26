@@ -19,7 +19,7 @@
 	ConversionError:       Chyba v konverzi.
 	UserInputError:        Chyba na vstupu.
 	CommandNotFound:       Takový příkaz neznám.
-	MissingRequiredArgument: Chybí mi argument **((param))**.
+	MissingRequiredArgument: Chybí ti argument **((param))**
 	TooManyArguments:      To je moc argumentů!
 	BadArgument:           Špatný argument.
 	CheckFailure:          Nedostatečné oprávnění.
