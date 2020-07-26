@@ -6,7 +6,6 @@ from discord.ext import commands
 from cogs.resource import CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 
 
 class Janitor(rubbercog.Rubbercog):
@@ -72,7 +71,7 @@ class Janitor(rubbercog.Rubbercog):
                 embed = embed.clear_fields()
             # fmt: on
         if warn:
-            await msg.edit(content=text.get("sent", num=len(hoarders)))
+            await msg.edit(content=self.text.get("sent", num=len(hoarders)))
         await ctx.send(embed=embed)
 
     @commands.guild_only()

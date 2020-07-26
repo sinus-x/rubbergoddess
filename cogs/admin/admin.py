@@ -5,7 +5,6 @@ from discord.ext import commands
 from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 
 
 class Admin(rubbercog.Rubbercog):

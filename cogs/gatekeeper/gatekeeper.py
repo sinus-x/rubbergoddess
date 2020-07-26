@@ -12,7 +12,6 @@ from discord.ext import commands
 from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 from repository import user_repo
 
 repo_u = user_repo.UserRepository()

@@ -4,7 +4,6 @@ from discord.ext import commands
 from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 from repository.subject_repo import SubjectRepository
 
 repo_s = SubjectRepository()
@@ -411,7 +410,7 @@ class Faceshifter(rubbercog.Rubbercog):
 
         await member.remove_roles(role)
 
-    async def _send(self, location: discord.abc.Messageable, text=text):
+    async def _send(self, location: discord.abc.Messageable, text: str):
         # fmt: off
         if isinstance(location, discord.TextChannel) \
         and location.id in self.config.get("r2r_channels"):
