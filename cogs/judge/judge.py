@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogText
 from core import check, rubbercog, utils
 from core.text import text
 from repository import review_repo, subject_repo
@@ -14,6 +15,8 @@ class Judge(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.text = CogText("judge")
 
     ##
     ## Commands
@@ -31,16 +34,16 @@ class Judge(rubbercog.Rubbercog):
         """See subject's reviews"""
         db_subject = repo_s.get(subject)
         if db_subject is None:
-            return await ctx.send(text.get("judge", "no subject"))
+            return await ctx.send(self.text.get("no_subject"))
 
-        title = text.get("judge", "embed_title") + subject
+        title = self.text.get("embed", "title") + subject
         name = db_subject.name if db_subject.name is not None else discord.Embed.Empty
         if name is not discord.Embed.Empty and db_subject.category is not None:
             name += f" ({db_subject.category})"
 
         db_reviews = repo_r.get_subject_reviews(subject)
         if db_reviews.count() == 0:
-            return await ctx.send(text.fill("judge", "no reviews", mention=ctx.author.mention))
+            return await ctx.send(self.text.get("no reviews", mention=ctx.author.mention))
 
         _total = 0
         for db_review in db_reviews:
@@ -71,15 +74,15 @@ class Judge(rubbercog.Rubbercog):
         text: Your review
         """
         if mark < 1 or mark > 5:
-            return await ctx.send(text.get("judge", "wrong mark"))
+            return await ctx.send(self.text.get("wrong_mark"))
 
         if len(text) > 1024:
-            return await ctx.send(text.get("judge", "text too long"))
+            return await ctx.send(self.text.get("text_too_long"))
 
         # check if subject is in database
         db_subject = repo_s.get(subject)
         if db_subject is None:
-            return await ctx.send(text.get("judge", "no subject"))
+            return await ctx.send(self.text.get("no_subject"))
 
         anonymous = isinstance(ctx.channel, discord.DMChannel)
         past_review = repo_r.get_review_by_author_subject(ctx.author.id, subject)
@@ -92,8 +95,8 @@ class Judge(rubbercog.Rubbercog):
             repo_r.update_review(past_review.id, mark, anonymous, text)
 
         # send confirmation
-        await self.event.user(ctx, f"Review by {ctx.author} for {subject} added")
-        return await ctx.send(text.get("judge", "added"))
+        await self.event.user(ctx, f"Added review for {subject}.")
+        return await ctx.send(self.text.get("added"))
 
     @review.command(name="remove")
     async def review_remove(self, ctx, subject: str):
@@ -103,11 +106,11 @@ class Judge(rubbercog.Rubbercog):
         """
         review = repo_r.get_review_by_author_subject(ctx.author.id, subject)
         if review is None:
-            return await ctx.send(text.fill("judge", "no review", mention=ctx.author.mention))
+            return await ctx.send(self.text.get("no_review", mention=ctx.author.mention))
 
         repo_r.remove(review.id)
-        await self.event.user(ctx, f"Review by {ctx.author} for {subject} removed")
-        return await ctx.send(text.get("judge", "removed"))
+        await self.event.user(ctx, f"Removed review for {subject}.")
+        return await ctx.send(self.text.get("removed"))
 
     @commands.check(check.is_mod)
     @commands.group(name="sudo_review")
@@ -120,11 +123,11 @@ class Judge(rubbercog.Rubbercog):
         """Remove someone's review"""
         db_review = repo_r.get(id)
         if db_review is None:
-            return await ctx.send(text.fill("judge", "no review", mention=ctx.author.mention))
+            return await ctx.send(self.text.get("no_review", mention=ctx.author.mention))
 
         repo_r.remove(id)
         await self.event.sudo(ctx, f"Review {id} removed")
-        return await ctx.send(text.get("judge", "removed"))
+        return await ctx.send(self.text.get("removed"))
 
     @commands.check(check.is_mod)
     @commands.group(name="sudo_subject")
@@ -142,11 +145,11 @@ class Judge(rubbercog.Rubbercog):
         """
         db_subject = repo_s.get(subject)
         if db_subject is not None:
-            return await ctx.send(text.get("judge", "subject exists"))
+            return await ctx.send(self.text.get("subject_exists"))
 
         repo_s.add(subject, name, category)
         await self.event.sudo(ctx, f"Subject {subject} added")
-        await ctx.send(text.get("judge", "subject added"))
+        await ctx.send(self.text.get("subject_added"))
 
     @sudo_subject.command(name="update")
     async def sudo_subject_update(self, ctx, subject: str, name: str, category: str):
@@ -158,11 +161,11 @@ class Judge(rubbercog.Rubbercog):
         """
         db_subject = repo_s.get(subject)
         if db_subject is None:
-            return await ctx.send(text.get("judge", "no subject"))
+            return await ctx.send(self.text.get("no_subject"))
 
         repo_s.update(subject, name, category)
         await self.event.sudo(ctx, f"Subject {subject} updated")
-        await ctx.send(text.get("judge", "subject updated"))
+        await ctx.send(self.text.get("subject_updated"))
 
     @sudo_subject.command(name="remove")
     async def sudo_subject_remove(self, ctx, subject: str):
@@ -172,11 +175,11 @@ class Judge(rubbercog.Rubbercog):
         """
         db_subject = repo_s.get(subject)
         if db_subject is None:
-            return await ctx.send(text.get("judge", "no subject"))
+            return await ctx.send(self.text.get("no_subject"))
 
         repo_s.remove(subject)
         await self.event.sudo(ctx, f"Subject {subject} removed")
-        await ctx.send(text.get("judge", "subject removed"))
+        await ctx.send(self.text.get("subject_removed"))
 
     ##
     ## Listeners
@@ -188,7 +191,7 @@ class Judge(rubbercog.Rubbercog):
             user.bot
             or len(reaction.message.embeds) != 1
             or not isinstance(reaction.message.embeds[0].title, str)
-            or not reaction.message.embeds[0].title.startswith(text.get("judge", "embed_title"))
+            or not reaction.message.embeds[0].title.startswith(self.text.get("embed", "title"))
         ):
             return
 
@@ -229,7 +232,7 @@ class Judge(rubbercog.Rubbercog):
             return await self._remove_reaction(reaction, user)
 
         # get reviews for given subject
-        subject = embed.title.replace(text.get("judge", "embed_title"), "")
+        subject = embed.title.replace(self.text.get("embed", "title"), "")
         reviews = repo_r.get_subject_reviews(subject)
 
         _total = 0
@@ -245,6 +248,8 @@ class Judge(rubbercog.Rubbercog):
 
             page = (page_current + scroll_delta) % reviews.count()
             footer_text = footer_text.replace(pages, f"{page+1}/{reviews.count()}")
+        else:
+            page = 0
 
         # get new review
         review = reviews[page].Review
@@ -285,18 +290,24 @@ class Judge(rubbercog.Rubbercog):
 
         # add content
         # fmt: off
-        name = self.bot.get_user(int(review.discord_id)) or text.get("judge", "embed_no_user")
+        name = self.bot.get_user(int(review.discord_id)) or self.text.get("embed", "no_user")
         if review.anonym:
-            name = text.get("judge", "embed_anonymous")
+            name = self.text.get("embed", "anonymous")
 
         embed.add_field(inline=False,
-            name=text.fill("judge", "embed_no", num=str(review.id)),
-            value=text.fill("judge", "embed_average", num=f"{average:.1f}"),
+            name=self.text.get("embed", "num", num=str(review.id)),
+            value=self.text.get("embed", "average", num=f"{average:.1f}"),
         )
-        embed.add_field(name=name, value=review.date)
-        embed.add_field(name=text.get("judge", "embed_mark"), value=review.tier)
+        embed.add_field(
+            name=name,
+            value=review.date
+        )
+        embed.add_field(
+            name=self.text.get("embed", "mark"),
+            value=review.tier
+        )
         embed.add_field(inline=False,
-            name=text.get("judge", "embed_text"),
+            name=self.text.get("embed", "text"),
             value=review.text_review,
         )
         # fmt: on

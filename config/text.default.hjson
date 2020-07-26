@@ -111,34 +111,6 @@
 		flip:   ["ano", "ne"]
 	}
 
-	judge: {
-		"no subject":   "Takový předmět neznám."
-		# ?review subject
-		"no reviews":    "{mention}, předmět ještě žádné hodnocení nemá."
-		embed_title:     "Review: "
-		embed_no:        Recenze #{num}
-		embed_average:   Průměrná známka: {num}
-		embed_no_user:   Neznámý uživatel
-		embed_anonymous: Anonymní uživatel
-		embed_mark:      Známka
-		embed_text:      Text
-
-		# ?review add
-		"text too long": "Maximální počet znaků je 1024."
-		"wrong mark":    "Číselné hodnocení je známka, 1-5 jako ve škole."
-		"added":         "Hodnocení předmětu bylo úspěšně přidáno."
-
-		# ?review remove
-		"no review":     "{mention}, takové hodnocení tu nemám."
-		"removed":       "Hodnocení bylo odebráno."
-
-		# ?sudo_subject
-		"subject exists":  Předmět už existuje.
-		"subject added":   Předmět přidán.
-		"subject updated": Předmět aktualizován.
-		"subject removed": Předmět odebrán.
-	}
-
 	librarian: {
 		# nameday
 		"nameday cz": "Dnes má svátek {name} {emote.happy}"
