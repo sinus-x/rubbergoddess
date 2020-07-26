@@ -1,12 +1,13 @@
 import asyncio
+from typing import List
 
 import discord
 from discord.ext import commands
 from emoji import demojize
 
+from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
-from core.text import text
 from repository import karma_repo, subject_repo
 from repository.database.karma import Karma as DB_Karma
 
@@ -19,6 +20,9 @@ class Karma(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.config = CogConfig("karma")
+        self.text = CogText("karma")
 
     ##
     ## Commands
@@ -39,21 +43,19 @@ class Karma(rubbercog.Rubbercog):
         k = repo_k.get_karma(member.id)
         embed = self.embed(
             ctx=ctx,
-            description=text.fill(
-                "karma", "stalk_user", user=self.sanitise(member.display_name, limit=32)
-            ),
+            description=self.text.get("stalk_user", user=self.sanitise(member.display_name)),
         )
         embed.add_field(
-            name=text.get("karma", "stalk_karma"),
+            name=self.text.get("stalk_karma"),
             value=f"**{k.karma.value}** ({k.karma.position}.)",
             inline=False,
         )
         embed.add_field(
-            name=text.get("karma", "stalk_positive"),
+            name=self.text.get("stalk_positive"),
             value=f"**{k.positive.value}** ({k.positive.position}.)",
         )
         embed.add_field(
-            name=text.get("karma", "stalk_negative"),
+            name=self.text.get("stalk_negative"),
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
         await ctx.send(embed=embed)
@@ -70,13 +72,13 @@ class Karma(rubbercog.Rubbercog):
             except (ValueError, IndexError):
                 return await utils.send_help(ctx)
             except discord.NotFound:
-                return await ctx.send(text.get("karma", "emote not found"))
+                return await ctx.send(self.text.get("emoji_not_found"))
 
         value = repo_k.emoji_value_raw(emote)
         if value is None:
-            return await ctx.send(text.get("karma", "emote not voted"))
+            return await ctx.send(self.text.get("emoji_not_voted"))
 
-        await ctx.send(text.fill("karma", "emote", emote=str(emote), value=str(value)))
+        await ctx.send(self.text.get("emoji", emoji=str(emote), value=str(value)))
         await utils.room_check(ctx)
 
     @commands.guild_only()
@@ -90,29 +92,43 @@ class Karma(rubbercog.Rubbercog):
 
         emotes_positive = self._getEmoteList(emotes, "1")
         if len(emotes_positive) > 0:
-            content.append(text.get("karma", "emotes_positive"))
-            content += self._emoteListToMessage(emotes_positive, 10)
+            content.append(self.text.get("emojis_positive"))
+            content += self._emoteListToMessage(emotes_positive)
 
         emotes_neutral = self._getEmoteList(emotes, "0")
         if len(emotes_neutral) > 0:
-            content.append(text.get("karma", "emotes_neutral"))
-            content += self._emoteListToMessage(emotes_neutral, 10)
+            content.append(self.text.get("emojis_neutral"))
+            content += self._emoteListToMessage(emotes_neutral)
 
         emotes_negative = self._getEmoteList(emotes, "-1")
         if len(emotes_negative) > 0:
-            content.append(text.get("karma", "emotes_negative"))
-            content += self._emoteListToMessage(emotes_negative, 10)
+            content.append(self.text.get("emojis_negative"))
+            content += self._emoteListToMessage(emotes_negative)
 
         emotes_nonvoted = self._getNonvotedEmoteList(emotes)
         if len(emotes_nonvoted) > 0:
-            content.append(text.get("karma", "emotes_nonvoted"))
-            content += self._emoteListToMessage(emotes_nonvoted, 10)
+            content.append(self.text.get("emojis_nonvoted"))
+            content += self._emoteListToMessage(emotes_nonvoted)
 
         if len(content) == 0:
-            content.append(text.get("karma", "no emotes"))
+            content.append(self.text.get("no_emojis"))
 
-        for line in [x for x in content if (x and len(x) > 0)]:
-            await ctx.send(line)
+        line = ""
+        for items in [x for x in content if (x and len(x) > 0)]:
+            if items[0] != "<":
+                # description
+                if len(line):
+                    await ctx.send(line)
+                    line = ""
+                await ctx.send(items)
+                continue
+
+            if len(line) + len(items) > 2000:
+                await ctx.send(line)
+                line = ""
+
+            line += "\n" + items
+        await ctx.send(line)
 
         await utils.room_check(ctx)
 
@@ -128,17 +144,16 @@ class Karma(rubbercog.Rubbercog):
 
             if len(nonvoted) == 0:
                 return await ctx.author.send(
-                    text.fill("karma", "all emojis voted", guild=ctx.guild.name)
+                    self.text.get("all_emojis_voted", guild=ctx.guild.name)
                 )
             emote = nonvoted[0]
 
         message = await ctx.send(
-            text.fill(
-                "karma",
-                "vote info",
-                emote=emote,
-                time=config.get("karma", "vote time"),
-                limit=config.get("karma", "vote limit"),
+            self.text.get(
+                "vote_info",
+                emoji=emote,
+                time=self.config.get("vote time"),
+                limit=self.config.get("vote limit"),
             )
         )
         # set default of zero, so we can run the command multiple times
@@ -150,7 +165,7 @@ class Karma(rubbercog.Rubbercog):
         await message.add_reaction("❎")
 
         await self.event.sudo(ctx, f"Vote over value of {emote} started.")
-        await asyncio.sleep(config.get("karma", "vote time") * 60)
+        await asyncio.sleep(self.config.get("vote time") * 60)
 
         # update cached message
         message = await ctx.channel.fetch_message(message.id)
@@ -166,9 +181,9 @@ class Karma(rubbercog.Rubbercog):
             elif reaction.emoji == "0⃣":
                 neutral = reaction.count - 1
 
-        if positive + negative + neutral < config.get("karma", "vote limit"):
+        if positive + negative + neutral < self.config.get("vote limit"):
             await self.event.sudo(ctx, f"Vote for {emote} failed.")
-            return await ctx.send(text.fill("karma", "vote failed", emote=emote))
+            return await ctx.send(self.text.get("vote_failed", emoji=emote))
 
         result = 0
         if positive > negative + neutral:
@@ -177,16 +192,16 @@ class Karma(rubbercog.Rubbercog):
             result = -1
 
         repo_k.set_emoji_value(str(self._emoteToID(emote)), result)
-        await ctx.send(text.fill("karma", "vote result", emote=emote, value=result))
+        await ctx.send(self.text.get("vote_result", emoji=emote, value=result))
         await self.event.sudo(ctx, f"{emote} karma value voted as {result}.")
 
     @commands.check(check.is_mod)
     @karma.command(name="set")
-    async def karma_set(self, ctx, emote: discord.Emoji, value: int):
+    async def karma_set(self, ctx, emoji: discord.Emoji, value: int):
         """Set karma value without public vote"""
-        repo_k.set_emoji_value(str(self._emoteToID(emote)), value)
-        await ctx.send(text.fill("karma", "emote", emote=emote, value=value))
-        await self.event.sudo(ctx, f"Karma of {emote} set to {value}.")
+        repo_k.set_emoji_value(str(self._emoteToID(emoji)), value)
+        await ctx.send(self.text.get("emoji", emoji=emoji, value=value))
+        await self.event.sudo(ctx, f"Karma of {emoji} set to {value}.")
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="message")
@@ -202,13 +217,13 @@ class Karma(rubbercog.Rubbercog):
 
         # fmt: off
         count = True
-        if message.channel.id in config.get("karma", "banned channels") \
+        if message.channel.id in self.config.get("banned channels") \
         or (
-            not config.get("karma", "count subjects")
+            not self.config.get("count subjects")
             and repo_s.get(message.channel.name) is not None
         ):
             count = False
-        for word in config.get("karma", "banned words"):
+        for word in self.config.get("banned words"):
             if word in message.content:
                 count = False
                 break
@@ -244,16 +259,16 @@ class Karma(rubbercog.Rubbercog):
                 if len(value) == 0:
                     continue
                 emotes = " ".join(str(emote) for emote in value)
-                embed.add_field(name=text.get("karma", "embed_" + key), value=emotes)
+                embed.add_field(name=self.text.get("embed_" + key), value=emotes)
             # fmt: off
             embed.add_field(
-                name=text.get("karma", "embed_total"),
+                name=self.text.get("embed_total"),
                 value=f"**{karma}**",
                 inline=False,
             )
             # fmt: on
         else:
-            embed.add_field(name="\u200b", value=text.get("karma", "embed_disabled"), inline=False)
+            embed.add_field(name="\u200b", value=self.text.get("embed_disabled"), inline=False)
         await ctx.send(embed=embed)
 
         await utils.room_check(ctx)
@@ -263,8 +278,7 @@ class Karma(rubbercog.Rubbercog):
     async def karma_give(self, ctx, member: discord.Member, value: int):
         """Give karma points to someone"""
         repo_k.update_karma(member=member, giver=ctx.author, emoji_value=value)
-        success = "give success given" if value > 0 else "give success taken"
-        await ctx.send(text.get("karma", success))
+        await ctx.send(self.text.get("give", "given" if value > 0 else "taken"))
         await self.event.sudo(ctx, f"{member} got {value} karma points.")
 
     @commands.check(check.is_verified)
@@ -276,9 +290,9 @@ class Karma(rubbercog.Rubbercog):
 
     @commands.check(check.is_verified)
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command(aliases=["ishaboard"])
-    async def looserboard(self, ctx, offset: int = 0):
-        """Karma leaderboard, from the least"""
+    @commands.command()
+    async def loserboard(self, ctx, offset: int = 0):
+        """Karma leaderboard, from the worst"""
         await self.sendBoard(ctx, "asc", offset)
 
     @commands.check(check.is_verified)
@@ -364,7 +378,7 @@ class Karma(rubbercog.Rubbercog):
                 result.append(guild_emote)
         return result
 
-    def _emoteListToMessage(self, emotes: list, width: int) -> list:
+    def _emoteListToMessage(self, emotes: list) -> List[str]:
         line = ""
         result = []
         for i, emote in enumerate(emotes):
@@ -425,20 +439,20 @@ class Karma(rubbercog.Rubbercog):
             return False
 
         # do not count banned channels
-        if message.channel.id in config.get("karma", "banned channels"):
+        if message.channel.id in self.config.get("banned channels"):
             return False
 
         # do not count banned roles
-        if config.get("karma", "banned roles") in map(lambda x: x.id, member.roles):
+        if self.config.get("banned roles") in map(lambda x: x.id, member.roles):
             return False
 
         # do not count banned strings
-        for word in config.get("karma", "banned words"):
+        for word in self.config.get("banned words"):
             if word in message.content:
                 return False
 
         # optionally, do not count subject channels
-        if not config.get("karma", "count subjects"):
+        if not self.config.get("count subjects"):
             if repo_s.get(message.channel.name) is not None:
                 return False
 
@@ -452,7 +466,7 @@ class Karma(rubbercog.Rubbercog):
         # convert offset to be zero-base
         offset -= 1
 
-        max_offset = repo_k.getMemberCount() - config.get("karma", "leaderboard limit")
+        max_offset = repo_k.getMemberCount() - self.config.get("leaderboard limit")
         if offset < 0:
             offset = 0
         elif offset > max_offset:
@@ -460,17 +474,17 @@ class Karma(rubbercog.Rubbercog):
 
         # fmt: off
         title = "{title}  {ordering}".format(
-            title=text.get("karma", "board_title"),
-            ordering=text.get("karma", "board_" + parameter + "_t"),
+            title=self.text.get("board_title"),
+            ordering=self.text.get("board_" + parameter + "_t"),
         )
         # fmt: on
-        description = text.get("karma", "board_" + parameter + "_d")
+        description = self.text.get("board_" + parameter + "_d")
         embed = self.embed(ctx=ctx, title=title, description=description)
         embed = self.fillBoard(embed, member=ctx.author, order=parameter, offset=offset)
         await ctx.send(embed=embed)
 
     def fillBoard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
-        limit = config.get("karma", "leaderboard limit")
+        limit = self.config.get("leaderboard limit")
         # around = config.get("karma", "leaderboard around")
         template = "`{position:>2}` … `{karma:>5}` {username}"
 
@@ -516,9 +530,9 @@ class Karma(rubbercog.Rubbercog):
             # fmt: on
 
         if offset == 0:
-            name = text.fill("karma", "board_1", num=limit)
+            name = self.text.get("board_1", num=limit)
         else:
-            name = text.fill("karma", "board_x", num=limit, offset=offset + 1)
+            name = self.text.get("board_x", num=limit, offset=offset + 1)
         embed.add_field(name=name, value="\n".join(value))
 
         # construct second field
@@ -533,16 +547,8 @@ class Karma(rubbercog.Rubbercog):
         if not hasattr(reaction, "emoji"):
             return await self._remove_reaction(reaction, user)
 
-        if not reaction.message.content.startswith(text.get("karma", "vote info")[:25]):
+        if not reaction.message.content.startswith(self.text.get("vote_info")[:25]):
             return
 
         if str(reaction.emoji) not in ("☑️", "0⃣", "❎"):
             await self._remove_reaction(reaction, user)
-
-    ##
-    ## Errors
-    ##
-
-
-def setup(bot):
-    bot.add_cog(Karma(bot))

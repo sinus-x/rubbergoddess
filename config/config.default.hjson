@@ -179,25 +179,6 @@
 		"subject roles": [0]
 	}
 
-	karma: {
-		# IDs for roles that shouldn't have karma
-		"banned roles": []
-		# IDs for channels that shouldn't have karma
-		"banned channels": []
-		# messages with these strings shouldn't have karma
-		"banned words": []
-
-		# you can disable karma for subjects
-		"count subjects": true
-
-		# emote value vote
-		"vote limit": 5
-		"vote time":  120
-
-		"leaderboard limit": 10
-		"leaderboard around": 2
-	}
-
 	librarian: {
 		# Week the current semester started
 		"starting week": 0

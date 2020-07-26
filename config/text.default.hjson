@@ -29,71 +29,13 @@
 		"duplicate":      "Takové ID už v databázi existuje"
 	}
 
-	"server": {
+	server: {
 		"guild only":       "Tohle funguje jenom na VUT FEKT serveru",
 		"channel only":     "Tohle funguje jenom v {channel}",
 		"botroom redirect": "{mention} {emote.sad} 👉 {channel}"
 	}
 
-	karma: {
-		stalk_user:     Karma uživatele **{user}**
-		stalk_karma:    Karma
-		stalk_positive: Rozdáno
-		stalk_negative: Odebráno
-
-		# ?karma emote/emotes
-		emote:           Hodnota {emote} je **{value}**.
-		emotes_positive: "Kladně ohodnocené emoty:"
-		emotes_neutral:  "Neutrálně hodnocené emoty:"
-		emotes_negative: "Záporně ohodnocené emoty:"
-		emotes_nonvoted: "Neohodnocené emoty:"
-
-		"emote not found": "Takový emote jsem na serveru nenašla."
-		"emote not voted": "Emote není ohodnocen."
-		"no emotes":       "Žádné emoty jsem nenašla."
-
-		# ?karma message
-		"no message":   Zpráva nenalezena.
-		embed_positive: Kladné reakce
-		embed_negative: Záporné reakce
-		embed_neutral:  Neutrální reakce
-		embed_total:    Celková karma
-		embed_disabled: Karma se pro tuto zprávu nepočítá
-
-		# ?karma vote
-		"vote info":
-			'''
-			Hlasování o karma hodnotě {emote}.
-			Vyhodnocení proběhne za **{time}** minut, potřebný počet hlasů je **{limit}**.
-			'''
-		"all emojis voted": Všechny emoji na serveru **{guild}** už jste ohodnotili.
-		"vote failed": Hlasování o hodnotě {emote} skončilo neúspěšně z důvodu nedostatku hlasů.
-		"vote result": Hodnota {emote} je {value}.
-		"all rated":    "Karma hodnotu už mají všechny emotes."
-
-		# ?karma give
-		"give success given": "Karmu jsem úspěšně přidala.",
-		"give success taken": "Karmu jsem úspěšně odebrala.",
-
-		# ?leaderboard
-		board_title:  Leaderboard
-		board_desc_t: "🏆"
-		board_desc_d: Karma, od nejúspěšnějších
-		board_asc_t:  "💩"
-		board_asc_d:  Karma, od nejméně úspěšných
-		board_give_t: "❤️"
-		board_give_d: Rozdaná karma
-		board_take_t: "💔"
-		board_take_d: Karma sebraná ostatním
-
-		# note: this value must have two words
-		board_1:    Top {num}
-		# note: this value must end with offset
-		board_x:    Top {num} od pozice {offset}
-		board_user: Tvoje umístění
-	}
-
-	"roles": {
+	roles: {
 		"role add denied":       "{user}, na přidání role {role} nemáš právo.",
 		"role remove denied":    "{user}, na odebrání role {role} nemáš právo.",
 		"subject add denied":    "{user}, předměty si mohou přidávat jen studenti VUT.",
