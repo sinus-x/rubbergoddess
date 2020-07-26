@@ -1,16 +1,19 @@
 import discord
 from discord.ext import commands
 
+from cogs.resource import CogText
 from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
 
 
 class Janitor(rubbercog.Rubbercog):
-    """Manage channels"""
+    """Manage users, roles and channels"""
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.text = CogText("janitor")
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
     @commands.check(check.is_in_modroom)
@@ -36,35 +39,39 @@ class Janitor(rubbercog.Rubbercog):
                 hoarders.append([member, prog])
 
         if len(hoarders) == 0:
-            await ctx.send(text.get("janitor", "no hoarders"))
-        else:
-            all = len(hoarders)
-            if warn:
-                msg = await ctx.send("Odesílání zprávy 1/{all}.".format(all=all))
-            embed = discord.Embed(title="Programme hoarders", color=config.color)
-            for num, (hoarder, progs) in enumerate(hoarders, start=1):
-                embed.add_field(
-                    name="User",
-                    value=f"**{discord.utils.escape_markdown(hoarder.name)}** ({hoarder.id})",
-                )
-                embed.add_field(name="Status", value=hoarder.status)
-                embed.add_field(name="Programmes", value=", ".join(progs), inline=False)
-                if warn:
-                    if num % 5 == 0:  # Do not stress the API too much
-                        await msg.edit(
-                            content="Odesílání zprávy {num}/{all}.".format(num=num, all=all)
-                        )
-                    await hoarder.send(
-                        text.fill("janitor", "hoarding warning", guild=self.getGuild().name)
-                    )
-                if num % 8 == 0:  # Can't have more than 25 fields in an embed
-                    await ctx.channel.send(embed=embed, delete_after=config.delay_embed)
-                    embed = discord.Embed(title="Programme hoarders", color=config.color)
-            if warn and num % 5 != 0:
-                await msg.edit(content="Odesílání zprávy {num}/{all}.".format(num=num, all=all))
-            await ctx.channel.send(embed=embed, delete_after=config.delay_embed)
+            return await ctx.send(self.text.get("no_hoarders"))
 
-        await utils.delete(ctx)
+        embed = self.embed(ctx=ctx, title=self.text.get("embed", "title"))
+        if warn:
+            msg = await ctx.send(self.text.get("sending", num=1, all=len(hoarders)))
+
+        for num, (hoarder, progs) in enumerate(hoarders):
+            # fmt: off
+            embed.add_field(
+                name=self.text.get("embed", "user"),
+                value=f"**{self.sanitise(hoarder.name)}** ({hoarder.id})",
+            )
+            embed.add_field(
+                name=self.text.get("embed", "status"),
+                value=hoarder.status
+            )
+            embed.add_field(
+                name=self.text.get("embed", "programmes"),
+                value=", ".join(progs),
+                inline=False,
+            )
+            if warn:
+                if num % 5 == 0:
+                    await msg.edit(content=self.text.get("sending", num=num, all=len(hoarders)))
+                await hoarder.send(self.text.get("warning", guild=self.getGuild().name))
+            if num % 8 == 0:
+                # There's a limit of 25 fields per embed
+                await ctx.send(embed=embed)
+                embed = embed.clear_fields()
+            # fmt: on
+        if warn:
+            await msg.edit(content=text.get("sent", num=len(hoarders)))
+        await ctx.send(embed=embed)
 
     @commands.guild_only()
     @commands.check(check.is_elevated)
@@ -94,7 +101,7 @@ class Janitor(rubbercog.Rubbercog):
             except discord.HTTPException:
                 pass
 
-        await self.event.sudo(ctx, f"Purged {total} posts in {ctx.channel}")
+        await self.event.sudo(ctx, f"Purged {total} posts.")
 
     @commands.check(check.is_mod)
     @commands.bot_has_permissions(manage_channels=True)
@@ -106,12 +113,12 @@ class Janitor(rubbercog.Rubbercog):
         """
         if channel.name not in config.subjects:
             return await self.output.error(
-                ctx, text.fill("janitor", "teacher not subject", channel=channel.mention)
+                ctx, self.text.get("not_subject", channel=channel.mention)
             )
 
         ch = await channel.clone(name=channel.name + config.get("channels", "teacher suffix"))
         await ch.edit(position=channel.position + 1)
-        await ctx.send(f"Created channel {ch.mention}")
+        await ctx.send(self.text.get("teacher_channel", channel=channel.mention))
 
         await self.event.sudo(ctx, f"Teacher channel {ch.name}")
 
