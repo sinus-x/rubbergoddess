@@ -63,6 +63,10 @@ class Librarian(rubbercog.Rubbercog):
     async def weather(self, ctx, *, place: str = "Brno"):
         token = self.config.get("librarian", "weather token")
         place = place[:100]
+
+        if "&" in place:
+            return await ctx.send(self.text.get("weather", "place_not_found"))
+
         url = (
             "https://api.openweathermap.org/data/2.5/weather?q="
             + place
