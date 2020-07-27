@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
+from core.config import config
 
 
 class Animals(rubbercog.Rubbercog):
@@ -33,104 +34,131 @@ class Animals(rubbercog.Rubbercog):
     ## Commands
     ##
 
+    @commands.is_owner()
+    @commands.command()
+    async def animal(self, ctx, member: discord.Member):
+        """Send vote embed"""
+        await self.check(member, "manual")
+
     ##
     ## Listeners
     ##
 
-    # TODO Only act if Gatekeeper is not active
-    #      Else, check for verify role being added
     @commands.Cog.listener()
-    async def on_member_join(self, member):
+    async def on_member_join(self, member: discord.Member):
+        # only act if Gatekeeper cog is not used
+        if "Gatekeeper" in self.bot.cogs.keys():
+            return
+
+        # only act if their avatar is not default
         if member.avatar_url != member.default_avatar_url:
-            await self.check(member)
+            await self.check(member, "on_member_join")
 
     @commands.Cog.listener()
-    async def on_user_update(self, before, after):
-        if before.avatar_url != after.avatar_url:
-            await self.check(after)
-
-    # TODO rewrite to on_raw_reaction_add
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        """Vote"""
-        if user.bot:
-            return
-
-        if reaction.message.channel != self.getChannel():
-            return
-
+    async def on_user_update(self, before: discord.User, after: discord.User):
+        # only act if user is verified
         # fmt: off
-        if len(reaction.message.embeds) != 1 \
-        or reaction.message.embeds[0].title != self.text.get("title"):
+        if "Gatekeeper" in self.bot.cogs.keys() \
+        and config.role_verify not in self.getGuild().get_member(after.id):
             return
         # fmt: on
 
-        if str(reaction.emoji) not in ("☑️", "❎"):
-            return await utils.remove_reaction(reaction, user)
+        if before.avatar_url != after.avatar_url:
+            await self.check(after, "on_user_update")
 
-        member_id = int(reaction.message.embeds[0].description.split(" | ")[1])
+    @commands.Cog.listener()
+    async def on_member_update(self, before: discord.Member, after: discord.Member):
+        # call if user has been verified
+        verify = self.getVerifyRole()
+        if verify not in before.roles and verify in after.roles:
+            await self.check(after, "on_member_update")
 
-        if member_id == user.id:
-            return await utils.remove_reaction(reaction, user)
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        """Vote"""
+        if payload.channel_id != self.getChannel().id:
+            return
 
-        member = reaction.message.guild.get_member(member_id)
+        if payload.member.bot:
+            return
 
-        for r in reaction.message.reactions:
+        message = await self.getChannel().fetch_message(payload.message_id)
+        # fmt: off
+        if not message or len(message.embeds) != 1 \
+        or message.embeds[0].title != self.text.get("title"):
+            return
+        # fmt: on
+
+        if str(payload.emoji) not in ("☑️", "❎"):
+            return await message.remove_reaction(payload.emoji, payload.member)
+
+        animal_id = int(message.embeds[0].description.split(" | ")[1])
+        if animal_id == payload.member.id:
+            return await message.remove_reaction(payload.emoji, payload.member)
+        animal = self.getChannel().guild.get_member(animal_id)
+
+        for r in message.reactions:
             if r.emoji == "☑️" and r.count > self.config.get("limit"):
-                if self.getRole() in member.roles:
+                if self.getRole() in animal.roles:
                     # member is an animal and has been before
                     await self.getChannel().send(
-                        self.text.get("yes_yes", nickname=self.sanitise(member.display_name))
+                        self.text.get(
+                            "result", "yes_yes", nickname=self.sanitise(animal.display_name)
+                        )
                     )
                 else:
                     # member is an animal and has not been before
                     try:
-                        await member.add_roles(self.getRole())
-                        await self.event.user(member, "New animal!")
+                        await animal.add_roles(self.getRole())
+                        await self.event.user(animal, "New animal!")
                         await self.getChannel().send(
-                            self.text.get("no_yes", mention=member.mention)
+                            self.text.get("result", "no_yes", mention=animal.mention)
                         )
-                    except:
-                        pass
+                    except Exception as e:
+                        await self.console.error(message, "Could not add animal", e)
                 break
             elif r.emoji == "❎" and r.count > self.config.get("limit"):
-                if self.getRole() in member.roles:
+                if self.getRole() in animal.roles:
                     # member is not an animal and has been before
                     try:
-                        await member.remove_roles(self.getRole())
-                        await self.event.user(member, "Animal left.")
+                        await animal.remove_roles(self.getRole())
+                        await self.event.user(animal, "Animal left.")
                         await self.getChannel().send(
-                            self.text.get("yes_no", mention=member.mention)
+                            self.text.get("result", "yes_no", mention=animal.mention)
                         )
-                    except:
-                        pass
+                    except Exception as e:
+                        await self.console.error(message, "Could not remove animal", e)
                 else:
                     # member is not an animal and has not been before
-                    await self.getChannel().send(self.text.get("no_no", mention=member.mention))
+                    await self.getChannel().send(
+                        self.text.get("result", "no_no", mention=animal.mention)
+                    )
                 break
         else:
             return
-        await utils.delete(reaction.message)
+        await utils.delete(message)
 
     ##
     ## Logic
     ##
 
-    async def check(self, member: discord.Member):
-        # create embed
+    async def check(self, member: discord.Member, source: str):
+        """Create vote embed"""
         embed = self.embed(title=self.text.get("title"), description=f"{str(member)} | {member.id}")
         embed.add_field(
-            name="\u200b", value=self.text.get("required", limit=self.config.get("limit"))
+            name=self.text.get("source", source),
+            value=self.text.get("required", limit=self.config.get("limit")),
+            inline=False,
         )
         embed.set_image(url=member.avatar_url)
         message = await self.getChannel().send(embed=embed)
         await message.add_reaction("☑️")
         await message.add_reaction("❎")
+
         try:
             await message.pin()
         except Exception as e:
             await self.event.user(member, "Could not pin Animal check embed.")
-            await self.console.warning("animals", "Could not unpin embed", e)
 
         await asyncio.sleep(0.5)
         messages = await message.channel.history(limit=5, after=message).flatten()

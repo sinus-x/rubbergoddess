@@ -3,9 +3,20 @@
 	title: Je to zvíře?
 	required: Je třeba ((limit)) souhlasných reakcí.
 
+	cannot_pin: Hlasování se mi nepodařilo připnout.
+
+	source: {
+		manual:           Manuální ověření
+		on_member_join:   Uživatel se připojil na server
+		on_user_update:   Uživatel aktualizoval svůj avatar
+		on_member_update: Uživatel prošel verifikací
+	}
+
 	# announcements
-	no_yes:  Máme tu nové zvířátko: ((mention)) ((emoji.happy))
-	yes_yes: **((nickname))** je pořád zvířátko ((emoji.happy))
-	yes_no:  ((mention)) už zvířátko není ((emoji.sad))
-	no_no:   ((mention)) zvířátko není ((emoji.sad))
+	result: {
+		no_yes:  Máme tu nové zvířátko: ((mention)) ((emoji.happy))
+		yes_yes: **((nickname))** je pořád zvířátko ((emoji.happy))
+		yes_no:  ((mention)) už zvířátko není ((emoji.sad))
+		no_no:   ((mention)) zvířátko není ((emoji.sad))
+	}
 }
