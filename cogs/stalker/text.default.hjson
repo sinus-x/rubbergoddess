@@ -1,12 +1,41 @@
 {
-	"read success":   "Záznam nalezen",
-	"read error":     "Nepodařilo se mi načíst databázi",
-	"write success":  "Zápis do databáze proběhl v pořádku",
-	"write error":    "Zápis do databáze se nepodařil",
-	"update success": "Aktualizace záznamu proběhla v pořádku",
-	"update error":   "Aktualizace záznamu v databázi se mi nepovedla",
-	"delete success": "Uživatele (((num))) jsem z databáze smazala",
-	"delete error":   "Smazání uživatele z databáze se nezdařilo",
-	"not found":      "Nikoho takového jsem v databázi nenašla",
-	"duplicate":      "Takové ID už v databázi existuje"
+	# whois
+	not_found:    Nikoho takového jsem nenašla.
+	not_in_guild: Na serveru není.
+
+	whois: {
+		information: Informace
+		account_information:
+			'''
+			**((name))**
+			Účet založen ((account_since))
+			Na serveru od ((member_since))
+			'''
+		email:   E-mail
+		code:    Kód
+		status:  Status
+		changed: Poslední úprava
+		comment: Komentář
+		roles:   Role
+		missing: _?_
+	}
+
+	prefix: {
+		result:   Nalezeno ((num)) záznamů.
+		too_many: Je toho moc
+		omitted:  Další položky jsem vynechala
+	}
+
+	db: {
+		duplicate:    Uživatel s takovým ID už v databázi je.
+		write_error:  Při zapisování se něco pokazilo.
+		delete_error: Nic jsem v databázi nenašla.
+		delete_success:
+			'''
+			Z databáze jsem odebrala ((num)) položek.
+			Role i přístup do kanálů uživateli zůstal.
+			'''
+		invalid_key:   Neplatný klíč.
+		invalid_value: Neplatná hodnota.
+	}
 }
