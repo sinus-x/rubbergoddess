@@ -7,7 +7,6 @@ from discord.ext import commands
 
 from core.config import config
 from core.text import text
-from config.messages import Messages
 
 
 def git_hash():
@@ -47,31 +46,6 @@ def has_role(user, role):
     except ValueError:
         return role.lower() in [u.name.lower() for u in user.roles]
     return
-
-
-def fill_message(message_name, *args, **kwargs):
-    """Fills message template from messages by attempting to get the attr.
-    :param message_name: {str} message template name
-    :kwargs: {dict} data for formatting the template
-    :return: filled template
-    """
-
-    def generate_mention(user_id):
-        return "<@" + str(user_id) + ">"
-
-    # Convert username/admin to a mention
-    if "user" in kwargs:
-        kwargs["user"] = generate_mention(kwargs["user"])
-
-    if "admin" in kwargs:
-        kwargs["admin"] = generate_mention(kwargs["admin"])
-
-    # Attempt to get message template and fill
-    try:
-        template = getattr(Messages, message_name)
-        return template.format(*args, **kwargs)
-    except AttributeError:
-        raise ValueError("Invalid template {}".format(message_name))
 
 
 def seconds2str(time):

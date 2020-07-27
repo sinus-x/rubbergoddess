@@ -15,7 +15,6 @@ from cogs import errors
 from core.config import config
 from repository import user_repo
 from core import check, rubbercog, utils
-from config.messages import Messages as messages
 
 repository = user_repo.UserRepository()
 
@@ -51,8 +50,6 @@ class Creator(rubbercog.Rubbercog):
                 position = int(kwargs["position"])
                 del kwargs["position"]
                 msg += " at position {}".format(int(position))
-            if config.debug:
-                print(msg)
             if position:
                 try:
                     await role.edit(server=guild, role=role, position=position)
@@ -77,14 +74,10 @@ class Creator(rubbercog.Rubbercog):
             position = None
             if "name" in kwargs:
                 name = kwargs["name"]
-                if config.debug:
-                    msg = "Creating {} in server {}".format(name, guild.name)
                 if "position" in kwargs:
                     position = int(kwargs["position"])
                     del kwargs["position"]
                     msg += " at position {}".format(int(position))
-                if config.debug:
-                    print(msg)
                 try:
                     await guild.create_role(**kwargs)
                 except Exception as e:
@@ -109,8 +102,6 @@ class Creator(rubbercog.Rubbercog):
         if guild == self.getGuild() or guild == self.getSlave():
             position = None
 
-            if config.debug:
-                print("Creating channel {} in server {}".format(name, guild.name))
             if channel_type == "category":
                 try:
                     await guild.create_category(name, **kwargs)
@@ -145,8 +136,6 @@ class Creator(rubbercog.Rubbercog):
 
     async def edit_channel(self, ctx, guild, channel, kwargs):
         if guild == self.getGuild() or guild == self.getSlave():
-            if config.debug:
-                print("Editing channel {} in server {}".format(channel.name, guild.name))
             try:
                 await channel.edit(**kwargs)
             except Exception as e:

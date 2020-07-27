@@ -32,15 +32,12 @@ class Config:
 
         ##
         ## BOT
-        self.debug     = self.get('bot', 'debug')
-        self.loader    = self.get('bot', 'loader')
-        self.key       = self.get('bot', 'key')
-        self.admin_id  = self.get('bot', 'admin id')
-        self.guild_id  = self.get('bot', 'guild id')
-        self.slave_id  = self.get('bot', 'slave guild id')
-        self.host      = self.get('bot', 'host')
-        self.prefixes  = self.get('bot', 'prefixes')
-        self.prefix    = self.prefixes[0]
+        self.loader   = self.get('bot', 'loader')
+        self.key      = self.get('bot', 'key')
+        self.admin_id = self.get('bot', 'admin id')
+        self.guild_id = self.get('bot', 'guild id')
+        self.slave_id = self.get('bot', 'slave guild id')
+        self.prefix   = self.get('bot', 'prefix')
 
         self.extensions = self.get('bot', 'extensions')
 
@@ -63,7 +60,6 @@ class Config:
         self.color_success = self.get('color', 'success')
         self.color_notify  = self.get('color', 'notify')
         self.color_error   = self.get('color', 'error')
-        self.colors = [self.color, self.color_success, self.color_notify, self.color_error]
 
         ##
         ## DELAY
