@@ -1,9 +1,11 @@
 {
 	# embed
 	title: Je to zvíře?
-	requred: Je třeba ((limit)) souhlasných reakcí.
+	required: Je třeba ((limit)) souhlasných reakcí.
 
 	# announcements
-	join: Máme tu nové zvířátko: ((mention)) ((emoji.happy))
-	leave: Tak ((mention)) zvířátko není ((emoji.sad))
+	no_yes:  Máme tu nové zvířátko: ((mention)) ((emoji.happy))
+	yes_yes: **((nickname))** je pořád zvířátko ((emoji.happy))
+	yes_no:  ((mention)) už zvířátko není ((emoji.sad))
+	no_no:   ((mention)) zvířátko není ((emoji.sad))
 }

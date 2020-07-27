@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 
@@ -39,7 +41,8 @@ class Animals(rubbercog.Rubbercog):
     #      Else, check for verify role being added
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        await self.check(member)
+        if member.avatar_url != member.default_avatar_url:
+            await self.check(member)
 
     @commands.Cog.listener()
     async def on_user_update(self, before, after):
@@ -66,21 +69,44 @@ class Animals(rubbercog.Rubbercog):
             return await utils.remove_reaction(reaction, user)
 
         member_id = int(reaction.message.embeds[0].description.split(" | ")[1])
+
+        if member_id == user.id:
+            return await utils.remove_reaction(reaction, user)
+
         member = reaction.message.guild.get_member(member_id)
 
         for r in reaction.message.reactions:
             if r.emoji == "☑️" and r.count > self.config.get("limit"):
-                # TODO Call in try:, they may have left
-                await member.add_roles(self.getRole())
-                await self.event.user(member, "New animal!")
-                await self.getChannel().send(self.text.get("join", mention=member.mention))
+                if self.getRole() in member.roles:
+                    # member is an animal and has been before
+                    await self.getChannel().send(
+                        self.text.get("yes_yes", nickname=self.sanitise(member.display_name))
+                    )
+                else:
+                    # member is an animal and has not been before
+                    try:
+                        await member.add_roles(self.getRole())
+                        await self.event.user(member, "New animal!")
+                        await self.getChannel().send(
+                            self.text.get("no_yes", mention=member.mention)
+                        )
+                    except:
+                        pass
                 break
             elif r.emoji == "❎" and r.count > self.config.get("limit"):
-                # TODO Call in try:, they may have left
-                await member.remove_roles(self.getRole())
-                # TODO Log event only if user had `animal` role
-                await self.event.user(member, "Animal left.")
-                await self.getChannel().send(self.text.get("leave", mention=member.mention))
+                if self.getRole() in member.roles:
+                    # member is not an animal and has been before
+                    try:
+                        await member.remove_roles(self.getRole())
+                        await self.event.user(member, "Animal left.")
+                        await self.getChannel().send(
+                            self.text.get("yes_no", mention=member.mention)
+                        )
+                    except:
+                        pass
+                else:
+                    # member is not an animal and has not been before
+                    await self.getChannel().send(self.text.get("no_no", mention=member.mention))
                 break
         else:
             return
@@ -105,3 +131,10 @@ class Animals(rubbercog.Rubbercog):
         except Exception as e:
             await self.event.user(member, "Could not pin Animal check embed.")
             await self.console.warning("animals", "Could not unpin embed", e)
+
+        await asyncio.sleep(0.5)
+        messages = await message.channel.history(limit=5, after=message).flatten()
+        for m in messages:
+            if m.type == discord.MessageType.pins_add:
+                await utils.delete(m)
+                break
