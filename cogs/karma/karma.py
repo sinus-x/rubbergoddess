@@ -494,8 +494,8 @@ class Karma(rubbercog.Rubbercog):
         column = "karma"
         if order == "give":
             column = "positive"
-        if order == "take":
-            column == "negative"
+        elif order == "take":
+            column = "negative"
 
         if order == "desc":
             attr = DB_Karma.karma.desc()
