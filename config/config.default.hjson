@@ -12,7 +12,7 @@
 		# Standalone:  postgres://rubbergoddess:rubbergoddess@localhost/rubbergoddess"
 		# No database: sqlite3:///rubbergoddess.db
 		string: postgres://postgres:postgres@db:5432/postgres
-	},
+	}
 
 	bot: {
 		# This value is outdated and will be removed. You do not need to change this.
@@ -42,8 +42,8 @@
 		# Accepted values: standalone | docker | systemd | systemd+docker
 		loader: systemd+docker
 
-		# To which prefixes the bot will respond
-		prefixes: ["?", "!"]
+		# Prefix the bot will respond to
+		prefix: ?
 
 		# Cogs to load by default
 		extensions: [
@@ -80,7 +80,7 @@
 			# check against image reposts
 			warden
 		]
-	},
+	}
 
 	channels: {
 		# the only writable channel when user joins the guild
@@ -127,7 +127,7 @@
 		botlog: 0
 		# logs for privileged actions
 		guildlog: 0
-	},
+	}
 
 	# Colors for embeds. They are standard hex RGB values in base 10
 	color: {
@@ -135,7 +135,7 @@
 		success:  2015049
 		notify:  15042615
 		error:   14166812
-	},
+	}
 
 	# Timers for automatic deletion of bot's messages
 	delay: {
@@ -147,7 +147,7 @@
 
 		# outdated, still in use
 		"embed": 120
-	},
+	}
 
 	roles: {
 		# role assigned after successful verification
