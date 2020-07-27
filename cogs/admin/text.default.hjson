@@ -1,0 +1,30 @@
+{
+	power_fail: Ani jeden z definovaných kanálů není k dispozici.
+
+	power_off: {
+		jail:    Dočasně nejde provádět verifikaci, jsem offline. Prosím, zkus to později.
+		botspam: Teď budu chvíli offline.
+		reason:
+			'''
+			Důvod:
+			> ((reason))
+			'''
+		ok:      Ví o tom kanály ((channels)). Můžeme.
+	}
+
+	power_on: {
+		botspam: Jsem zpátky: ((emoji.happy))
+		ok:      Jsem připravená, ví o tom kanály ((channels)).
+	}
+
+	systemd_only:  Neběžím v systemd, takže to nebude fungovat.
+	not_in_docker: Běžím v dockeru, takže to nebude fungovat.
+
+	config_embed: {
+		host:         Server
+		loader:       Zavaděč
+		log_level:    Úroveň logování
+		default_cogs: Výchozí moduly
+		loaded_cogs:  Aktivní moduly
+	}
+}

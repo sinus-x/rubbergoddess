@@ -72,23 +72,12 @@ class Config:
         self.delay_verify = self.get('delay', 'verify')
 
         ##
-        ## EMAIL
-        self.mail_address     = self.get('email', 'address')
-        self.mail_smtp_server = self.get('email', 'server')
-        self.mail_smtp_port   = self.get('email', 'port')
-        self.mail_password    = self.get('email', 'password')
-
-        ##
         ## ROLES
         self.role_verify    = self.get('roles', 'verify_id')
         self.role_mod       = self.get('roles', 'mod_id')
         self.roles_elevated = self.get('roles', 'elevated_ids')
         self.roles_native   = self.get('roles', 'native')
         self.roles_guest    = self.get('roles', 'guests')
-
-        ##
-        ## COMPATIBILITY
-        self.noimitation = self.get('compatibility', 'ignored imitation channels')
 
         # fmt: on
 

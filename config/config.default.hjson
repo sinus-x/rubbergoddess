@@ -61,16 +61,16 @@
 			howto
 			# purge messages, duplicate subject channel for teacher
 			janitor
+			# allow students to review their subjects
+			judge
 			# see and manage karma
-			karma_old
+			karma
 			# nameday, weather
 			librarian
 			# hug
 			meme
 			# pick, flip, roll
 			random
-			# allow students to review their subjects
-			review
 			# allow users to buy stuff for their karma
 			shop
 			# manage users and make database lookups
@@ -149,18 +149,6 @@
 		"embed": 120
 	},
 
-	# SMTP credentials for verification
-	email: {
-		# e-mail address
-		address:  ""
-		# your smtp server
-		server:   ""
-		# STARTTLS 587, SSL/TLS 465
-		port:     587
-		# password. yes, in cleartext.
-		password: ""
-	},
-
 	roles: {
 		# role assigned after successful verification
 		verify_id: 0
@@ -177,111 +165,5 @@
 
 		# Which roles are considered as visiting
 		guests: [0, 0, 0]
-	},
-
-	base: {
-		# how many users have to react with 📌 to have their post pinned by the bot
-		"pin limit": 5
-	}
-
-	gatekeeper: {
-		# email domain to role ID mapping
-		suffixes: {
-			stud.feec.vutbr.cz: 0
-			vutbr.cz:           0
-			muni.cz:            0
-			cuni.cz:            0
-			cvut.cz:            0
-			vsb.cz:             0
-			zcu.cz:             0
-			# guest role
-			.:                  0
-		},
-		# if the e-mail can have more formats, you can enforce one of them
-		constraints: {
-			stud.feec.vutbr.cz: "x[a-z]{5}[0-9][a-z0-9]"
-			vutbr.cz:           "x[a-z]{5}[0-9][a-z0-9]"
-			# the rest
-			.:                  "[a-z0-9]+"
-		}
-	}
-
-	faceshifter: {
-		# where to look for "<emote> <channel>/<role>" pattern
-		"react-to-role channels": [],
-		# how to start the react-to-role ouside of specified channels
-		"react-to-role prefix": "Role\n",
-
-		# which role IDs are allowed to assign programmes
-		"programme roles": [0]
-		# which role IDs are allowed to assign subjects
-		"subject roles": [0]
-	}
-
-	karma: {
-		# IDs for roles that shouldn't have karma
-		"banned roles": []
-		# IDs for channels that shouldn't have karma
-		"banned channels": []
-		# messages with these strings shouldn't have karma
-		"banned words": []
-
-		# you can disable karma for subjects
-		"count subjects": true
-
-		# emote value vote
-		"vote limit": 5
-		"vote time":  120
-
-		"leaderboard limit": 10
-		"leaderboard around": 2
-	}
-
-	librarian: {
-		# Week the current semester started
-		"starting week": 0
-
-		# token for openweathermap.com
-		"weather token": "678a5932f6dd92ac668b20e9f89c0318"
-	},
-
-	"voice cog": {
-		# Wordlist for automatic voice channel name generation
-		adjectives: ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]
-		nouns: ["cat", "dog", "elephant", "horse", "mouse", "fish",
-                "octopus", "cockroach", "butterfly", "owl", "fox", "tiger",
-                "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
-	},
-
-	warden: {
-		# Where the images should be checked for duplicities. (memes etc)
-		"deduplication channels": []
-
-		# How many people have to react to embed for it to dissapear
-		"not duplicate limit": 5
-
-		# Look for these strings in messages
-		"penalty strings": ["giphy.com", "tenor.com", "imgur.com", "gfycat.com"]
-		# Remove karma is strings above are found
-		"penalty value": 2
-	},
-
-	shop: {
-		# Karma points needed to change the nickname
-		nickname: 500
-	},
-
-	animals: {
-		# animal-kingdom channel. only users with animal in their avatar are allowed
-		channel: 0
-		# animal-kingdom role
-		role:    0
-		# vote limit
-		limit:   5
-	}
-
-	compatibility: {
-		# Do not send the same emote as other bot here
-		"ignored imitation channels": []
 	}
 }

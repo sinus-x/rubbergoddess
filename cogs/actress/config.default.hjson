@@ -1,0 +1,4 @@
+{
+	# channel IDs where not to send any reactions
+	ignored_channels: []
+}

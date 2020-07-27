@@ -1,0 +1,31 @@
+{
+	# to represent user login, we're using an placeholder username
+	# we do not want our users to try to use it (they see it and blindly follow the manual)
+	placeholder: "xlogin00"
+
+	suffixes: {
+		stud.feec.vutbr.cz: 0
+		vutbr.cz:           0
+		muni.cz:            0
+		# guest role
+		.:                  0
+	}
+	constraints: {
+		stud.feec.vutbr.cz: "x[a-z]{5}[0-9][a-z0-9]"
+		vutbr.cz:           "x[a-z]{5}[0-9][a-z0-9]"
+		# the rest
+		.:                  "[a-z0-9]+"
+	}
+
+	# SMTP credentials for verification
+	email: {
+		# e-mail address
+		address:  ""
+		# your smtp server
+		server:   ""
+		# STARTTLS 587, SSL/TLS 465
+		port:     587
+		# password. yes, in cleartext.
+		password: ""
+	}
+}

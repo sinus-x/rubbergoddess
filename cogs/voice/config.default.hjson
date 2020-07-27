@@ -1,0 +1,7 @@
+{
+	# Wordlist for automatic voice channel name generation
+	adjectives: ["Red", "Green", "Blue", "Black", "White", "Pink", "Orange"]
+	nouns: ["cat", "dog", "elephant", "horse", "mouse", "fish",
+            "octopus", "cockroach", "butterfly", "owl", "fox", "tiger",
+            "bear", "sheep", "duck", "panda", "rabbit", "wolf"]
+}

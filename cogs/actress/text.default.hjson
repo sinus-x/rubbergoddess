@@ -1,0 +1,32 @@
+{
+	send_text: Zpráva odeslána.
+	send_file: Soubor odeslán za ((delta)) vteřin.
+
+	reaction_add:    Nová reakce: **((name))**.
+	reaction_edit:   Reakce **((name))** upravena.
+	reaction_remove: Reakce **((name))** odstraněna.
+
+	image: {
+		no_files:   Žádné soubory jsem nenašla.
+		downloaded: Soubor byl úspěšně stažen.
+		deleted:    Soubor **((name))** byl úspěšně smazán.
+
+		bad_extension: Nepodporovaný formát.
+		bad_character: Název souboru obsahuje zakázané znaky.
+	}
+
+	# `react usage` command
+	embed: {
+		nothing: Zatím nic.
+		total:   Celkem ((count))
+	}
+
+
+	ActressException:         Chyba **Actress** modulu.
+	ReactionException:        Problematická manipulace s reakcí.
+	ReactionNameExists:       Reakce s takovým jménem už existuje.
+	ReactionNotFound:         Reakce s takovým jménem neexistuje.
+	InvalidReactionKey:       Nepodporovaný klíč **((key))**.
+	ReactionParsingException: Špatná hodnota **((value))** pro klíč **((key))**.
+	FileSendError:            Soubor se nepodařilo odeslat.
+}

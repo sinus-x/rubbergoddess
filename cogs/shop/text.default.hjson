@@ -1,0 +1,13 @@
+{
+	no_karma: ((mention)), zatím nemáš žádnou karmu.
+	not_enough_karma: ((mention)), nemáš dost karmy. Chybí ti **((value))** bodů.
+
+	new_nick: ((mention)), za ((value)) karma bodů jsem ti nastavila přezdívku na **((nick))**.
+	no_nick:  ((mention)), nemáš nastavenou žádnou přezdívku.
+	nick_removed: ((mention)), přezdívku **((nick))** jsem ti odebrala.
+
+	ShopException: Chyba při transakci.
+	ForbiddenNicknameCharacter: Jméno nesmí obsahovat ((characters))
+
+	higher_role: To nemůžu, máš vyšší oprávnění.
+}

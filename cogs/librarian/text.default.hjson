@@ -1,0 +1,30 @@
+{
+	nameday: {
+		cs: Dnes má svátek ((name)) ((emoji.happy))
+		sk: Dnes má meniny ((name)) ((emoji.happy))
+	}
+
+	week: {
+		even: sudý
+		odd:  lichý
+
+		study:    Studijní
+		calendar: Kalendářní
+	}
+
+	weather: {
+		place_not_found: Takové místo neznám.
+		bad_token:       Chybný token.
+		place_error:     Chyba při získávání informací (`((message))`)
+
+		description:       ((name)), ((country))
+		temperature:       Teplota
+		temperature_value: ((real)) °C (pocitová ((feel)) °C)"
+		humidity:          Vlhkost
+		clouds:            Oblačnost
+		visibility:        Viditelnost
+		wind:              Vítr
+	}
+
+	invalid_hash: Takovou hashovací funkci neznám ((emoji.sad))
+}

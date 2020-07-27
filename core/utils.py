@@ -127,7 +127,7 @@ async def send(
     # fmt: off
     if not isinstance(target, discord.TextChannel) \
     or (
-        isinstance(target, discord.TextChannel) and \
+        isinstance(target, discord.TextChannel) and
         target.id in config.get("channels", "bot allowed")
     ):
         delete_after = None

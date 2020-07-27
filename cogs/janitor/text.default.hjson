@@ -1,0 +1,23 @@
+{
+	no_hoarders: Nikoho jsem nenašla.
+
+	sending: Odesílání zprávy ((num))/((all)).
+	sent:    Všech ((num)) zpráv jsem úspěšně odeslala.
+
+	embed: {
+		title:      Hoarders
+		user:       Uživatel
+		status:     Status
+		programmes: Programy
+	}
+
+	warning:
+		'''
+		Ahoj.
+		Všimla jsem si, že máš na **((guild))** víc než jednu roli programu. Aby byl celý server přehlednější, nech si jen ten, který studuješ.
+		'''
+
+	# teacher_channel
+	not_subject:     Kanál ((channel)) není předmět.
+	teacher_channel: Vytvořila jsem ((channel)).
+}
