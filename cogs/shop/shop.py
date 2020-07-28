@@ -26,7 +26,7 @@ class Shop(rubbercog.Rubbercog):
         items = ("nickname",)
 
         prices = []
-        template = "`{item:<12} … {price} k"
+        template = "`{item:<12}` … {price} k"
         for item in items:
             price_tag = template.format(item=item, price=self.config.get("prices", item))
             prices.append(price_tag)
