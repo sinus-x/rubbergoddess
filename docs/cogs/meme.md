@@ -12,6 +12,10 @@ Hug someone.
 
 Send UwUized message back.
 
+### randomcase (text)
+
+Send message wItH rANdoM cApiTaLIsatIoN
+
 ## Privileged commands
 
 This module has no commands only usable by privileged users.

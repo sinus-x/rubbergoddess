@@ -4,7 +4,9 @@
 
 ## User commands
 
-This module has no commands usable by non-privileged users.
+### commands
+
+See command statistics since last start.
 
 ## Privileged commands
 
