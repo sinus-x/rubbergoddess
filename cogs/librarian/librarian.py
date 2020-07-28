@@ -61,7 +61,7 @@ class Librarian(rubbercog.Rubbercog):
 
     @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
     async def weather(self, ctx, *, place: str = "Brno"):
-        token = self.config.get("librarian", "weather token")
+        token = self.config.get("weather_token")
         place = place[:100]
 
         if "&" in place:
