@@ -187,7 +187,8 @@ class Admin(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
         await utils.delete(ctx)
 
-    @commands.is_owner()
+    @commands.cooldown(rate=2, per=20, type=commands.BucketType.channel)
+    @commands.check(check.is_verified)
     @commands.command(name="commands")
     async def command_stats(self, ctx):
         """Command invocation statistics"""

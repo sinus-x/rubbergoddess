@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import rubbercog, utils
+from core import check, rubbercog, utils
 from core.emote import emote
 
 
@@ -17,6 +17,7 @@ class Meme(rubbercog.Rubbercog):
         self.text = CogText("meme")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.check(check.is_verified)
     @commands.command()
     async def hug(self, ctx, user: discord.Member = None):
         """Hug someone!
@@ -37,6 +38,7 @@ class Meme(rubbercog.Rubbercog):
             await ctx.send(self.text.get("cannot_hug"))
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
+    @commands.check(check.is_verified)
     @commands.command(aliases=["owo"])
     async def uwu(self, ctx, *, message: str = None):
         """UWUize message"""
@@ -47,6 +49,7 @@ class Meme(rubbercog.Rubbercog):
         await ctx.send("> " + text)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
+    @commands.check(check.is_verified)
     @commands.command(aliases=["rcase", "randomise"])
     async def randomcase(self, ctx, *, message: str = None):
         """raNdOMisE cAsInG"""

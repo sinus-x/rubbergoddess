@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import rubbercog, utils
+from core import check, rubbercog, utils
 
 
 class Random(rubbercog.Rubbercog):
@@ -17,6 +17,7 @@ class Random(rubbercog.Rubbercog):
         self.text = CogText("random")
 
     @commands.cooldown(rate=3, per=20.0, type=commands.BucketType.user)
+    @commands.check(check.is_verified)
     @commands.command()
     async def pick(self, ctx, *args):
         """"Pick an option"""
@@ -27,6 +28,7 @@ class Random(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=3, per=20.0, type=commands.BucketType.user)
+    @commands.check(check.is_verified)
     @commands.command()
     async def flip(self, ctx):
         """Yes/No"""
@@ -35,6 +37,7 @@ class Random(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.check(check.is_verified)
     @commands.command()
     async def random(self, ctx, first: int, second: int = None):
         """Pick number from interval"""
@@ -49,6 +52,7 @@ class Random(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
+    @commands.check(check.is_verified)
     @commands.command(aliases=["unsplash"])
     async def picsum(self, ctx, seed: str = None):
         """Get random image from picsum.photos"""
