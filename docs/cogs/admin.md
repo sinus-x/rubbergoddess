@@ -8,13 +8,17 @@ This module has no commands usable by non-privileged users.
 
 ## Privileged commands
 
-### power off (reason)
+### system off (reason)
 
 Owner only. In jail channel, remove write permission for @everyone and send a message explaining why the new users cannot be verified. Sends the message to bot spam channel, too.
 
-### power on
+### system on
 
 Owner only. Restore write permission in jail channel, remove bot's message. Send message to bot spam channel that the bot is online again.
+
+### system shutdown
+
+Shutdown the bot.
 
 ### status
 
