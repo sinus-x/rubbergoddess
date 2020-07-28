@@ -1,0 +1,10 @@
+{
+	# time slot, in seconds
+	timer: 60
+
+	# how many items to show on leaderboard
+	board: 10
+
+	# lower and higher limit on how many points the user can get
+	points: [15, 25]
+}
