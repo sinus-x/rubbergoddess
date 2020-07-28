@@ -15,6 +15,8 @@ class Admin(rubbercog.Rubbercog):
 
         self.text = CogText("admin")
 
+        self.usage = {}
+
     ##
     ## Commands
     ##
@@ -184,6 +186,47 @@ class Admin(rubbercog.Rubbercog):
 
         await ctx.send(embed=embed)
         await utils.delete(ctx)
+
+    @commands.is_owner()
+    @commands.command(name="commands")
+    async def command_stats(self, ctx):
+        """Command invocation statistics"""
+        items = {
+            k: v for k, v in sorted(self.usage.items(), key=lambda item: item[1], reverse=True)
+        }
+
+        content = []
+        content.append(">>> **{}**".format(self.text.get("stats", "title").upper()))
+        total = 0
+        template = "`{count:>3}` … {command}"
+        for command, count in items.items():
+            content.append(template.format(count=count, command=command))
+            total += count
+        if len(content) == 0:
+            content.append(self.text.get("stats", "nothing"))
+
+        result = ""
+        for line in content:
+            if len(result) + len(line) > 2000:
+                await ctx.send(result)
+                result = ""
+            result += "\n" + line
+        await ctx.send(result)
+
+    ##
+    ## Listeners
+    ##
+
+    @commands.Cog.listener()
+    async def on_command_completion(self, ctx):
+        if not hasattr(ctx, "command") or not hasattr(ctx.command, "qualified_name"):
+            return
+
+        name = ctx.command.qualified_name
+        if name in self.usage:
+            self.usage[name] += 1
+        else:
+            self.usage[name] = 1
 
     ##
     ## Helper functions

@@ -27,4 +27,10 @@
 		default_cogs: Výchozí moduly
 		loaded_cogs:  Aktivní moduly
 	}
+
+	stats: {
+		title:   Statistika příkazů
+		nothing: Zatím nic
+		total:   Celkem ((total))
+	}
 }
