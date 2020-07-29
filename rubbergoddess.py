@@ -8,6 +8,7 @@ from core.config import config
 from repository.database import database
 from repository.database import session
 from repository.database.karma import Karma, Karma_emoji
+from repository.database.seeking import Seeking
 from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.verification import User
 from repository.database.image import Image
