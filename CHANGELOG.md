@@ -9,6 +9,7 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 ### Added
 
 - Points cog: MEE6-like points.
+- Seeking cog: Announce that you're seeking something/someone.
 
 ### Maintenance
 

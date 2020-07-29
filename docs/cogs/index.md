@@ -58,6 +58,10 @@ MEE6-like XP points gained by participating in conversations.
 
 Pick between options or select number in interval. Or get random image from Unsplash.
 
+## [Seeking](seeking.md)
+
+Announce that you're seeking something/someone.
+
 ## [Stalker](stalker.md)
 
 See whois information. Manage user database.
