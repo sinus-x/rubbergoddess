@@ -15,7 +15,11 @@
 	weather: {
 		place_not_found: Takové místo neznám.
 		bad_token:       Chybný token.
-		place_error:     Chyba při získávání informací (`((message))`)
+		place_error:
+			'''
+			Chyba při získávání informací:.
+			> ((message))
+			'''
 
 		description:       ((name)), ((country))
 		temperature:       Teplota

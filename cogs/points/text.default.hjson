@@ -1,0 +1,24 @@
+{
+	me:    Máš **((points))** bodů, držíš se na **((poisition)).** místě.
+	stalk: Uživatel **((display_name))** má **((points))** bodů a drží se na **((points)).** místě.
+
+	unknown: ???
+
+	embed: {
+		title: "Body  "
+
+		# note: *_n must have comma, *_0 cannot
+		#       *_n must end with space separated number
+		desc_0:  Top ((num))
+		desc_n:  Top ((num)), pozice ((offset))
+		asc_0:   Nejhorších ((num))
+		asc_n:   Nejhorších ((num)), pozice ((offset))
+
+		# suffix
+		desc_suffix: 🏆
+		asc_suffix:  💩
+		# description
+		desc_description: Skóre, sestupně
+		asc_description:  Skóre, vzestupně
+	}
+}

@@ -4,6 +4,17 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+**The upcoming release breaks everything, as the cogs and their settings are separated. This means that next version will be 2.0.**
+
+### Added
+
+- Points cog: MEE6-like points.
+- Seeking cog: Announce that you're seeking something/someone.
+
+### Maintenance
+
+- All cogs were moved to their separate directories, along with their strings and configuration. Manual transfer of config and text files is needed.
+
 ## [0.6]
 
 ### Added

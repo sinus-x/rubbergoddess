@@ -50,9 +50,17 @@ See current nameday, weather. Encode a text in base64 or hash it.
 
 Hug users. UWUize message.
 
+## [Points](points.md)
+
+MEE6-like XP points gained by participating in conversations.
+
 ## [Random](random.md)
 
 Pick between options or select number in interval. Or get random image from Unsplash.
+
+## [Seeking](seeking.md)
+
+Announce that you're seeking something/someone.
 
 ## [Stalker](stalker.md)
 

@@ -196,7 +196,7 @@ class Console:
             command = "not a command"
 
         # author
-        if hasattr(source, "author") and isinstance(source.author, discord.User):
+        if hasattr(source, "author") and type(source.author) in (discord.User, discord.Member):
             author = f"{source.author} (ID {source.author.id})"
         else:
             author = "unknown author"

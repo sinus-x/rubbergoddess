@@ -15,15 +15,21 @@ class Admin(rubbercog.Rubbercog):
 
         self.text = CogText("admin")
 
-    @commands.group(name="power")
+        self.usage = {}
+
+    ##
+    ## Commands
+    ##
+
     @commands.is_owner()
-    async def power(self, ctx):
+    @commands.group(name="system")
+    async def system(self, ctx):
         """Prepare the guild for shutdown"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
 
-    @power.command(name="off")
-    async def power_off(self, ctx, *, reason: str = None):
+    @system.command(name="off", aliases=["down"])
+    async def system_off(self, ctx, *, reason: str = None):
         """Prepare for power off
 
         reason: Optional. The reason for shutdown
@@ -31,7 +37,7 @@ class Admin(rubbercog.Rubbercog):
         if reason is None:
             reason = ""
         else:
-            reason = " " + self.text.get("power_off", "reason", reason=reason)
+            reason = " " + self.text.get("system_off", "reason", reason=reason)
 
         jail = self.getGuild().get_channel(config.get("channels", "jail"))
         everyone = self.getGuild().default_role
@@ -41,25 +47,25 @@ class Admin(rubbercog.Rubbercog):
 
         if jail is not None:
             # send message
-            await jail.send(self.text.get("power_off", "jail") + reason)
+            await jail.send(self.text.get("system_off", "jail") + reason)
             # switch to read-only
-            await jail.set_permissions(everyone, send_messages=False, reason="?power off")
+            await jail.set_permissions(everyone, send_messages=False, reason="?system off")
             visited.append(jail.mention)
 
         if botspam is not None:
             # send message
-            await botspam.send(self.text.get("power_off", "botspam") + reason)
+            await botspam.send(self.text.get("system_off", "botspam") + reason)
             visited.append(botspam.mention)
 
         # send confirmation message
         if len(visited) > 0:
-            await ctx.send(self.text.get("power_off", "ok", channels=", ".join(visited)))
+            await ctx.send(self.text.get("system_off", "ok", channels=", ".join(visited)))
         else:
-            await ctx.send(self.text.get("power_fail"))
-        await self.event.sudo(ctx, "Power off" + f": {reason}." if len(reason) else ".")
+            await ctx.send(self.text.get("system_fail"))
+        await self.event.sudo(ctx, "System off" + f": {reason}." if len(reason) else ".")
 
-    @power.command(name="on")
-    async def power_on(self, ctx):
+    @system.command(name="on", aliases=["up"])
+    async def system_on(self, ctx):
         """Restore"""
         jail = self.getGuild().get_channel(config.get("channels", "jail"))
         everyone = self.getGuild().default_role
@@ -71,24 +77,31 @@ class Admin(rubbercog.Rubbercog):
             # remove the message
             messages = await jail.history(limit=10).flatten()
             for message in messages:
-                if message.content.startswith(self.text.get("power_off", "jail")):
+                if message.content.startswith(self.text.get("system_off", "jail")):
                     await message.delete()
                     break
             # switch to read-write
-            await jail.set_permissions(everyone, send_messages=True, reason="?power on")
+            await jail.set_permissions(everyone, send_messages=True, reason="?system on")
             visited.append(jail.mention)
 
         if botspam is not None:
             # send message
-            await botspam.send(self.text.get("power_on", "botspam"))
+            await botspam.send(self.text.get("system_on", "botspam"))
             visited.append(botspam.mention)
 
         # send confirmation message
         if len(visited) > 0:
-            await ctx.send(self.text.get("power_on", "ok", channels=", ".join(visited)))
+            await ctx.send(self.text.get("system_on", "ok", channels=", ".join(visited)))
         else:
             await ctx.send(self.text.get("power_fail"))
-        await self.event.sudo(ctx, "Power on.")
+        await self.event.sudo(ctx, "System on.")
+
+    @system.command(name="shutdown")
+    async def system_shutdown(self, ctx):
+        """Shutdown the bot"""
+        await self.event.sudo(ctx, "System shutdown.")
+        await self.console.critical(ctx, "System shutdown initiated.")
+        await self.bot.logout()
 
     @commands.command(name="status")
     @commands.check(check.is_mod)
@@ -173,6 +186,52 @@ class Admin(rubbercog.Rubbercog):
 
         await ctx.send(embed=embed)
         await utils.delete(ctx)
+
+    @commands.cooldown(rate=2, per=20, type=commands.BucketType.channel)
+    @commands.check(check.is_verified)
+    @commands.command(name="commands")
+    async def command_stats(self, ctx):
+        """Command invocation statistics"""
+        items = {
+            k: v for k, v in sorted(self.usage.items(), key=lambda item: item[1], reverse=True)
+        }
+
+        content = []
+        content.append(">>> **{}**".format(self.text.get("stats", "title").upper()))
+        total = 0
+        template = "`{count:>3}` … {command}"
+        for command, count in items.items():
+            content.append(template.format(count=count, command=command))
+            total += count
+        if len(content) == 0:
+            content.append(self.text.get("stats", "nothing"))
+
+        result = ""
+        for line in content:
+            if len(result) + len(line) > 2000:
+                await ctx.send(result)
+                result = ""
+            result += "\n" + line
+        await ctx.send(result)
+
+    ##
+    ## Listeners
+    ##
+
+    @commands.Cog.listener()
+    async def on_command_completion(self, ctx):
+        if not hasattr(ctx, "command") or not hasattr(ctx.command, "qualified_name"):
+            return
+
+        name = ctx.command.qualified_name
+        if name in self.usage:
+            self.usage[name] += 1
+        else:
+            self.usage[name] = 1
+
+    ##
+    ## Helper functions
+    ##
 
     async def _readFile(self, ctx: commands.Context, path: str):
         """Read file"""

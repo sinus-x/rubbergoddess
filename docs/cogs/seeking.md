@@ -1,23 +1,26 @@
 ← Back to [module list](index.md) or [home](../index.md)
 
-# Meme
+# Seeking
+
+Announce that you're seeking something.
 
 ## User commands
 
-### hug _(member)_
+### seeking
 
-Hug someone.
+Display items for current channel.
 
-### uwu (text)
+### seeking add (text)
 
-Send UwUized message back.
+Add item. The text has to be 140 characters long at most.
 
-### randomcase (text)
+### seeking remove (id)
 
-Send message wItH rANdoM cApiTaLIsatIoN
+Remove item.
 
 ## Privileged commands
 
 This module has no commands only usable by privileged users.
+
 
 ← Back to [module list](index.md) or [home](../index.md)

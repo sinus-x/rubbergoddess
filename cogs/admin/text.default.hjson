@@ -1,7 +1,7 @@
 {
 	power_fail: Ani jeden z definovaných kanálů není k dispozici.
 
-	power_off: {
+	system_off: {
 		jail:    Dočasně nejde provádět verifikaci, jsem offline. Prosím, zkus to později.
 		botspam: Teď budu chvíli offline.
 		reason:
@@ -12,7 +12,7 @@
 		ok:      Ví o tom kanály ((channels)). Můžeme.
 	}
 
-	power_on: {
+	system_on: {
 		botspam: Jsem zpátky: ((emoji.happy))
 		ok:      Jsem připravená, ví o tom kanály ((channels)).
 	}
@@ -26,5 +26,11 @@
 		log_level:    Úroveň logování
 		default_cogs: Výchozí moduly
 		loaded_cogs:  Aktivní moduly
+	}
+
+	stats: {
+		title:   Statistika příkazů
+		nothing: Zatím nic
+		total:   Celkem ((total))
 	}
 }

@@ -59,7 +59,7 @@ class Animals(rubbercog.Rubbercog):
         # only act if user is verified
         # fmt: off
         if "Gatekeeper" in self.bot.cogs.keys() \
-        and config.role_verify not in self.getGuild().get_member(after.id):
+        and config.role_verify not in self.getGuild().get_member(after.id).roles:
             return
         # fmt: on
 

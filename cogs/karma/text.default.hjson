@@ -51,9 +51,9 @@
 	board_take_t: "💔"
 	board_take_d: Karma sebraná ostatním
 
-	# note: this value must have two words
+	# note: this value must not contain comma
 	board_1:    Top ((num))
-	# note: this value must end with offset
-	board_x:    Top ((num)) od pozice ((offset))
+	# note: this value must end with offset and has to contain comma
+	board_x:    Top ((num)), pozice ((offset))
 	board_user: Tvoje umístění
 }

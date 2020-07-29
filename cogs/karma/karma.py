@@ -349,6 +349,9 @@ class Karma(rubbercog.Rubbercog):
         if reaction.message.channel.id == config.get("channels", "vote"):
             await self.checkVoteEmote(reaction, user)
 
+        if str(reaction) in ("⏪", "◀", "▶"):
+            await self.checkBoardEmoji(reaction, user)
+
     ##
     ## Helper functions
     ##
@@ -481,14 +484,18 @@ class Karma(rubbercog.Rubbercog):
         description = self.text.get("board_" + parameter + "_d")
         embed = self.embed(ctx=ctx, title=title, description=description)
         embed = self.fillBoard(embed, member=ctx.author, order=parameter, offset=offset)
-        await ctx.send(embed=embed)
+
+        message = await ctx.send(embed=embed)
+        await message.add_reaction("⏪")
+        await message.add_reaction("◀")
+        await message.add_reaction("▶")
+
+        await utils.room_check(ctx)
 
     def fillBoard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
         limit = self.config.get("leaderboard limit")
         # around = config.get("karma", "leaderboard around")
         template = "`{position:>2}` … `{karma:>5}` {username}"
-
-        embed.clear_fields()
 
         # get repository parameters
         column = "karma"
@@ -510,6 +517,9 @@ class Karma(rubbercog.Rubbercog):
         value = []
         board = repo_k.getLeaderboard(attr, offset, limit)
 
+        if not board or not board.count():
+            return None
+
         for i, db_user in enumerate(board, start=offset):
             # fmt: off
             user = self.bot.get_user(int(db_user.discord_id))
@@ -529,16 +539,13 @@ class Karma(rubbercog.Rubbercog):
             ))
             # fmt: on
 
+        embed.clear_fields()
+
         if offset == 0:
             name = self.text.get("board_1", num=limit)
         else:
             name = self.text.get("board_x", num=limit, offset=offset + 1)
         embed.add_field(name=name, value="\n".join(value))
-
-        # construct second field
-        # FIXME How to get user's position?
-        # value = []
-        # board = repo_k.getLeaderboard(attr, offset=user_position - around, limit=around*2+1)
 
         return embed
 
@@ -552,3 +559,49 @@ class Karma(rubbercog.Rubbercog):
 
         if str(reaction.emoji) not in ("☑️", "0⃣", "❎"):
             await self._remove_reaction(reaction, user)
+
+    async def checkBoardEmoji(self, reaction, user):
+        """Check if the leaderboard should be scrolled"""
+        if user.bot:
+            return
+
+        if str(reaction) not in ("⏪", "◀", "▶"):
+            return
+
+        # fmt: off
+        if len(reaction.message.embeds) != 1 \
+        or type(reaction.message.embeds[0].title) != str \
+        or not reaction.message.embeds[0].title.startswith(self.text.get("board_title")):
+            return
+        # fmt: on
+
+        embed = reaction.message.embeds[0]
+
+        # get ordering
+        for o in ("desc", "asc", "give", "take"):
+            if embed.title.endswith(self.text.get("board_" + o + "_t")):
+                order = o
+                break
+
+        # get current offset
+        if "," in embed.fields[0].name:
+            offset = int(embed.fields[0].name.split(" ")[-1]) - 1
+        else:
+            offset = 0
+
+        # get new offset
+        if str(reaction) == "⏪":
+            offset = 0
+        elif str(reaction) == "◀":
+            offset -= self.config.get("leaderboard limit")
+        elif str(reaction) == "▶":
+            offset += self.config.get("leaderboard limit")
+
+        if offset < 0:
+            return await utils.remove_reaction(reaction, user)
+
+        # apply
+        embed = self.fillBoard(embed, member=user, order=order, offset=offset)
+        if embed:
+            await reaction.message.edit(embed=embed)
+        await utils.remove_reaction(reaction, user)

@@ -9,10 +9,12 @@
 	# you can disable karma for subjects
 	"count subjects": true
 
-	# emote value vote
+	# how many users have to vote over emoji's value
 	"vote limit": 5
+	# how many minutes the vote should be opened
 	"vote time":  120
 
+	# how many items the leaderboard should show
 	"leaderboard limit": 10
 	"leaderboard around": 2
 }
