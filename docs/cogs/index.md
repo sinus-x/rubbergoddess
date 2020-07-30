@@ -2,6 +2,10 @@
 
 # Rubbergoddess modules
 
+## [Account](account.md)
+
+Set bot's name and avatar.
+
 ## [Actress](actress.md)
 
 Send messages and attachments as Rubbergoddess. Use dynamic replies, so the bot can react to user's own messages.
