@@ -47,10 +47,14 @@
 
 		# Cogs to load by default
 		extensions: [
+			# manage bot's user account
+			account
 			# replying to programmed triggers, sending posts as a bot, change avatar or name
 			actress
 			# send messages that the bot will be offline, display bot and host machine info
 			admin
+			# elite channel for users with animal avatar
+			animals
 			# uptime, ping
 			base
 			# managed role and channel assignment, react-to-role functionality
@@ -69,6 +73,8 @@
 			librarian
 			# hug
 			meme
+			# MEE6-styled points
+			points
 			# pick, flip, roll
 			random
 			# allow users to buy stuff for their karma

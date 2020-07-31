@@ -57,11 +57,12 @@ class Animals(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
         # only act if user is verified
-        # fmt: off
-        if "Gatekeeper" in self.bot.cogs.keys() \
-        and config.role_verify not in self.getGuild().get_member(after.id).roles:
+        member = self.getGuild().get_member(after.id)
+        if member is None:
             return
-        # fmt: on
+
+        if "Gatekeeper" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
+            return
 
         if before.avatar_url != after.avatar_url:
             await self.check(after, "on_user_update")

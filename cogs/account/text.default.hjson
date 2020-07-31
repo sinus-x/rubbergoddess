@@ -1,0 +1,11 @@
+{
+	name: {
+		ok: Změnila jsem jméno na **((name))**.
+	}
+
+	avatar: {
+		invalid:   Cesta obsahuje zakázané nebo neplatné znaky.
+		not_found: Takový soubor neexistuje.
+		ok:        Nový avatar byl úspěšně nahrán.
+	}
+}
