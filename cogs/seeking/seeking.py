@@ -48,6 +48,7 @@ class Seeking(rubbercog.Rubbercog):
                         timestamp=utils.id_to_datetime(item.message_id).strftime("%Y-%m-%d %H:%M"),
                     ),
                     value=text,
+                    inline=False,
                 )
         else:
             embed.add_field(name="\u200b", value=self.text.get("embed", "no_items"))

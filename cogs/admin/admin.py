@@ -199,7 +199,7 @@ class Admin(rubbercog.Rubbercog):
             description=self.text.get("stats", "description"),
         )
 
-        num = self.config.get("stats_length")
+        num = self.config.get("limit")
         if len(self.usage) < num:
             num = len(self.usage)
         embed.add_field(
@@ -253,32 +253,26 @@ class Admin(rubbercog.Rubbercog):
         else:
             offset = 0
 
-        stats_length = self.config.get("stats_length")
+        limit = self.config.get("limit")
 
         # get new offset
         if str(reaction) == "⏪":
             offset = 0
         elif str(reaction) == "◀":
-            offset -= stats_length
+            offset -= limit
         elif str(reaction) == "▶":
-            offset += stats_length
+            offset += limit
 
-        if offset > stats_length - len(self.usage):
-            offset = len(self.usage) - stats_length - 1
-        if offset < 0:
+        if offset < 0 or offset > len(self.usage):
             offset = 0
 
         # apply
         embed.clear_fields()
 
-        num = stats_length
-        if len(self.usage) < num:
-            num = len(self.usage)
         if offset == 0:
-            name = self.text.get("stats", "top_0", num=num)
+            name = self.text.get("stats", "top_0", num=limit)
         else:
-            name = self.text.get("stats", "top_n", num=num, offset=offset)
-        top = "top_0" if offset == 0 else "top_n"
+            name = self.text.get("stats", "top_n", num=limit, offset=offset + 1)
 
         embed.add_field(
             name=name, value=self.getCommandsStats(offset), inline=False,
@@ -315,15 +309,10 @@ class Admin(rubbercog.Rubbercog):
         for i, (command, count) in enumerate(items.items()):
             if i < offset:
                 continue
-            if i + offset > self.config.get("stats_length"):
+            if i >= self.config.get("limit") + offset:
                 break
-
             content.append(template.format(count=count, command=command))
 
         if not len(content):
             return self.text.get("stats", "nothing")
         return "\n".join(content)
-
-
-def setup(bot):
-    bot.add_cog(Admin(bot))

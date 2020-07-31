@@ -36,6 +36,6 @@
 		# this value must not have comma
 		top_0: ((num)) nejčastějších
 		# this value must contain comma and has to end with offset
-		top_n: ((num)) nejčastějších, od ((offset))
+		top_n: ((num)) nejčastějších, od pozice ((offset))
 	}
 }

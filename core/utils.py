@@ -54,9 +54,9 @@ def seconds2str(time):
     H = 3600
     M = 60
 
-    d = (time - (time % D)) / D
-    h = (time - (time % H)) / H
-    m = (time - (time % M)) / M
+    d = int((time - (time % D)) / D)
+    h = int((time - (time % H)) / H)
+    m = int((time - (time % M)) / M)
     s = time % 60
 
     if d > 0:

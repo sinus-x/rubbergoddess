@@ -1,4 +1,4 @@
 {
 	# how many items to show in command usage embed
-	stats_length: 10
+	limit: 10
 }
