@@ -17,8 +17,7 @@ class Janitor(rubbercog.Rubbercog):
         self.text = CogText("janitor")
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(check.is_in_modroom)
-    @commands.has_permissions(administrator=True)
+    @commands.check(check.is_mod)
     @commands.command()
     async def hoarders(self, ctx: commands.Context, warn: str = None):
         """Check for users with multiple programme roles

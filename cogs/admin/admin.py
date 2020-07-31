@@ -106,7 +106,6 @@ class Admin(rubbercog.Rubbercog):
 
     @commands.command(name="status")
     @commands.check(check.is_mod)
-    @commands.check(check.is_in_modroom)
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
@@ -126,7 +125,6 @@ class Admin(rubbercog.Rubbercog):
 
     @commands.command(name="journalctl")
     @commands.check(check.is_mod)
-    @commands.check(check.is_in_modroom)
     async def journalctl(self, ctx: commands.Context):
         """See bot logs"""
         cmd = None
