@@ -24,7 +24,7 @@ class Seeking(rubbercog.Rubbercog):
         if ctx.invoked_subcommand is not None:
             return
 
-        embed = self.embed(ctx=ctx, title="Hledám")
+        embed = self.embed(ctx=ctx, title=self.text.get("embed", "title"))
         items = repo_s.getAll(ctx.channel.id)
 
         if items is not None:
@@ -36,12 +36,18 @@ class Seeking(rubbercog.Rubbercog):
                     if hasattr(member, "display_name")
                     else self.text.get("embed", "no_user")
                 )
+                message = await ctx.channel.fetch_message(item.message_id)
+                if message:
+                    text = item.text + f" | [link]({message.jump_url})"
+                else:
+                    text = item.text
                 embed.add_field(
                     name=template.format(
-                        id=item.id, name=name, timestamp=item.timestamp.strftime("%Y-%m-%d %H:%M")
+                        id=item.id,
+                        name=name,
+                        timestamp=utils.id_to_datetime(item.message_id).strftime("%Y-%m-%d %H:%M"),
                     ),
-                    value=item.text,
-                    inline=False,
+                    value=text,
                 )
         else:
             embed.add_field(name="\u200b", value=self.text.get("embed", "no_items"))
@@ -53,7 +59,9 @@ class Seeking(rubbercog.Rubbercog):
         if len(text) > 140:
             return await ctx.send(self.text.get("add", "too_long"))
 
-        repo_s.add(user_id=ctx.author.id, channel_id=ctx.channel.id, text=text)
+        repo_s.add(
+            user_id=ctx.author.id, message_id=ctx.message.id, channel_id=ctx.channel.id, text=text
+        )
         await ctx.send(self.text.get("add", "ok"))
 
     @seeking.command(name="remove")
