@@ -99,8 +99,8 @@ Files for SQLAlchemy initialisation are saved in `repository/database`.
 |------------|------------|-----------|---------------|
 | id         | Integer    | primary   | autoincrement |
 | user_id    | BigInteger |           |               |
+| message_id | BigInteger |           |               |
 | channel_id | BigInteger |           |               |
 | text       | String     |           |               |
-| timestamp  | DateTime   |           |               |
 
 ← Back to [home](index.md)
