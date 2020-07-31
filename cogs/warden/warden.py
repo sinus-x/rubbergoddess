@@ -146,7 +146,9 @@ class Warden(rubbercog.Rubbercog):
 
     async def saveMessageHashes(self, message: discord.Message):
         for f in message.attachments:
-            # FIXME Can we check that the file is image before downloading it?
+            if f.size > self.config.get("max_size") * 1024:
+                continue
+
             fp = BytesIO()
             await f.save(fp)
             try:
