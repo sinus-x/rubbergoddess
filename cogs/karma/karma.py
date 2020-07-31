@@ -520,9 +520,10 @@ class Karma(rubbercog.Rubbercog):
         if not board or not board.count():
             return None
 
+        user_in_list = False
         for i, db_user in enumerate(board, start=offset):
             # fmt: off
-            user = self.bot.get_user(int(db_user.discord_id))
+            user = self.getGuild().get_member(int(db_user.discord_id))
             username = (
                 self.sanitise(user.display_name)
                 if hasattr(user, "display_name")
@@ -531,6 +532,7 @@ class Karma(rubbercog.Rubbercog):
 
             if int(db_user.discord_id) == member.id:
                 username = f"**{username}**"
+                user_in_list = True
 
             value.append(template.format(
                 position=i + 1,
@@ -545,7 +547,24 @@ class Karma(rubbercog.Rubbercog):
             name = self.text.get("board_1", num=limit)
         else:
             name = self.text.get("board_x", num=limit, offset=offset + 1)
-        embed.add_field(name=name, value="\n".join(value))
+        embed.add_field(name=name, value="\n".join(value), inline=False)
+
+        # construct user field, if they are not included in first one
+        if not user_in_list:
+            k = repo_k.get_karma(member.id)
+            # get right values
+            if order in ("desc", "asc"):
+                value, position = k.karma.value, k.karma.position
+            elif order == "give":
+                value, position = k.positive.value, k.positive.position
+            else:
+                value, position = k.negative.value, k.negative.position
+            username = "**" + self.sanitise(member.display_name) + "**"
+
+            embed.add_field(
+                name=self.text.get("board_user"),
+                value=template.format(position=position, karma=value, username=username),
+            )
 
         return embed
 
@@ -598,7 +617,7 @@ class Karma(rubbercog.Rubbercog):
             offset += self.config.get("leaderboard limit")
 
         if offset < 0:
-            return await utils.remove_reaction(reaction, user)
+            offset = 0
 
         # apply
         embed = self.fillBoard(embed, member=user, order=order, offset=offset)
