@@ -82,5 +82,25 @@ Files for SQLAlchemy initialisation are saved in `repository/database`.
 | timestamp     | DateTime   |           |         |
 | dhash         | String     |           |         |
 
+## Points
+
+**points**
+
+| name    | type       | attribute | default |
+|---------|------------|-----------|---------|
+| user_id | BigInteger | primary   |         |
+| points  | Integer    |           |         |
+
+## Seeking
+
+**seeking**
+
+| name       | type       | attribute | default       |
+|------------|------------|-----------|---------------|
+| id         | Integer    | primary   | autoincrement |
+| user_id    | BigInteger |           |               |
+| channel_id | BigInteger |           |               |
+| text       | String     |           |               |
+| timestamp  | DateTime   |           |               |
 
 ← Back to [home](index.md)
