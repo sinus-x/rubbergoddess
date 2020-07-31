@@ -1,0 +1,4 @@
+{
+	# how many items to show in command usage embed
+	stats_length: 10
+}
