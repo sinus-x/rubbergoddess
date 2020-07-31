@@ -16,5 +16,4 @@
 
 	# how many items the leaderboard should show
 	"leaderboard limit": 10
-	"leaderboard around": 2
 }

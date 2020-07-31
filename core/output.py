@@ -258,7 +258,7 @@ class Event:
                 location = source.channel.mention
             else:
                 # dm
-                location = type(location).__name__
+                location = type(source.channel).__name__
             if hasattr(source, "author"):
                 author = str(source.author)
             else:

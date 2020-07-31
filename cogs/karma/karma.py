@@ -494,7 +494,6 @@ class Karma(rubbercog.Rubbercog):
 
     def fillBoard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
         limit = self.config.get("leaderboard limit")
-        # around = config.get("karma", "leaderboard around")
         template = "`{position:>2}` … `{karma:>5}` {username}"
 
         # get repository parameters

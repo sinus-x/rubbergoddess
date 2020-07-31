@@ -1,6 +1,6 @@
 {
-	me:    Máš **((points))** bodů, držíš se na **((poisition)).** místě.
-	stalk: Uživatel **((display_name))** má **((points))** bodů a drží se na **((points)).** místě.
+	me:    Máš **((points))** bodů, držíš se na **((position)).** místě.
+	stalk: Uživatel **((display_name))** má **((points))** bodů a drží se na **((position)).** místě.
 
 	unknown: ???
 
