@@ -48,12 +48,12 @@ class Points(rubbercog.Rubbercog):
         position = repo_p.getPosition(result.points)
 
         if member.id == ctx.author.id:
-            text = self.text.get("me", points=result, position=position)
+            text = self.text.get("me", points=result.points, position=position)
         else:
             text = self.text.get(
                 "stalk",
                 display_name=self.sanitise(member.display_name),
-                points=result,
+                points=result.points,
                 position=position,
             )
 
