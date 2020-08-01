@@ -58,7 +58,7 @@ class Warden(rubbercog.Rubbercog):
                 await message.channel.send(
                     self.text.get("gif warning", mention=message.author, value=penalty)
                 )
-                repo_k.update_karma_get(message.author, -1 * penalty)
+                repo_k.update_karma_get(message.author, penalty)
                 await utils.delete(message)
                 await self.console.debug(message, f"Removed message linking to {link}")
                 break

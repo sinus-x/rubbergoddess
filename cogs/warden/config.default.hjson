@@ -9,7 +9,7 @@
 	max_size: 4000
 
 	# Look for these strings in messages
-	"penalty strings": ["giphy.com", "tenor.com", "imgur.com", "gfycat.com"]
+	"penalty strings": []
 	# Remove karma is strings above are found
-	"penalty value": 2
+	"penalty value": -1
 }
