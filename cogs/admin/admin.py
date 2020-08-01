@@ -2,7 +2,7 @@ import subprocess
 
 from discord.ext import commands
 
-from cogs.resource import CogText
+from cogs.resource import CogConfig, CogText
 from core import check, rubbercog, utils
 from core.config import config
 
@@ -13,6 +13,7 @@ class Admin(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
+        self.config = CogConfig("admin")
         self.text = CogText("admin")
 
         self.usage = {}
@@ -105,7 +106,6 @@ class Admin(rubbercog.Rubbercog):
 
     @commands.command(name="status")
     @commands.check(check.is_mod)
-    @commands.check(check.is_in_modroom)
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
@@ -125,7 +125,6 @@ class Admin(rubbercog.Rubbercog):
 
     @commands.command(name="journalctl")
     @commands.check(check.is_mod)
-    @commands.check(check.is_in_modroom)
     async def journalctl(self, ctx: commands.Context):
         """See bot logs"""
         cmd = None
@@ -192,27 +191,27 @@ class Admin(rubbercog.Rubbercog):
     @commands.command(name="commands")
     async def command_stats(self, ctx):
         """Command invocation statistics"""
-        items = {
-            k: v for k, v in sorted(self.usage.items(), key=lambda item: item[1], reverse=True)
-        }
+        embed = self.embed(
+            ctx=ctx,
+            title=self.text.get("stats", "title"),
+            description=self.text.get("stats", "description"),
+        )
 
-        content = []
-        content.append(">>> **{}**".format(self.text.get("stats", "title").upper()))
-        total = 0
-        template = "`{count:>3}` … {command}"
-        for command, count in items.items():
-            content.append(template.format(count=count, command=command))
-            total += count
-        if len(content) == 0:
-            content.append(self.text.get("stats", "nothing"))
+        num = self.config.get("limit")
+        if len(self.usage) < num:
+            num = len(self.usage)
+        embed.add_field(
+            name=self.text.get("stats", "top_0", num=num),
+            value=self.getCommandsStats(0),
+            inline=False,
+        )
 
-        result = ""
-        for line in content:
-            if len(result) + len(line) > 2000:
-                await ctx.send(result)
-                result = ""
-            result += "\n" + line
-        await ctx.send(result)
+        message = await ctx.send(embed=embed)
+        await message.add_reaction("⏪")
+        await message.add_reaction("◀")
+        await message.add_reaction("▶")
+
+        await utils.room_check(ctx)
 
     ##
     ## Listeners
@@ -228,6 +227,57 @@ class Admin(rubbercog.Rubbercog):
             self.usage[name] += 1
         else:
             self.usage[name] = 1
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        """command_stats scrolling"""
+        if str(reaction) not in ("⏪", "◀", "▶"):
+            return
+
+        if user.bot:
+            return
+
+        # fmt: off
+        if len(reaction.message.embeds) != 1 \
+        or reaction.message.embeds[0].title != self.text.get("stats", "title"):
+            return
+        # fmt: on
+
+        embed = reaction.message.embeds[0]
+
+        # get current offset
+        if "," in embed.fields[0].name:
+            offset = int(embed.fields[0].name.split(" ")[-1]) - 1
+        else:
+            offset = 0
+
+        limit = self.config.get("limit")
+
+        # get new offset
+        if str(reaction) == "⏪":
+            offset = 0
+        elif str(reaction) == "◀":
+            offset -= limit
+        elif str(reaction) == "▶":
+            offset += limit
+
+        if offset < 0 or offset > len(self.usage):
+            offset = 0
+
+        # apply
+        embed.clear_fields()
+
+        if offset == 0:
+            name = self.text.get("stats", "top_0", num=limit)
+        else:
+            name = self.text.get("stats", "top_n", num=limit, offset=offset + 1)
+
+        embed.add_field(
+            name=name, value=self.getCommandsStats(offset), inline=False,
+        )
+
+        await reaction.message.edit(embed=embed)
+        await utils.remove_reaction(reaction, user)
 
     ##
     ## Helper functions
@@ -247,6 +297,20 @@ class Admin(rubbercog.Rubbercog):
             data += line
         return data
 
+    def getCommandsStats(self, offset: int = 0) -> str:
+        items = {
+            k: v for k, v in sorted(self.usage.items(), key=lambda item: item[1], reverse=True)
+        }
 
-def setup(bot):
-    bot.add_cog(Admin(bot))
+        template = "`{count:>3}` … {command}"
+        content = []
+        for i, (command, count) in enumerate(items.items()):
+            if i < offset:
+                continue
+            if i >= self.config.get("limit") + offset:
+                break
+            content.append(template.format(count=count, command=command))
+
+        if not len(content):
+            return self.text.get("stats", "nothing")
+        return "\n".join(content)

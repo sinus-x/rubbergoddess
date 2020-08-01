@@ -17,7 +17,7 @@
 		bad_token:       Chybný token.
 		place_error:
 			'''
-			Chyba při získávání informací:.
+			Chyba při získávání informací:
 			> ((message))
 			'''
 

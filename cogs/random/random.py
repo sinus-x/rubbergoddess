@@ -21,6 +21,9 @@ class Random(rubbercog.Rubbercog):
     @commands.command()
     async def pick(self, ctx, *args):
         """"Pick an option"""
+        if not len(args):
+            return
+
         option = self.sanitise(random.choice(args), limit=50)
         if option is not None:
             await ctx.send(self.text.get("answer", mention=ctx.author.mention, option=option))

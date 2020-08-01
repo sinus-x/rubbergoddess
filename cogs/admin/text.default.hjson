@@ -29,8 +29,13 @@
 	}
 
 	stats: {
-		title:   Statistika příkazů
-		nothing: Zatím nic
-		total:   Celkem ((total))
+		title:       Statistika příkazů
+		description: Od posledního spuštění
+		nothing:     Zatím nic
+
+		# this value must not have comma
+		top_0: ((num)) nejčastějších
+		# this value must contain comma and has to end with offset
+		top_n: ((num)) nejčastějších, od pozice ((offset))
 	}
 }

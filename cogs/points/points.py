@@ -3,16 +3,13 @@ import random
 from typing import Union
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
 from repository.points_repo import PointsRepository
 
 repo_p = PointsRepository()
-
-# TODO Add timer: iterate over stats every X minutes and remove everyone
-#      with time expired
 
 
 class Points(rubbercog.Rubbercog):
@@ -24,10 +21,15 @@ class Points(rubbercog.Rubbercog):
         self.config = CogConfig("points")
         self.text = CogText("points")
 
-        self.limits = self.config.get("points")
-        self.timeslot = self.config.get("timer")
+        self.limits_message = self.config.get("points_message")
+        self.timer_message = self.config.get("timer_message")
+        self.limits_reaction = self.config.get("points_reaction")
+        self.timer_reaction = self.config.get("timer_reaction")
 
-        self.stats = {}
+        self.stats_message = {}
+        self.stats_reaction = {}
+
+        self.cleanup.start()
 
     ##
     ## Commands
@@ -48,12 +50,12 @@ class Points(rubbercog.Rubbercog):
         position = repo_p.getPosition(result.points)
 
         if member.id == ctx.author.id:
-            text = self.text.get("me", points=result, position=position)
+            text = self.text.get("me", points=result.points, position=position)
         else:
             text = self.text.get(
                 "stalk",
                 display_name=self.sanitise(member.display_name),
-                points=result,
+                points=result.points,
                 position=position,
             )
 
@@ -113,13 +115,14 @@ class Points(rubbercog.Rubbercog):
         now = datetime.datetime.now()
 
         if (
-            str(message.author.id) in self.stats
-            and (now - self.stats[str(message.author.id)]).total_seconds() < self.timeslot
+            str(message.author.id) in self.stats_message
+            and (now - self.stats_message[str(message.author.id)]).total_seconds()
+            < self.timer_message
         ):
             return
 
-        value = random.randint(self.limits[0], self.limits[1])
-        self.stats[str(message.author.id)] = now
+        value = random.randint(self.limits_message[0], self.limits_message[1])
+        self.stats_message[str(message.author.id)] = now
         repo_p.increment(message.author.id, value)
 
     @commands.Cog.listener()
@@ -127,6 +130,16 @@ class Points(rubbercog.Rubbercog):
         """Handle board scrolling"""
         if user.bot:
             return
+
+        # add points
+        now = datetime.datetime.now()
+        if (
+            str(user.id) not in self.stats_reaction
+            or (now - self.stats_reaction[str(user.id)]).total_seconds() >= self.timer_reaction
+        ):
+            value = random.randint(self.limits_reaction[0], self.limits_reaction[1])
+            self.stats_reaction[str(user.id)] = now
+            repo_p.increment(user.id, value)
 
         if str(reaction) not in ("⏪", "◀", "▶"):
             return
@@ -203,3 +216,22 @@ class Points(rubbercog.Rubbercog):
 
             result.append(template.format(points=db_user.points, name=name))
         return "\n".join(result)
+
+    ##
+    ## Tasks
+    ##
+
+    @tasks.loop(seconds=120.0)
+    async def cleanup(self):
+        delete = []
+        for uid, time in self.stats_message.items():
+            if (datetime.datetime.now() - time).total_seconds() >= self.timer_message:
+                delete.append(uid)
+        for uid in delete:
+            self.stats_message.pop(uid)
+        delete = []
+        for uid, time in self.stats_reaction.items():
+            if (datetime.datetime.now() - time).total_seconds() >= self.timer_reaction:
+                delete.append(uid)
+        for uid in delete:
+            self.stats_reaction.pop(uid)

@@ -1,10 +1,12 @@
 {
 	# time slot, in seconds
-	timer: 60
+	timer_message:  60
+	timer_reaction: 30
 
 	# how many items to show on leaderboard
 	board: 10
 
 	# lower and higher limit on how many points the user can get
-	points: [15, 25]
+	points_message:  [15, 25]
+	points_reaction: [0, 5]
 }

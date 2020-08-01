@@ -71,4 +71,4 @@ class Help(commands.MinimalHelpCommand):
     async def send_pages(self):
         destination = self.get_destination()
         for page in self.paginator.pages:
-            await destination.send(">>> " + page, delete_after=config.get("delay", "help"))
+            await destination.send(">>> " + page)

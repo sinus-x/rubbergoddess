@@ -29,7 +29,6 @@ class Stalker(rubbercog.Rubbercog):
         return
 
     @commands.check(check.is_mod)
-    @commands.check(check.is_in_modroom)
     @commands.group(name="whois", aliases=["gdo"])
     async def whois(self, ctx: commands.Context):
         """Get information about user"""

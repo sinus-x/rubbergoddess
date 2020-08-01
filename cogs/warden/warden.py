@@ -58,7 +58,7 @@ class Warden(rubbercog.Rubbercog):
                 await message.channel.send(
                     self.text.get("gif warning", mention=message.author, value=penalty)
                 )
-                repo_k.update_karma_get(message.author, -1 * penalty)
+                repo_k.update_karma_get(message.author, penalty)
                 await utils.delete(message)
                 await self.console.debug(message, f"Removed message linking to {link}")
                 break
@@ -146,7 +146,9 @@ class Warden(rubbercog.Rubbercog):
 
     async def saveMessageHashes(self, message: discord.Message):
         for f in message.attachments:
-            # FIXME Can we check that the file is image before downloading it?
+            if f.size > self.config.get("max_size") * 1024:
+                continue
+
             fp = BytesIO()
             await f.save(fp)
             try:

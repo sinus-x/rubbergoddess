@@ -4,7 +4,8 @@
 		ok:       V pořádku, položku jsem přidala.
 	}
 	remove: {
-		not_found: Takovou položku tu nemám.
+		not_found:   Takovou položku tu nemám.
+		not_allowed: Na to nemáš právo!
 		ok: V pořádku, položku jsem smazala.
 	}
 
