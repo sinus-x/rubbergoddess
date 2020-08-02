@@ -315,7 +315,7 @@ class Faceshifter(rubbercog.Rubbercog):
     def _get_teacher_channel(self, subject: discord.TextChannel) -> discord.TextChannel:
         return discord.utils.get(
             subject.guild.text_channels,
-            name=subject.name + self.config.get("channels", "teacher suffix"),
+            name=subject.name + config.get("channels", "teacher suffix"),
         )
 
     ##
