@@ -1,0 +1,7 @@
+{
+	# week the current semester started
+	starting_week: 0
+
+	# openweathermap.com token
+	weather_token: 678a5932f6dd92ac668b20e9f89c0318
+}

@@ -1,18 +1,33 @@
 # Changelog
-Development of this bot is quite chaotic. This document will try to document
-the biggest changes, most importantly those that need some kind of edits to
-configuration or database.
 
 ## [Unreleased]
 
-See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can
-expect in the future.
+See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
+
+## [1.0]
+
+### Added
+
+- Account cog: Manage bot's user account.
+- Points cog: MEE6-like points.
+- Seeking cog: Announce that you're seeking something/someone.
+
+### Maintenance
+
+- All cogs were moved to their separate directories, along with their strings and configuration. Manual transfer of config and text files is needed.
+
+## [0.6]
+
+### Added
+
+- Animals cog: Elite club for users with animal avatar
 
 ### Developers
 
 - `utils.remove_reaction(reaction, user)`
+- `event.user()` and `event.sudo()` signatures changed
 
-## [0.5.0]
+## [0.5]
 
 ### Added
 
@@ -41,7 +56,7 @@ expect in the future.
 
 - Bumped reqired discord.py version to 1.3.4
 
-## [0.4.0]
+## [0.4]
 
 ### Added
 
@@ -57,7 +72,7 @@ expect in the future.
 - Removed `Rubbercog.throw*` functions
 - Removed `Rubbercog.log` function
 
-## [0.3.0]
+## [0.3]
 ### Added
 - Gatekeeper cog
 
@@ -77,7 +92,7 @@ These two replace previous logging channels, which weren't clearly defined.
 - Config: major naming change. Go line-by-line and copy values that apply.
 - Actor: using word values (`full` instead of `F`, `text` instead of `T`)
 
-## [0.2.0]
+## [0.2]
 ### Added
 - Faceshifter cog (deprecating some of the code in `features/reaction.py`)
 
@@ -102,13 +117,16 @@ ADD COLUMN category VARCHAR,
 ADD COLUMN name VARCHAR;
 ```
 
-
-## [0.1.0]
+## [0.1]
 Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/Toaster192/rubbergod).
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.0...devel
-[0.5.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/sinus-x/rubbergoddess/releases/tag/v0.1.0
+
+
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.1...devel
+[1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.1
+[0.6]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.3...v0.6.1
+[0.5]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.2...v0.5.3
+[0.4]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...v0.4.2
+[0.3]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.2...v0.3.0
+[0.2]: https://github.com/sinus-x/rubbergoddess/compare/v0.1.0...v0.2.2
+[0.1]: https://github.com/sinus-x/rubbergoddess/releases/tag/v0.1.0

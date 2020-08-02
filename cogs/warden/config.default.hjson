@@ -1,0 +1,15 @@
+{
+	# Where the images should be checked for duplicities. (memes etc)
+	"deduplication channels": []
+
+	# How many people have to react to embed for it to dissapear
+	"not duplicate limit": 5
+
+	# maximal attachment size to be scanned, in kB
+	max_size: 4000
+
+	# Look for these strings in messages
+	"penalty strings": []
+	# Remove karma is strings above are found
+	"penalty value": -1
+}

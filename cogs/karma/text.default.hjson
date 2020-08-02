@@ -1,0 +1,59 @@
+{
+	stalk_user:     Karma uživatele **((user))**
+	stalk_karma:    Karma
+	stalk_positive: Rozdáno
+	stalk_negative: Odebráno
+
+	# ?karma emoji/emojis
+	emoji:            Hodnota ((emoji)) je **((value))**.
+	emojis_positive:  "Kladně ohodnocené emoji:"
+	emojis_neutral:   "Neutrálně hodnocené emoji:"
+	emojis_negative:  "Záporně ohodnocené emoji:"
+	emojis_not_voted: "Neohodnocené emoji:"
+
+	emoji_not_found: Emoji jsem na serveru nenašla.
+	emoji_not_voted: Emoji není ohodnocen.
+	no_emojis:       Žádné emoty jsem nenašla.
+
+	# ?karma message
+	no_message :    Zpráva nenalezena.
+	embed_positive: Kladné reakce
+	embed_negative: Záporné reakce
+	embed_neutral:  Neutrální reakce
+	embed_total:    Celková karma
+	embed_disabled: Karma se pro tuto zprávu nepočítá.
+
+	# ?karma vote
+	vote_info:
+		'''
+		Hlasování o karma hodnotě ((emoji)).
+		Vyhodnocení proběhne za **((time))** minut, potřebný počet hlasů je **((limit))**.
+		'''
+	all_emojis_voted: Všechny emoji na serveru **((guild))** už jste ohodnotili.
+	vote_failed: Hlasování o hodnotě ((emoji)) skončilo neúspěšně z důvodu nedostatku hlasů.
+	vote_result: Hodnota ((emoji)) je ((value)).
+	all_rated:   Karma hodnotu už mají všechny emoji.
+
+	# ?karma give
+	give: {
+		given: Karmu jsem úspěšně přidala.
+		taken: Karmu jsem úspěšně odebrala.
+	}
+
+	# ?leaderboard
+	board_title:  Leaderboard
+	board_desc_t: "🏆"
+	board_desc_d: Karma, od nejúspěšnějších
+	board_asc_t:  "💩"
+	board_asc_d:  Karma, od nejméně úspěšných
+	board_give_t: "❤️"
+	board_give_d: Rozdaná karma
+	board_take_t: "💔"
+	board_take_d: Karma sebraná ostatním
+
+	# note: this value must not contain comma
+	board_1:    Top ((num))
+	# note: this value must end with offset and has to contain comma
+	board_x:    Top ((num)), pozice ((offset))
+	board_user: Tvoje umístění
+}

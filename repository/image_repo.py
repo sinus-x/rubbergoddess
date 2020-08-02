@@ -1,5 +1,3 @@
-import datetime
-
 from repository.base_repository import BaseRepository
 from repository.database import session
 from repository.database.image import Image
@@ -18,7 +16,6 @@ class ImageRepository(BaseRepository):
                 message_id=message_id,
                 attachment_id=attachment_id,
                 dhash=dhash,
-                timestamp=datetime.datetime.now().replace(microsecond=0),
             )
         )
         session.commit()

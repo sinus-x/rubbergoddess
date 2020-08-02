@@ -1,0 +1,31 @@
+{
+	no_subject: Takový předmět neznám.
+
+	# review subject
+	no_reviews: ((mention)), předmět ještě žádné hodnocení nemá.
+
+	embed: {
+		title:     "Review: "
+		num:       Recenze #((num))
+		average:   Průměrná známka: ((num))
+		no_user:   Neznámý uživatel
+		anonymous: Anonymní uživatel
+		mark:      Známka
+		text:      Text
+	}
+
+	# review add
+	text_too_long: Maximální počet znaků je 1024.
+	wrong_mark:    Známka je číslo 1-5 jako ve škole.
+	added:         Hodnocení předmětu bylo úspěšně přidáno.
+
+	# review remove
+	no_review: ((mention)), takové hodnocení tu nemám.
+	removed:   Hodnocení bylo odebráno.
+
+	# sudo_subject
+	subject_exists:  Předmět už existuje.
+	subject_added:   Předmět přidán.
+	subject_updated: Předmět aktualizován.
+	subject_removed: Předmět odebrán.
+}

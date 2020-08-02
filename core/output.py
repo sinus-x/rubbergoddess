@@ -196,7 +196,7 @@ class Console:
             command = "not a command"
 
         # author
-        if hasattr(source, "author") and isinstance(source.author, discord.User):
+        if hasattr(source, "author") and type(source.author) in (discord.User, discord.Member):
             author = f"{source.author} (ID {source.author.id})"
         else:
             author = "unknown author"
@@ -216,7 +216,7 @@ class Console:
             message = "no message"
 
         # traceback
-        if error and len(error):
+        if error and len(str(error.__traceback__)):
             tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             if len(tb) > 1000:
                 tb = tb[-999:] + "…"
@@ -243,46 +243,51 @@ class Event:
         self.bot = bot
         self.channel = None
 
-        self.user_template = "{user} in {location}: {message}"
-        self.sudo_template = "**SUDO** {user} in {location}: {message}"
-
     def getChannel(self):
         if self.channel is None:
             self.channel = self.bot.get_channel(config.get("channels", "events"))
         return self.channel
 
-    async def user(self, member: discord.Member, location, message: str):
-        """Unprivileged events"""
-        if isinstance(location, discord.abc.Messageable):
-            if hasattr(location, "mention"):
-                location = location.mention
+    def _identifier(
+        self, source: Union[commands.Context, discord.Message, discord.User, discord.Member, str]
+    ):
+        if hasattr(source, "channel"):
+            # ctx, message
+            if hasattr(source.channel, "mention"):
+                # channel
+                location = source.channel.mention
             else:
-                location = type(location).__name__
+                # dm
+                location = type(source.channel).__name__
+            if hasattr(source, "author"):
+                author = str(source.author)
+            else:
+                author = "unknown"
+            identifier = f"{discord.utils.escape_markdown(author)} in {location}"
+        elif isinstance(source, discord.User) or isinstance(source, discord.Member):
+            # user or member
+            identifier = f"{str(source)}"
         else:
-            location = str(location)
+            # str
+            identifier = source
+        return identifier
 
-        # fmt: off
-        await self.getChannel().send(self.user_template.format(
-            user=str(member),
-            location=location,
-            message=message.replace("@", "@\u200b"),
-        ))
-        # fmt: on
+    async def user(
+        self,
+        source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
+        message: str,
+    ):
+        """Non-privileged events"""
+        await self.getChannel().send(
+            "**USER** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
+        )
 
-    async def sudo(self, member: discord.Member, location, message: str):
+    async def sudo(
+        self,
+        source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
+        message: str,
+    ):
         """Privileged events"""
-        if isinstance(location, discord.abc.Messageable):
-            if hasattr(location, "mention"):
-                location = location.mention
-            else:
-                location = type(location).__name__
-        else:
-            location = str(location)
-
-        # fmt: off
-        await self.getChannel().send(self.sudo_template.format(
-            user=str(member),
-            location=location,
-            message=message.replace("@", "@\u200b"),
-        ))
-        # fmt: on
+        await self.getChannel().send(
+            "**SUDO** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
+        )

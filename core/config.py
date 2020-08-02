@@ -32,15 +32,12 @@ class Config:
 
         ##
         ## BOT
-        self.debug     = self.get('bot', 'debug')
-        self.loader    = self.get('bot', 'loader')
-        self.key       = self.get('bot', 'key')
-        self.admin_id  = self.get('bot', 'admin id')
-        self.guild_id  = self.get('bot', 'guild id')
-        self.slave_id  = self.get('bot', 'slave guild id')
-        self.host      = self.get('bot', 'host')
-        self.prefixes  = self.get('bot', 'prefixes')
-        self.prefix    = self.prefixes[0]
+        self.loader   = self.get('bot', 'loader')
+        self.key      = self.get('bot', 'key')
+        self.admin_id = self.get('bot', 'admin id')
+        self.guild_id = self.get('bot', 'guild id')
+        self.slave_id = self.get('bot', 'slave guild id')
+        self.prefix   = self.get('bot', 'prefix')
 
         self.extensions = self.get('bot', 'extensions')
 
@@ -63,7 +60,6 @@ class Config:
         self.color_success = self.get('color', 'success')
         self.color_notify  = self.get('color', 'notify')
         self.color_error   = self.get('color', 'error')
-        self.colors = [self.color, self.color_success, self.color_notify, self.color_error]
 
         ##
         ## DELAY
@@ -72,23 +68,12 @@ class Config:
         self.delay_verify = self.get('delay', 'verify')
 
         ##
-        ## EMAIL
-        self.mail_address     = self.get('email', 'address')
-        self.mail_smtp_server = self.get('email', 'server')
-        self.mail_smtp_port   = self.get('email', 'port')
-        self.mail_password    = self.get('email', 'password')
-
-        ##
         ## ROLES
         self.role_verify    = self.get('roles', 'verify_id')
         self.role_mod       = self.get('roles', 'mod_id')
         self.roles_elevated = self.get('roles', 'elevated_ids')
         self.roles_native   = self.get('roles', 'native')
         self.roles_guest    = self.get('roles', 'guests')
-
-        ##
-        ## COMPATIBILITY
-        self.noimitation = self.get('compatibility', 'ignored imitation channels')
 
         # fmt: on
 

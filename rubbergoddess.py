@@ -8,14 +8,14 @@ from core.config import config
 from repository.database import database
 from repository.database import session
 from repository.database.karma import Karma, Karma_emoji
+from repository.database.seeking import Seeking
 from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.verification import User
 from repository.database.image import Image
+from repository.database.points import Points
 from repository.review_repo import ReviewRepository
 
-bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or(*config.prefixes), help_command=help.Help()
-)
+bot = commands.Bot(command_prefix=config.prefix, help_command=help.Help())
 
 presence = presence.Presence(bot)
 event = output.Event(bot)
@@ -66,7 +66,8 @@ async def on_error(event, *args, **kwargs):
 async def load(ctx, extension):
     bot.load_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** načteno.")
-    await event.sudo(ctx.author, ctx.channel, f"Loaded: {extension.upper()}")
+    await event.sudo(ctx, f"Loaded: {extension.upper()}")
+    print(f"Loaded: {extension.upper()}")
 
 
 @bot.command()
@@ -74,7 +75,8 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     bot.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** odebráno.")
-    await event.sudo(ctx.author, ctx.channel, f"Unloaded: {extension.upper()}")
+    await event.sudo(ctx, f"Unloaded: {extension.upper()}")
+    print(f"Unloaded: {extension.upper()}")
 
 
 @bot.command()
@@ -82,7 +84,7 @@ async def unload(ctx, extension):
 async def reload(ctx, extension):
     bot.reload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
-    await event.sudo(ctx.author, ctx.channel, f"Reloaded: {extension.upper()}")
+    await event.sudo(ctx, f"Reloaded: {extension.upper()}")
     print(f"Reloaded: {extension.upper()}")
     if "docker" in config.loader:
         await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")

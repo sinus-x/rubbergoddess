@@ -1,0 +1,12 @@
+{
+	not_subject: ((mention)), předmětovou místnost **((shortcut))** tu nemáme.
+	not_role:    ((mention)), roli **((role))** tu nemáme.
+
+	role_help:         Špatný formát\n>>> Role\n🙂 cat-role\n🙃 cat-channel
+	invalid_role_line: Řádek obsahuje chybu: _((line))_
+
+	deny_subject:          ((mention)), předměty si můžou přidávat jen studenti VUT.
+	deny_programme:        ((mention)), na to nemáš právo, nejsi z FEKTu.
+	deny_second_programme: ((mention)), vyber si jen jeden program.
+	deny_high_role:        ((mention)), na to nemáš právo.
+}

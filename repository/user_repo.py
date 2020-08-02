@@ -12,9 +12,7 @@ def time() -> str:
 class UserRepository(BaseRepository):
     # unknown - pending - verified - kicked - banned - quarantined
 
-    def add(
-        self, discord_id: int, login: str, group: str, code: str,
-    ):
+    def add(self, discord_id: int, login: str, group: str, code: str, status: str = "pending"):
         """Add new user"""
         session.add(
             User(
@@ -22,7 +20,7 @@ class UserRepository(BaseRepository):
                 login=login,
                 group=group,
                 code=code,
-                status="pending",
+                status=status,
                 changed=time(),
             )
         )
@@ -81,7 +79,6 @@ class UserRepository(BaseRepository):
         """Get users from database"""
         return session.query(User).filter(User.login.startswith(prefix)).all()
 
-    # TODO Deprecated
     def filterId(self, discord_id: int):
         """Find user in database"""
         users = session.query(User).filter(User.discord_id == discord_id).all()

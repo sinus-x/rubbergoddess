@@ -1,0 +1,53 @@
+{
+	RubbercogException: Neznámá chyba jádra.
+
+	# discord.errors
+	DiscordException: Chyba discord.py knihovny.
+	ClientException:  Chyba na straně klienta.
+	NoMoreItems:      Už mám všechny položky.
+	GatewayNotFound:  Gateway nenalezena.
+	HTTPException:    Chyba HTTP.
+	Forbidden:        403: Přístup odepřen.
+	NotFound:         404: Nenalezeno.
+	InvalidData:      Obdržela jsem chybná data.
+	InvalidArgument:  Špatný argument.
+	LoginFailure:     Chyba přihlášení.
+	ConnectionClosed: Připojení ke gateway uzavřeno.
+
+	# discord.ext.commands.errors
+	CommandError:          Chyba příkazu.
+	ConversionError:       Chyba v konverzi.
+	UserInputError:        Chyba na vstupu.
+	CommandNotFound:       Takový příkaz neznám.
+	MissingRequiredArgument: Chybí ti argument **((param))**
+	TooManyArguments:      To je moc argumentů!
+	BadArgument:           Špatný argument.
+	CheckFailure:          Nedostatečné oprávnění.
+	CheckAnyFailure:       Nedostatečné oprávnění.
+	PrivateMessageOnly:    Tohle funguje jen v DM.
+	NoPrivateMessage:      Tohle v DM nefunguje.
+	NotOwner:              Tohle může dělat jenom vlastník.
+	DisabledCommand:       Příkaz je zakázaný.
+	CommandInvokeError:    Chyba při vykonávání příkazu.
+	CommandOnCooldown:     Trochu zpomal, počkej ((time)).
+	MaxConcurrencyReached: Tento příkaz už běží mockrát; limit je **((num))**/**((per))**.
+	MissingRole:           Na to potřebuješ roli ((role)).
+	BotMissingRole:        Na to nemám roli ((role)).
+	MissingAnyRole:        Na to potřebuješ některou z rolí ((roles)).
+	BotMissingAnyRole:     Na to potřebuji některou z rolí ((roles)).
+	NSFWChannelRequired:   S tím musíš do NSFW kanálu.
+	MissingPermissions:    Na to ti chybí oprávnění ((perms)).
+	BotMissingPermission:  Na to mi chybí oprávnění ((perms)).
+	BadUnionArgument:      Špatný datový typ v `((param))`.
+	ArgumentParsingException:      Chyba ve formulaci argumentů.
+	UnexpectedQuoteError:          Nečekané uvozovky.
+	InvalidEndOfQuotedStringError: Argumenty nejsou odděleny mezerou.
+	ExpectedClosingQuoteError:     Neuzavřené uvozovky.
+	ExtensionError:         Chyba rozšíření **((extension))**.
+	ExtensionAlreadyLoaded: Rozšíření **((extension))** už je načteno.
+	ExtensionNotLoaded:     Rozšíření **((extension))** není načteno.
+	NoEntryPointError:      Rozšíření **((extension))** není jak načíst.
+	ExtensionFailed:        Rozšíření **((extension))** selhalo.
+	ExtensionNotFound:      Rozšíření **((extension))** jsem nenašla.
+	CommandRegistrationError: Chyba při registraci příkazu.
+}

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger, DateTime
+from sqlalchemy import Column, String, BigInteger
 from repository.database import database
 
 
@@ -9,6 +9,5 @@ class Image(database.base):
     attachment_id = Column(BigInteger, primary_key=True)
     message_id    = Column(BigInteger)
     channel_id    = Column(BigInteger)
-    timestamp     = Column(DateTime)
     dhash         = Column(String)
     # fmt: on

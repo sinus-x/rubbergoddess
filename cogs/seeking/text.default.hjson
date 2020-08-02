@@ -1,0 +1,19 @@
+{
+	add: {
+		too_long: Text je moc dlouhý, musíš se vejít do 140 znaků.
+		ok:       V pořádku, položku jsem přidala.
+	}
+	remove: {
+		not_found:   Takovou položku tu nemám.
+		not_allowed: Na to nemáš právo!
+		ok: V pořádku, položku jsem smazala.
+	}
+
+	embed: {
+		title:    Hledám
+		template: "#{id} | {name}, {timestamp}"
+
+		no_user:  _neznámý uživatel_
+		no_items: Zatím nic.
+	}
+}

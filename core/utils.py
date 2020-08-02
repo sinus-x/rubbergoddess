@@ -1,11 +1,12 @@
 import git
+from datetime import datetime
+from typing import List
 
 import discord
 from discord.ext import commands
 
 from core.config import config
 from core.text import text
-from config.messages import Messages
 
 
 def git_hash():
@@ -22,6 +23,10 @@ def git_pull():
     repo = git.Repo(search_parent_directories=True)
     cmd = repo.git
     return cmd.pull()
+
+
+def id_to_datetime(snowflake_id: int):
+    return datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
 
 
 def str_emoji_id(emoji):
@@ -43,40 +48,15 @@ def has_role(user, role):
     return
 
 
-def fill_message(message_name, *args, **kwargs):
-    """Fills message template from messages by attempting to get the attr.
-    :param message_name: {str} message template name
-    :kwargs: {dict} data for formatting the template
-    :return: filled template
-    """
-
-    def generate_mention(user_id):
-        return "<@" + str(user_id) + ">"
-
-    # Convert username/admin to a mention
-    if "user" in kwargs:
-        kwargs["user"] = generate_mention(kwargs["user"])
-
-    if "admin" in kwargs:
-        kwargs["admin"] = generate_mention(kwargs["admin"])
-
-    # Attempt to get message template and fill
-    try:
-        template = getattr(Messages, message_name)
-        return template.format(*args, **kwargs)
-    except AttributeError:
-        raise ValueError("Invalid template {}".format(message_name))
-
-
 def seconds2str(time):
     time = int(time)
     D = 3600 * 24
     H = 3600
     M = 60
 
-    d = (time - (time % D)) / D
-    h = (time - (time % H)) / H
-    m = (time - (time % M)) / M
+    d = int((time - (time % D)) / D)
+    h = int((time - (time % H)) / H)
+    m = int((time - (time % M)) / M)
     s = time % 60
 
     if d > 0:
@@ -93,7 +73,7 @@ def seconds2str(time):
 
 
 async def room_check(ctx: commands.Context):
-    if not hasattr(ctx, "channel") or not hasattr(ctx.channel, "id"):
+    if not isinstance(ctx.channel, discord.TextChannel):
         return
 
     if ctx.channel.id not in config.get("channels", "bot allowed"):
@@ -108,12 +88,50 @@ async def room_check(ctx: commands.Context):
         )
 
 
-async def delete(ctx: commands.Context):
-    if hasattr(ctx, "message"):
+async def send(
+    target: discord.abc.Messageable,
+    text: str = None,
+    *,
+    embed: discord.Embed = None,
+    delete_after: float = None,
+    nonce: int = None,
+    file: discord.File = None,
+    files: List[discord.File] = None,
+):
+    # fmt: off
+    if not isinstance(target, discord.TextChannel) \
+    or (
+        isinstance(target, discord.TextChannel) and
+        target.id in config.get("channels", "bot allowed")
+    ):
+        delete_after = None
+
+    await target.send(
+        content=text,
+        embed=embed,
+        delete_after=delete_after,
+        nonce=nonce,
+        file=file,
+        files=files,
+    )
+    # fmt: on
+
+
+async def delete(thing):
+    if hasattr(thing, "message"):
+        thing = thing.message
+    if isinstance(thing, discord.Message):
         try:
-            await ctx.message.delete()
+            await thing.delete()
         except discord.Forbidden:
             pass
+
+
+async def remove_reaction(reaction, user):
+    try:
+        await reaction.remove(user)
+    except:
+        pass
 
 
 async def send_help(ctx: commands.Context):
