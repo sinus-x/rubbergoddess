@@ -6,23 +6,77 @@ We're using PostgreSQL to store the data. Dump files differ between standalone a
 
 Files for SQLAlchemy initialisation are saved in `repository/database`.
 
+## Verification
+
+**users**
+
+| name       | type       | note    |
+|------------|------------|---------|
+| discord_id | BigInteger | primary |
+| login      | String     |         |
+| code       | String     |         |
+| group      | String     |         |
+| status     | String     |         |
+| changed    | String     |         |
+| comment    | String     |         |
+
+## ACL
+
+**acl_groups**
+
+| name      | type       | note    |
+|-----------|------------|---------|
+| id        | Integer    | primary |
+| parent_id | Integer    | `-1` represents no parent |
+| name      | String     |         |
+| role_id   | BigInteger | discord role ID |
+
+**acl_rule**
+
+| name     | type            | note         |
+|----------|-----------------|--------------|
+| id       | Integer         | primary      |
+| command  | String          |              |
+| guild_id | BigInteger      |              |
+| users    | acl_role_users  | relationship |
+| groups   | acl_role_groups | relationship |
+
+**acl_rule_users**
+
+| name       | type       | note         |
+|------------|------------|--------------|
+| id         | Integer    | primary      |
+| rule_id    | Integer    | acl_rules.id |
+| discord_id | BigInteger |              |
+| allow      | Boolean    |              |
+
+**acl_rule_groups**
+
+| name     | type    | note          |
+|----------|---------|---------------|
+| id       | Integer | primary       |
+| rule_id  | Integer | acl_rules.id  |
+| group_id | Integer | acl_groups.id |
+| allow    | Boolean |               |
+
+
 ## Karma
 
 **user_karma**
 
-| name       | type       | attribute | default |
-|------------|------------|-----------|---------|
-| discord_id | BigInteger | primary   |         |
-| karma      | Integer    |           | 0       |
-| positive   | Integer    |           | 0       |
-| negative   | Integer    |           | 0       |
+| name       | type       | note    |
+|------------|------------|---------|
+| discord_id | BigInteger | primary |
+| karma      | Integer    |         |
+| positive   | Integer    |         |
+| negative   | Integer    |         |
 
 **emote_karma**
 
-| name     | type    | attribute | default |
-|----------|---------|-----------|---------|
-| emoji_ID | String  | primary   |         |
-| value    | Integer |           | 0       |
+| name     | type    | note    |
+|----------|---------|---------|
+| emoji_ID | String  | primary |
+| value    | Integer |         |
 
 ## Review
 
@@ -41,66 +95,52 @@ Files for SQLAlchemy initialisation are saved in `repository/database`.
 
 **review_relevance**
 
-| name       | type       | attribute  | default |
-|------------|------------|------------|---------|
-| discord_id | BigInteger | primary    |         |
-| vote       | Boolean    |            | False   |
-| review     | Integer    | reviews.id |         |
+| name       | type       | attribute  |
+|------------|------------|------------|
+| discord_id | BigInteger | primary    |
+| vote       | Boolean    |            |
+| review     | Integer    | reviews.id |
 
 **subjects**
 
-| name     | type   | attribute | default |
-|----------|--------|-----------|---------|
-| shortcut | String | primary   |         |
-| category | String |           |         |
-| name     | String |           |         |
-| reviews  | Review |           |         |
-
-## Verification
-
-**users**
-
-| name       | type       | attribute | default |
-|------------|------------|-----------|---------|
-| discord_id | BigInteger | primary   |         |
-| login      | String     |           |         |
-| code       | String     |           |         |
-| group      | String     |           |         |
-| status     | String     |           |         |
-| changed    | String     |           |         |
-| comment    | String     |           |         |
+| name     | type   | note    |
+|----------|--------|---------|
+| shortcut | String | primary |
+| category | String |         |
+| name     | String |         |
+| reviews  | Review |         |
 
 ## Image
 
 **images**
 
-| name          | type       | attribute | default |
-|---------------|------------|-----------|---------|
-| attachment_id | BigInteger | primary   |         |
-| message_id    | BigInteger |           |         |
-| channel_id    | BigInteger |           |         |
-| timestamp     | DateTime   |           |         |
-| dhash         | String     |           |         |
+| name          | type       | note    |
+|---------------|------------|---------|
+| attachment_id | BigInteger | primary |
+| message_id    | BigInteger |         |
+| channel_id    | BigInteger |         |
+| timestamp     | DateTime   |         |
+| dhash         | String     |         |
 
 ## Points
 
 **points**
 
-| name    | type       | attribute | default |
-|---------|------------|-----------|---------|
-| user_id | BigInteger | primary   |         |
-| points  | Integer    |           |         |
+| name    | type       | note    |
+|---------|------------|---------|
+| user_id | BigInteger | primary |
+| points  | Integer    |         |
 
 ## Seeking
 
 **seeking**
 
-| name       | type       | attribute | default       |
-|------------|------------|-----------|---------------|
-| id         | Integer    | primary   | autoincrement |
-| user_id    | BigInteger |           |               |
-| message_id | BigInteger |           |               |
-| channel_id | BigInteger |           |               |
-| text       | String     |           |               |
+| name       | type       | note    |
+|------------|------------|---------|
+| id         | Integer    | primary |
+| user_id    | BigInteger |         |
+| message_id | BigInteger |         |
+| channel_id | BigInteger |         |
+| text       | String     |         |
 
 ← Back to [home](index.md)
