@@ -312,7 +312,9 @@ class Actress(rubbercog.Rubbercog):
             # send
             response = random.choice(reaction["responses"])
             if reaction["type"] == "text":
-                await message.channel.send(response.replace("((mention))", message.author.mention))
+                response = response.replace("((mention))", message.author.mention)
+                response = response.replace("((name))", self.sanitise(message.author.display_name))
+                await message.channel.send(response)
             elif reaction["type"] == "image":
                 await message.channel.send(file=discord.File(self.path + response))
 

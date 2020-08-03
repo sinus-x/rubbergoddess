@@ -54,8 +54,8 @@ triggers "uh oh"
 responses "uh oh"
 ```
 
-If the text contains `((mention))`, it will be replaced with author's tag.
-_Note: Before the v0.7 version, the mention string was `{mention}`._
+If the text contains `((name))`, it will be replaced with author's nickname; `((mention))` will be replaced with author's tag.
+_Note: Before the v1.0 version, the mention string was `{mention}`._
 
 ### react edit (name)
 
