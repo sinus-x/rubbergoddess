@@ -70,12 +70,26 @@ class Points(rubbercog.Rubbercog):
             title=self.text.get("embed", "title") + self.text.get("embed", "desc_suffix"),
             description=self.text.get("embed", "desc_description"),
         )
-        value = self._getBoard(
-            ctx.author, repo_p.getUsers("desc", limit=self.config.get("board"), offset=0)
-        )
+        users = repo_p.getUsers("desc", limit=self.config.get("board"), offset=0)
+        value = self._getBoard(ctx.author, users)
         embed.add_field(
-            name=self.text.get("embed", "desc_0", num=self.config.get("board")), value=value
+            name=self.text.get("embed", "desc_0", num=self.config.get("board")),
+            value=value,
+            inline=False,
         )
+
+        # if the user is not present, add them to second field
+        if ctx.author.id not in [u.user_id for u in users]:
+            author = repo_p.get(ctx.author.id)
+
+            embed.add_field(
+                name=self.text.get("embed", "user"),
+                value="`{points:>8}` … {name}".format(
+                    points=author.points, name="**" + self.sanitise(ctx.author.display_name) + "**"
+                ),
+                inline=False,
+            )
+
         message = await ctx.send(embed=embed)
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
@@ -90,12 +104,24 @@ class Points(rubbercog.Rubbercog):
             title=self.text.get("embed", "title") + self.text.get("embed", "asc_suffix"),
             description=self.text.get("embed", "asc_description"),
         )
-        value = self._getBoard(
-            ctx.author, repo_p.getUsers("asc", limit=self.config.get("board"), offset=0)
-        )
+        users = repo_p.getUsers("asc", limit=self.config.get("board"), offset=0)
+        value = self._getBoard(ctx.author, users)
         embed.add_field(
             name=self.text.get("embed", "asc_0", num=self.config.get("board")), value=value
         )
+
+        # if the user is not present, add them to second field
+        if ctx.author.id not in [u.user_id for u in users]:
+            author = repo_p.get(ctx.author.id)
+
+            embed.add_field(
+                name=self.text.get("embed", "user"),
+                value="`{points:>8}` … {name}".format(
+                    points=author.points, name="**" + self.sanitise(ctx.author.display_name) + "**"
+                ),
+                inline=False,
+            )
+
         message = await ctx.send(embed=embed)
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
@@ -176,9 +202,8 @@ class Points(rubbercog.Rubbercog):
         if offset < 0:
             return await utils.remove_reaction(reaction, user)
 
-        value = self._getBoard(
-            user, repo_p.getUsers(order, limit=self.config.get("board"), offset=offset)
-        )
+        users = repo_p.getUsers(order, limit=self.config.get("board"), offset=offset)
+        value = self._getBoard(user, users)
         if not value:
             # offset too big
             return await utils.remove_reaction(reaction, user)
@@ -190,7 +215,19 @@ class Points(rubbercog.Rubbercog):
         else:
             name = self.text.get("embed", order + "_0", num=self.config.get("board"))
         embed.clear_fields()
-        embed.add_field(name=name, value=value)
+        embed.add_field(name=name, value=value, inline=False)
+
+        # if the user is not present, add them to second field
+        if user.id not in [u.user_id for u in users]:
+            author = repo_p.get(user.id)
+
+            embed.add_field(
+                name=self.text.get("embed", "user"),
+                value="`{points:>8}` … {name}".format(
+                    points=author.points, name="**" + self.sanitise(user.display_name) + "**"
+                ),
+                inline=False,
+            )
 
         await reaction.message.edit(embed=embed)
         await utils.remove_reaction(reaction, user)

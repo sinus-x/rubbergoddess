@@ -13,7 +13,7 @@
 	}
 
 	system_on: {
-		botspam: Jsem zpátky: ((emoji.happy))
+		botspam: Jsem zpátky ((emoji.happy))
 		ok:      Jsem připravená, ví o tom kanály ((channels)).
 	}
 

@@ -18,22 +18,26 @@ class Faceshifter(rubbercog.Rubbercog):
         self.config = CogConfig("faceshifter")
         self.text = CogText("faceshifter")
 
-        self.limit_programmes = None
-        self.limit_interests = None
+        self.limit_programmes = {}
+        self.limit_interests = {}
 
     ##
     ## Getters
     ##
 
-    def getLimitProgrammes(self, location: discord.abc.Messageable) -> discord.Role:
-        if self.limit_programmes is None:
-            self.limit_programmes = discord.utils.get(location.guild.roles, name="---PROGRAMMES")
-        return self.limit_programmes
+    def getLimitProgrammes(self, channel: discord.TextChannel) -> discord.Role:
+        gid = str(channel.guild.id)
+        if gid not in self.limit_programmes:
+            self.limit_programmes[gid] = discord.utils.get(
+                channel.guild.roles, name="---PROGRAMMES"
+            )
+        return self.limit_programmes[gid]
 
-    def getLimitInterests(self, location: discord.abc.Messageable) -> discord.Role:
-        if self.limit_interests is None:
-            self.limit_interests = discord.utils.get(location.guild.roles, name="---INTERESTS")
-        return self.limit_interests
+    def getLimitInterests(self, channel: discord.TextChannel) -> discord.Role:
+        gid = str(channel.guild.id)
+        if gid not in self.limit_interests:
+            self.limit_interests[gid] = discord.utils.get(channel.guild.roles, name="---INTERESTS")
+        return self.limit_interests[gid]
 
     ##
     ## Commands
@@ -64,7 +68,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
-                await self._subject_add(ctx, ctx.author, channel)
+                await self._subject_add(ctx.channel, ctx.author, channel)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
         await utils.delete(ctx)
@@ -117,7 +121,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
-                result = await self._role_add(ctx, ctx.author, guild_role)
+                result = await self._role_add(ctx.channel, ctx.author, guild_role)
 
         if result:
             await ctx.send(ctx.author.mention + " ✅", delete_after=3)
@@ -142,7 +146,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 ), delete_after=config.get("delay", "user error"))
                 # fmt: on
             else:
-                await self._role_remove(ctx, ctx.author, guild_role)
+                await self._role_remove(ctx.channel, ctx.author, guild_role)
         await ctx.send(ctx.author.mention + " ✅", delete_after=3)
 
         await utils.delete(ctx)
@@ -154,6 +158,9 @@ class Faceshifter(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_message(self, message):
         # fmt: off
+        if not isinstance(message.channel, discord.TextChannel):
+            return
+
         if message.channel.id in self.config.get("r2r_channels") \
         or message.content.startswith(self.config.get("r2r_prefix")):
             emote_channel_list = await self._message_to_tuple_list(message)
@@ -315,17 +322,14 @@ class Faceshifter(rubbercog.Rubbercog):
     def _get_teacher_channel(self, subject: discord.TextChannel) -> discord.TextChannel:
         return discord.utils.get(
             subject.guild.text_channels,
-            name=subject.name + self.config.get("channels", "teacher suffix"),
+            name=subject.name + config.get("channels", "teacher suffix"),
         )
 
     ##
     ## Logic
     ##
     async def _subject_add(
-        self,
-        location: discord.abc.Messageable,
-        member: discord.Member,
-        channel: discord.TextChannel,
+        self, source: discord.TextChannel, member: discord.Member, channel: discord.TextChannel,
     ) -> bool:
         # check permission
         for subject_role in self.config.get("subject_roles"):
@@ -333,7 +337,7 @@ class Faceshifter(rubbercog.Rubbercog):
                 break
         else:
             # they do not have neccesary role
-            await self._send(location, self.text.get("deny_subject", mention=member.mention))
+            await self._send(source, self.text.get("deny_subject", mention=member.mention))
             return False
 
         await channel.set_permissions(member, view_channel=True)
@@ -343,10 +347,7 @@ class Faceshifter(rubbercog.Rubbercog):
         return True
 
     async def _subject_remove(
-        self,
-        location: discord.abc.Messageable,
-        member: discord.Member,
-        channel: discord.TextChannel,
+        self, source: discord.TextChannel, member: discord.Member, channel: discord.TextChannel,
     ):
         # we do not need to check for permissions
         await channel.set_permissions(member, overwrite=None)
@@ -355,66 +356,63 @@ class Faceshifter(rubbercog.Rubbercog):
             await teacher_channel.set_permissions(member, overwrite=None)
 
     async def _role_add(
-        self, location: discord.abc.Messageable, member: discord.Member, role: discord.Role
+        self, channel: discord.TextChannel, member: discord.Member, role: discord.Role
     ) -> bool:
-        if role < self.getLimitProgrammes(location) and role > self.getLimitInterests(location):
+        if role < self.getLimitProgrammes(channel) and role > self.getLimitInterests(channel):
             # role is programme, check if user has permission
             for programme_role in self.config.get("programme_roles"):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await self._send(location, self.text.get("deny_programme", mention=member.mention))
+                await self._send(channel, self.text.get("deny_programme", mention=member.mention))
                 return False
 
             # check if user already doesn't have some programme role
             for user_role in member.roles:
                 # fmt: off
-                if user_role < self.getLimitProgrammes(location) \
-                and user_role > self.getLimitInterests(location):
+                if user_role < self.getLimitProgrammes(channel) \
+                and user_role > self.getLimitInterests(channel):
                     await self._send(
-                        location, self.text.get("deny_second_programme", mention=member.mention),
+                        channel, self.text.get("deny_second_programme", mention=member.mention),
                     )
                     return False
                 # fmt: on
 
-        elif role < self.getLimitInterests(location):
+        elif role < self.getLimitInterests(channel):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
-            await self._send(location, self.text.get("deny_high_role", mention=member.mention))
+            await self._send(channel, self.text.get("deny_high_role", mention=member.mention))
             return False
 
         await member.add_roles(role)
         return True
 
     async def _role_remove(
-        self, location: discord.abc.Messageable, member: discord.Member, role: discord.Role
+        self, channel: discord.TextChannel, member: discord.Member, role: discord.Role
     ):
-        if role < self.getLimitProgrammes(location) and role > self.getLimitInterests(location):
+        if role < self.getLimitProgrammes(channel) and role > self.getLimitInterests(channel):
             # role is programme, check if user has permission
             for programme_role in self.config.get("programme_roles"):
                 if programme_role in [r.id for r in member.roles]:
                     break
             else:
-                await self._send(location, self.text.get("deny_programme", mention=member.mention))
+                await self._send(channel, self.text.get("deny_programme", mention=member.mention))
                 return
-        elif role < self.getLimitInterests(location):
+        elif role < self.getLimitInterests(channel):
             # role is below interests limit, continue
             pass
         else:
             # role is limit itself or something above programmes
             return await self._send(
-                location, self.text.get("deny_high_role", mention=member.mention)
+                channel, self.text.get("deny_high_role", mention=member.mention)
             )
 
         await member.remove_roles(role)
 
-    async def _send(self, location: discord.abc.Messageable, text: str):
-        # fmt: off
-        if isinstance(location, discord.TextChannel) \
-        and location.id in self.config.get("r2r_channels"):
+    async def _send(self, channel: discord.TextChannel, text: str):
+        if channel.id in self.config.get("r2r_channels"):
             return
-        # fmt: on
 
-        await location.send(text, delete_after=config.get("delay", "user error"))
+        await channel.send(text, delete_after=config.get("delay", "user error"))

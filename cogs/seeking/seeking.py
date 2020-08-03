@@ -72,7 +72,7 @@ class Seeking(rubbercog.Rubbercog):
 
         if item is None:
             return await ctx.send(self.text.get("remove", "not_found"))
-        if item.author_id != ctx.author.id:
+        if item.user_id != ctx.author.id:
             return await ctx.send(self.text.get("remove", "not_allowed"))
 
         repo_s.delete(id)
