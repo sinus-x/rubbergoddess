@@ -81,9 +81,27 @@ class Actress(rubbercog.Rubbercog):
     async def react(self, ctx):
         await utils.send_help(ctx)
 
+    @react.command(name="overview")
+    async def react_overview(self, ctx):
+        """List registered reactions"""
+        embed = self.embed(
+            ctx=ctx, description=self.text.get("embed", "total", count=len(self.reactions))
+        )
+        value = []
+        for name in self.reactions.keys():
+            if len(value) + len(name) > 1024:
+                embed.add_field(
+                    name="\u200b", value="\n".join(f"`{v}`" for v in value), inline=False
+                )
+                value = []
+            value.append(name)
+
+        embed.add_field(name="\u200b", value="\n".join(f"`{v}`" for v in value), inline=False)
+        await ctx.send(embed=embed)
+
     @react.command(name="list")
     async def react_list(self, ctx):
-        """List current reactions"""
+        """See details for reactions"""
         try:
             name = next(iter(self.reactions))
             reaction = self.reactions[name]
