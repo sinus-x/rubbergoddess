@@ -11,8 +11,9 @@ def check(ctx: commands.Context) -> bool:
         return True
 
     # TODO Take into account DMs
+    # FIXME What to do if the command is not found?
 
-    acl_command = repo.getCommand(ctx.qualified_name)  # ??? Is it qualified name ???
+    acl_command = repo.getCommand(ctx.qualified_name)
     user_role_ids = [role.id for role in ctx.author.roles]
 
     ##

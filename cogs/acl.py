@@ -3,8 +3,12 @@ from discord.ext import commands
 from core import check, rubbercog, utils
 from core.config import config
 from core.text import text
+from repository import acl_repo
 
-# TODO Iterate over all command the bot has and send message to botdev if some are not found in database
+repo_a = acl_repo.ACLRepository()
+
+# TODO Iterate over all command the bot has
+#      and send message to botdev if some are not found in database
 
 
 class ACL(rubbercog.Rubbercog):
@@ -23,6 +27,20 @@ class ACL(rubbercog.Rubbercog):
     async def acl_group(self, ctx):
         """Group controll"""
         await utils.send_help(ctx)
+
+    @acl_group.command(name="list")
+    async def acl_group_list(self, ctx):
+        """List ACL groups"""
+        # FIXME show as dependencies
+
+        groups = repo_a.getGroups()
+        result = ""
+        for group in groups:
+            if len(result) > 2000:
+                await ctx.send(result)
+                result = ""
+            result += "\n" + (str(group))
+        await ctx.send(result)
 
     @acl_group.command(name="add")
     async def acl_group_add(self, ctx, name: str, role_id: int):

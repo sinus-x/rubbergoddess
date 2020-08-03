@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from repository.base_repository import BaseRepository
 from repository.database import session
@@ -12,6 +12,9 @@ class ACLRepository(BaseRepository):
     ##
     ## Groups
     ##
+
+    def getGroups(self) -> Optional[List[ACL_group]]:
+        return session.query(ACL_group).all()
 
     def getGroup(self, identifier: Union[int, str]) -> Optional[ACL_group]:
         if isinstance(identifier, int):
@@ -41,6 +44,9 @@ class ACLRepository(BaseRepository):
     ##
     ## Commands
     ##
+
+    def getCommands(self) -> Optional[List[ACL_rule]]:
+        return session.query(ACL_rule).all()
 
     def getCommand(self, command: str) -> Optional[ACL_rule]:
         return session.query(ACL_rule).filter(ACL_rule.command == command).one_or_none()
