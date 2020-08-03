@@ -2,7 +2,7 @@ from typing import Union, Optional, List
 
 from repository.base_repository import BaseRepository
 from repository.database import session
-from repository.database.acl import ACL_group, ACL_rule, ACL_data
+from repository.database.acl import ACL_rule, ACL_group, ACL_rule_user, ACL_rule_group
 
 
 class ACLRepository(BaseRepository):
@@ -17,7 +17,7 @@ class ACLRepository(BaseRepository):
         return session.query(ACL_group).all()
 
     def getGroup(self, identifier: Union[int, str]) -> Optional[ACL_group]:
-        if isinstance(identifier, int):
+        if type(identifier) == int:
             return session.query(ACL_group).filter(ACL_group.id == identifier).one_or_none()
         else:
             return session.query(ACL_group).filter(ACL_group.name == identifier).one_or_none()
@@ -35,7 +35,7 @@ class ACLRepository(BaseRepository):
         return self.getGroup(name)
 
     def deleteGroup(self, identifier: Union[int, str]) -> bool:
-        if self.getGroup(identifier) is not None:
+        if self.getGroup(identifier) is None:
             raise ACLException("identifier", identifier)
         if isinstance(identifier, int):
             result = session.query(ACL_group).filter(ACL_group.id == identifier).delete()
@@ -61,46 +61,51 @@ class ACLRepository(BaseRepository):
         session.commit()
         return self.getCommand(command)
 
-    def removeCommand(self, command: str) -> bool:
+    def deleteCommand(self, command: str) -> bool:
         if self.getCommand(command) is None:
             raise ACLException("command", command)
         result = session.query(ACL_rule).filter(ACL_rule.command == command).delete()
         session.commit()
         return result > 0
 
-    def setCommandConstraint(
-        self, command: str, *, constraint: str, id: int, allow: bool
-    ) -> ACL_rule:
+    def setCommandConstraint(self, command: str, constraint: str, id: int, allow: bool) -> ACL_rule:
         cmd = self.getCommand(command)
         if cmd is None:
             raise ACLException("command", command)
 
         if constraint == "user":
-            cmd.users.append(ACL_data(item_id=id, allow=allow))
-        elif constraint == "channel":
-            cmd.channels.append(ACL_data(item_id=id, allow=allow))
+            cmd.users.append(ACL_rule_user(discord_id=id, allow=allow))
         elif constraint == "group":
-            cmd.groups.append(ACL_data(item_id=id, allow=allow))
+            cmd.groups.append(ACL_rule_group(group_id=id, allow=allow))
         else:
             raise ACLException("constraint", constraint)
 
         session.commit()
         return self.getCommand(command)
 
-    def removeCommandConstraint(self, command: str, id: int) -> ACL_rule:
+    def removeCommandConstraint(self, command: str, constraint: str, id: int) -> ACL_rule:
         if self.getCommand(command) is None:
             raise ACLException("command", command)
 
-        session.query(ACL_data).filter(command=command, item_id=id).delete()
+        if constraint == "user":
+            session.query(ACL_rule_user).filter(command=command, discord_id=id).delete()
+        elif constraint == "group":
+            session.query(ACL_rule_group).filter(command=command, group_id=id).delete()
+        else:
+            raise ACLException("id", id)
         session.commit()
         return self.getCommand(command)
 
 
 class ACLException(Exception):
     def __init__(self, parameter: str, value: Union[str, int]):
-        super().__init__("Invalid parameter")
         self.parameter = parameter
         self.value = value
 
+        super().__init__(f"Invalid parameter: {self.parameter} = {self.value}")
+
     def __repr__(self):
         return f"Invalid parameter: {self.parameter} = {self.value}"
+
+    def __str__(self):
+        return self.__repr__()

@@ -39,7 +39,7 @@ class ACL(rubbercog.Rubbercog):
             if len(result) > 2000:
                 await ctx.send(f"```\n{result}```")
                 result = ""
-            result += "\n" + (str(group))
+            result += "\n" + (group.__repr__())
         if result:
             await ctx.send(f"```\n{result}```")
         else:
@@ -49,22 +49,26 @@ class ACL(rubbercog.Rubbercog):
     async def acl_group_add(self, ctx, name: str, parent_id: int, role_id: int):
         """Add ACL group
 
+        name: string matching `[a-zA-Z_]*`
         parent_id: Parent group; -1 for None
         role_id: Discord role ID, 0 for DM, -1 for None
         """
+        # TODO Match name against regex
         result = repo_a.addGroup(name, parent_id, role_id)
-        if result:
-            await ctx.send("ok")
-        else:
-            await ctx.send("error occured")
+        await ctx.send(result)
 
     @acl_group.command(name="remove", aliases=["delete"])
-    async def acl_group_remove(self, ctx, id: int):
+    async def acl_group_remove(self, ctx, identifier: str):
         """Remove ACL rule
 
-        id: Rule ID
+        identifier: Rule ID or name
         """
-        pass
+        try:
+            identifier = int(identifier)
+        except ValueError:
+            pass
+        result = repo_a.deleteGroup(identifier)
+        await ctx.send("ok" if result else "not found")
 
     @acl.group(name="command", aliases=["rule"])
     async def acl_command(self, ctx):
@@ -76,7 +80,7 @@ class ACL(rubbercog.Rubbercog):
         """See command's policy"""
         command = repo_a.getCommand(command_name)
         if command:
-            await ctx.send("```\n" + str(command) + "```")
+            await ctx.send("```\n" + command.__repr__() + "```")
         else:
             await ctx.send("nothing yet")
 
@@ -91,8 +95,8 @@ class ACL(rubbercog.Rubbercog):
     @acl_command.command(name="remove", aliases=["delete"])
     async def acl_command_remove(self, ctx, *, command: str):
         """Remove command"""
-        result = repo_a.removeCommand(command)
-        await ctx.send(result)
+        result = repo_a.deleteCommand(command)
+        await ctx.send("ok" if result else "not found")
 
     @acl_command.group(name="constraint")
     async def acl_command_constraint(self, ctx):
@@ -101,17 +105,17 @@ class ACL(rubbercog.Rubbercog):
 
     @acl_command_constraint.command(name="add")
     async def acl_command_constraint_add(
-        self, ctx, command: str, constraint: str, group_id: int, allow: bool
+        self, ctx, command: str, constraint: str, id: int, allow: bool
     ):
         """Add command constraint
 
         command: valid command
-        constraint: "user", "channel" or "group" string
-        group_id: user ID, channel ID or ACL group ID
+        constraint: "user" or "group" string
+        id: discord user ID or ACL group ID
         allow: True or False
         """
         result = repo_a.setCommandConstraint(
-            command=command, constraint=constraint, id=group_id, allow=allow
+            command=command, constraint=constraint, id=id, allow=allow
         )
         await ctx.send(result)
 
@@ -120,6 +124,7 @@ class ACL(rubbercog.Rubbercog):
         """Remove command constraint
 
         command: valid command
+        constraint: "user" or "group" string
         constraint_id: Assigned constraint ID
         """
         result = repo_a.removeCommandConstraint(command=command, constraint_id=id)
