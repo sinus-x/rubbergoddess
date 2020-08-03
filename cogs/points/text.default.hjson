@@ -14,6 +14,8 @@
 		asc_0:   Nejhorších ((num))
 		asc_n:   Nejhorších ((num)), pozice ((offset))
 
+		user:    Tvoje skóre
+
 		# suffix
 		desc_suffix: 🏆
 		asc_suffix:  💩
