@@ -1,5 +1,7 @@
 import traceback
 
+import sqlalchemy
+
 import discord
 from discord.ext import commands
 
@@ -47,8 +49,6 @@ class Errors(rubbercog.Rubbercog):
 
     async def _send_exception_message(self, ctx: commands.Context, error: Exception) -> bool:
         """Return True if error should be thrown"""
-
-        # TODO This is a bit funny
 
         # fmt: off
         # cog exceptions are handled in their cogs
@@ -100,6 +100,7 @@ class Errors(rubbercog.Rubbercog):
         if type(error) == commands.BadUnionArgument:
             await self.output.warning(ctx, self.text.get("BadUnionArgument", param=error.param.name))
             return False
+
         # All cog-related errors
         if isinstance(error, commands.ExtensionError):
             await self.output.error(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
@@ -118,6 +119,17 @@ class Errors(rubbercog.Rubbercog):
         # DiscordException, critical errors
         if type(error) in (discord.DiscordException, discord.GatewayNotFound):
             await self.output.error(ctx, self.text.get(type(error).__name__))
+
+        # Database
+        if isinstance(error, sqlalchemy.exc.SQLAlchemyError):
+            error_name = ".".join([type(error).__module__, type(error).__name__])
+            await self.output.critical(ctx, error_name)
+            await self.console.critical(ctx, "Database error", error)
+            await self.event.user(
+                ctx,
+                f"Database reported`{error_name}`. The session may be invalidated <@{config.admin_id}>"
+            )
+            return False
         # fmt: on
 
         return True
