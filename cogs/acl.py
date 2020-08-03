@@ -12,7 +12,7 @@ repo_a = acl_repo.ACLRepository()
 
 
 class ACL(rubbercog.Rubbercog):
-    """Permission controll"""
+    """Permission control"""
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -20,12 +20,12 @@ class ACL(rubbercog.Rubbercog):
     @commands.is_owner()
     @commands.group(name="acl")
     async def acl(self, ctx):
-        """Permission controll"""
+        """Permission control"""
         await utils.send_help(ctx)
 
     @acl.group(name="group")
     async def acl_group(self, ctx):
-        """Group controll"""
+        """Group control"""
         await utils.send_help(ctx)
 
     @acl_group.command(name="list")
@@ -37,18 +37,26 @@ class ACL(rubbercog.Rubbercog):
         result = ""
         for group in groups:
             if len(result) > 2000:
-                await ctx.send(result)
+                await ctx.send(f"```\n{result}```")
                 result = ""
             result += "\n" + (str(group))
-        await ctx.send(result)
+        if result:
+            await ctx.send(f"```\n{result}```")
+        else:
+            await ctx.send("nothing yet")
 
     @acl_group.command(name="add")
-    async def acl_group_add(self, ctx, name: str, role_id: int):
+    async def acl_group_add(self, ctx, name: str, parent_id: int, role_id: int):
         """Add ACL group
 
-        role_id: Role ID or 0 for DM
+        parent_id: Parent group; -1 for None
+        role_id: Discord role ID, 0 for DM, -1 for None
         """
-        pass
+        result = repo_a.addGroup(name, parent_id, role_id)
+        if result:
+            await ctx.send("ok")
+        else:
+            await ctx.send("error occured")
 
     @acl_group.command(name="remove", aliases=["delete"])
     async def acl_group_remove(self, ctx, id: int):
@@ -58,20 +66,33 @@ class ACL(rubbercog.Rubbercog):
         """
         pass
 
-    @acl.group(name="command")
+    @acl.group(name="command", aliases=["rule"])
     async def acl_command(self, ctx):
-        """Command controll"""
+        """Command control"""
         await utils.send_help(ctx)
+
+    @acl_command.command(name="get")
+    async def acl_command_get(self, ctx, *, command_name: str):
+        """See command's policy"""
+        command = repo_a.getCommand(command_name)
+        if command:
+            await ctx.send("```\n" + str(command) + "```")
+        else:
+            await ctx.send("nothing yet")
 
     @acl_command.command(name="add")
     async def acl_command_add(self, ctx, *, command: str):
         """Add command"""
-        pass
+        if command not in self.bot.all_commands.keys():
+            return await ctx.send("unknown command")
+        result = repo_a.addCommand(command)
+        await ctx.send(result)
 
     @acl_command.command(name="remove", aliases=["delete"])
     async def acl_command_remove(self, ctx, *, command: str):
         """Remove command"""
-        pass
+        result = repo_a.removeCommand(command)
+        await ctx.send(result)
 
     @acl_command.group(name="constraint")
     async def acl_command_constraint(self, ctx):
@@ -80,15 +101,29 @@ class ACL(rubbercog.Rubbercog):
 
     @acl_command_constraint.command(name="add")
     async def acl_command_constraint_add(
-        self, ctx, command: str, constraint: str, id: int, allow: bool
+        self, ctx, command: str, constraint: str, group_id: int, allow: bool
     ):
-        """Add command constraint"""
-        pass
+        """Add command constraint
+
+        command: valid command
+        constraint: "user", "channel" or "group" string
+        group_id: user ID, channel ID or ACL group ID
+        allow: True or False
+        """
+        result = repo_a.setCommandConstraint(
+            command=command, constraint=constraint, id=group_id, allow=allow
+        )
+        await ctx.send(result)
 
     @acl_command_constraint.command(name="remove")
-    async def acl_command_constraint_remove(self, ctx, command: str, constraint: str, id: int):
-        """Remove command constraint"""
-        pass
+    async def acl_command_constraint_remove(self, ctx, command: str, constraint_id: int):
+        """Remove command constraint
+
+        command: valid command
+        constraint_id: Assigned constraint ID
+        """
+        result = repo_a.removeCommandConstraint(command=command, constraint_id=id)
+        await ctx.send(result)
 
 
 def setup(bot):

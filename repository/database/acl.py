@@ -17,31 +17,40 @@ class ACL_group(database.base):
     # fmt: on
 
     def __repr__(self):
-        return "{}^{}: {} ~ {}".format(self.id, self.parent_id, self.name, self.role_id)
+        return "{}^{}: {} ~ {}".format(
+            self.id, self.parent_id if self.parent_id >= 0 else "-", self.name, self.role_id
+        )
+
+    def __str__(self):
+        return f"Group {self.name} ({self.id}) linked to role ID {self.role_id}"
 
 
 class ACL_rule(database.base):
     __tablename__ = "acl_rules"
 
     # fmt: off
-    command  = Column(String, primary_key=True)
+    id       = Column(Integer, primary_key=True, autoincrement=True)
+    command  = Column(String)
     users    = relationship("ACL_data")
     groups   = relationship("ACL_data")
     channels = relationship("ACL_data")
     # fmt: on
 
     def __repr__(self):
-        result = ["command " + self.command]
+        result = [self.command]
         result.append("users")
         for u in self.users:
-            result.append(u)
+            result.append(str(u))
         result.append("groups")
         for g in self.groups:
-            result.append(g)
+            result.append(str(g))
         result.append("channels")
         for c in self.channels:
-            result.append(c)
+            result.append(str(c))
         return "\n".join(result)
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class ACL_data(database.base):
@@ -49,10 +58,15 @@ class ACL_data(database.base):
 
     # fmt: off
     id      = Column(Integer,    primary_key=True)
-    command = Column(String,     ForeignKey('acl_rules.command', ondelete="CASCADE"))
+    rule_id = Column(Integer,     ForeignKey('acl_rules.id', ondelete="CASCADE"))
+    type    = Column(String)     # group, user, channel
     item_id = Column(BigInteger) #  discord_id or group ID
     allow   = Column(Boolean,    default=None)
     # fmt: on
 
     def __repr__(self):
-        return "{}allow for ID {}".format("   " if self.allow else "dis", self.item_id)
+        return f"{self.id:>3} of {self.type} for rule {self.rule_id}: "
+        f"{self.item_id} set to {'' if self.allow else 'dis'}allow"
+
+    def __str__(self):
+        return "{}allow for ID {}".format("" if self.allow else "dis", self.item_id)
