@@ -16,7 +16,12 @@ class ACLRepository(BaseRepository):
     def getGroups(self) -> Optional[List[ACL_group]]:
         return session.query(ACL_group).all()
 
-    def getGroup(self, identifier: Union[int, str]) -> Optional[ACL_group]:
+    def getGroup(self, identifier: Optional[Union[int, str]]) -> Optional[ACL_group]:
+        if identifier is None:
+            return None
+        if identifier == 0:
+            return ACL_group(name="everyone", parent_id=None, role_id=0)
+
         if type(identifier) == int:
             return session.query(ACL_group).filter(ACL_group.id == identifier).one_or_none()
         else:
@@ -34,7 +39,9 @@ class ACLRepository(BaseRepository):
         session.commit()
         return self.getGroup(name)
 
-    def editGroup(self, id: int, *, name: str = None, parent_id: int = None) -> ACL_group:
+    def editGroup(
+        self, id: int, *, name: str = None, parent_id: int = None, role_id: int = None
+    ) -> ACL_group:
         group = self.getGroup(id)
         if group is None:
             raise ACLException("id", id)
@@ -45,6 +52,8 @@ class ACLRepository(BaseRepository):
             if self.getGroup(parent_id) is None:
                 raise ACLException("parent_id", parent_id)
             group.parent_id = parent_id
+        if role_id is not None:
+            group.role_id = role_id
 
         session.commit()
         return self.getGroup(id)
@@ -69,47 +78,55 @@ class ACLRepository(BaseRepository):
         return session.query(ACL_rule).filter(ACL_rule.command == command).one_or_none()
 
     def addRule(self, command: str) -> ACL_rule:
-        if self.getCommand(command) is not None:
+        if self.getRule(command) is not None:
             raise ACLException("command", command)
 
         session.add(ACL_rule(command=command))
         session.commit()
-        return self.getCommand(command)
+        return self.getRule(command)
 
     def deleteRule(self, command: str) -> bool:
-        if self.getCommand(command) is None:
+        if self.getRule(command) is None:
             raise ACLException("command", command)
         result = session.query(ACL_rule).filter(ACL_rule.command == command).delete()
         session.commit()
         return result > 0
 
-    def addRuleConstraint(self, command: str, constraint: str, id: int, allow: bool) -> ACL_rule:
-        cmd = self.getCommand(command)
+    ##
+    ## Constraints
+    ##
+
+    def addGroupConstraint(
+        self, command: str, identifier: Union[int, str], allow: bool
+    ) -> ACL_rule:
+        cmd = self.getRule(command)
         if cmd is None:
             raise ACLException("command", command)
 
-        if constraint == "user":
-            cmd.users.append(ACL_rule_user(discord_id=id, allow=allow))
-        elif constraint == "group":
-            cmd.groups.append(ACL_rule_group(group_id=id, allow=allow))
-        else:
-            raise ACLException("constraint", constraint)
+        group = self.getGroup(identifier)
+        if group is None:
+            raise ACLException("identifier", identifier)
 
+        cmd.groups.append(ACL_rule_group(group_id=group.id, allow=allow))
         session.commit()
-        return self.getCommand(command)
+        return cmd
 
-    def removeRuleConstraint(self, command: str, constraint: str, id: int) -> ACL_rule:
-        if self.getCommand(command) is None:
+    def removeGroupConstraint(self, constraint_id: int) -> None:
+        session.query(ACL_rule_group).filter(ACL_rule_group.id == constraint_id).delete()
+        session.commit()
+
+    def addUserConstraint(self, command: str, discord_id: int, allow: bool) -> ACL_rule:
+        cmd = self.getRule(command)
+        if cmd is None:
             raise ACLException("command", command)
 
-        if constraint == "user":
-            session.query(ACL_rule_user).filter(command=command, discord_id=id).delete()
-        elif constraint == "group":
-            session.query(ACL_rule_group).filter(command=command, group_id=id).delete()
-        else:
-            raise ACLException("id", id)
+        cmd.users.append(ACL_rule_user(discord_id=discord_id, allow=allow))
         session.commit()
-        return self.getCommand(command)
+        return cmd
+
+    def removeUserConstraint(self, constraint_id: int) -> None:
+        session.query(ACL_rule_user).filter(ACL_rule_user.id == constraint_id).delete()
+        session.commit()
 
 
 class ACLException(Exception):

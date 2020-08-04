@@ -14,6 +14,7 @@ class ACL_group(database.base):
     parent_id = Column(Integer, default=-1)
     name      = Column(String,  unique=True)
     role_id   = Column(BigInteger, default=None)
+    rules     = relationship("ACL_rule_group", back_populates="group")
     # fmt: on
 
     def __repr__(self):
@@ -27,31 +28,31 @@ class ACL_group(database.base):
         # Group verify (4) linked to role 328874
         return f"Group {self.name} ({self.id}) linked to role {self.role_id}"
 
+    def __eq__(self, obj):
+        # HACK This will return true for every object with ID property
+        # TODO Is it still neccesary?
+        return self.id == obj.id
+
 
 class ACL_rule(database.base):
     __tablename__ = "acl_rules"
 
     # fmt: off
     id       = Column(Integer, primary_key=True, autoincrement=True)
-    guild_id = Column(BigInteger)
     command  = Column(String)
-    users    = relationship("ACL_rule_user")
-    groups   = relationship("ACL_rule_group")
+    users    = relationship("ACL_rule_user", back_populates="rule")
+    groups   = relationship("ACL_rule_group", back_populates="rule")
     # fmt: on
 
     def __repr__(self):
         # hug
-        # users
-        # User 667155: disallow
-        # groups
-        # Group 4: allow
+        # #4 User 667155: disallow
+        # #8 Group 4: allow
         result = [self.command]
-        result.append("users")
         for u in self.users:
-            result.append(u.__repr__())
-        result.append("groups")
+            result.append(str(u))
         for g in self.groups:
-            result.append(g.__repr__())
+            result.append(str(g))
 
         return "\n".join(result)
 
@@ -69,21 +70,22 @@ class ACL_rule_user(database.base):
     # fmt: off
     id         = Column(Integer, primary_key=True, autoincrement=True)
     rule_id    = Column(Integer, ForeignKey('acl_rules.id', ondelete="CASCADE"))
+    rule       = relationship("ACL_rule", back_populates="users")
     discord_id = Column(BigInteger)
     allow      = Column(Boolean)
     # fmt: on
 
     def __repr__(self):
-        # Entry 56 for rule 32: User 667155: allow
+        # User override #56: User 667155: allow
         return (
-            f"Entry {self.id} for rule {self.rule_id}: User {self.discord_id}: "
+            f"User override #{self.id}: User {self.discord_id}: "
             + ("" if self.allow else "dis")
             + "allow"
         )
 
     def __str__(self):
-        # User 667155: allow
-        return f"User {self.discord_id}: " + ("" if self.allow else "dis") + "allow"
+        # #56 User 667155: allow
+        return f"#{self.id} User {self.discord_id}: " + ("" if self.allow else "dis") + "allow"
 
 
 class ACL_rule_group(database.base):
@@ -92,18 +94,17 @@ class ACL_rule_group(database.base):
     # fmt: off
     id       = Column(Integer, primary_key=True, autoincrement=True)
     rule_id  = Column(Integer, ForeignKey("acl_rules.id", ondelete="CASCADE"))
+    rule     = relationship("ACL_rule", back_populates="groups")
     group_id = Column(Integer, ForeignKey("acl_groups.id", ondelete="CASCADE"))
+    group    = relationship("ACL_group", back_populates="rules")
     allow    = Column(Boolean, default=None)
     # fmt: on
 
     def __repr__(self):
         # Entry 78 for rule 15: group 4: disallow
-        return (
-            f"Entry {self.id} for rule {self.rule_id}: group {self.group_id}: "
-            + ("" if self.allow else "dis")
-            + "allow"
-        )
+        allow = "undefined" if self.allow is None else "allow" if self.allow else "disallow"
+        return f"Entry {self.id} for rule {self.rule_id}: group {self.group_id}: " + allow
 
     def __str__(self):
-        # Group 4: disallow
-        return f"Group {self.group_id}: " + ("" if self.allow else "dis") + "allow"
+        # #78 Group 4: disallow
+        return f"#{self.id} Group {self.group_id}: " + ("" if self.allow else "dis") + "allow"
