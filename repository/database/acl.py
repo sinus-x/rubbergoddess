@@ -12,7 +12,7 @@ class ACL_group(database.base):
     # fmt: off
     id        = Column(Integer, primary_key=True, autoincrement=True)
     parent_id = Column(Integer, default=-1)
-    name      = Column(String)
+    name      = Column(String,  unique=True)
     role_id   = Column(BigInteger, default=None)
     # fmt: on
 

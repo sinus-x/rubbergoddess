@@ -34,6 +34,21 @@ class ACLRepository(BaseRepository):
         session.commit()
         return self.getGroup(name)
 
+    def editGroup(self, id: int, *, name: str = None, parent_id: int = None) -> ACL_group:
+        group = self.getGroup(id)
+        if group is None:
+            raise ACLException("id", id)
+
+        if name is not None:
+            group.name = name
+        if parent_id is not None:
+            if self.getGroup(parent_id) is None:
+                raise ACLException("parent_id", parent_id)
+            group.parent_id = parent_id
+
+        session.commit()
+        return self.getGroup(id)
+
     def deleteGroup(self, identifier: Union[int, str]) -> bool:
         if self.getGroup(identifier) is None:
             raise ACLException("identifier", identifier)
@@ -47,13 +62,13 @@ class ACLRepository(BaseRepository):
     ## Commands
     ##
 
-    def getCommands(self) -> Optional[List[ACL_rule]]:
+    def getRules(self) -> Optional[List[ACL_rule]]:
         return session.query(ACL_rule).all()
 
-    def getCommand(self, command: str) -> Optional[ACL_rule]:
+    def getRule(self, command: str) -> Optional[ACL_rule]:
         return session.query(ACL_rule).filter(ACL_rule.command == command).one_or_none()
 
-    def addCommand(self, command: str) -> ACL_rule:
+    def addRule(self, command: str) -> ACL_rule:
         if self.getCommand(command) is not None:
             raise ACLException("command", command)
 
@@ -61,14 +76,14 @@ class ACLRepository(BaseRepository):
         session.commit()
         return self.getCommand(command)
 
-    def deleteCommand(self, command: str) -> bool:
+    def deleteRule(self, command: str) -> bool:
         if self.getCommand(command) is None:
             raise ACLException("command", command)
         result = session.query(ACL_rule).filter(ACL_rule.command == command).delete()
         session.commit()
         return result > 0
 
-    def setCommandConstraint(self, command: str, constraint: str, id: int, allow: bool) -> ACL_rule:
+    def addRuleConstraint(self, command: str, constraint: str, id: int, allow: bool) -> ACL_rule:
         cmd = self.getCommand(command)
         if cmd is None:
             raise ACLException("command", command)
@@ -83,7 +98,7 @@ class ACLRepository(BaseRepository):
         session.commit()
         return self.getCommand(command)
 
-    def removeCommandConstraint(self, command: str, constraint: str, id: int) -> ACL_rule:
+    def removeRuleConstraint(self, command: str, constraint: str, id: int) -> ACL_rule:
         if self.getCommand(command) is None:
             raise ACLException("command", command)
 

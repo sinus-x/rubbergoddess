@@ -17,6 +17,10 @@ class ACL(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
+    ##
+    ## Commands
+    ##
+
     @commands.is_owner()
     @commands.group(name="acl")
     async def acl(self, ctx):
@@ -36,10 +40,12 @@ class ACL(rubbercog.Rubbercog):
         groups = repo_a.getGroups()
         result = ""
         for group in groups:
-            if len(result) > 2000:
+            group_repr = group.__repr__()
+            if len(result) + len(group_repr) > 2000:
                 await ctx.send(f"```\n{result}```")
                 result = ""
             result += "\n" + (group.__repr__())
+
         if result:
             await ctx.send(f"```\n{result}```")
         else:
@@ -70,43 +76,38 @@ class ACL(rubbercog.Rubbercog):
         result = repo_a.deleteGroup(identifier)
         await ctx.send("ok" if result else "not found")
 
-    @acl.group(name="command", aliases=["rule"])
-    async def acl_command(self, ctx):
+    @acl.group(name="rule")
+    async def acl_rule(self, ctx):
         """Command control"""
         await utils.send_help(ctx)
 
-    @acl_command.command(name="get")
-    async def acl_command_get(self, ctx, *, command_name: str):
+    @acl_rule.command(name="get")
+    async def acl_rule_get(self, ctx, *, command_name: str):
         """See command's policy"""
         command = repo_a.getCommand(command_name)
-        if command:
-            await ctx.send("```\n" + command.__repr__() + "```")
-        else:
-            await ctx.send("nothing yet")
+        await ctx.send("```\n" + command.__repr__() + "```")
 
-    @acl_command.command(name="add")
-    async def acl_command_add(self, ctx, *, command: str):
+    @acl_rule.command(name="add")
+    async def acl_rule_add(self, ctx, *, command: str):
         """Add command"""
         if command not in self.bot.all_commands.keys():
             return await ctx.send("unknown command")
         result = repo_a.addCommand(command)
         await ctx.send(result)
 
-    @acl_command.command(name="remove", aliases=["delete"])
-    async def acl_command_remove(self, ctx, *, command: str):
+    @acl_rule.command(name="remove", aliases=["delete"])
+    async def acl_rule_remove(self, ctx, *, command: str):
         """Remove command"""
         result = repo_a.deleteCommand(command)
         await ctx.send("ok" if result else "not found")
 
-    @acl_command.group(name="constraint")
-    async def acl_command_constraint(self, ctx):
+    @acl.group(name="constraint")
+    async def acl_constraint(self, ctx):
         """Manage command constraints"""
         await utils.send_help(ctx)
 
-    @acl_command_constraint.command(name="add")
-    async def acl_command_constraint_add(
-        self, ctx, command: str, constraint: str, id: int, allow: bool
-    ):
+    @acl_constraint.command(name="add")
+    async def acl_constraint_add(self, ctx, command: str, constraint: str, id: int, allow: bool):
         """Add command constraint
 
         command: valid command
@@ -119,7 +120,7 @@ class ACL(rubbercog.Rubbercog):
         )
         await ctx.send(result)
 
-    @acl_command_constraint.command(name="remove")
+    @acl_constraint.command(name="remove")
     async def acl_command_constraint_remove(self, ctx, command: str, constraint_id: int):
         """Remove command constraint
 
