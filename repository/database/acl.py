@@ -38,15 +38,16 @@ class ACL_rule(database.base):
     # fmt: off
     id       = Column(Integer, primary_key=True, autoincrement=True)
     command  = Column(String)
+    default  = Column(Boolean, default=False)
     users    = relationship("ACL_rule_user", back_populates="rule")
     groups   = relationship("ACL_rule_group", back_populates="rule")
     # fmt: on
 
     def __repr__(self):
-        # hug
+        # hug: allow
         # #4 User 667155: disallow
         # #8 Group 4: allow
-        result = [self.command]
+        result = [self.command + f": {'' if self.allow else 'dis'}allow"]
         for u in self.users:
             result.append(str(u))
         for g in self.groups:
@@ -55,9 +56,10 @@ class ACL_rule(database.base):
         return "\n".join(result)
 
     def __str__(self):
-        # Rule 4 for command hug: 1 user overrides, 1 group overrides
+        # Rule 4 for command hug: False, 1 user overrides, 1 group overrides
         return (
             f"Rule {self.id} for command {self.command}: "
+            f"{'' if self.allow else 'dis'}allow, "
             f"{len(self.users)} user overrides, {len(self.groups)} group overrides"
         )
 

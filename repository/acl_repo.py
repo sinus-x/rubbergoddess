@@ -20,7 +20,7 @@ class ACLRepository(BaseRepository):
         if identifier is None:
             return None
         if identifier == 0:
-            return ACL_group(name="everyone", parent_id=None, role_id=0)
+            return ACL_group(name="everyone", parent_id=None, role_id=None)
 
         if type(identifier) == int:
             return session.query(ACL_group).filter(ACL_group.id == identifier).one_or_none()
@@ -31,7 +31,7 @@ class ACLRepository(BaseRepository):
         return session.query(ACL_group).filter(ACL_group.role_id == role_id).one_or_none()
 
     def addGroup(self, name: str, parent_id: int, role_id: int) -> ACL_group:
-        if parent_id != -1 and self.getGroup(parent_id) is None:
+        if self.getGroup(parent_id) is None:
             raise ACLException("parent_id", parent_id)
         if self.getGroup(name) is not None:
             raise ACLException("name", name)
@@ -84,6 +84,14 @@ class ACLRepository(BaseRepository):
         session.add(ACL_rule(command=command))
         session.commit()
         return self.getRule(command)
+
+    def editRule(self, command: str, allow: bool) -> ACL_rule:
+        cmd = self.getRule(command)
+        if cmd is None:
+            raise ACLException("command", command)
+        cmd.default = allow
+        session.commit()
+        return cmd
 
     def deleteRule(self, command: str) -> bool:
         if self.getRule(command) is None:

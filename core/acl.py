@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from core.config import config
@@ -21,13 +22,16 @@ def check(ctx: commands.Context) -> bool:
     if rule is None:
         return False
 
-    # get user's top role
-    # FIXME Is this the right way around?
-    for role in ctx.author.roles:
-        group = repo.getGroupByRole(role.id)
-        if group is not None:
-            break
-    else:
+    if isinstance(ctx.author, discord.Member):
+        # get user's top role
+        # FIXME Is this the right way around?
+        for role in ctx.author.roles:
+            group = repo.getGroupByRole(role.id)
+            if group is not None:
+                break
+        else:
+            group = repo.getGroup(0)
+    elif isinstance(ctx.author, discord.User):
         group = repo.getGroupByRole(0)
 
     # resolve

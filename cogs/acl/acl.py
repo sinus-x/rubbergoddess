@@ -77,8 +77,11 @@ class ACL(rubbercog.Rubbercog):
         """Add ACL group
 
         name: string matching `[a-zA-Z_]*`
-        parent_id: Parent group; 0 for everyone, -1 for None
-        role_id: Discord role ID, 0 for DM, -1 for None
+        parent_id: parent group ID
+        role_id: Discord role ID
+
+        To set up virtual group with no link to discord roles, fill in garbage number for role_id.
+        To have the group inherit from @everyone/default behaviour, set parent_id to 0.
         """
         # TODO Match name against regex
         result = repo_a.addGroup(name, parent_id, role_id)
@@ -146,6 +149,23 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send("ok" if result else "not found")
 
     ## Constraints
+
+    @acl_rule.group(name="default")
+    async def acl_rule_default(self, ctx):
+        """Set default response"""
+        await utils.send_help(ctx)
+
+    @acl_rule_default.command(name="allow")
+    async def acl_rule_default_allow(self, ctx, *, command: str):
+        """Allow by default"""
+        result = repo_a.editRule(command=command, allow=True)
+        await ctx.send(result)
+
+    @acl_rule_default.command(name="disallow")
+    async def acl_rule_default_disallow(self, ctx, *, command: str):
+        """Disallow by default"""
+        result = repo_a.editRule(command=command, allow=False)
+        await ctx.send(result)
 
     @acl.group(name="user_constraint", aliases=["constraint_user", "uc"])
     async def acl_user_constraint(self, ctx):
