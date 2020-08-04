@@ -17,6 +17,10 @@ def check(ctx: commands.Context) -> bool:
 
     rule = repo.getRule(ctx.command.qualified_name)
 
+    # do not allow execution of unknown functions
+    if rule is None:
+        return False
+
     # get user's top role
     # FIXME Is this the right way around?
     for role in ctx.author.roles:

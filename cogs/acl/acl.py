@@ -29,7 +29,7 @@ class ACL(rubbercog.Rubbercog):
 
     ## Groups
 
-    @acl.group(name="group")
+    @acl.group(name="group", aliases=["g"])
     async def acl_group(self, ctx):
         """Group control"""
         await utils.send_help(ctx)
@@ -72,7 +72,7 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send("```" + result + "```")
 
-    @acl_group.command(name="add")
+    @acl_group.command(name="add", aliases=["a"])
     async def acl_group_add(self, ctx, name: str, parent_id: int, role_id: int):
         """Add ACL group
 
@@ -84,7 +84,7 @@ class ACL(rubbercog.Rubbercog):
         result = repo_a.addGroup(name, parent_id, role_id)
         await ctx.send(result)
 
-    @acl_group.command(name="edit")
+    @acl_group.command(name="edit", aliases=["e"])
     async def acl_group_edit(self, ctx, id: int, param: str, value):
         """Edit group
 
@@ -105,7 +105,7 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send(result)
 
-    @acl_group.command(name="remove", aliases=["delete"])
+    @acl_group.command(name="remove", aliases=["delete", "r"])
     async def acl_group_remove(self, ctx, identifier: str):
         """Remove ACL rule
 
