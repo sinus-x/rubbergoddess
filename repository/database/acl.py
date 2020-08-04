@@ -29,9 +29,7 @@ class ACL_group(database.base):
         return f"Group {self.name} ({self.id}) linked to role {self.role_id}"
 
     def __eq__(self, obj):
-        # HACK This will return true for every object with ID property
-        # TODO Is it still neccesary?
-        return self.id == obj.id
+        return type(self) == type(obj) and self.id == obj.id
 
 
 class ACL_rule(database.base):
@@ -63,6 +61,9 @@ class ACL_rule(database.base):
             f"{len(self.users)} user overrides, {len(self.groups)} group overrides"
         )
 
+    def __eq__(self, obj):
+        return type(self) == type(obj) and self.id == obj.id
+
 
 class ACL_rule_user(database.base):
     __tablename__ = "acl_rule_users"
@@ -87,6 +88,9 @@ class ACL_rule_user(database.base):
         # #56 User 667155: allow
         return f"#{self.id} User {self.discord_id}: " + ("" if self.allow else "dis") + "allow"
 
+    def __eq__(self, obj):
+        return type(self) == type(obj) and self.id == obj.id
+
 
 class ACL_rule_group(database.base):
     __tablename__ = "acl_rule_groups"
@@ -108,3 +112,6 @@ class ACL_rule_group(database.base):
     def __str__(self):
         # #78 Group 4: disallow
         return f"#{self.id} Group {self.group_id}: " + ("" if self.allow else "dis") + "allow"
+
+    def __eq__(self, obj):
+        return type(self) == type(obj) and self.id == obj.id

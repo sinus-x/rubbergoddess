@@ -29,15 +29,12 @@ def check(ctx: commands.Context) -> bool:
     # resolve
     for user in rule.users:
         if ctx.author.id == user.discord_id:
-            print(f"author match: {user.allow}")
             return user.allow
 
     while group:
         for rule_group in rule.groups:
             if rule_group.group == group and rule_group.allow is not None:
-                print(f"got response from {group}")
                 return rule_group.allow
         group = repo.getGroup(group.parent_id)
 
-    print("no match")
     return False

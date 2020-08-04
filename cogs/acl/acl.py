@@ -37,21 +37,40 @@ class ACL(rubbercog.Rubbercog):
     @acl_group.command(name="list")
     async def acl_group_list(self, ctx):
         """List ACL groups"""
-        # FIXME show as dependencies
-
         groups = repo_a.getGroups()
-        result = ""
-        for group in groups:
-            group_repr = group.__repr__()
-            if len(result) + len(group_repr) > 2000:
-                await ctx.send(f"```\n{result}```")
-                result = ""
-            result += "\n" + (group.__repr__())
 
-        if result:
-            await ctx.send(f"```\n{result}```")
-        else:
-            await ctx.send("nothing yet")
+        if not len(groups):
+            return await ctx.send("nothing yet")
+
+        # prepare objects
+        for group in groups:
+            group.children = []
+            group.level = 0
+
+        # fill children and intendation level
+        for group in groups:
+            if group.parent_id > 0:
+                parent = groups[group.parent_id - 1]
+                parent.children.append(group)
+                group.level = parent.level + 1
+
+        def bfs(queue):
+            visited = []
+            while queue:
+                group = queue.pop(0)
+                if group not in visited:
+                    visited.append(group)
+                    queue = group.children + queue
+            return visited
+
+        result = ""
+        template = "{group_id:<2} {name:<20} {role:<18}"
+        for group in bfs(groups):
+            result += "\n" + template.format(
+                group_id=group.id, name="  " * group.level + group.name, role=group.role_id,
+            )
+
+        await ctx.send("```" + result + "```")
 
     @acl_group.command(name="add")
     async def acl_group_add(self, ctx, name: str, parent_id: int, role_id: int):
@@ -151,7 +170,7 @@ class ACL(rubbercog.Rubbercog):
         constraint_id: User constraint ID
         """
         result = repo_a.removeUserConstraint(constraint_id=constraint_id)
-        await ctx.send(result)
+        await ctx.send("ok" if result else "not found")
 
     @acl.group(name="group_constraint", aliases=["constraint_group", "gc"])
     async def acl_group_constraint(self, ctx):
@@ -182,4 +201,4 @@ class ACL(rubbercog.Rubbercog):
         constraint_id: Group constraint ID
         """
         result = repo_a.removeGroupConstraint(constraint_id=constraint_id)
-        await ctx.send(result)
+        await ctx.send("ok" if result else "not found")

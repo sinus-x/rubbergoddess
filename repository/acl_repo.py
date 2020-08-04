@@ -111,9 +111,10 @@ class ACLRepository(BaseRepository):
         session.commit()
         return cmd
 
-    def removeGroupConstraint(self, constraint_id: int) -> None:
-        session.query(ACL_rule_group).filter(ACL_rule_group.id == constraint_id).delete()
+    def removeGroupConstraint(self, constraint_id: int) -> bool:
+        result = session.query(ACL_rule_group).filter(ACL_rule_group.id == constraint_id).delete()
         session.commit()
+        return result > 0
 
     def addUserConstraint(self, command: str, discord_id: int, allow: bool) -> ACL_rule:
         cmd = self.getRule(command)
@@ -124,9 +125,10 @@ class ACLRepository(BaseRepository):
         session.commit()
         return cmd
 
-    def removeUserConstraint(self, constraint_id: int) -> None:
-        session.query(ACL_rule_user).filter(ACL_rule_user.id == constraint_id).delete()
+    def removeUserConstraint(self, constraint_id: int) -> bool:
+        result = session.query(ACL_rule_user).filter(ACL_rule_user.id == constraint_id).delete()
         session.commit()
+        return result > 0
 
 
 class ACLException(Exception):
