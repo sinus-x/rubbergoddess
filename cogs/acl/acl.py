@@ -222,3 +222,28 @@ class ACL(rubbercog.Rubbercog):
         """
         result = repo_a.removeGroupConstraint(constraint_id=constraint_id)
         await ctx.send("ok" if result else "not found")
+
+    ## Security
+
+    @acl.command(name="audit")
+    async def acl_audit(self, ctx):
+        """Make security audit"""
+        # TODO Load all commands, including subcommands
+        # self.bot.commands -- does not include subcommands
+        # self.bot.all_commands -- includes aliases
+
+        rules = repo_a.getRules()
+
+        result = []
+        for rule in rules:
+            result.append(rule.__repr__())
+
+        result.append("WIP")
+
+        output = ""
+        for line in result:
+            if len(output) + len(line) > 1980:
+                await ctx.send("```" + output + "```")
+                output = ""
+            output += "\n" + line
+        await ctx.send("```" + output + "```")

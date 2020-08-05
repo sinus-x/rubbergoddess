@@ -47,7 +47,7 @@ class ACL_rule(database.base):
         # hug: allow
         # #4 User 667155: disallow
         # #8 Group 4: allow
-        result = [self.command + f": {'' if self.allow else 'dis'}allow"]
+        result = [self.command + f": {'' if self.default else 'dis'}allow"]
         for u in self.users:
             result.append(str(u))
         for g in self.groups:
@@ -59,7 +59,7 @@ class ACL_rule(database.base):
         # Rule 4 for command hug: False, 1 user overrides, 1 group overrides
         return (
             f"Rule {self.id} for command {self.command}: "
-            f"{'' if self.allow else 'dis'}allow, "
+            f"{'' if self.default else 'dis'}allow, "
             f"{len(self.users)} user overrides, {len(self.groups)} group overrides"
         )
 
