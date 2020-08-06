@@ -71,7 +71,11 @@ class Animals(rubbercog.Rubbercog):
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         # call if user has been verified
         verify = self.getVerifyRole()
-        if verify not in before.roles and verify in after.roles:
+        if (
+            verify not in before.roles
+            and verify in after.roles
+            and after.avatar_url != after.default_avatar_url
+        ):
             await self.check(after, "on_member_update")
 
     @commands.Cog.listener()
@@ -143,15 +147,19 @@ class Animals(rubbercog.Rubbercog):
     ## Logic
     ##
 
-    async def check(self, member: discord.Member, source: str):
+    async def check(self, member: discord.Member, source: str, thumbnail_url: str = None):
         """Create vote embed"""
-        embed = self.embed(title=self.text.get("title"), description=f"{str(member)} | {member.id}")
+        embed = self.embed(
+            title=self.text.get("title"), description=f"{self.sanitise(str(member))} | {member.id}"
+        )
         embed.add_field(
             name=self.text.get("source", source),
             value=self.text.get("required", limit=self.config.get("limit")),
             inline=False,
         )
         embed.set_image(url=member.avatar_url)
+        if str(thumbnail_url):
+            embed.set_thumbnail(url=thumbnail_url)
         message = await self.getChannel().send(embed=embed)
         await message.add_reaction("☑️")
         await message.add_reaction("❎")

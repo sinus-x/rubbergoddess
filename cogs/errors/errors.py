@@ -103,7 +103,7 @@ class Errors(rubbercog.Rubbercog):
 
         # All cog-related errors
         if isinstance(error, commands.ExtensionError):
-            await self.output.error(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
+            await self.output.critical(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
             return False
 
         # The rest of client exceptions
