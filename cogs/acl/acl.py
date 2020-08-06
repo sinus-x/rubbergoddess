@@ -1,8 +1,11 @@
+from typing import List, Optional
+
 import discord
 from discord.ext import commands
 
 from core import check, rubbercog, utils
 from repository import acl_repo
+from repository.database.acl import ACL_rule
 
 repo_a = acl_repo.ACLRepository()
 
@@ -131,6 +134,7 @@ class ACL(rubbercog.Rubbercog):
     @acl_rule.command(name="get")
     async def acl_rule_get(self, ctx, *, command_name: str):
         """See command's policy"""
+        # TODO Sort group overrides
         command = repo_a.getRule(command_name)
         await ctx.send("```\n" + command.__repr__() + "```")
 
@@ -228,19 +232,16 @@ class ACL(rubbercog.Rubbercog):
     @acl.command(name="audit")
     async def acl_audit(self, ctx):
         """Make security audit"""
-        # TODO Load all commands, including subcommands
-        # self.bot.commands -- does not include subcommands
-        # self.bot.all_commands -- includes aliases
-
-        # TODO Use walk_commands()
-
         rules = repo_a.getRules()
+        all_commands = []
+        for c in self.bot.walk_commands():
+            all_commands.append(c.qualified_name)
 
         result = []
         for rule in rules:
             result.append(rule.__repr__())
 
-        result.append("WIP")
+        result += self.get_free_commands(commands=all_commands, rules=rules)
 
         output = ""
         for line in result:
@@ -249,3 +250,49 @@ class ACL(rubbercog.Rubbercog):
                 output = ""
             output += "\n" + line
         await ctx.send("```" + output + "```")
+
+    @acl.command(name="check")
+    async def acl_check(self, ctx):
+        """Check, if all commands are in database"""
+        commands = self.get_free_commands()
+        if len(commands):
+            output = ""
+            for command in commands:
+                if len(output) + len(command) > 1980:
+                    await ctx.send("```" + output + "```")
+                    output = ""
+                output += "\n" + command
+            await ctx.send("```" + output + "```")
+            await ctx.send(f"Found {len(commands)} items.")
+        else:
+            await ctx.send("everything is OK.")
+
+    @acl.command(name="init")
+    async def acl_init(self, ctx):
+        """Load default settings from file"""
+        # TODO
+        pass
+
+    ##
+    ## Logic
+    ##
+    def get_command_names(self) -> Optional[List[str]]:
+        """Return list of registered commands"""
+        result = []
+        for command in self.bot.walk_commands():
+            result.append(command.qualified_name)
+        return result
+
+    def get_free_commands(
+        self, *, commands: List[str] = None, rules: List[ACL_rule] = None
+    ) -> Optional[List[str]]:
+        """Return list of commands not in database"""
+        if commands is None:
+            commands = self.get_command_names()
+        if rules is None:
+            rules = repo_a.getRules()
+
+        for rule in rules:
+            if rule.command in commands:
+                commands.remove(rule.command)
+        return commands

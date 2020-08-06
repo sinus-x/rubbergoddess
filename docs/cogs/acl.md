@@ -77,6 +77,35 @@ Add command constraint. **group** is group ID or name, **allow** is **True**, **
 
 Remove command constraint.
 
+### acl init
+
+Load settings from file, located at `data/acl/commands.csv`.
+
+The file may look like this:
+```csv
+verify,1,,VERIFY
+hug,0,VERIFY,
+load,0,,
+acl rule get,0,MOD SUBMOD,
+```
+
+You can get much cleaner view if you open the file in LibreOffice Calc or Microsoft Excel:
+
+| full command name | default result | allowed groups | forbidden groups |
+|:------------------|----------------|:---------------|:-----------------|
+| verify            | 1              |                | VERIFY           |
+| hug               | 0              | VERIFY         |                  |
+| load              | 0              |                |                  |
+| acl rule get      | 0              | MOD SUBMOD     |                  |
+
+Full command name (qualified name) is that part before arguments.
+
+Second column represents the default answer, if there are no group overrides for given command.
+
+Allowed groups is column representing groups set to allow. If there are more than one, keep them space separated.
+
+Last column adds group overrides denying the access.
+
 
 
 ← Back to [module list](index.md) or [home](../index.md)

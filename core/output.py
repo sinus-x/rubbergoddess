@@ -130,9 +130,6 @@ class Console:
             self.log_channel = self.bot.get_channel(log_channel_id)
         return self.log_channel
 
-    def bot(self, bot: discord.ext.commands.Bot):
-        self.bot = bot
-
     async def debug(
         self,
         source: Union[commands.Context, discord.Message, str],
