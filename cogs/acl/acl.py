@@ -232,6 +232,8 @@ class ACL(rubbercog.Rubbercog):
         # self.bot.commands -- does not include subcommands
         # self.bot.all_commands -- includes aliases
 
+        # TODO Use walk_commands()
+
         rules = repo_a.getRules()
 
         result = []
