@@ -4,6 +4,10 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+### Developers
+
+- `utils.paginate()`, so we don't have to cut messages to fit into 2000 char limit every time
+
 ## [1.0]
 
 ### Added
