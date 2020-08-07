@@ -32,9 +32,9 @@ class ACLRepository(BaseRepository):
 
     def addGroup(self, name: str, parent_id: int, role_id: int) -> ACL_group:
         if self.getGroup(parent_id) is None:
-            raise ACLException("parent_id", parent_id)
+            raise Duplicate("parent_id", parent_id)
         if self.getGroup(name) is not None:
-            raise ACLException("name", name)
+            raise Duplicate("group", name)
         session.add(ACL_group(name=name, parent_id=parent_id, role_id=role_id))
         session.commit()
         return self.getGroup(name)
@@ -77,11 +77,11 @@ class ACLRepository(BaseRepository):
     def getRule(self, command: str) -> Optional[ACL_rule]:
         return session.query(ACL_rule).filter(ACL_rule.command == command).one_or_none()
 
-    def addRule(self, command: str) -> ACL_rule:
+    def addRule(self, command: str, allow: bool = False) -> ACL_rule:
         if self.getRule(command) is not None:
-            raise ACLException("command", command)
+            raise Duplicate("rule", command)
 
-        session.add(ACL_rule(command=command))
+        session.add(ACL_rule(command=command, default=allow))
         session.commit()
         return self.getRule(command)
 
@@ -148,6 +148,19 @@ class ACLException(Exception):
 
     def __repr__(self):
         return f"Invalid parameter: {self.parameter} = {self.value}"
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class Duplicate(Exception):
+    def __init__(self, ACLtype: str, rule: str):
+        self.type = ACLtype
+        self.rule = rule
+        super().__init__(f"Duplicate {self.type}: {self.rule}")
+
+    def __repr__(self):
+        return f"Duplicate {self.type}: {self.rule}"
 
     def __str__(self):
         return self.__repr__()

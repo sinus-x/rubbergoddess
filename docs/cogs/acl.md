@@ -10,7 +10,7 @@ If the command has user override, the user is not checked for requred roles: It 
 
 As a starting point for group permissions, we try to map user's top role to ACL group. If the role ID is not linked to any group, then the second highest is used, and so on. The group permission has three possible values: **allow**, **disallow** and **not set**. If the group is allowed to run the command, the check function returns `True`, if the group prohibits users to run it, the function returns `False`.
 
-If the group does not have behavior for given command set, then its parent group is used. If no group defines the outcome, the check returns `False`.
+If the group does not have behavior for given command set, then its parent group is used. If no group defines the outcome, the check returns function's default value.
 
 
 You can see example group layout below. You can display yours with `?acl group list` command.
@@ -37,9 +37,9 @@ List ACL groups
 
 Add new ACL group.
 
-**parent_id** of **0** represents the _@everyone_ role, **1** is **None**.
+Set **parent_id** to **0**, if you don't want the group have any parents.
 
-**role_id** of **0** represents DMs, **1** is **None**.
+Set **role_id** to **0** if it's purpose is to act as parenting group for its children.
 
 ### acl group edit (id) (param) (value)
 
@@ -63,7 +63,7 @@ Remove command from database.
 
 ### acl user_constraint add (command) (discord_id) (allow)
 
-Add command constraint. **discord_id** is user ID, **allow** is **True** or **False**.
+Add command constraint. **discord_id** is user ID, **allow** is **True** (**true**, **1**) or **False** (**false**, **0**).
 
 ### acl user_constraint remove (constraint_id)
 
@@ -93,19 +93,22 @@ You can get much cleaner view if you open the file in LibreOffice Calc or Micros
 
 | full command name | default result | allowed groups | forbidden groups |
 |:------------------|----------------|:---------------|:-----------------|
-| verify            | 1              |                | VERIFY           |
-| hug               | 0              | VERIFY         |                  |
-| load              | 0              |                |                  |
-| acl rule get      | 0              | MOD SUBMOD     |                  |
+| verify            | allow          |                | VERIFY           |
+| hug               | deny           | VERIFY         |                  |
+| load              | deny           |                |                  |
+| acl rule get      | deny           | MOD SUBMOD     |                  |
 
-Full command name (qualified name) is that part before arguments.
-
-Second column represents the default answer, if there are no group overrides for given command.
-
-Allowed groups is column representing groups set to allow. If there are more than one, keep them space separated.
+Allowed groups is column representing ACL groups set to allow. If there are more than one, keep them space separated.
 
 Last column adds group overrides denying the access.
 
+### acl audit
+
+Print commands along with their default settings. Notifies if unsaved commands are found.
+
+### acl check
+
+Check if all commands have been saved to the database.
 
 
 ← Back to [module list](index.md) or [home](../index.md)
