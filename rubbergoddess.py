@@ -32,17 +32,18 @@ started = False
 
 @bot.event
 async def on_ready():
-    """If Rubbergoddess is ready"""
     global started
     if started:
-        return
-    started = True
-
-    message = "Logged in [{level}]: {timestamp} (hash {hash})".format(
-        level=config.get("bot", "logging"),
-        timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-        hash=utils.git_hash()[:7],
-    )
+        message = "Reconnected: {timestamp}".format(
+            timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        )
+    else:
+        message = "Logged in [{level}]: {timestamp} (hash {hash})".format(
+            level=config.get("bot", "logging"),
+            timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+            hash=utils.git_hash()[:7],
+        )
+        started = True
 
     print(message)
     channel = bot.get_channel(config.get("channels", "stdout"))

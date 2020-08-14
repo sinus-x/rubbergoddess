@@ -4,6 +4,7 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+- Feature [GH-173](https://github.com/sinus-x/rubbergoddess/issues/173): Log reconnections
 - Bug [GH-177](https://github.com/sinus-x/rubbergoddess/issues/177): Faceshifter: Catch 404 errors on message fetch
 
 ### Developers
