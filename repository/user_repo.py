@@ -84,10 +84,10 @@ class UserRepository(BaseRepository):
         users = session.query(User).filter(User.discord_id == discord_id).all()
         return users
 
-    def deleteId(self, discord_id: int):
-        users = session.query(User).filter(User.discord_id == discord_id).delete()
+    def deleteId(self, discord_id: int) -> int:
+        count = session.query(User).filter(User.discord_id == discord_id).delete()
         session.commit()
-        return users
+        return count
 
     def filterLogin(self, login: str):
         return session.query(User).filter(User.login == login).all()
