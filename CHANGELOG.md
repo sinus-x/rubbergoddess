@@ -4,6 +4,7 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+- Feature [GH-163](https://github.com/sinus-x/rubbergoddess/issues/163): Compress database dumps
 - Feature [GH-169](https://github.com/sinus-x/rubbergoddess/issues/169): Animals: Check if the avatar is still valid
 - Feature [GH-173](https://github.com/sinus-x/rubbergoddess/issues/173): Log reconnections
 - Bug [GH-174](https://github.com/sinus-x/rubbergoddess/issues/174): Animals: Verified user is not sent to be checked
@@ -13,6 +14,11 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 ### Developers
 
 - `utils.paginate()`, so we don't have to cut messages to fit into 2000 char limit every time
+
+### Maintenance
+
+- Removed key faceshifter/r2r_prefix ([GH-177](https://github.com/sinus-x/rubbergoddess/issues/177))
+- Database dumps are compressed at the end of the month ([GH-163](https://github.com/sinus-x/rubbergoddess/issues/163))
 
 ## [1.0]
 
