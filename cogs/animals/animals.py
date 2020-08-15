@@ -111,6 +111,11 @@ class Animals(rubbercog.Rubbercog):
             return await message.remove_reaction(payload.emoji, payload.member)
         animal = self.getChannel().guild.get_member(animal_id)
 
+        if animal is None:
+            await self.console.error("animals", "get_member() did not return Member.")
+            await message.remove_reaction(payload.emoji, payload.member)
+            return
+
         # delete if the user has changed their avatar since the embed creation
         if message.embeds[0].image.url != animal.avatar_url:
             return await utils.delete(message)

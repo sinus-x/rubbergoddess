@@ -12,6 +12,7 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 - Bug [GH-174](https://github.com/sinus-x/rubbergoddess/issues/174): Animals: Verified user is not sent to be checked
 - Bug [GH-175](https://github.com/sinus-x/rubbergoddess/issues/175): Stalker: ?db remove crashes on len() called on int
 - Bug [GH-177](https://github.com/sinus-x/rubbergoddess/issues/177): Faceshifter: Catch 404 errors on message fetch
+- Bug: Animals: Halt vote if animal member is not found
 
 ### Developers
 
