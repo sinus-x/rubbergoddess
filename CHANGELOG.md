@@ -4,7 +4,9 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+- Feature [GH-169](https://github.com/sinus-x/rubbergoddess/issues/169): Animals: Check if the avatar is still valid
 - Feature [GH-173](https://github.com/sinus-x/rubbergoddess/issues/173): Log reconnections
+- Bug [GH-174](https://github.com/sinus-x/rubbergoddess/issues/174): Animals: Verified user is not sent to be checked
 - Bug [GH-175](https://github.com/sinus-x/rubbergoddess/issues/175): Stalker: ?db remove crashes on len() called on int
 - Bug [GH-177](https://github.com/sinus-x/rubbergoddess/issues/177): Faceshifter: Catch 404 errors on message fetch
 
