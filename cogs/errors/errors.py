@@ -102,6 +102,17 @@ class Errors(rubbercog.Rubbercog):
             return False
 
         # All cog-related errors
+        if type(error) == commands.ExtensionFailed:
+            await self.output.error(
+                ctx,
+                self.text.get(
+                    type(error).__name__,
+                    extension=f"{error.name!r}",
+                    error_name=error.original.__class__.__name__,
+                    error=str(error.original),
+                )
+            )
+            return False
         if isinstance(error, commands.ExtensionError):
             await self.output.error(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
             return False

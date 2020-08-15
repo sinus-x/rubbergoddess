@@ -5,7 +5,9 @@
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
 - Feature [GH-163](https://github.com/sinus-x/rubbergoddess/issues/163): Compress database dumps
+- Fix [GH-168](https://github.com/sinus-x/rubbergoddess/issues/168): Librarian: Remove trailing quote character
 - Feature [GH-169](https://github.com/sinus-x/rubbergoddess/issues/169): Animals: Check if the avatar is still valid
+- Feature [GH-170](https://github.com/sinus-x/rubbergoddess/issues/170): Errors: Print reason when cog fails to load
 - Feature [GH-173](https://github.com/sinus-x/rubbergoddess/issues/173): Log reconnections
 - Bug [GH-174](https://github.com/sinus-x/rubbergoddess/issues/174): Animals: Verified user is not sent to be checked
 - Bug [GH-175](https://github.com/sinus-x/rubbergoddess/issues/175): Stalker: ?db remove crashes on len() called on int
@@ -17,8 +19,9 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 
 ### Maintenance
 
-- Removed key faceshifter/r2r_prefix ([GH-177](https://github.com/sinus-x/rubbergoddess/issues/177))
+- Removed config key faceshifter/r2r_prefix ([GH-177](https://github.com/sinus-x/rubbergoddess/issues/177))
 - Database dumps are compressed at the end of the month ([GH-163](https://github.com/sinus-x/rubbergoddess/issues/163))
+- Altered text key errors/ExtensionFailed ([GH-170](https://github.com/sinus-x/rubbergoddess/issues/170))
 
 ## [1.0]
 
