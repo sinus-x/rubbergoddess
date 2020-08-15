@@ -157,36 +157,36 @@ class Faceshifter(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        # fmt: off
+        """Listen for react-to-role message"""
         if not isinstance(message.channel, discord.TextChannel):
             return
 
-        if message.channel.id in self.config.get("r2r_channels") \
-        or message.content.startswith(self.config.get("r2r_prefix")):
-            emote_channel_list = await self._message_to_tuple_list(message)
-            for emote_channel in emote_channel_list:
-                try:
-                    await message.add_reaction(emote_channel[0])
-                except (discord.errors.Forbidden, discord.errors.HTTPException):
-                    continue
-        # fmt: on
+        if message.channel.id not in self.config.get("r2r_channels"):
+            return
+
+        emote_channel_list = await self._message_to_tuple_list(message)
+        for emote_channel in emote_channel_list:
+            try:
+                await message.add_reaction(emote_channel[0])
+            except (discord.errors.Forbidden, discord.errors.HTTPException):
+                continue
 
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload: discord.RawMessageUpdateEvent):
+        """Listen for react-to-role message changes"""
+        if payload.channel_id not in self.config.get("r2r_channels"):
+            return
+
         message_channel = self.bot.get_channel(payload.channel_id)
         message = await message_channel.fetch_message(payload.message_id)
 
-        # fmt: off
-        if message.channel.id in self.config.get("r2r_channels") \
-        or message.content.startswith(self.config.get("r2r_prefix")):
-            # make a list of current emotes
-            emote_channel_list = await self._message_to_tuple_list(message)
-            for emote_channel in emote_channel_list:
-                try:
-                    await message.add_reaction(emote_channel[0])
-                except (discord.errors.Forbidden, discord.errors.HTTPException):
-                    continue
-        # fmt: on
+        # make a list of current emotes
+        emote_channel_list = await self._message_to_tuple_list(message)
+        for emote_channel in emote_channel_list:
+            try:
+                await message.add_reaction(emote_channel[0])
+            except (discord.errors.Forbidden, discord.errors.HTTPException):
+                continue
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -262,10 +262,7 @@ class Faceshifter(rubbercog.Rubbercog):
 
         # check every line
         result = []
-        for i, line in enumerate(content):
-            if i == 0 and line == self.config.get("r2r_prefix").replace("\n", ""):
-                # invoked via message prefix, skip the first line
-                continue
+        for line in content:
             try:
                 line_ = line.split(" ")
                 emote = line_[0]
@@ -299,13 +296,8 @@ class Faceshifter(rubbercog.Rubbercog):
             return
 
         # halt if not react-to-role message
-        # fmt: off
-        if (
-            channel.id not in self.config.get("r2r_channels")
-            and not message.content.startswith(self.config.get("r2r_prefix"))
-        ):
+        if channel.id not in self.config.get("r2r_channels"):
             return
-        # fmt: on
 
         # member
         member = message.guild.get_member(payload.user_id)

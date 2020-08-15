@@ -165,7 +165,7 @@ class Stalker(rubbercog.Rubbercog):
         """Remove user from database"""
         result = repository.deleteId(discord_id=member.id)
 
-        if not result or len(result) < 1:
+        if result < 1:
             return await self.output.error(ctx, self.text.get("db", "delete_error"))
 
         await ctx.send(self.text.get("db", "delete_success", num=len(result)))

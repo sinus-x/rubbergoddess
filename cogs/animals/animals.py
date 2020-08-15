@@ -51,8 +51,10 @@ class Animals(rubbercog.Rubbercog):
             return
 
         # only act if their avatar is not default
-        if member.avatar_url != member.default_avatar_url:
-            await self.check(member, "on_member_join")
+        if member.avatar_url == member.default_avatar_url:
+            return
+
+        await self.check(member, "on_member_join")
 
     @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
@@ -61,18 +63,29 @@ class Animals(rubbercog.Rubbercog):
         if member is None:
             return
 
+        # only act if Gatekeeper cog is used
         if "Gatekeeper" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
             return
 
-        if before.avatar_url != after.avatar_url:
-            await self.check(after, "on_user_update")
+        # only act if user has changed their avatar
+        if before.avatar_url == after.avatar_url:
+            return
+
+        await self.check(after, "on_user_update")
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
-        # call if user has been verified
-        verify = self.getVerifyRole()
-        if verify not in before.roles and verify in after.roles:
-            await self.check(after, "on_member_update")
+        # if the gatekeeper is loaded, only act user has been verified
+        if "Gatekeeper" in self.bot.cogs.keys():
+            verify = self.getVerifyRole()
+            if not (verify not in before.roles and verify in after.roles):
+                return
+
+        # only act if their avatar is not default
+        if after.avatar_url == after.default_avatar_url:
+            return
+
+        await self.check(after, "on_member_update")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
@@ -97,6 +110,10 @@ class Animals(rubbercog.Rubbercog):
         if animal_id == payload.member.id:
             return await message.remove_reaction(payload.emoji, payload.member)
         animal = self.getChannel().guild.get_member(animal_id)
+
+        # delete if the user has changed their avatar since the embed creation
+        if message.embeds[0].image.url != animal.avatar_url:
+            return await utils.delete(message)
 
         for r in message.reactions:
             if r.emoji == "☑️" and r.count > self.config.get("limit"):

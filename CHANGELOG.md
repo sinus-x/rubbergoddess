@@ -4,6 +4,16 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+- Feature [GH-169](https://github.com/sinus-x/rubbergoddess/issues/169): Animals: Check if the avatar is still valid
+- Feature [GH-173](https://github.com/sinus-x/rubbergoddess/issues/173): Log reconnections
+- Bug [GH-174](https://github.com/sinus-x/rubbergoddess/issues/174): Animals: Verified user is not sent to be checked
+- Bug [GH-175](https://github.com/sinus-x/rubbergoddess/issues/175): Stalker: ?db remove crashes on len() called on int
+- Bug [GH-177](https://github.com/sinus-x/rubbergoddess/issues/177): Faceshifter: Catch 404 errors on message fetch
+
+### Developers
+
+- `utils.paginate()`, so we don't have to cut messages to fit into 2000 char limit every time
+
 ## [1.0]
 
 ### Added
@@ -11,6 +21,10 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 - Account cog: Manage bot's user account.
 - Points cog: MEE6-like points.
 - Seeking cog: Announce that you're seeking something/someone.
+
+### Mods
+
+- Actress response variables: `((mention))` and `((name))`
 
 ### Maintenance
 
@@ -122,8 +136,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 
 
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.1...devel
-[1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.1
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.2...devel
+[1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.2
 [0.6]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.3...v0.6.1
 [0.5]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.2...v0.5.3
 [0.4]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...v0.4.2

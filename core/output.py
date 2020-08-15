@@ -190,14 +190,14 @@ class Console:
         template = "{timestamp} {level} [{command}] {message}\n{author}, {source_name}"
 
         # command
-        if isinstance(source, commands.Context):
-            command = source.invoked_with
+        if isinstance(source, commands.Context) and hasattr(source.command, "qualified_name"):
+            command = source.command.qualified_name
         else:
             command = "not a command"
 
         # author
         if hasattr(source, "author") and type(source.author) in (discord.User, discord.Member):
-            author = f"{source.author} (ID {source.author.id})"
+            author = str(source.author)
         else:
             author = "unknown author"
 
@@ -218,8 +218,6 @@ class Console:
         # traceback
         if error and len(str(error.__traceback__)):
             tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
-            if len(tb) > 1000:
-                tb = tb[-999:] + "…"
         else:
             tb = ""
 
@@ -234,8 +232,11 @@ class Console:
         if len(tb):
             result += "\n" + tb
 
-        await self.getLogChannel().send(f"```{result}```")
         print(result)
+
+        result = list(result[0 + i : 1980 + i] for i in range(0, len(result), 1980))
+        for r in result:
+            await self.getLogChannel().send(f"```{r}```")
 
 
 class Event:
