@@ -1,15 +1,15 @@
 [Unit]
-Description=Rubbergoddess Discord bot
-Requires=postgresql.service
-After=postgresql.service
+Description    = Rubbergoddess Discord bot
+Requires       = postgresql.service
+After          = postgresql.service
 
 [Service]
-Restart=always
-User=rubbergoddess
-StandardOutput=journal+console
+Restart          = always
+User             = rubbergoddess
+StandardOutput   = journal+console
 
-WorkingDirectory=/home/rubbergoddess/rubbergoddess
-ExecStart=python3 rubbergoddess.py
+WorkingDirectory = /home/rubbergoddess/rubbergoddess
+ExecStart        = python3 rubbergoddess.py
 
 [Install]
-WantedBy=multi-user.target
+WantedBy = multi-user.target

@@ -1,6 +1,7 @@
 import traceback
 from datetime import datetime
 
+import discord
 from discord.ext import commands
 
 from core import help, rubbercog, output, presence, utils
@@ -15,7 +16,11 @@ from repository.database.image import Image
 from repository.database.points import Points
 from repository.review_repo import ReviewRepository
 
-bot = commands.Bot(command_prefix=config.prefix, help_command=help.Help())
+bot = commands.Bot(
+    command_prefix=config.prefix,
+    help_command=help.Help(),
+    allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
+)
 
 presence = presence.Presence(bot)
 event = output.Event(bot)

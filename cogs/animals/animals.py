@@ -52,6 +52,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if member.avatar_url == member.default_avatar_url:
+            await self.event.user("animals", "User has default avatar.")
             return
 
         await self.check(member, "on_member_join")
@@ -83,6 +84,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if after.avatar_url == after.default_avatar_url:
+            await self.event.user("animals", "User has default avatar.")
             return
 
         await self.check(after, "on_member_update")
@@ -110,6 +112,11 @@ class Animals(rubbercog.Rubbercog):
         if animal_id == payload.member.id:
             return await message.remove_reaction(payload.emoji, payload.member)
         animal = self.getChannel().guild.get_member(animal_id)
+
+        if animal is None:
+            await self.console.error("animals", "get_member() did not return Member.")
+            await message.remove_reaction(payload.emoji, payload.member)
+            return
 
         # delete if the user has changed their avatar since the embed creation
         if message.embeds[0].image.url != animal.avatar_url:

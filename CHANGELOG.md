@@ -4,15 +4,17 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
-- Feature [GH-169](https://github.com/sinus-x/rubbergoddess/issues/169): Animals: Check if the avatar is still valid
-- Feature [GH-173](https://github.com/sinus-x/rubbergoddess/issues/173): Log reconnections
-- Bug [GH-174](https://github.com/sinus-x/rubbergoddess/issues/174): Animals: Verified user is not sent to be checked
-- Bug [GH-175](https://github.com/sinus-x/rubbergoddess/issues/175): Stalker: ?db remove crashes on len() called on int
-- Bug [GH-177](https://github.com/sinus-x/rubbergoddess/issues/177): Faceshifter: Catch 404 errors on message fetch
+Resolved [12 issues][milestone-1.1] (some may have not been reported as GitHub issue).
 
 ### Developers
 
 - `utils.paginate()`, so we don't have to cut messages to fit into 2000 char limit every time
+
+### Maintenance
+
+- Removed config key faceshifter/r2r_prefix ([GH-177](https://github.com/sinus-x/rubbergoddess/issues/177))
+- Database dumps are compressed at the end of the month ([GH-163](https://github.com/sinus-x/rubbergoddess/issues/163))
+- Altered text key errors/ExtensionFailed ([GH-170](https://github.com/sinus-x/rubbergoddess/issues/170))
 
 ## [1.0]
 
@@ -137,6 +139,7 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 
 
 [Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.2...devel
+[milestone-1.1]: https://github.com/sinus-x/rubbergoddess/milestone/10
 [1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.2
 [0.6]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.3...v0.6.1
 [0.5]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.2...v0.5.3

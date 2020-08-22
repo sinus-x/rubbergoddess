@@ -23,7 +23,7 @@
 
 		description:       ((name)), ((country))
 		temperature:       Teplota
-		temperature_value: ((real)) °C (pocitová ((feel)) °C)"
+		temperature_value: ((real)) °C (pocitová ((feel)) °C)
 		humidity:          Vlhkost
 		clouds:            Oblačnost
 		visibility:        Viditelnost
