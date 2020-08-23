@@ -179,7 +179,7 @@ class Stalker(rubbercog.Rubbercog):
         key: value
         - login: e-mail
         - group: one of the groups defined in gatekeeper mapping
-        - status: [unknown, pending, verified, kicked, banned, quarantined]
+        - status: [unknown, pending, verified, kicked, banned]
         - comment: commentary on user
         """
         if key not in ("login", "group", "status", "comment"):
@@ -200,7 +200,7 @@ class Stalker(rubbercog.Rubbercog):
             repository.update(member.id, group=value)
 
         elif key == "status":
-            if value not in ("unknown", "pending", "verified", "kicked", "banned", "quarantined"):
+            if value not in ("unknown", "pending", "verified", "kicked", "banned"):
                 return await self.output.error(ctx, self.text.get("db", "invalid_value"))
             repository.update(member.id, status=value)
 

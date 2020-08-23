@@ -10,7 +10,7 @@ def time() -> str:
 
 
 class UserRepository(BaseRepository):
-    # unknown - pending - verified - kicked - banned - quarantined
+    # unknown - pending - verified - kicked - banned
 
     def add(self, discord_id: int, login: str, group: str, code: str, status: str = "pending"):
         """Add new user"""
