@@ -37,15 +37,8 @@ def is_verified(ctx: commands.Context):
     return False
 
 
-def is_quarantined(ctx: commands.Context):
-    for role in __getAuthor(ctx).roles:
-        if role.id == config.get("roles", "quarantine_id"):
-            return True
-    return False
-
-
 def is_not_verified(ctx: commands.Context):
-    return not is_verified(ctx) or is_quarantined(ctx)
+    return not is_verified(ctx)
 
 
 def is_in_modroom(ctx: commands.Context):
@@ -62,16 +55,6 @@ def is_in_jail(ctx: commands.Context):
 
 def is_in_jail_or_dm(ctx: commands.Context):
     return ctx.channel.id == config.get("channels", "jail") or isinstance(
-        ctx.message.channel, discord.DMChannel
-    )
-
-
-def is_in_quarantine(ctx):
-    return ctx.channel.id == config.get("channels", "quarantine")
-
-
-def is_in_quarantine_or_dm(ctx):
-    return ctx.channel.id == config.get("channels", "quarantine") or isinstance(
         ctx.message.channel, discord.DMChannel
     )
 

@@ -15,6 +15,7 @@ Resolved [12 issues][milestone-1.1] (some may have not been reported as GitHub i
 - Removed config key faceshifter/r2r_prefix ([GH-177](https://github.com/sinus-x/rubbergoddess/issues/177))
 - Database dumps are compressed at the end of the month ([GH-163](https://github.com/sinus-x/rubbergoddess/issues/163))
 - Altered text key errors/ExtensionFailed ([GH-170](https://github.com/sinus-x/rubbergoddess/issues/170))
+- Removed Quarantine mechanics (too much confusion)
 
 ## [1.0]
 
