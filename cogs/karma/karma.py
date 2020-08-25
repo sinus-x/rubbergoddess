@@ -123,7 +123,7 @@ class Karma(rubbercog.Rubbercog):
                 await ctx.send(items)
                 continue
 
-            if len(line) + len(items) > 2000:
+            if line.count("\n") > 2:
                 await ctx.send(line)
                 line = ""
 
