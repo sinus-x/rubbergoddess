@@ -46,7 +46,7 @@ class Meme(rubbercog.Rubbercog):
             text = "OwO!"
         else:
             text = self.sanitise(self.uwuize(message), limit=1960, markdown=True)
-        await ctx.send("> " + text)
+        await ctx.send(">>> " + text)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.check(check.is_verified)
@@ -62,7 +62,7 @@ class Meme(rubbercog.Rubbercog):
                     text += letter.upper() if random.choice((True, False)) else letter.lower()
                 else:
                     text += letter
-        await ctx.send("> " + text)
+        await ctx.send(">>> " + text)
 
     ##
     ## Logic
