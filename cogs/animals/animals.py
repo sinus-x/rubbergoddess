@@ -52,7 +52,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if member.avatar_url == member.default_avatar_url:
-            await self.event.user("animals", "User has default avatar.")
+            await self.event.user(str(member), "Not an animal (default avatar).")
             return
 
         await self.check(member, "on_member_join")
@@ -70,6 +70,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if user has changed their avatar
         if before.avatar_url == after.avatar_url:
+            await self.event.user(str(after), "Not an animal (default avatar).")
             return
 
         await self.check(after, "on_user_update")
@@ -84,7 +85,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if after.avatar_url == after.default_avatar_url:
-            await self.event.user("animals", "User has default avatar.")
+            await self.event.user(str(after), "Not an animal (default avatar).")
             return
 
         await self.check(after, "on_member_update")
