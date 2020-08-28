@@ -118,8 +118,24 @@ class Gatekeeper(rubbercog.Rubbercog):
         )
 
     ##
+    ## Listeners
+    ##
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        """Add them their roles back, if they have been verified before"""
+        db_user = repo_u.get(member.id)
+        if db_user is None or db_user.status != "verified":
+            return
+
+        # user has been verified, give them their main roles back
+        await self._add_verify_roles(ctx.author, db_user)
+        await self.event.user(member, f"Verification skipped (**{db_user.group}**)")
+
+    ##
     ## Helper functions
     ##
+
     async def _email_to_role(self, ctx, email: str) -> discord.Role:
         """Get role from email address"""
         registered = self.config.get("suffixes")
