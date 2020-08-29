@@ -115,8 +115,11 @@ class Animals(rubbercog.Rubbercog):
         animal = self.getChannel().guild.get_member(animal_id)
 
         if animal is None:
-            await self.console.error("animals", "get_member() did not return Member.")
-            await message.remove_reaction(payload.emoji, payload.member)
+            await self.console.error(
+                "animals", f"Could not find member with ID {animal_id}. Vote aborted."
+            )
+            await self.event.user("animals", f"Could not find user {animal_id}, vote aborted.")
+            await utils.delete(message)
             return
 
         # delete if the user has changed their avatar since the embed creation
