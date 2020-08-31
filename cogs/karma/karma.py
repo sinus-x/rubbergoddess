@@ -105,14 +105,14 @@ class Karma(rubbercog.Rubbercog):
 
         emotes_nonvoted = self._getNonvotedEmoteList(emotes)
         if len(emotes_nonvoted) > 0:
-            content.append(self.text.get("emojis_nonvoted"))
+            content.append(self.text.get("emojis_not_voted"))
             content += self._emoteListToMessage(emotes_nonvoted)
 
         if len(content) == 0:
             content.append(self.text.get("no_emojis"))
 
         line = ""
-        for items in [x for x in content if (x and len(x) > 0)]:
+        for items in [x for x in content]:
             if items[0] != "<":
                 # description
                 if len(line):
@@ -121,7 +121,7 @@ class Karma(rubbercog.Rubbercog):
                 await ctx.send(items)
                 continue
 
-            if line.count("\n") > 2:
+            if line.count("\n") >= 3:
                 await ctx.send(line)
                 line = ""
 
@@ -385,7 +385,7 @@ class Karma(rubbercog.Rubbercog):
         line = ""
         result = []
         for i, emote in enumerate(emotes):
-            if i % 10 == 0:
+            if i % 8 == 0:
                 result.append(line)
                 line = ""
             line += f"{emote} "
