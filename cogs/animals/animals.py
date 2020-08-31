@@ -173,7 +173,9 @@ class Animals(rubbercog.Rubbercog):
 
     async def check(self, member: discord.Member, source: str):
         """Create vote embed"""
-        embed = self.embed(title=self.text.get("title"), description=f"{str(member)} | {member.id}")
+        embed = self.embed(
+            title=self.text.get("title"), description=f"{str(self.sanitise(member))} | {member.id}"
+        )
         embed.add_field(
             name=self.text.get("source", source),
             value=self.text.get("required", limit=self.config.get("limit")),
