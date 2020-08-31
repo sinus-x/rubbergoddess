@@ -31,8 +31,6 @@ class Karma(rubbercog.Rubbercog):
     @commands.group(name="karma")
     async def karma(self, ctx):
         """Karma"""
-        await utils.delete(ctx)
-
         if ctx.invoked_subcommand is None:
             await self.karma_stalk(ctx, member=ctx.author)
 
@@ -202,6 +200,8 @@ class Karma(rubbercog.Rubbercog):
         repo_k.set_emoji_value(str(self._emoteToID(emoji)), value)
         await ctx.send(self.text.get("emoji", emoji=emoji, value=value))
         await self.event.sudo(ctx, f"Karma of {emoji} set to {value}.")
+
+        await utils.delete(ctx)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="message")
