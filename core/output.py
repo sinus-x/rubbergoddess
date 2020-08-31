@@ -277,11 +277,11 @@ class Event:
             identifier = f"{discord.utils.escape_markdown(author)} in {location}"
         elif isinstance(source, discord.User) or isinstance(source, discord.Member):
             # user or member
-            identifier = f"{str(source)}"
+            identifier = str(source)
         else:
             # str
             identifier = source
-        return identifier
+        return discord.utils.escape_markdown(identifier)
 
     async def user(
         self,
