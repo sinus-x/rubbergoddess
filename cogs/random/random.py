@@ -21,6 +21,11 @@ class Random(rubbercog.Rubbercog):
     @commands.command()
     async def pick(self, ctx, *args):
         """"Pick an option"""
+        for i, arg in enumerate(args):
+            if arg.endswith("?"):
+                args = args[i + 1 :]
+                break
+
         if not len(args):
             return
 

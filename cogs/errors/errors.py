@@ -125,6 +125,7 @@ class Errors(rubbercog.Rubbercog):
         # DiscordException, non-critical errors
         if type(error) in (discord.NoMoreItems, discord.HTTPException, discord.Forbidden, discord.NotFound):
             await self.output.error(ctx, self.text.get(type(error).__name__))
+            await self.console.error(ctx, type(error).__name__, error)
             return False
 
         # DiscordException, critical errors

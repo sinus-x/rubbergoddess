@@ -5,7 +5,6 @@ from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
-from core.config import config
 
 
 class Animals(rubbercog.Rubbercog):
@@ -52,7 +51,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if member.avatar_url == member.default_avatar_url:
-            await self.event.user("animals", "User has default avatar.")
+            await self.event.user(f"{member} joined.", "Not an animal (default avatar).")
             return
 
         await self.check(member, "on_member_join")
@@ -70,6 +69,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if user has changed their avatar
         if before.avatar_url == after.avatar_url:
+            await self.event.user(f"{after} updated.", "Not an animal (default avatar).")
             return
 
         await self.check(after, "on_user_update")
@@ -84,7 +84,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if after.avatar_url == after.default_avatar_url:
-            await self.event.user("animals", "User has default avatar.")
+            await self.event.user(f"{after} verified.", "Not an animal (default avatar).")
             return
 
         await self.check(after, "on_member_update")
@@ -114,8 +114,11 @@ class Animals(rubbercog.Rubbercog):
         animal = self.getChannel().guild.get_member(animal_id)
 
         if animal is None:
-            await self.console.error("animals", "get_member() did not return Member.")
-            await message.remove_reaction(payload.emoji, payload.member)
+            await self.console.error(
+                "animals", f"Could not find member with ID {animal_id}. Vote aborted."
+            )
+            await self.event.user("animals", f"Could not find user {animal_id}, vote aborted.")
+            await utils.delete(message)
             return
 
         # delete if the user has changed their avatar since the embed creation
@@ -169,7 +172,9 @@ class Animals(rubbercog.Rubbercog):
 
     async def check(self, member: discord.Member, source: str):
         """Create vote embed"""
-        embed = self.embed(title=self.text.get("title"), description=f"{str(member)} | {member.id}")
+        embed = self.embed(
+            title=self.text.get("title"), description=f"{str(self.sanitise(member))} | {member.id}"
+        )
         embed.add_field(
             name=self.text.get("source", source),
             value=self.text.get("required", limit=self.config.get("limit")),
@@ -183,7 +188,7 @@ class Animals(rubbercog.Rubbercog):
         try:
             await message.pin()
         except Exception as e:
-            await self.event.user(member, "Could not pin Animal check embed.")
+            await self.event.user(member, "Could not pin Animal check embed.", e)
 
         await asyncio.sleep(0.5)
         messages = await message.channel.history(limit=5, after=message).flatten()

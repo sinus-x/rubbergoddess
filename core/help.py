@@ -1,7 +1,5 @@
 from discord.ext import commands
 
-from core.config import config
-
 
 class Paginator(commands.Paginator):
     def __init__(self):
