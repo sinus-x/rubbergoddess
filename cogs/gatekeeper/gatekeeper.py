@@ -129,7 +129,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             return
 
         # user has been verified, give them their main roles back
-        await self._add_verify_roles(ctx.author, db_user)
+        await self._add_verify_roles(member, db_user)
         await self.event.user(member, f"Verification skipped (**{db_user.group}**)")
 
     ##

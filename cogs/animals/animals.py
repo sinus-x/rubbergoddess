@@ -5,7 +5,6 @@ from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
-from core.config import config
 
 
 class Animals(rubbercog.Rubbercog):
@@ -189,7 +188,7 @@ class Animals(rubbercog.Rubbercog):
         try:
             await message.pin()
         except Exception as e:
-            await self.event.user(member, "Could not pin Animal check embed.")
+            await self.event.user(member, "Could not pin Animal check embed.", e)
 
         await asyncio.sleep(0.5)
         messages = await message.channel.history(limit=5, after=message).flatten()
