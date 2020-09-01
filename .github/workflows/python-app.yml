@@ -15,16 +15,19 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python 3.7
+    - name: Set up Python - ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
 
     - name: Restore cache
       uses: actions/cache@v2
@@ -43,8 +46,12 @@ jobs:
 
     - name: Check the code for errors
       run: |
-        flake8 . --count --select=BLK,E9,F70,F82 --statistics
+        flake8 . --count --select=E9,F70,F82 --statistics
 
     - name: Check the code for non-critical errors
       run: |
         flake8 . --exit-zero
+
+    - name: Run Black
+      run: |
+        black --diff .
