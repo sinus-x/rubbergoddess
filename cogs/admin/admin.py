@@ -273,7 +273,9 @@ class Admin(rubbercog.Rubbercog):
             name = self.text.get("stats", "top_n", num=limit, offset=offset + 1)
 
         embed.add_field(
-            name=name, value=self.getCommandsStats(offset), inline=False,
+            name=name,
+            value=self.getCommandsStats(offset),
+            inline=False,
         )
 
         await reaction.message.edit(embed=embed)
