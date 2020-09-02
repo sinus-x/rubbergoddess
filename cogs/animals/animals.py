@@ -71,17 +71,6 @@ class Animals(rubbercog.Rubbercog):
         if "Gatekeeper" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
             return
 
-        # Lookup user timestamp, only allow new verifications
-        db_user = repo_u.get(after.id)
-        if db_user is not None and db_user.status == "verified":
-            db_user = repo_u.get(member.id)
-            timestamp = datetime.strptime(db_user.changed, "%Y-%m-%d %H:%M:%S")
-            now = datetime.now()
-            if (now - timestamp).total_seconds() > 5:
-                # this was probably temporary unverify, they have been checked before
-                await self.event.user(f"{after} updated", "Not an animal (not from verification).")
-                return
-
         # only act if user has changed their avatar
         if before.avatar_url == after.avatar_url:
             await self.event.user(f"{after} updated", "Not an animal (default avatar).")
@@ -101,6 +90,17 @@ class Animals(rubbercog.Rubbercog):
         if after.avatar_url == after.default_avatar_url:
             await self.event.user(f"{after} verified", "Not an animal (default avatar).")
             return
+
+        # Lookup user timestamp, only allow new verifications
+        db_user = repo_u.get(after.id)
+        if db_user is not None and db_user.status == "verified":
+            db_user = repo_u.get(after.id)
+            timestamp = datetime.strptime(db_user.changed, "%Y-%m-%d %H:%M:%S")
+            now = datetime.now()
+            if (now - timestamp).total_seconds() > 5:
+                # this was probably temporary unverify, they have been checked before
+                await self.event.user(f"{after} reverified", "Not an animal (unverify).")
+                return
 
         await self.check(after, "on_member_update")
 
