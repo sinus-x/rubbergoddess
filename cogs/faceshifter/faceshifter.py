@@ -321,7 +321,10 @@ class Faceshifter(rubbercog.Rubbercog):
     ## Logic
     ##
     async def _subject_add(
-        self, source: discord.TextChannel, member: discord.Member, channel: discord.TextChannel,
+        self,
+        source: discord.TextChannel,
+        member: discord.Member,
+        channel: discord.TextChannel,
     ) -> bool:
         # check permission
         for subject_role in self.config.get("subject_roles"):
@@ -339,7 +342,10 @@ class Faceshifter(rubbercog.Rubbercog):
         return True
 
     async def _subject_remove(
-        self, source: discord.TextChannel, member: discord.Member, channel: discord.TextChannel,
+        self,
+        source: discord.TextChannel,
+        member: discord.Member,
+        channel: discord.TextChannel,
     ):
         # we do not need to check for permissions
         await channel.set_permissions(member, overwrite=None)

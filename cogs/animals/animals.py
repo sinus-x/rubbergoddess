@@ -1,10 +1,14 @@
 import asyncio
+from datetime import datetime
 
 import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
+from repository import user_repo
+
+repo_u = user_repo.UserRepository()
 
 
 class Animals(rubbercog.Rubbercog):
@@ -51,7 +55,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if member.avatar_url == member.default_avatar_url:
-            await self.event.user(f"{member} joined.", "Not an animal (default avatar).")
+            await self.event.user(f"{member} joined", "Not an animal (default avatar).")
             return
 
         await self.check(member, "on_member_join")
@@ -64,12 +68,28 @@ class Animals(rubbercog.Rubbercog):
             return
 
         # only act if Gatekeeper cog is used
-        if "Gatekeeper" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
+        if (
+            "Gatekeeper" in self.bot.cogs.keys()
+            and self.getVerifyRole() not in member.roles
+        ):
             return
+
+        # Lookup user timestamp, only allow new verifications
+        db_user = repo_u.get(after.id)
+        if db_user is not None and db_user.status == "verified":
+            db_user = repo_u.get(member.id)
+            timestamp = datetime.strptime(db_user.changed, "%Y-%m-%d %H:%M:%S")
+            now = datetime.now()
+            if (now - timestamp).total_seconds() > 5:
+                # this was probably temporary unverify, they have been checked before
+                await self.event.user(
+                    f"{after} updated", "Not an animal (not from verification)."
+                )
+                return
 
         # only act if user has changed their avatar
         if before.avatar_url == after.avatar_url:
-            await self.event.user(f"{after} updated.", "Not an animal (default avatar).")
+            await self.event.user(f"{after} updated", "Not an animal (default avatar).")
             return
 
         await self.check(after, "on_user_update")
@@ -84,7 +104,9 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if after.avatar_url == after.default_avatar_url:
-            await self.event.user(f"{after} verified.", "Not an animal (default avatar).")
+            await self.event.user(
+                f"{after} verified", "Not an animal (default avatar)."
+            )
             return
 
         await self.check(after, "on_member_update")
@@ -117,7 +139,9 @@ class Animals(rubbercog.Rubbercog):
             await self.console.error(
                 "animals", f"Could not find member with ID {animal_id}. Vote aborted."
             )
-            await self.event.user("animals", f"Could not find user {animal_id}, vote aborted.")
+            await self.event.user(
+                "animals", f"Could not find user {animal_id}, vote aborted."
+            )
             await utils.delete(message)
             return
 
@@ -131,7 +155,9 @@ class Animals(rubbercog.Rubbercog):
                     # member is an animal and has been before
                     await self.getChannel().send(
                         self.text.get(
-                            "result", "yes_yes", nickname=self.sanitise(animal.display_name)
+                            "result",
+                            "yes_yes",
+                            nickname=self.sanitise(animal.display_name),
                         )
                     )
                 else:
@@ -173,7 +199,8 @@ class Animals(rubbercog.Rubbercog):
     async def check(self, member: discord.Member, source: str):
         """Create vote embed"""
         embed = self.embed(
-            title=self.text.get("title"), description=f"{str(self.sanitise(member))} | {member.id}"
+            title=self.text.get("title"),
+            description=f"{self.sanitise(str(member))} | {member.id}",
         )
         embed.add_field(
             name=self.text.get("source", source),

@@ -50,7 +50,6 @@ class UserRepository(BaseRepository):
         user.code = code or user.code
         user.status = status or user.status
         user.comment = comment or user.comment
-        user.changed = time()
         session.commit()
 
     def is_not_verified(self, discord_id: int):

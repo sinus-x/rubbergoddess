@@ -114,7 +114,8 @@ class Gatekeeper(rubbercog.Rubbercog):
         # fmt: on
 
         await self.event.user(
-            ctx, f"User {ctx.author.id} verified with group **{db_user.group}**.",
+            ctx,
+            f"User {ctx.author.id} verified with group **{db_user.group}**.",
         )
 
     ##
