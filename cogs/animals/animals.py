@@ -68,10 +68,7 @@ class Animals(rubbercog.Rubbercog):
             return
 
         # only act if Gatekeeper cog is used
-        if (
-            "Gatekeeper" in self.bot.cogs.keys()
-            and self.getVerifyRole() not in member.roles
-        ):
+        if "Gatekeeper" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
             return
 
         # Lookup user timestamp, only allow new verifications
@@ -82,9 +79,7 @@ class Animals(rubbercog.Rubbercog):
             now = datetime.now()
             if (now - timestamp).total_seconds() > 5:
                 # this was probably temporary unverify, they have been checked before
-                await self.event.user(
-                    f"{after} updated", "Not an animal (not from verification)."
-                )
+                await self.event.user(f"{after} updated", "Not an animal (not from verification).")
                 return
 
         # only act if user has changed their avatar
@@ -104,9 +99,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if after.avatar_url == after.default_avatar_url:
-            await self.event.user(
-                f"{after} verified", "Not an animal (default avatar)."
-            )
+            await self.event.user(f"{after} verified", "Not an animal (default avatar).")
             return
 
         await self.check(after, "on_member_update")
@@ -136,12 +129,8 @@ class Animals(rubbercog.Rubbercog):
         animal = self.getChannel().guild.get_member(animal_id)
 
         if animal is None:
-            await self.console.error(
-                "animals", f"Could not find member with ID {animal_id}. Vote aborted."
-            )
-            await self.event.user(
-                "animals", f"Could not find user {animal_id}, vote aborted."
-            )
+            await self.console.error("animals", f"Could not find member with ID {animal_id}. Vote aborted.")
+            await self.event.user("animals", f"Could not find user {animal_id}, vote aborted.")
             await utils.delete(message)
             return
 
@@ -184,9 +173,7 @@ class Animals(rubbercog.Rubbercog):
                         await self.console.error(message, "Could not remove animal", e)
                 else:
                     # member is not an animal and has not been before
-                    await self.getChannel().send(
-                        self.text.get("result", "no_no", mention=animal.mention)
-                    )
+                    await self.getChannel().send(self.text.get("result", "no_no", mention=animal.mention))
                 break
         else:
             return
