@@ -200,7 +200,7 @@ class Animals(rubbercog.Rubbercog):
         """Create vote embed"""
         embed = self.embed(
             title=self.text.get("title"),
-            description=f"{str(self.sanitise(member))} | {member.id}",
+            description=f"{self.sanitise(str(member))} | {member.id}",
         )
         embed.add_field(
             name=self.text.get("source", source),
