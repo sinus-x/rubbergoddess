@@ -100,6 +100,9 @@ class ACLRepository(BaseRepository):
         session.commit()
         return result > 0
 
+    def deleteAllRules(self) -> int:
+        return session.query(ACL_rule).delete()
+
     ##
     ## Constraints
     ##

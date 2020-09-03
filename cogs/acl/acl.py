@@ -85,7 +85,7 @@ class ACL(rubbercog.Rubbercog):
         role_id: Discord role ID
 
         To set up virtual group with no link to discord roles, fill in garbage number for role_id.
-        To have the group inherit from @everyone/default behaviour, set parent_id to 0.
+        To have the group follow default behaviour, set parent_id to 0.
         """
         # TODO Match name against regex
         result = repo_a.addGroup(name, parent_id, role_id)
@@ -135,15 +135,14 @@ class ACL(rubbercog.Rubbercog):
     @acl_rule.command(name="get")
     async def acl_rule_get(self, ctx, *, command_name: str):
         """See command's policy"""
-        # TODO Sort group overrides
-        command = repo_a.getRule(command_name)
-        await ctx.send("```\n" + command.__repr__() + "```")
+        rule = repo_a.getRule(command_name)
+        await ctx.send("```\n" + self.get_rule_representation(rule) + "```")
 
     @acl_rule.command(name="add")
     async def acl_rule_add(self, ctx, *, command: str):
         """Add command"""
-        if command not in self.bot.all_commands.keys():
-            return await ctx.send("unknown command")
+        if command not in self.get_command_names():
+            return await ctx.send(f"I don't know command `{self.sanitise(command)}`.")
         result = repo_a.addRule(command)
         await ctx.send(result)
 
@@ -153,6 +152,12 @@ class ACL(rubbercog.Rubbercog):
         result = repo_a.deleteRule(command)
         await ctx.send("ok" if result else "not found")
 
+    @acl_rule.command(name="flush")
+    async def acl_rule_flush(self, ctx):
+        """Remove all commands"""
+        result = repo_a.deleteAllRules()
+        await ctx.send(f"removed {result} rules.")
+
     ## Constraints
 
     @acl_rule.group(name="default")
@@ -161,13 +166,13 @@ class ACL(rubbercog.Rubbercog):
         await utils.send_help(ctx)
 
     @acl_rule_default.command(name="allow")
-    async def acl_rule_default_allow(self, ctx, *, command: str):
+    async def acl_rule_default_allow(self, ctx, command: str):
         """Allow by default"""
         result = repo_a.editRule(command=command, allow=True)
         await ctx.send(result)
 
     @acl_rule_default.command(name="disallow")
-    async def acl_rule_default_disallow(self, ctx, *, command: str):
+    async def acl_rule_default_disallow(self, ctx, command: str):
         """Disallow by default"""
         result = repo_a.editRule(command=command, allow=False)
         await ctx.send(result)
@@ -238,13 +243,14 @@ class ACL(rubbercog.Rubbercog):
 
         result = []
         for rule in rules:
-            result.append(rule.__repr__())
+            result.append(self.get_rule_representation(rule))
 
         not_in_db = len(all_commands) - len(rules)
 
         output = utils.paginate(result)
         for page in output:
-            await ctx.send("```" + page + "```")
+            if len(page):
+                await ctx.send("```" + page + "```")
 
         if not_in_db:
             await ctx.send(f"**{not_in_db} commands** are not in database. Run `?acl check`.")
@@ -254,12 +260,16 @@ class ACL(rubbercog.Rubbercog):
         """Check, if all commands are in database"""
         commands = self.get_free_commands()
         output = utils.paginate(commands)
-        if len(output):
-            for page in output:
+        for page in output:
+            if len(page):
                 await ctx.send("```" + page + "```")
-            await ctx.send(f"Found **{len(commands)} commands** with no defined behaviour.")
+        if len(commands):
+            await ctx.send(
+                f"Found **{len(commands)} commands** with no defined behaviour. "
+                "Run `?acl rule add [command].`"
+            )
         else:
-            await ctx.send("everything is OK.")
+            await ctx.send("No commands without defined behaviour found.")
 
     @acl.command(name="init")
     async def acl_init(self, ctx):
@@ -286,7 +296,7 @@ class ACL(rubbercog.Rubbercog):
                 groups_allowed = [g for g in command[2].split(" ") if len(g)]
                 for g in groups_allowed:
                     if g not in acl_groups:
-                        skipped.append(f"{i} (invalid allow group) | " + ",".join(command))
+                        skipped.append(f"{i} (no group {g}) | " + ",".join(command))
                         skip = True
                         break
                 if skip:
@@ -294,14 +304,14 @@ class ACL(rubbercog.Rubbercog):
                 groups_denied = [g for g in command[3].split(" ") if len(g)]
                 for g in groups_denied:
                     if g not in acl_groups:
-                        skipped.append(f"{i} (invalid deny group)  | " + ",".join(command))
+                        skipped.append(f"{i} (no group {g})  | " + ",".join(command))
                         skip = True
                         break
                 if skip:
                     continue
 
                 try:
-                    repo_a.addRule(command[0], command[1] == "1")
+                    repo_a.addRule(command=command[0], allow=(command[1] == "1"))
                     for g in groups_allowed:
                         repo_a.addGroupConstraint(
                             command=command[0], identifier=g, allow=True,
@@ -323,7 +333,7 @@ class ACL(rubbercog.Rubbercog):
             for page in utils.paginate(skipped):
                 await ctx.send("```" + page + "```")
         if len(errors):
-            await ctx.send("Reported database errors:")
+            await ctx.send("Reported errors:")
             output = []
             for c, err in errors.items():
                 output.append(f"{c}: {err}")
@@ -333,6 +343,7 @@ class ACL(rubbercog.Rubbercog):
     ##
     ## Logic
     ##
+
     def get_command_names(self) -> Optional[List[str]]:
         """Return list of registered commands"""
         result = []
@@ -353,3 +364,48 @@ class ACL(rubbercog.Rubbercog):
             if rule.command in commands:
                 commands.remove(rule.command)
         return commands
+
+    def get_rule_representation(self, rule: ACL_rule) -> str:
+        """Convert ACL_rule object to human-friendly string"""
+
+        template_override = "{}#{}"
+
+        def get_user(discord_id: int) -> str:
+            user = self.bot.get_user(discord_id)
+            if hasattr(user, "display_name"):
+                return user.display_name
+            return str(discord_id)
+
+        result = [
+            "{default} {command}".format(
+                command=rule.command, default="+" if rule.default else "-",
+            )
+        ]
+
+        gallow = " ".join(
+            template_override.format(group.group.name, group.id)
+            for group in rule.groups
+            if group.allow
+        )
+        gdeny = " ".join(
+            template_override.format(group.group.name, group.id)
+            for group in rule.groups
+            if not group.allow
+        )
+        uallow = " ".join(
+            template_override.format(get_user(user.discord_id), user.id)
+            for user in rule.users
+            if user.allow
+        )
+        udeny = " ".join(
+            template_override.format(get_user(user.discord_id), user.id)
+            for user in rule.users
+            if not user.allow
+        )
+
+        if len(gallow) or len(uallow):
+            result.append(f"  + {' '.join((gallow, uallow))}")
+        if len(gdeny) or len(udeny):
+            result.append(f"  - {' '.join((gdeny, udeny))}")
+
+        return "\n".join(result)

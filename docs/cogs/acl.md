@@ -61,6 +61,10 @@ Add command to database.
 
 Remove command from database.
 
+### acl rule flush
+
+Remove all commands. Useful if you plan to re-import the rules.
+
 ### acl user_constraint add (command) (discord_id) (allow)
 
 Add command constraint. **discord_id** is user ID, **allow** is **True** (**true**, **1**) or **False** (**false**, **0**).
