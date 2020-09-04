@@ -1,5 +1,7 @@
+import os
 import csv
 from typing import List, Optional
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -9,10 +11,6 @@ from repository import acl_repo
 from repository.database.acl import ACL_rule
 
 repo_a = acl_repo.ACLRepository()
-
-# TODO ?acl check: List commands not in database
-#      ?acl import: Import JSON with information to fill into the database
-#      ?acl export: Export database into JSON
 
 
 class ACL(rubbercog.Rubbercog):
@@ -242,7 +240,7 @@ class ACL(rubbercog.Rubbercog):
         all_commands = self.get_command_names()
 
         result = []
-        for rule in rules:
+        for rule in sorted(rules, key=lambda r: r.command):
             result.append(self.get_rule_representation(rule))
 
         not_in_db = len(all_commands) - len(rules)
@@ -271,74 +269,63 @@ class ACL(rubbercog.Rubbercog):
         else:
             await ctx.send("No commands without defined behaviour found.")
 
+    ## Import & Export
+
     @acl.command(name="init")
     async def acl_init(self, ctx):
         """Load default settings from file"""
-        all_commands = self.get_command_names()
-        acl_groups = [g.name for g in repo_a.getGroups()]
-        skipped = []
-        errors = {}
-        done = []
-        with open("data/acl/commands.csv", newline="") as csvfile:
-            reader = csv.reader(csvfile)
-            for i, command in enumerate(reader, 1):
-                if len(command) != 4:
-                    skipped.append(f"{i} (invalid field count) | " + ",".join(command))
-                    continue
-                if command[0] not in all_commands:
-                    skipped.append(f"{i} (command not found) | " + ",".join(command))
-                    continue
-                if command[1] not in ("0", "1"):
-                    skipped.append(f"{i} (invalid default) | " + ",".join(command))
-                    continue
+        now = datetime.now()
 
-                skip = False
-                groups_allowed = [g for g in command[2].split(" ") if len(g)]
-                for g in groups_allowed:
-                    if g not in acl_groups:
-                        skipped.append(f"{i} (no group {g}) | " + ",".join(command))
-                        skip = True
-                        break
-                if skip:
-                    continue
-                groups_denied = [g for g in command[3].split(" ") if len(g)]
-                for g in groups_denied:
-                    if g not in acl_groups:
-                        skipped.append(f"{i} (no group {g})  | " + ",".join(command))
-                        skip = True
-                        break
-                if skip:
-                    continue
+        await self.import_csv(ctx, "data/acl/commands.csv")
 
-                try:
-                    repo_a.addRule(command=command[0], allow=(command[1] == "1"))
-                    for g in groups_allowed:
-                        repo_a.addGroupConstraint(
-                            command=command[0], identifier=g, allow=True,
-                        )
-                    for g in groups_denied:
-                        repo_a.addGroupConstraint(
-                            command=command[0], identifier=g, allow=False,
-                        )
-                    done.append(command[0])
-                except acl_repo.Duplicate as e:
-                    skipped.append(f"{i} | {str(e)}")
-                except acl_repo.ACLException as e:
-                    errors[command[0]] = str(e)
+        delta = int((datetime.now() - now).total_seconds())
+        await ctx.send(f"Rules imported in **{delta} seconds**.")
 
-        if len(done):
-            await ctx.send("New commands: ```\n" + ", ".join(done) + "```")
-        if len(skipped):
-            await ctx.send("Skipped CSV file entries:")
-            for page in utils.paginate(skipped):
-                await ctx.send("```" + page + "```")
-        if len(errors):
-            await ctx.send("Reported errors:")
-            output = []
-            for c, err in errors.items():
-                output.append(f"{c}: {err}")
-            for page in utils.paginate(output):
-                await ctx.send("```" + page + "```")
+    @acl.command(name="import")
+    async def acl_import(self, ctx):
+        """Import settings from attachment"""
+        if len(ctx.message.attachments) != 1 or ctx.message.attachments[0].filename != "rules.csv":
+            return await ctx.send("I need single file called `rules.csv`.")
+
+        now = datetime.now()
+        filename = f"import_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{ctx.author.id}.csv"
+
+        m = await ctx.send("Saving attachment...")
+        await ctx.message.attachments[0].save(filename)
+        await m.edit(content="Attachment saved. Importing...")
+
+        await self.import_csv(ctx, filename)
+
+        delta = int((datetime.now() - now).total_seconds())
+        await m.edit(content=f"Rules imported in **{delta} seconds**.")
+
+    @acl.command(name="export")
+    async def acl_export(self, ctx):
+        """Export settings to attachment"""
+        now = datetime.now()
+        filename = f"export_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{ctx.author.id}.csv"
+
+        m = await ctx.send(f"Exporting to `{filename}`...")
+        rules = sorted(repo_a.getRules(), key=lambda rule: rule.command)
+
+        with ctx.typing():
+            with open("data/acl/" + filename, "w", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=["command", "default", "allow", "deny"])
+                writer.writeheader()
+                for rule in rules:
+                    writer.writerow(
+                        {
+                            "command": rule.command,
+                            "default": "1" if rule.default else "0",
+                            "allow": " ".join(g.group.name for g in rule.groups if g.allow),
+                            "deny": " ".join(g.group.name for g in rule.groups if not g.allow),
+                        }
+                    )
+
+        delta = int((datetime.now() - now).total_seconds())
+        await m.edit(content=f"ACL rule export finished in **{delta} seconds**.")
+        await ctx.send(file=discord.File(fp="data/acl/" + filename))
+        os.remove("data/acl/" + filename)
 
     ##
     ## Logic
@@ -409,3 +396,71 @@ class ACL(rubbercog.Rubbercog):
             result.append(f"  - {' '.join((gdeny, udeny))}")
 
         return "\n".join(result)
+
+    async def import_csv(self, ctx: commands.Context, path: str) -> bool:
+        """Import rule csv"""
+        all_commands = self.get_command_names()
+        acl_groups = [g.name for g in repo_a.getGroups()]
+
+        skipped = []
+        errors = {}
+        done = []
+
+        with open(path, newline="") as csvfile:
+            reader = csv.DictReader(csvfile)
+
+            for i, rule in enumerate(reader, 1):
+                print(rule)
+                # detect misconfigured rows
+                if len(rule) != 4:
+                    skipped.append(f"{i:>3} | wrong line    | {rule['command']}")
+                    continue
+                # detect misconfigured commands
+                if rule["command"] not in all_commands:
+                    skipped.append(f"{i:>3} | no command    | {rule['command']}")
+                    continue
+                # detect misconfigured defaults
+                if rule["default"] not in ("0", "1"):
+                    skipped.append(f"{i:>3} | wrong default | {rule['command']}: {rule['default']}")
+                    continue
+                # detect misconfigured groups
+                groups_allowed = [g for g in rule["allow"].split(" ") if len(g)]
+                groups_denied = [g for g in rule["deny"].split(" ") if len(g)]
+                skip = False
+                for group in groups_allowed + groups_denied:
+                    if group not in acl_groups:
+                        skipped.append(f"{i:>3} | wrong group   | {rule['command']}: {group}")
+                        skip = True
+                        break
+                if skip:
+                    continue
+
+                try:
+                    repo_a.addRule(command=rule["command"], allow=(rule["default"] == 1))
+                    for group in groups_allowed:
+                        repo_a.addGroupConstraint(
+                            command=rule["command"], identifier=group, allow=True,
+                        )
+                    for group in groups_denied:
+                        repo_a.addGroupConstraint(
+                            command=rule["command"], identifier=group, allow=False,
+                        )
+                    done.append(rule["command"])
+                except acl_repo.Duplicate:
+                    skipped.append(f"{i:>3} | already set   | {rule['command']}")
+                except acl_repo.ACLException as e:
+                    errors[rule["command"]] = str(e)
+
+        if len(done):
+            await ctx.send("New command rules: ```\n" + ", ".join(done) + "```")
+        if len(skipped):
+            await ctx.send("Skipped rules:")
+            for page in utils.paginate(skipped):
+                await ctx.send("```" + page + "```")
+        if len(errors):
+            await ctx.send("Reported errors:")
+            output = []
+            for command, error in errors.items():
+                output.append(f"{command}: {error}")
+            for page in utils.paginate(output):
+                await ctx.send("```" + page + "```")

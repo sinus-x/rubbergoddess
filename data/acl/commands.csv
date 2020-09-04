@@ -1,3 +1,4 @@
+command,default,allow,deny
 scan,0,MOD,
 scan message,0,MOD,
 scan history,0,MOD,
