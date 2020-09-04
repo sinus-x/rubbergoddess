@@ -34,7 +34,7 @@ exclude =
 	test.py
 count = True
 max-complexity = 20
-max-line-length = 110
+max-line-length = 100
 max-doc-length = 100
 format=%(code)s %(path)s (%(row)d:%(col)d): %(text)s
 statistics = True
