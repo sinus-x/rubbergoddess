@@ -36,7 +36,10 @@ class Seeking(rubbercog.Rubbercog):
                     if hasattr(member, "display_name")
                     else self.text.get("embed", "no_user")
                 )
-                message = await ctx.channel.fetch_message(item.message_id)
+                try:
+                    message = await ctx.channel.fetch_message(item.message_id)
+                except discord.NotFound:
+                    message = None
                 if message:
                     text = item.text + f" | [link]({message.jump_url})"
                 else:

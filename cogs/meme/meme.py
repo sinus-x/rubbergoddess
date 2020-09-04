@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import check, rubbercog, utils
+from core import check, rubbercog
 from core.emote import emote
 
 
@@ -45,8 +45,8 @@ class Meme(rubbercog.Rubbercog):
         if message is None:
             text = "OwO!"
         else:
-            text = self.sanitise(self.uwuize(message), limit=1960, markdown=True)
-        await ctx.send("> " + text)
+            text = self.sanitise(self.uwuize(message), limit=1900, markdown=True)
+        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.check(check.is_verified)
@@ -62,7 +62,7 @@ class Meme(rubbercog.Rubbercog):
                     text += letter.upper() if random.choice((True, False)) else letter.lower()
                 else:
                     text += letter
-        await ctx.send("> " + text)
+        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
 
     ##
     ## Logic

@@ -47,7 +47,11 @@
 	ExtensionAlreadyLoaded: Rozšíření **((extension))** už je načteno.
 	ExtensionNotLoaded:     Rozšíření **((extension))** není načteno.
 	NoEntryPointError:      Rozšíření **((extension))** není jak načíst.
-	ExtensionFailed:        Rozšíření **((extension))** selhalo.
+	ExtensionFailed:
+		'''
+		Rozšíření **((extension))** selhalo: **((error_name))**
+		_((error))_
+		'''
 	ExtensionNotFound:      Rozšíření **((extension))** jsem nenašla.
 	CommandRegistrationError: Chyba při registraci příkazu.
 }

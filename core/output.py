@@ -230,13 +230,23 @@ class Console:
             source_name=source_name,
         )
         if len(tb):
-            result += "\n" + tb
+            result += "\n\n" + tb
 
         print(result)
 
+        # send traceback
         result = list(result[0 + i : 1980 + i] for i in range(0, len(result), 1980))
         for r in result:
             await self.getLogChannel().send(f"```{r}```")
+
+        # try to include trigger message
+        content = None
+        if isinstance(source, discord.Message):
+            content = source.content
+        elif isinstance(source, commands.Context):
+            content = source.message.content
+        if content is not None:
+            await self.getLogChannel().send(f"Original:\n```{content[:1980]}```")
 
 
 class Event:
@@ -267,11 +277,11 @@ class Event:
             identifier = f"{discord.utils.escape_markdown(author)} in {location}"
         elif isinstance(source, discord.User) or isinstance(source, discord.Member):
             # user or member
-            identifier = f"{str(source)}"
+            identifier = str(source)
         else:
             # str
             identifier = source
-        return identifier
+        return discord.utils.escape_markdown(identifier)
 
     async def user(
         self,

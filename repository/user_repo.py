@@ -10,7 +10,7 @@ def time() -> str:
 
 
 class UserRepository(BaseRepository):
-    # unknown - pending - verified - kicked - banned - quarantined
+    # unknown - pending - verified - kicked - banned
 
     def add(self, discord_id: int, login: str, group: str, code: str, status: str = "pending"):
         """Add new user"""
@@ -50,7 +50,6 @@ class UserRepository(BaseRepository):
         user.code = code or user.code
         user.status = status or user.status
         user.comment = comment or user.comment
-        user.changed = time()
         session.commit()
 
     def is_not_verified(self, discord_id: int):
@@ -84,10 +83,10 @@ class UserRepository(BaseRepository):
         users = session.query(User).filter(User.discord_id == discord_id).all()
         return users
 
-    def deleteId(self, discord_id: int):
-        users = session.query(User).filter(User.discord_id == discord_id).delete()
+    def deleteId(self, discord_id: int) -> int:
+        count = session.query(User).filter(User.discord_id == discord_id).delete()
         session.commit()
-        return users
+        return count
 
     def filterLogin(self, login: str):
         return session.query(User).filter(User.login == login).all()

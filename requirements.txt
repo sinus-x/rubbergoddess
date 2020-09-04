@@ -1,5 +1,5 @@
 dhash
-discord.py >= 1.4.0
+discord.py >= 1.4.1
 emoji
 GitPython
 hjson

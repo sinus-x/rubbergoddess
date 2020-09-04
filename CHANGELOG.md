@@ -23,6 +23,11 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 ### Maintenance
 
 - All cogs were moved to their separate directories, along with their strings and configuration. Manual transfer of config and text files is needed.
+- Removed config key faceshifter/r2r_prefix ([GH-177](https://github.com/sinus-x/rubbergoddess/issues/177))
+- Database dumps are compressed at the end of the month ([GH-163](https://github.com/sinus-x/rubbergoddess/issues/163))
+- Altered text key errors/ExtensionFailed ([GH-170](https://github.com/sinus-x/rubbergoddess/issues/170))
+- Removed Quarantine mechanics (too much confusion)
+- Lot of fixes (see commits)
 
 ## [0.6]
 
@@ -130,8 +135,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 
 
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.2...devel
-[1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.2
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.3...devel
+[1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.3
 [0.6]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.3...v0.6.1
 [0.5]: https://github.com/sinus-x/rubbergoddess/compare/v0.4.2...v0.5.3
 [0.4]: https://github.com/sinus-x/rubbergoddess/compare/v0.3.0...v0.4.2

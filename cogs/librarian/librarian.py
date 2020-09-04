@@ -151,7 +151,8 @@ class Librarian(rubbercog.Rubbercog):
         )
 
         embed.add_field(
-            name=self.text.get("weather", "humidity"), value=str(res["main"]["humidity"]) + " %",
+            name=self.text.get("weather", "humidity"),
+            value=str(res["main"]["humidity"]) + " %",
         )
         embed.add_field(
             name=self.text.get("weather", "clouds"), value=(str(res["clouds"]["all"]) + " %")

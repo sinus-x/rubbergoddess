@@ -102,6 +102,17 @@ class Errors(rubbercog.Rubbercog):
             return False
 
         # All cog-related errors
+        if type(error) == commands.ExtensionFailed:
+            await self.output.error(
+                ctx,
+                self.text.get(
+                    type(error).__name__,
+                    extension=f"{error.name!r}",
+                    error_name=error.original.__class__.__name__,
+                    error=str(error.original),
+                )
+            )
+            return False
         if isinstance(error, commands.ExtensionError):
             await self.output.critical(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
             return False
@@ -114,6 +125,7 @@ class Errors(rubbercog.Rubbercog):
         # DiscordException, non-critical errors
         if type(error) in (discord.NoMoreItems, discord.HTTPException, discord.Forbidden, discord.NotFound):
             await self.output.error(ctx, self.text.get(type(error).__name__))
+            await self.console.error(ctx, type(error).__name__, error)
             return False
 
         # DiscordException, critical errors

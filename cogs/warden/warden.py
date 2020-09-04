@@ -76,11 +76,16 @@ class Warden(rubbercog.Rubbercog):
             for m in messages:
                 if not m.author.bot:
                     continue
-                try:
-                    if str(message.id) == m.embeds[0].footer.text:
-                        await m.delete()
-                except:
+                if len(m.embeds) != 1 or type(m.embeds[0].footer.text) != str:
                     continue
+                if str(message.id) != m.embeds[0].footer.text.split(" | ")[1]:
+                    continue
+
+                try:
+                    await m.delete()
+                except Exception as e:
+                    await self.console.error(message, "Could not delete report embed.", e)
+                break
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
@@ -124,7 +129,7 @@ class Warden(rubbercog.Rubbercog):
                     await repost_message.remove_reaction("🤷🏻", self.bot.user)
                     await repost_message.remove_reaction("🤔", self.bot.user)
                 except Exception as e:
-                    await self.console.debug(embed_message, "Could not remove bot's reaction", e)
+                    await self.console.error(embed_message, "Could not remove bot's reaction", e)
                     return
                 await embed_message.delete()
 
@@ -140,7 +145,7 @@ class Warden(rubbercog.Rubbercog):
                 embed.set_footer(text=embed_message.embeds[0].footer.text)
                 try:
                     await embed_message.edit(embed=embed)
-                    await r.clear()
+                    await embed_message.clear_reactions()
                 except discord.NotFound:
                     pass
 

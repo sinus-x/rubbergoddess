@@ -44,9 +44,8 @@ class Stalker(rubbercog.Rubbercog):
 
         embed = self.whois_embed(ctx, member, db_member)
 
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for member **{member}**.")
-        await utils.delete(ctx)
 
     @whois.command(name="email", aliases=["login", "xlogin"])
     async def whois_email(self, ctx: commands.Context, email: str = None):
@@ -63,9 +62,8 @@ class Stalker(rubbercog.Rubbercog):
 
         embed = self.whois_embed(ctx, member, db_member)
 
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for e-mail **{email}**.")
-        await utils.delete(ctx)
 
     @whois.command(name="logins", aliases=["emails"])
     @commands.check(check.is_elevated)
@@ -103,9 +101,8 @@ class Stalker(rubbercog.Rubbercog):
                 inline=False,
             )
 
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for e-mail prefix **{prefix}**.")
-        await utils.delete(ctx)
 
     @commands.guild_only()
     @commands.group(aliases=["db"])
@@ -157,7 +154,7 @@ class Stalker(rubbercog.Rubbercog):
 
         # display the result
         embed = self.whois_embed(ctx, member, repository.get(member.id))
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
+        await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"New user {member} ({group.name})")
 
     @database.command(name="remove", aliases=["delete"])
@@ -165,12 +162,11 @@ class Stalker(rubbercog.Rubbercog):
         """Remove user from database"""
         result = repository.deleteId(discord_id=member.id)
 
-        if not result or len(result) < 1:
+        if result < 1:
             return await self.output.error(ctx, self.text.get("db", "delete_error"))
 
         await ctx.send(self.text.get("db", "delete_success", num=len(result)))
         await self.event.sudo(ctx, f"Member {member} ({member.id}) removed from database.")
-        await utils.delete(ctx)
 
     @database.command(name="update")
     async def database_update(self, ctx, member: discord.Member, key: str, *, value):
@@ -179,7 +175,7 @@ class Stalker(rubbercog.Rubbercog):
         key: value
         - login: e-mail
         - group: one of the groups defined in gatekeeper mapping
-        - status: [unknown, pending, verified, kicked, banned, quarantined]
+        - status: [unknown, pending, verified, kicked, banned]
         - comment: commentary on user
         """
         if key not in ("login", "group", "status", "comment"):
@@ -192,7 +188,9 @@ class Stalker(rubbercog.Rubbercog):
             # get list of role names, defined in
             role_ids = config.get("roles", "native") + config.get("roles", "guests")
             role_names = [
-                x.name for x in [self.bot.get_role(x) for x in role_ids] if hasattr(x, "name")
+                x.name
+                for x in [self.getGuild().get_role(x) for x in role_ids]
+                if hasattr(x, "name")
             ]
             value = value.upper()
             if value not in role_names:
@@ -200,7 +198,7 @@ class Stalker(rubbercog.Rubbercog):
             repository.update(member.id, group=value)
 
         elif key == "status":
-            if value not in ("unknown", "pending", "verified", "kicked", "banned", "quarantined"):
+            if value not in ("unknown", "pending", "verified", "kicked", "banned"):
                 return await self.output.error(ctx, self.text.get("db", "invalid_value"))
             repository.update(member.id, status=value)
 
@@ -208,6 +206,7 @@ class Stalker(rubbercog.Rubbercog):
             repository.update(member.id, comment=value)
 
         await self.event.sudo(ctx, f"Updated {member}: {key} = {value}.")
+        await ctx.send(self.text.get("db", "update_success"))
 
     @database.command(name="show")
     async def database_show(self, ctx, param: str):
@@ -264,8 +263,7 @@ class Stalker(rubbercog.Rubbercog):
             value=f"Total count **{g.member_count}**, {g.premium_subscription_count} boosters",
         )
 
-        await ctx.send(embed=embed, delete_after=config.delay_embed)
-        await utils.delete(ctx)
+        await ctx.send(embed=embed)
 
     ##
     ## Logic

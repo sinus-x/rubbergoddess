@@ -56,6 +56,10 @@ class Base(rubbercog.Rubbercog):
         if payload.emoji.is_custom_emoji() or payload.emoji.name != "📌":
             return
 
+        if message.pinned:
+            # TODO Remove the reaction
+            return
+
         for reaction in message.reactions:
             if reaction.emoji != "📌":
                 continue

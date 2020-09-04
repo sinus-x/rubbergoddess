@@ -1,11 +1,14 @@
 import asyncio
+from datetime import datetime
 
 import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
-from core.config import config
+from repository import user_repo
+
+repo_u = user_repo.UserRepository()
 
 
 class Animals(rubbercog.Rubbercog):
@@ -51,8 +54,11 @@ class Animals(rubbercog.Rubbercog):
             return
 
         # only act if their avatar is not default
-        if member.avatar_url != member.default_avatar_url:
-            await self.check(member, "on_member_join")
+        if member.avatar_url == member.default_avatar_url:
+            await self.event.user(f"{member} joined", "Not an animal (default avatar).")
+            return
+
+        await self.check(member, "on_member_join")
 
     @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
@@ -61,22 +67,42 @@ class Animals(rubbercog.Rubbercog):
         if member is None:
             return
 
+        # only act if Gatekeeper cog is used
         if "Gatekeeper" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
             return
 
-        if before.avatar_url != after.avatar_url:
-            await self.check(after, "on_user_update")
+        # only act if user has changed their avatar
+        if before.avatar_url == after.avatar_url:
+            await self.event.user(f"{after} updated", "Not an animal (default avatar).")
+            return
+
+        await self.check(after, "on_user_update")
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
-        # call if user has been verified
-        verify = self.getVerifyRole()
-        if (
-            verify not in before.roles
-            and verify in after.roles
-            and after.avatar_url != after.default_avatar_url
-        ):
-            await self.check(after, "on_member_update")
+        # if the gatekeeper is loaded, only act user has been verified
+        if "Gatekeeper" in self.bot.cogs.keys():
+            verify = self.getVerifyRole()
+            if not (verify not in before.roles and verify in after.roles):
+                return
+
+        # only act if their avatar is not default
+        if after.avatar_url == after.default_avatar_url:
+            await self.event.user(f"{after} verified", "Not an animal (default avatar).")
+            return
+
+        # Lookup user timestamp, only allow new verifications
+        db_user = repo_u.get(after.id)
+        if db_user is not None and db_user.status == "verified":
+            db_user = repo_u.get(after.id)
+            timestamp = datetime.strptime(db_user.changed, "%Y-%m-%d %H:%M:%S")
+            now = datetime.now()
+            if (now - timestamp).total_seconds() > 5:
+                # this was probably temporary unverify, they have been checked before
+                await self.event.user(f"{after} reverified", "Not an animal (unverify).")
+                return
+
+        await self.check(after, "on_member_update")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
@@ -102,13 +128,25 @@ class Animals(rubbercog.Rubbercog):
             return await message.remove_reaction(payload.emoji, payload.member)
         animal = self.getChannel().guild.get_member(animal_id)
 
+        if animal is None:
+            await self.console.error("animals", f"Could not find member with ID {animal_id}. Vote aborted.")
+            await self.event.user("animals", f"Could not find user {animal_id}, vote aborted.")
+            await utils.delete(message)
+            return
+
+        # delete if the user has changed their avatar since the embed creation
+        if message.embeds[0].image.url != animal.avatar_url:
+            return await utils.delete(message)
+
         for r in message.reactions:
             if r.emoji == "☑️" and r.count > self.config.get("limit"):
                 if self.getRole() in animal.roles:
                     # member is an animal and has been before
                     await self.getChannel().send(
                         self.text.get(
-                            "result", "yes_yes", nickname=self.sanitise(animal.display_name)
+                            "result",
+                            "yes_yes",
+                            nickname=self.sanitise(animal.display_name),
                         )
                     )
                 else:
@@ -135,9 +173,7 @@ class Animals(rubbercog.Rubbercog):
                         await self.console.error(message, "Could not remove animal", e)
                 else:
                     # member is not an animal and has not been before
-                    await self.getChannel().send(
-                        self.text.get("result", "no_no", mention=animal.mention)
-                    )
+                    await self.getChannel().send(self.text.get("result", "no_no", mention=animal.mention))
                 break
         else:
             return
@@ -150,7 +186,8 @@ class Animals(rubbercog.Rubbercog):
     async def check(self, member: discord.Member, source: str, thumbnail_url: str = None):
         """Create vote embed"""
         embed = self.embed(
-            title=self.text.get("title"), description=f"{self.sanitise(str(member))} | {member.id}"
+            title=self.text.get("title"),
+            description=f"{self.sanitise(str(member))} | {member.id}",
         )
         embed.add_field(
             name=self.text.get("source", source),
@@ -167,7 +204,7 @@ class Animals(rubbercog.Rubbercog):
         try:
             await message.pin()
         except Exception as e:
-            await self.event.user(member, "Could not pin Animal check embed.")
+            await self.event.user(member, "Could not pin Animal check embed.", e)
 
         await asyncio.sleep(0.5)
         messages = await message.channel.history(limit=5, after=message).flatten()
