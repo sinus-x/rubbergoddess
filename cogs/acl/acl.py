@@ -7,10 +7,14 @@ import discord
 from discord.ext import commands
 
 from core import check, rubbercog, utils
+from cogs.resource import CogText
 from repository import acl_repo
 from repository.database.acl import ACL_rule
 
 repo_a = acl_repo.ACLRepository()
+
+
+# TODO Do something better than send(result)
 
 
 class ACL(rubbercog.Rubbercog):
@@ -18,6 +22,8 @@ class ACL(rubbercog.Rubbercog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.text = CogText("acl")
 
     ##
     ## Commands
@@ -42,7 +48,7 @@ class ACL(rubbercog.Rubbercog):
         groups = repo_a.getGroups()
 
         if not len(groups):
-            return await ctx.send("nothing yet")
+            return await ctx.send(self.text.get("group_list", "nothing"))
 
         # prepare objects
         for group in groups:
@@ -123,7 +129,9 @@ class ACL(rubbercog.Rubbercog):
         except ValueError:
             pass
         result = repo_a.deleteGroup(identifier)
-        await ctx.send("ok" if result else "not found")
+        await ctx.send(
+            self.text.get("group_remove", "ok") if result else self.text.get("group_remove", "nothing")
+        )
 
     ## Rules
 
@@ -133,16 +141,16 @@ class ACL(rubbercog.Rubbercog):
         await utils.send_help(ctx)
 
     @acl_rule.command(name="get")
-    async def acl_rule_get(self, ctx, *, command_name: str):
+    async def acl_rule_get(self, ctx, command: str):
         """See command's policy"""
-        rule = repo_a.getRule(command_name)
+        rule = repo_a.getRule(command)
         await ctx.send("```\n" + self.get_rule_representation(rule) + "```")
 
     @acl_rule.command(name="add")
-    async def acl_rule_add(self, ctx, *, command: str):
+    async def acl_rule_add(self, ctx, command: str):
         """Add command"""
         if command not in self.get_command_names():
-            return await ctx.send(f"I don't know command `{self.sanitise(command)}`.")
+            return await ctx.send(self.text.get("rule_add", "nothing"))
         result = repo_a.addRule(command)
         await ctx.send(result)
 
@@ -150,13 +158,15 @@ class ACL(rubbercog.Rubbercog):
     async def acl_rule_remove(self, ctx, *, command: str):
         """Remove command"""
         result = repo_a.deleteRule(command)
-        await ctx.send("ok" if result else "not found")
+        await ctx.send(
+            self.text.get("rule_remove", "ok") if result else self.text.get("rule_remove", "nothing")
+        )
 
     @acl_rule.command(name="flush")
     async def acl_rule_flush(self, ctx):
         """Remove all commands"""
         result = repo_a.deleteAllRules()
-        await ctx.send(f"removed {result} rules.")
+        await ctx.send(self.text.get("rule_flush", count=result))
 
     ## Constraints
 
@@ -189,7 +199,11 @@ class ACL(rubbercog.Rubbercog):
         constraint_id: User constraint ID
         """
         result = repo_a.removeUserConstraint(constraint_id=constraint_id)
-        await ctx.send("ok" if result else "not found")
+        await ctx.send(
+            self.text.get("user_constraint", "removed")
+            if result
+            else self.text.get("user_constraint", "nothing")
+        )
 
     @acl.group(name="group_constraint", aliases=["constraint_group", "gc"])
     async def acl_group_constraint(self, ctx):
@@ -223,7 +237,11 @@ class ACL(rubbercog.Rubbercog):
         constraint_id: Group constraint ID
         """
         result = repo_a.removeGroupConstraint(constraint_id=constraint_id)
-        await ctx.send("ok" if result else "not found")
+        await ctx.send(
+            self.text.get("group_constraint", "removed")
+            if result
+            else self.text.get("group_constraint", "nothing")
+        )
 
     ## Security
 
@@ -245,7 +263,7 @@ class ACL(rubbercog.Rubbercog):
                 await ctx.send("```" + page + "```")
 
         if not_in_db:
-            await ctx.send(f"**{not_in_db} commands** are not in database. Run `?acl check`.")
+            await ctx.send(self.text.get("audit", count=not_in_db))
 
     @acl.command(name="check")
     async def acl_check(self, ctx):
@@ -256,12 +274,9 @@ class ACL(rubbercog.Rubbercog):
             if len(page):
                 await ctx.send("```" + page + "```")
         if len(commands):
-            await ctx.send(
-                f"Found **{len(commands)} commands** with no defined behaviour. "
-                "Run `?acl rule add [command].`"
-            )
+            await ctx.send(self.text.get("check", "some", count=len(commands)))
         else:
-            await ctx.send("No commands without defined behaviour found.")
+            await ctx.send(self.text.get("check", "none"))
 
     ## Import & Export
 
@@ -273,25 +288,25 @@ class ACL(rubbercog.Rubbercog):
         await self.import_csv(ctx, "data/acl/commands.csv")
 
         delta = int((datetime.now() - now).total_seconds())
-        await ctx.send(f"Rules imported in **{delta} seconds**.")
+        await ctx.send(self.text.get("import", "imported", delta=delta))
 
     @acl.command(name="import")
     async def acl_import(self, ctx):
         """Import settings from attachment"""
         if len(ctx.message.attachments) != 1 or ctx.message.attachments[0].filename != "rules.csv":
-            return await ctx.send("I need single file called `rules.csv`.")
+            return await ctx.send(self.text.get("import", "wrong_file"))
 
         now = datetime.now()
         filename = f"import_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{ctx.author.id}.csv"
 
-        m = await ctx.send("Saving attachment...")
+        m = await ctx.send(self.text.get("import", "saving"))
         await ctx.message.attachments[0].save(filename)
-        await m.edit(content="Attachment saved. Importing...")
+        await m.edit(content=self.text.get("import", "importing"))
 
         await self.import_csv(ctx, filename)
 
         delta = int((datetime.now() - now).total_seconds())
-        await m.edit(content=f"Rules imported in **{delta} seconds**.")
+        await m.edit(content=self.text.get("import", "imported", delta=delta))
 
     @acl.command(name="export")
     async def acl_export(self, ctx):
@@ -299,7 +314,7 @@ class ACL(rubbercog.Rubbercog):
         now = datetime.now()
         filename = f"export_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{ctx.author.id}.csv"
 
-        m = await ctx.send(f"Exporting to `{filename}`...")
+        m = await ctx.send(self.text.get("export", "exporting", filename=filename))
         rules = sorted(repo_a.getRules(), key=lambda rule: rule.command)
 
         with ctx.typing():
@@ -317,7 +332,7 @@ class ACL(rubbercog.Rubbercog):
                     )
 
         delta = int((datetime.now() - now).total_seconds())
-        await m.edit(content=f"ACL rule export finished in **{delta} seconds**.")
+        await m.edit(content=self.text.get("export", "exported", delta=delta))
         await ctx.send(file=discord.File(fp="data/acl/" + filename))
         os.remove("data/acl/" + filename)
 
@@ -445,13 +460,14 @@ class ACL(rubbercog.Rubbercog):
                     errors[rule["command"]] = str(e)
 
         if len(done):
-            await ctx.send("New command rules: ```\n" + ", ".join(done) + "```")
+            await ctx.send(self.text.get("csv_output", "new"))
+            await ctx.send("```" + ", ".join(done) + "```")
         if len(skipped):
-            await ctx.send("Skipped rules:")
+            await ctx.send(self.text.get("csv_output", "skipped"))
             for page in utils.paginate(skipped):
                 await ctx.send("```" + page + "```")
         if len(errors):
-            await ctx.send("Reported errors:")
+            await ctx.send(self.text.get("csv_output", "errors"))
             output = []
             for command, error in errors.items():
                 output.append(f"{command}: {error}")

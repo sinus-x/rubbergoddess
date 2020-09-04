@@ -1,0 +1,59 @@
+{
+	group_list: {
+		nothing: Nejsou definovány žádné skupiny.
+	}
+
+	group_remove: {
+		ok: Skupina **((name))** odebrána.
+		nothing: Takovou skupinu jsem nenašla.
+	}
+
+	rule_add: {
+		nothing: Takový příkaz neznám.
+	}
+
+	rule_remove: {
+		ok: Pravidlo pro příkaz **((command))** odebráno.
+		nothing: Takový příkaz neznám.
+	}
+
+	rule_flush: Smazala jsem všech **((count)) pravidel**.
+
+	user_constraint: {
+		removed: Uživatelské pravidlo odebráno.
+		nothing: Takové uživatelské pravidlo neexistuje.
+	}
+
+	group_constraint: {
+		removed: Pravidlo skupiny odebráno.
+		nothing: Takové pravidlo skupiny neexistuje.
+	}
+
+	audit: V databázi chybí **((count)) příkazů**. Pro zobrazení podrobností zavolej `acl check`.
+
+	check: {
+		some: Našla jsem **((count)) příkazů** bez definovaného pravidla. Pro přidání můžeš zavolat `acl rule add (příkaz)`.
+		none: Vše v pořádku, žádné příkazy bez pravidla jsem nenašla. Pro zobrazení pravidel zavolej `acl audit` nebo `acl rule get (příkaz)`.
+	}
+
+	import: {
+		wrong_file: Musíš nahrát soubor s názvem `rules.csv`.
+
+		saving: Ukládám...
+		importing: Importuji...
+		imported: Pravidla jsem importovala za **((delta)) vteřin**.
+	}
+
+	export: {
+		exporting: Exportuji do souboru `((filename))`...
+		exported: Pravidla jsem exportovala za **((delta)) vteřin**.
+	}
+
+
+	csv_output: {
+		new: Nová pravidla
+		skipped: Přeskočeno
+		errors: Nalezené chyby
+	}
+
+}
