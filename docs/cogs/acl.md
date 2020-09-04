@@ -81,12 +81,25 @@ Add command constraint. **group** is group ID or name, **allow** is **True**, **
 
 Remove command constraint.
 
+### acl audit
+
+Print commands along with their default settings. Notifies if unsaved commands are found.
+
+### acl check
+
+Check if all commands have been saved to the database.
+
 ### acl init
 
-Load settings from file, located at `data/acl/commands.csv`.
+Load recommended settings from file, located at `data/acl/commands.csv`.
+
+### acl import
+
+Import your CSV file as an attachment. The file has to be called **rules.csv**.
 
 The file may look like this:
 ```csv
+command,default,allow,deny
 verify,1,,VERIFY
 hug,0,VERIFY,
 load,0,,
@@ -104,15 +117,8 @@ You can get much cleaner view if you open the file in LibreOffice Calc or Micros
 
 Allowed groups is column representing ACL groups set to allow. If there are more than one, keep them space separated.
 
-Last column adds group overrides denying the access.
+### acl export
 
-### acl audit
-
-Print commands along with their default settings. Notifies if unsaved commands are found.
-
-### acl check
-
-Check if all commands have been saved to the database.
-
+Export current rules to file. User overrides are not exported.
 
 ← Back to [module list](index.md) or [home](../index.md)
