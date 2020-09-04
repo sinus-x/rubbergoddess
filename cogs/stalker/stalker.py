@@ -165,7 +165,7 @@ class Stalker(rubbercog.Rubbercog):
         if result < 1:
             return await self.output.error(ctx, self.text.get("db", "delete_error"))
 
-        await ctx.send(self.text.get("db", "delete_success", num=len(result)))
+        await ctx.send(self.text.get("db", "delete_success", num=result))
         await self.event.sudo(ctx, f"Member {member} ({member.id}) removed from database.")
 
     @database.command(name="update")
