@@ -69,7 +69,9 @@ class ACL(rubbercog.Rubbercog):
         template = "{group_id:<2} {name:<20} {role:<18}"
         for group in bfs(groups):
             result += "\n" + template.format(
-                group_id=group.id, name="  " * group.level + group.name, role=group.role_id,
+                group_id=group.id,
+                name="  " * group.level + group.name,
+                role=group.role_id,
             )
 
         await ctx.send("```" + result + "```")
@@ -82,8 +84,8 @@ class ACL(rubbercog.Rubbercog):
         parent_id: parent group ID
         role_id: Discord role ID
 
-        To set up virtual group with no link to discord roles, fill in garbage number for role_id.
-        To have the group follow default behaviour, set parent_id to 0.
+        To unlink the group from any parents, set parent_id to 0.
+        To set up virtual group with no link to discord roles, set role_id to 0.
         """
         # TODO Match name against regex
         result = repo_a.addGroup(name, parent_id, role_id)
@@ -158,21 +160,10 @@ class ACL(rubbercog.Rubbercog):
 
     ## Constraints
 
-    @acl_rule.group(name="default")
-    async def acl_rule_default(self, ctx):
+    @acl_rule.command(name="default")
+    async def acl_rule_default(self, ctx, command: str, allow: bool):
         """Set default response"""
-        await utils.send_help(ctx)
-
-    @acl_rule_default.command(name="allow")
-    async def acl_rule_default_allow(self, ctx, command: str):
-        """Allow by default"""
-        result = repo_a.editRule(command=command, allow=True)
-        await ctx.send(result)
-
-    @acl_rule_default.command(name="disallow")
-    async def acl_rule_default_disallow(self, ctx, command: str):
-        """Disallow by default"""
-        result = repo_a.editRule(command=command, allow=False)
+        result = repo_a.editRule(command=command, allow=allow)
         await ctx.send(result)
 
     @acl.group(name="user_constraint", aliases=["constraint_user", "uc"])
@@ -218,8 +209,11 @@ class ACL(rubbercog.Rubbercog):
         else:
             allow = allow in ("True", "true", "1")
 
-        result = repo_a.addGroupConstraint(command=command, identifier=group, allow=allow)
-        await ctx.send(result)
+        try:
+            result = repo_a.addGroupConstraint(command=command, identifier=group, allow=allow)
+            await ctx.send(result)
+        except acl_repo.ACLException as e:
+            await ctx.send(str(e))
 
     @acl_group_constraint.command(name="remove", aliases=["r"])
     async def acl_group_constraint_remove(self, ctx, constraint_id: int):
@@ -365,24 +359,19 @@ class ACL(rubbercog.Rubbercog):
 
         result = [
             "{default} {command}".format(
-                command=rule.command, default="+" if rule.default else "-",
+                command=rule.command,
+                default="+" if rule.default else "-",
             )
         ]
 
         gallow = " ".join(
-            template_override.format(group.group.name, group.id)
-            for group in rule.groups
-            if group.allow
+            template_override.format(group.group.name, group.id) for group in rule.groups if group.allow
         )
         gdeny = " ".join(
-            template_override.format(group.group.name, group.id)
-            for group in rule.groups
-            if not group.allow
+            template_override.format(group.group.name, group.id) for group in rule.groups if not group.allow
         )
         uallow = " ".join(
-            template_override.format(get_user(user.discord_id), user.id)
-            for user in rule.users
-            if user.allow
+            template_override.format(get_user(user.discord_id), user.id) for user in rule.users if user.allow
         )
         udeny = " ".join(
             template_override.format(get_user(user.discord_id), user.id)
@@ -439,11 +428,15 @@ class ACL(rubbercog.Rubbercog):
                     repo_a.addRule(command=rule["command"], allow=(rule["default"] == 1))
                     for group in groups_allowed:
                         repo_a.addGroupConstraint(
-                            command=rule["command"], identifier=group, allow=True,
+                            command=rule["command"],
+                            identifier=group,
+                            allow=True,
                         )
                     for group in groups_denied:
                         repo_a.addGroupConstraint(
-                            command=rule["command"], identifier=group, allow=False,
+                            command=rule["command"],
+                            identifier=group,
+                            allow=False,
                         )
                     done.append(rule["command"])
                 except acl_repo.Duplicate:

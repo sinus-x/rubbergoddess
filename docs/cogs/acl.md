@@ -61,6 +61,10 @@ Add command to database.
 
 Remove command from database.
 
+### acl rule default (command) (allow)
+
+Set the default outcome for DM or when no group defines it.
+
 ### acl rule flush
 
 Remove all commands. Useful if you plan to re-import the rules.

@@ -19,8 +19,6 @@ class ACLRepository(BaseRepository):
     def getGroup(self, identifier: Optional[Union[int, str]]) -> Optional[ACL_group]:
         if identifier is None:
             return None
-        if identifier == 0:
-            return ACL_group(name="everyone", parent_id=None, role_id=None)
 
         if type(identifier) == int:
             return session.query(ACL_group).filter(ACL_group.id == identifier).one_or_none()
@@ -107,9 +105,7 @@ class ACLRepository(BaseRepository):
     ## Constraints
     ##
 
-    def addGroupConstraint(
-        self, command: str, identifier: Union[int, str], allow: bool
-    ) -> ACL_rule:
+    def addGroupConstraint(self, command: str, identifier: Union[int, str], allow: bool) -> ACL_rule:
         cmd = self.getRule(command)
         if cmd is None:
             raise ACLException("command", command)
