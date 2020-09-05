@@ -55,4 +55,4 @@ jobs:
 
     - name: Run Black
       run: |
-        black . -l 110 --diff
+        black . -l 100 --diff
