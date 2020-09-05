@@ -388,13 +388,13 @@ class ACL(rubbercog.Rubbercog):
         template_parent = "has parent group **{pname}** (id `{pid}`)"
         pname = getattr(repo_a.getGroup(group.parent_id), "name", "")
 
-        message = [template.format(gname=group.name, gid=group.id)]
+        message = [self.text.get("group_repr", "name", gname=group.name, gid=group.id)]
         if len(dname):
-            message.append(template_map.format(dname=self.sanitise(dname)))
+            message.append(self.text.get("group_repr", "map", dname=self.sanitise(dname), did=group.role_id))
         if len(pname):
-            message.append(template_parent.format(pname=pname, pid=group.parent_id))
+            message.append(self.text.get("group_repr", "parent", pname=pname, pid=group.parent_id))
 
-        return " ".join(message)
+        return " ".join(message) + "."
 
     def get_rule_representation(self, rule: ACL_rule) -> str:
         """Convert ACL_rule object to human-friendly string"""

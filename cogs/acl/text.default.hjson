@@ -50,6 +50,11 @@
 	}
 
 
+	group_repr: {
+		name: Skupina **((gname))** (`id ((gid))`)
+		map:  mapovaná na Discord roli **((dname))** (`id ((did))`)
+		parent: má jako rodiče skupinu **((pname))** (`id ((pid))`)
+	}
 	csv_output: {
 		new: Nová pravidla
 		skipped: Přeskočeno
