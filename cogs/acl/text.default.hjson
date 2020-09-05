@@ -1,4 +1,6 @@
 {
+	group_regex: Jméno musí splňovat podmínku `((regex))`.
+
 	group_list: {
 		nothing: Nejsou definovány žádné skupiny.
 	}

@@ -1,5 +1,6 @@
-import os
 import csv
+import os
+import re
 from typing import List, Optional
 from datetime import datetime
 
@@ -96,14 +97,17 @@ class ACL(rubbercog.Rubbercog):
     async def acl_group_add(self, ctx, name: str, parent_id: int, role_id: int):
         """Add ACL group
 
-        name: string matching `[a-zA-Z_]*`
+        name: string matching `[a-zA-Z]*`
         parent_id: parent group ID
         role_id: Discord role ID
 
         To unlink the group from any parents, set parent_id to 0.
         To set up virtual group with no link to discord roles, set role_id to 0.
         """
-        # TODO Match name against regex
+        regex = r"[a-zA-Z-]+"
+        if re.fullmatch(regex, name) is None:
+            return await ctx.send(self.text.get("group_regex", regex=regex))
+
         result = repo_a.addGroup(name, parent_id, role_id)
         await ctx.send(self.get_group_representation(ctx.guild, result))
 
@@ -140,7 +144,7 @@ class ACL(rubbercog.Rubbercog):
             pass
         result = repo_a.deleteGroup(identifier)
         await ctx.send(
-            self.text.get("group_remove", "ok")
+            self.text.get("group_remove", "ok", name=identifier)
             if result
             else self.text.get("group_remove", "nothing")
         )
