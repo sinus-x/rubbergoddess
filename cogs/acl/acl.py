@@ -246,24 +246,25 @@ class ACL(rubbercog.Rubbercog):
     ## Security
 
     @acl.command(name="audit")
-    async def acl_audit(self, ctx):
-        """Make security audit"""
+    async def acl_audit(self, ctx, search: str = None):
+        """Make security audit
+
+        search: Only display commands containing the `search` string
+        """
         rules = repo_a.getRules()
-        all_commands = self.get_command_names()
+        if search is not None:
+            rules = [r for r in rules if search in r.command]
 
         result = []
         for rule in sorted(rules, key=lambda r: r.command):
             result.append(self.get_rule_representation(rule))
-
-        not_in_db = len(all_commands) - len(rules)
 
         output = utils.paginate(result)
         for page in output:
             if len(page):
                 await ctx.send("```" + page + "```")
 
-        if not_in_db:
-            await ctx.send(self.text.get("audit", count=not_in_db))
+        await ctx.send(self.text.get("audit"))
 
     @acl.command(name="check")
     async def acl_check(self, ctx):

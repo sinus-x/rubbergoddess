@@ -29,7 +29,7 @@
 		nothing: Takové pravidlo skupiny neexistuje.
 	}
 
-	audit: V databázi chybí **((count)) příkazů**. Pro zobrazení podrobností zavolej `acl check`.
+	audit: Příkazy mimo ACL můžeš zobrazit s `acl check`.
 
 	check: {
 		some: Našla jsem **((count)) příkazů** bez definovaného pravidla. Pro přidání můžeš zavolat `acl rule add (příkaz)`.
