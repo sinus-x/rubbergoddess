@@ -129,7 +129,9 @@ class Animals(rubbercog.Rubbercog):
         animal = self.getChannel().guild.get_member(animal_id)
 
         if animal is None:
-            await self.console.error("animals", f"Could not find member with ID {animal_id}. Vote aborted.")
+            await self.console.error(
+                "animals", f"Could not find member with ID {animal_id}. Vote aborted."
+            )
             await self.event.user("animals", f"Could not find user {animal_id}, vote aborted.")
             return await utils.delete(message)
 
@@ -173,7 +175,9 @@ class Animals(rubbercog.Rubbercog):
                         await self.console.error(message, "Could not remove animal", e)
                 else:
                     # member is not an animal and has not been before
-                    await self.getChannel().send(self.text.get("result", "no_no", mention=animal.mention))
+                    await self.getChannel().send(
+                        self.text.get("result", "no_no", mention=animal.mention)
+                    )
                 break
         else:
             return

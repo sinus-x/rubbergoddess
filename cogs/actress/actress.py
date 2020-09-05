@@ -49,8 +49,7 @@ class Actress(rubbercog.Rubbercog):
         message = await channel.send(content)
         await self.event.sudo(
             ctx,
-            f"Text sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
-            f"> _{content}_\n> <{message.jump_url}>",
+            f"Text sent to {channel.mention}:\n<{message.jump_url}>\n>>> _{content}_",
         )
         await self.output.info(ctx, self.text.get("send_text"))
 
@@ -68,10 +67,10 @@ class Actress(rubbercog.Rubbercog):
                 delta = str(int(time.monotonic() - now))
                 await self.output.info(ctx, self.text.get("send_file", delta=delta))
 
-                mention = channel.mention if hasattr(channel, "mention") else type(channel).__name__
                 await self.event.sudo(
                     ctx,
-                    f"Media file sent to {mention}:\n" f"> _{filename}_\n> <{message.jump_url}>",
+                    f"Media file sent to {channel.mention}:\n"
+                    f"> _{filename}_\n> <{message.jump_url}>",
                 )
         except Exception as e:
             await self.output.error(ctx, self.text.get("FileSendError"), e)
