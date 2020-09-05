@@ -11,7 +11,11 @@ def check(ctx: commands.Context) -> bool:
         # return True
         pass
 
-    rule = repo.getRule(ctx.command.qualified_name)
+    if ctx.guild is None:
+        # do not allow invocation in DM
+        return False
+
+    rule = repo.get_rule(ctx.guild.id, ctx.command.qualified_name)
 
     # do not allow execution of unknown functions
     if rule is None:
@@ -26,18 +30,18 @@ def check(ctx: commands.Context) -> bool:
     if hasattr(ctx.author, "roles"):
         # get user's top role
         for role in ctx.author.roles[::-1]:
-            group = repo.getGroupByRole(role.id)
+            group = repo.get_group_by_role(role.id)
             if group is not None:
                 break
         else:
-            group = repo.getGroup(0)
+            group = None
 
         # get group hierarchy
         while group:
             for rule_group in rule.groups:
                 if rule_group.group == group and rule_group.allow is not None:
                     return rule_group.allow
-            group = repo.getGroup(group.parent_id)
+            group = repo.get_group(group.guild_id, group.parent)
 
     # no settings found, return default
     return rule.default

@@ -9,22 +9,24 @@ class ACL_group(database.base):
 
     # fmt: off
     id        = Column(Integer, primary_key=True, autoincrement=True)
+    name      = Column(String)
     parent_id = Column(Integer, default=0)
-    name      = Column(String,  unique=True)
-    role_id   = Column(BigInteger, default=None)
+
+    guild_id  = Column(BigInteger)
+    role_id   = Column(BigInteger, default=0)
+
     rules     = relationship("ACL_rule_group", back_populates="group")
     # fmt: on
 
     def __repr__(self):
-        # 4^3: group verify ~ role 328875
         return (
-            f"{self.id}^{self.parent_id if self.parent_id >= 0 else '-'}: "
-            f"group {self.name} ~ role {self.role_id}"
+            f"ACL group {self.name} (parent {self.parent_id}) "
+            f"mapped to role {self.role_id} in guild {self.guild_id}. "
+            f"Internal ID {self.id}."
         )
 
     def __str__(self):
-        # Group verify (4) linked to role 328874
-        return f"Group {self.name} ({self.id}) linked to role {self.role_id}"
+        return f"ACL group {self.name} mapped to role {self.role_id} on server {self.guild_id}."
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
@@ -35,30 +37,22 @@ class ACL_rule(database.base):
 
     # fmt: off
     id       = Column(Integer, primary_key=True, autoincrement=True)
+    guild_id = Column(Integer)
     command  = Column(String)
+
     default  = Column(Boolean, default=False)
     users    = relationship("ACL_rule_user", back_populates="rule")
     groups   = relationship("ACL_rule_group", back_populates="rule")
     # fmt: on
 
     def __repr__(self):
-        # hug: allow
-        # #4 User 667155: disallow
-        # #8 Group 4: allow
-        result = [self.command + f": {'' if self.default else 'dis'}allow"]
-        for u in self.users:
-            result.append(str(u))
-        for g in self.groups:
-            result.append(str(g))
-
-        return "\n".join(result)
+        return f"R#{self.id}: {self.command} on {self.guild_id}: {self.allow}" f""
 
     def __str__(self):
-        # Rule 4 for command hug: False, 1 user overrides, 1 group overrides
         return (
-            f"Rule {self.id} for command {self.command}: "
-            f"{'' if self.default else 'dis'}allow, "
-            f"{len(self.users)} user overrides, {len(self.groups)} group overrides"
+            f"{self.command}: {self.allow} "
+            f"{' '.join(str(rg) for rg in self.groups)} "
+            f"{' '.join(str(ru) for ru in self.users)} (R#{self.id})."
         )
 
     def __eq__(self, obj):
@@ -77,16 +71,10 @@ class ACL_rule_user(database.base):
     # fmt: on
 
     def __repr__(self):
-        # User override #56: User 667155: allow
-        return (
-            f"Override #{self.id}: User {self.discord_id}: "
-            + ("" if self.allow else "dis")
-            + "allow"
-        )
+        return f"RU#{self.id} for R#{self.rule_id}: {self.allow}."
 
     def __str__(self):
-        # #56 User 667155: allow
-        return f"#{self.id} User {self.discord_id}: " + ("" if self.allow else "dis") + "allow"
+        return f"{self.discord_id}: {self.allow} (RU#{self.id})."
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
@@ -105,13 +93,10 @@ class ACL_rule_group(database.base):
     # fmt: on
 
     def __repr__(self):
-        # Entry 78 for rule 15: group 4: disallow
-        allow = "undefined" if self.allow is None else "allow" if self.allow else "disallow"
-        return f"Entry {self.id} for rule {self.rule_id}: group {self.group_id}: " + allow
+        return f"RG#{self.id} for R#{self.rule_id}: {self.allow}."
 
     def __str__(self):
-        # #78 Group 4: disallow
-        return f"#{self.id} Group {self.group_id}: " + ("" if self.allow else "dis") + "allow"
+        return f"{self.group.name}: {self.allow} (RG#{self.id})."
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
