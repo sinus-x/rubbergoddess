@@ -8,8 +8,7 @@ repo = acl_repo.ACLRepository()
 
 def check(ctx: commands.Context) -> bool:
     if ctx.author.id == config.admin_id:
-        # return True
-        pass
+        return True
 
     if ctx.guild is None:
         # do not allow invocation in DM

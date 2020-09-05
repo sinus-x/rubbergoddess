@@ -27,6 +27,9 @@ class ACLRepository(BaseRepository):
         return session.query(ACL_group).filter(ACL_group.role_id == role_id).one_or_none()
 
     def add_group(self, guild_id: int, name: str, parent: str, role_id: int) -> ACL_group:
+        if parent is not None and self.get_group(guild_id, parent) is None:
+            raise NotFound(guild_id=guild_id, name=parent)
+
         if self.get_group(guild_id, name) is not None:
             raise Duplicate(guild_id=guild_id, name=name)
 

@@ -7,7 +7,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import rubbercog, utils
+from core import acl, rubbercog, utils
 from cogs.resource import CogText
 from repository import acl_repo
 from repository.database.acl import ACL_rule, ACL_group
@@ -27,7 +27,8 @@ class ACL(rubbercog.Rubbercog):
     ## Commands
     ##
 
-    @commands.is_owner()
+    @commands.guild_only()
+    @commands.check(acl.check)
     @commands.group(name="acl")
     async def acl(self, ctx):
         """Permission control"""
@@ -37,28 +38,32 @@ class ACL(rubbercog.Rubbercog):
 
     @acl.group(name="group", aliases=["g"])
     async def acl_group(self, ctx):
-        """Group control"""
+        """ACL group control"""
         await utils.send_help(ctx)
 
-    @acl_group.command(name="list")
+    @acl_group.command(name="list", aliases=["l"])
     async def acl_group_list(self, ctx):
         """List ACL groups"""
-        groups = repo_a.getGroups()
+        groups = repo_a.get_groups(ctx.guild.id)
 
         if not len(groups):
             return await ctx.send(self.text.get("group_list", "nothing"))
 
-        # prepare objects
+        # compute relationships between groups
+        relationships = {}
         for group in groups:
-            group.children = []
-            group.level = 0
+            if group.name not in relationships:
+                relationships[group.name] = []
+            if group.parent is not None:
+                # add to parent's list
+                if group.parent not in relationships:
+                    relationships[group.parent] = []
+                relationships[group.parent].append(group)
 
-        # fill children and intendation level
+        # add relationships to group objects
         for group in groups:
-            if group.parent_id > 0:
-                parent = groups[group.parent_id - 1]
-                parent.children.append(group)
-                group.level = parent.level + 1
+            group.children = relationships[group.name]
+            group.level = 0
 
         def bfs(queue):
             visited = []
@@ -66,6 +71,9 @@ class ACL(rubbercog.Rubbercog):
                 group = queue.pop(0)
                 if group not in visited:
                     visited.append(group)
+                    # build levels for intendation
+                    for child in group.children:
+                        child.level = group.level + 1
                     queue = group.children + queue
             return visited
 
@@ -80,74 +88,65 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send("```" + result + "```")
 
-    @acl_group.command(name="get")
-    async def acl_group_get(self, ctx, identifier: str):
-        """Get ACL rule
-
-        identifier: Rule ID or name
-        """
-        try:
-            identifier = int(identifier)
-        except ValueError:
-            pass
-        result = repo_a.getGroup(identifier)
+    @acl_group.command(name="get", aliases=["g"])
+    async def acl_group_get(self, ctx, name: str):
+        """Get ACL group"""
+        result = repo_a.get_group(ctx.guild.id, name)
         await ctx.send(self.get_group_representation(ctx.guild, result))
 
     @acl_group.command(name="add", aliases=["a"])
-    async def acl_group_add(self, ctx, name: str, parent_id: int, role_id: int):
+    async def acl_group_add(self, ctx, name: str, parent: str, role_id: int):
         """Add ACL group
 
-        name: string matching `[a-zA-Z]*`
-        parent_id: parent group ID
+        name: string matching `[a-zA-Z-]+`
+        parent: parent group name
         role_id: Discord role ID
 
-        To unlink the group from any parents, set parent_id to 0.
+        To unlink the group from any parents, set parent to "".
         To set up virtual group with no link to discord roles, set role_id to 0.
         """
         regex = r"[a-zA-Z-]+"
         if re.fullmatch(regex, name) is None:
             return await ctx.send(self.text.get("group_regex", regex=regex))
 
-        result = repo_a.addGroup(name, parent_id, role_id)
+        if len(parent) == 0:
+            parent = None
+        result = repo_a.add_group(ctx.guild.id, name, parent, role_id)
         await ctx.send(self.get_group_representation(ctx.guild, result))
 
     @acl_group.command(name="edit", aliases=["e"])
-    async def acl_group_edit(self, ctx, id: int, param: str, value):
-        """Edit group
+    async def acl_group_edit(self, ctx, name: str, param: str, value):
+        """Edit ACL group
 
-        id: Group ID
-        param:value
-        - name: string
-        - parent_id: int
-        - role_id:   int
+        name: string matching `[a-zA-Z-]+`
+
+        Options:
+        name, string matching `[a-zA-Z-]+`
+        parent, parent group name
+        role_id, Discord role ID
+
+        To unlink the group from any parents, set parent to "".
+        To set up virtual group with no link to discord roles, set role_id to 0.
         """
         if param == "name":
-            result = repo_a.editGroup(id, name=value)
-        elif param == "parent_id":
-            result = repo_a.editGroup(id, parent_id=int(value))
+            regex = r"[a-zA-Z-]+"
+            if re.fullmatch(regex, value) is None:
+                return await ctx.send(self.text.get("group_regex", regex=regex))
+            result = repo_a.edit_group(ctx.guild.id, name=name, new_name=value)
+        elif param == "parent":
+            result = repo_a.edit_group(ctx.guild.id, name=name, parent=value)
         elif param == "role_id":
-            result = repo_a.editGroup(id, role_id=int(value))
+            result = repo_a.edit_group(ctx.guild.id, name=name, role_id=int(value))
         else:
             raise discord.BadArgument()
 
         await ctx.send(self.get_group_representation(ctx.guild, result))
 
-    @acl_group.command(name="remove", aliases=["delete", "r"])
-    async def acl_group_remove(self, ctx, identifier: str):
-        """Remove ACL rule
-
-        identifier: Rule ID or name
-        """
-        try:
-            identifier = int(identifier)
-        except ValueError:
-            pass
-        result = repo_a.deleteGroup(identifier)
-        await ctx.send(
-            self.text.get("group_remove", "ok", name=identifier)
-            if result
-            else self.text.get("group_remove", "nothing")
-        )
+    @acl_group.command(name="remove", aliases=["delete", "r", "d"])
+    async def acl_group_remove(self, ctx, name: str):
+        """Remove ACL group"""
+        result = repo_a.delete_group(ctx.guild.id, name)
+        await ctx.send(self.get_group_representation(ctx.guild, result))
 
     ## Rules
 
@@ -159,31 +158,27 @@ class ACL(rubbercog.Rubbercog):
     @acl_rule.command(name="get")
     async def acl_rule_get(self, ctx, command: str):
         """See command's policy"""
-        rule = repo_a.getRule(command)
+        rule = repo_a.get_rule(ctx.guild.id, command)
         await ctx.send("```\n" + self.get_rule_representation(rule) + "```")
 
     @acl_rule.command(name="add")
-    async def acl_rule_add(self, ctx, command: str):
+    async def acl_rule_add(self, ctx, command: str, default: bool = False):
         """Add command"""
         if command not in self.get_command_names():
             return await ctx.send(self.text.get("rule_add", "nothing"))
-        result = repo_a.addRule(command)
+        result = repo_a.add_rule(ctx.guild.id, command)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl_rule.command(name="remove", aliases=["delete"])
     async def acl_rule_remove(self, ctx, *, command: str):
         """Remove command"""
-        result = repo_a.deleteRule(command)
-        await ctx.send(
-            self.text.get("rule_remove", "ok")
-            if result
-            else self.text.get("rule_remove", "nothing")
-        )
+        result = repo_a.delete_rule(ctx.guild.id, command)
+        await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl_rule.command(name="flush")
     async def acl_rule_flush(self, ctx):
         """Remove all commands"""
-        result = repo_a.deleteAllRules()
+        result = repo_a.delete_rules(ctx.guild.id)
         await ctx.send(self.text.get("rule_flush", count=result))
 
     ## Constraints
@@ -191,7 +186,7 @@ class ACL(rubbercog.Rubbercog):
     @acl_rule.command(name="default")
     async def acl_rule_default(self, ctx, command: str, allow: bool):
         """Set default response"""
-        result = repo_a.editRule(command=command, allow=allow)
+        result = repo_a.edit_rule(ctx.guild.id, command, allow)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl.group(name="user_constraint", aliases=["constraint_user", "uc"])
@@ -207,7 +202,7 @@ class ACL(rubbercog.Rubbercog):
         discord_id: User ID
         allow: True or False
         """
-        result = repo_a.addUserConstraint(command=command, discord_id=discord_id, allow=allow)
+        result = repo_a.add_user_constraint(ctx.guild.id, discord_id, command, allow)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl_user_constraint.command(name="remove", aliases=["r"])
@@ -216,7 +211,7 @@ class ACL(rubbercog.Rubbercog):
 
         constraint_id: User constraint ID
         """
-        result = repo_a.removeUserConstraint(constraint_id=constraint_id)
+        result = repo_a.remove_user_constraint(constraint_id)
         await ctx.send(
             self.text.get("user_constraint", "removed")
             if result
@@ -236,16 +231,13 @@ class ACL(rubbercog.Rubbercog):
         group: ACL group name or ID
         allow: True, False or None
         """
-        if allow in ("None", "none"):
+        if allow.lower() in ("none", "skip"):
             allow = None
         else:
             allow = allow in ("True", "true", "1")
 
-        try:
-            result = repo_a.addGroupConstraint(command=command, identifier=group, allow=allow)
-            await ctx.send("```" + self.get_rule_representation(result) + "```")
-        except acl_repo.ACLException as e:
-            await ctx.send(str(e))
+        result = repo_a.add_group_constraint(ctx.guild.id, group, command, allow)
+        await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl_group_constraint.command(name="remove", aliases=["r"])
     async def acl_group_constraint_remove(self, ctx, constraint_id: int):
@@ -254,7 +246,7 @@ class ACL(rubbercog.Rubbercog):
         command: A command
         constraint_id: Group constraint ID
         """
-        result = repo_a.removeGroupConstraint(constraint_id=constraint_id)
+        result = repo_a.remove_group_constraint(constraint_id)
         await ctx.send(
             self.text.get("group_constraint", "removed")
             if result
@@ -269,7 +261,7 @@ class ACL(rubbercog.Rubbercog):
 
         search: Only display commands containing the `search` string
         """
-        rules = repo_a.getRules()
+        rules = repo_a.get_rules(ctx.guild.id)
         if search is not None:
             rules = [r for r in rules if search in r.command]
 
@@ -287,7 +279,7 @@ class ACL(rubbercog.Rubbercog):
     @acl.command(name="check")
     async def acl_check(self, ctx):
         """Check, if all commands are in database"""
-        commands = self.get_free_commands()
+        commands = self.get_free_commands(ctx.guild.id)
         output = utils.paginate(commands)
         for page in output:
             if len(page):
@@ -331,10 +323,10 @@ class ACL(rubbercog.Rubbercog):
     async def acl_export(self, ctx):
         """Export settings to attachment"""
         now = datetime.now()
-        filename = f"export_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{ctx.author.id}.csv"
+        filename = f"export_{ctx.guild.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
         m = await ctx.send(self.text.get("export", "exporting", filename=filename))
-        rules = sorted(repo_a.getRules(), key=lambda rule: rule.command)
+        rules = sorted(repo_a.get_rules(), key=lambda rule: rule.command)
 
         with ctx.typing():
             with open("data/acl/" + filename, "w", newline="") as handle:
@@ -367,13 +359,13 @@ class ACL(rubbercog.Rubbercog):
         return result
 
     def get_free_commands(
-        self, *, commands: List[str] = None, rules: List[ACL_rule] = None
+        self, guild_id: int, *, commands: List[str] = None, rules: List[ACL_rule] = None
     ) -> Optional[List[str]]:
         """Return list of commands not in database"""
         if commands is None:
             commands = self.get_command_names()
         if rules is None:
-            rules = repo_a.getRules()
+            rules = repo_a.get_rules(guild_id)
 
         for rule in rules:
             if rule.command in commands:
@@ -382,23 +374,17 @@ class ACL(rubbercog.Rubbercog):
 
     def get_group_representation(self, guild: discord.Guild, group: ACL_group) -> str:
         """Convert ACL_group object to human-friendly string"""
-        if group.parent_id != 0:
-            if guild is not None:
-                dname = getattr(guild.get_role(group.role_id), "name", "")
-            else:
-                dname = f"`{group.role_id}`"
-        else:
-            dname = ""
+        group_role = getattr(guild.get_role(group.role_id), "name", "")
 
-        pname = getattr(repo_a.getGroup(group.parent_id), "name", "")
-
-        message = [self.text.get("group_repr", "name", gname=group.name, gid=group.id)]
-        if len(dname):
+        message = [self.text.get("group_repr", "name", name=group.name)]
+        if len(group_role):
             message.append(
-                self.text.get("group_repr", "map", dname=self.sanitise(dname), did=group.role_id)
+                self.text.get(
+                    "group_repr", "map", dname=self.sanitise(group_role), did=group.role_id
+                )
             )
-        if len(pname):
-            message.append(self.text.get("group_repr", "parent", pname=pname, pid=group.parent_id))
+        if group.parent is not None:
+            message.append(self.text.get("group_repr", "parent", parent=group.parent))
 
         return " ".join(message) + "."
 
@@ -408,10 +394,7 @@ class ACL(rubbercog.Rubbercog):
         template_override = "{}#{}"
 
         def get_user(discord_id: int) -> str:
-            user = self.bot.get_user(discord_id)
-            if hasattr(user, "display_name"):
-                return user.display_name
-            return str(discord_id)
+            return getattr(self.bot.get_user(discord_id), "display_name", str(discord_id))
 
         result = [
             "{default} {command}".format(
@@ -451,7 +434,7 @@ class ACL(rubbercog.Rubbercog):
     async def import_csv(self, ctx: commands.Context, path: str) -> bool:
         """Import rule csv"""
         all_commands = self.get_command_names()
-        acl_groups = [g.name for g in repo_a.getGroups()]
+        acl_groups = [g.name for g in repo_a.get_groups(ctx.guild.id)]
 
         skipped = []
         errors = {}
@@ -488,15 +471,17 @@ class ACL(rubbercog.Rubbercog):
                 try:
                     repo_a.addRule(command=rule["command"], allow=(rule["default"] == 1))
                     for group in groups_allowed:
-                        repo_a.addGroupConstraint(
+                        repo_a.add_group_constraint(
+                            guild_id=ctx.guild.id,
+                            name=group,
                             command=rule["command"],
-                            identifier=group,
                             allow=True,
                         )
                     for group in groups_denied:
-                        repo_a.addGroupConstraint(
+                        repo_a.add_group_constraint(
+                            guild_id=ctx.guild.id,
+                            name=group,
                             command=rule["command"],
-                            identifier=group,
                             allow=False,
                         )
                     done.append(rule["command"])

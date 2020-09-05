@@ -8,19 +8,19 @@ class ACL_group(database.base):
     __tablename__ = "acl_groups"
 
     # fmt: off
-    id        = Column(Integer, primary_key=True, autoincrement=True)
-    name      = Column(String)
-    parent_id = Column(Integer, default=0)
+    id       = Column(Integer, primary_key=True, autoincrement=True)
+    name     = Column(String)
+    parent   = Column(String, default=None)
 
-    guild_id  = Column(BigInteger)
-    role_id   = Column(BigInteger, default=0)
+    guild_id = Column(BigInteger)
+    role_id  = Column(BigInteger, default=0)
 
-    rules     = relationship("ACL_rule_group", back_populates="group")
+    rules    = relationship("ACL_rule_group", back_populates="group")
     # fmt: on
 
     def __repr__(self):
         return (
-            f"ACL group {self.name} (parent {self.parent_id}) "
+            f"ACL group {self.name} (parent {self.parent}) "
             f"mapped to role {self.role_id} in guild {self.guild_id}. "
             f"Internal ID {self.id}."
         )
@@ -31,13 +31,16 @@ class ACL_group(database.base):
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
 
+    def __hash__(self):
+        return hash((self.id))
+
 
 class ACL_rule(database.base):
     __tablename__ = "acl_rules"
 
     # fmt: off
     id       = Column(Integer, primary_key=True, autoincrement=True)
-    guild_id = Column(Integer)
+    guild_id = Column(BigInteger)
     command  = Column(String)
 
     default  = Column(Boolean, default=False)

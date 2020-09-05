@@ -6,7 +6,7 @@
 	}
 
 	group_remove: {
-		ok: Skupina **((name))** odebrána.
+		ok:      Skupina **((name))** odebrána.
 		nothing: Takovou skupinu jsem nenašla.
 	}
 
@@ -15,11 +15,11 @@
 	}
 
 	rule_remove: {
-		ok: Pravidlo pro příkaz **((command))** odebráno.
+		ok:      Pravidlo pro příkaz **((command))** odebráno.
 		nothing: Takový příkaz neznám.
 	}
 
-	rule_flush: Smazala jsem všech **((count)) pravidel**.
+	rule_flush: Smazala jsem všech **((count)) pravidel** pro tento server.
 
 	user_constraint: {
 		removed: Uživatelské pravidlo odebráno.
@@ -41,26 +41,25 @@
 	import: {
 		wrong_file: Musíš nahrát soubor s názvem `rules.csv`.
 
-		saving: Ukládám...
+		saving:    Ukládám...
 		importing: Importuji...
-		imported: Pravidla jsem importovala za **((delta)) vteřin**.
+		imported:  Pravidla jsem importovala za **((delta)) vteřin**.
 	}
 
 	export: {
 		exporting: Exportuji do souboru `((filename))`...
-		exported: Pravidla jsem exportovala za **((delta)) vteřin**.
+		exported:  Pravidla jsem exportovala za **((delta)) vteřin**.
 	}
 
 
 	group_repr: {
-		name: Skupina **((gname))** (`id ((gid))`)
-		map:  mapovaná na Discord roli **((dname))** (`id ((did))`)
-		parent: má jako rodiče skupinu **((pname))** (`id ((pid))`)
+		name:   Skupina **((name))**
+		map:    mapovaná na Discord roli **((dname))** (`id ((did))`)
+		parent: má jako rodiče skupinu **((parent))**
 	}
 	csv_output: {
-		new: Nová pravidla
+		new:     Nová pravidla
 		skipped: Přeskočeno
-		errors: Nalezené chyby
+		errors:  Nalezené chyby
 	}
-
 }
