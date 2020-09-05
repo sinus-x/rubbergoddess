@@ -11,7 +11,7 @@ class ACL_group(database.base):
 
     # fmt: off
     id        = Column(Integer, primary_key=True, autoincrement=True)
-    parent_id = Column(Integer, default=-1)
+    parent_id = Column(Integer, default=0)
     name      = Column(String,  unique=True)
     role_id   = Column(BigInteger, default=None)
     rules     = relationship("ACL_rule_group", back_populates="group")
@@ -80,11 +80,7 @@ class ACL_rule_user(database.base):
 
     def __repr__(self):
         # User override #56: User 667155: allow
-        return (
-            f"User override #{self.id}: User {self.discord_id}: "
-            + ("" if self.allow else "dis")
-            + "allow"
-        )
+        return f"User override #{self.id}: User {self.discord_id}: " + ("" if self.allow else "dis") + "allow"
 
     def __str__(self):
         # #56 User 667155: allow

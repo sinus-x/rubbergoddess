@@ -9,12 +9,9 @@ from discord.ext import commands
 from core import check, rubbercog, utils
 from cogs.resource import CogText
 from repository import acl_repo
-from repository.database.acl import ACL_rule
+from repository.database.acl import ACL_rule, ACL_group
 
 repo_a = acl_repo.ACLRepository()
-
-
-# TODO Do something better than send(result)
 
 
 class ACL(rubbercog.Rubbercog):
@@ -82,6 +79,19 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send("```" + result + "```")
 
+    @acl_group.command(name="get")
+    async def acl_group_get(self, ctx, identifier: str):
+        """Get ACL rule
+
+        identifier: Rule ID or name
+        """
+        try:
+            identifier = int(identifier)
+        except ValueError:
+            pass
+        result = repo_a.getGroup(identifier)
+        await ctx.send(self.get_group_representation(ctx.guild, result))
+
     @acl_group.command(name="add", aliases=["a"])
     async def acl_group_add(self, ctx, name: str, parent_id: int, role_id: int):
         """Add ACL group
@@ -95,7 +105,7 @@ class ACL(rubbercog.Rubbercog):
         """
         # TODO Match name against regex
         result = repo_a.addGroup(name, parent_id, role_id)
-        await ctx.send(result)
+        await ctx.send(self.get_group_representation(ctx.guild, result))
 
     @acl_group.command(name="edit", aliases=["e"])
     async def acl_group_edit(self, ctx, id: int, param: str, value):
@@ -116,7 +126,7 @@ class ACL(rubbercog.Rubbercog):
         else:
             raise discord.BadArgument()
 
-        await ctx.send(result)
+        await ctx.send(self.get_group_representation(ctx.guild, result))
 
     @acl_group.command(name="remove", aliases=["delete", "r"])
     async def acl_group_remove(self, ctx, identifier: str):
@@ -152,7 +162,7 @@ class ACL(rubbercog.Rubbercog):
         if command not in self.get_command_names():
             return await ctx.send(self.text.get("rule_add", "nothing"))
         result = repo_a.addRule(command)
-        await ctx.send(result)
+        await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl_rule.command(name="remove", aliases=["delete"])
     async def acl_rule_remove(self, ctx, *, command: str):
@@ -174,7 +184,7 @@ class ACL(rubbercog.Rubbercog):
     async def acl_rule_default(self, ctx, command: str, allow: bool):
         """Set default response"""
         result = repo_a.editRule(command=command, allow=allow)
-        await ctx.send(result)
+        await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl.group(name="user_constraint", aliases=["constraint_user", "uc"])
     async def acl_user_constraint(self, ctx):
@@ -190,7 +200,7 @@ class ACL(rubbercog.Rubbercog):
         allow: True or False
         """
         result = repo_a.addUserConstraint(command=command, discord_id=discord_id, allow=allow)
-        await ctx.send(result)
+        await ctx.send("```" + self.get_rule_representation(result) + "```")
 
     @acl_user_constraint.command(name="remove", aliases=["r"])
     async def acl_user_constraint_remove(self, ctx, constraint_id: int):
@@ -225,7 +235,7 @@ class ACL(rubbercog.Rubbercog):
 
         try:
             result = repo_a.addGroupConstraint(command=command, identifier=group, allow=allow)
-            await ctx.send(result)
+            await ctx.send("```" + self.get_rule_representation(result) + "```")
         except acl_repo.ACLException as e:
             await ctx.send(str(e))
 
@@ -361,6 +371,30 @@ class ACL(rubbercog.Rubbercog):
             if rule.command in commands:
                 commands.remove(rule.command)
         return commands
+
+    def get_group_representation(self, guild: discord.Guild, group: ACL_group) -> str:
+        """Convert ACL_group object to human-friendly string"""
+        template = "Group **{gname}** (id `{gid}`)"
+
+        template_map = "mapped to Discord role **{dname}**"
+        if group.parent_id != 0:
+            if guild is not None:
+                dname = getattr(guild.get_role(group.role_id), "name", "")
+            else:
+                dname = f"`{group.role_id}`"
+        else:
+            dname = ""
+
+        template_parent = "has parent group **{pname}** (id `{pid}`)"
+        pname = getattr(repo_a.getGroup(group.parent_id), "name", "")
+
+        message = [template.format(gname=group.name, gid=group.id)]
+        if len(dname):
+            message.append(template_map.format(dname=self.sanitise(dname)))
+        if len(pname):
+            message.append(template_parent.format(pname=pname, pid=group.parent_id))
+
+        return " ".join(message)
 
     def get_rule_representation(self, rule: ACL_rule) -> str:
         """Convert ACL_rule object to human-friendly string"""
