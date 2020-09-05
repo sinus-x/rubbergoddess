@@ -1,5 +1,3 @@
-from typing import Optional, List
-
 from sqlalchemy import Column, ForeignKey, Integer, BigInteger, Boolean, String
 from sqlalchemy.orm import relationship
 
@@ -80,7 +78,11 @@ class ACL_rule_user(database.base):
 
     def __repr__(self):
         # User override #56: User 667155: allow
-        return f"User override #{self.id}: User {self.discord_id}: " + ("" if self.allow else "dis") + "allow"
+        return (
+            f"Override #{self.id}: User {self.discord_id}: "
+            + ("" if self.allow else "dis")
+            + "allow"
+        )
 
     def __str__(self):
         # #56 User 667155: allow

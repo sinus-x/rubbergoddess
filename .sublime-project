@@ -6,7 +6,8 @@
 		"default_line_ending": "unix",
 
 		"sublack": {
-			"black_on_save": true
+			"black_on_save": true,
+			"black_line_length": 100
 		}
 	}
 }

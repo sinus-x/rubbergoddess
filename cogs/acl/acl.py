@@ -6,7 +6,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import check, rubbercog, utils
+from core import rubbercog, utils
 from cogs.resource import CogText
 from repository import acl_repo
 from repository.database.acl import ACL_rule, ACL_group
@@ -140,7 +140,9 @@ class ACL(rubbercog.Rubbercog):
             pass
         result = repo_a.deleteGroup(identifier)
         await ctx.send(
-            self.text.get("group_remove", "ok") if result else self.text.get("group_remove", "nothing")
+            self.text.get("group_remove", "ok")
+            if result
+            else self.text.get("group_remove", "nothing")
         )
 
     ## Rules
@@ -169,7 +171,9 @@ class ACL(rubbercog.Rubbercog):
         """Remove command"""
         result = repo_a.deleteRule(command)
         await ctx.send(
-            self.text.get("rule_remove", "ok") if result else self.text.get("rule_remove", "nothing")
+            self.text.get("rule_remove", "ok")
+            if result
+            else self.text.get("rule_remove", "nothing")
         )
 
     @acl_rule.command(name="flush")
@@ -374,9 +378,6 @@ class ACL(rubbercog.Rubbercog):
 
     def get_group_representation(self, guild: discord.Guild, group: ACL_group) -> str:
         """Convert ACL_group object to human-friendly string"""
-        template = "Group **{gname}** (id `{gid}`)"
-
-        template_map = "mapped to Discord role **{dname}**"
         if group.parent_id != 0:
             if guild is not None:
                 dname = getattr(guild.get_role(group.role_id), "name", "")
@@ -385,12 +386,13 @@ class ACL(rubbercog.Rubbercog):
         else:
             dname = ""
 
-        template_parent = "has parent group **{pname}** (id `{pid}`)"
         pname = getattr(repo_a.getGroup(group.parent_id), "name", "")
 
         message = [self.text.get("group_repr", "name", gname=group.name, gid=group.id)]
         if len(dname):
-            message.append(self.text.get("group_repr", "map", dname=self.sanitise(dname), did=group.role_id))
+            message.append(
+                self.text.get("group_repr", "map", dname=self.sanitise(dname), did=group.role_id)
+            )
         if len(pname):
             message.append(self.text.get("group_repr", "parent", pname=pname, pid=group.parent_id))
 
@@ -415,13 +417,19 @@ class ACL(rubbercog.Rubbercog):
         ]
 
         gallow = " ".join(
-            template_override.format(group.group.name, group.id) for group in rule.groups if group.allow
+            template_override.format(group.group.name, group.id)
+            for group in rule.groups
+            if group.allow
         )
         gdeny = " ".join(
-            template_override.format(group.group.name, group.id) for group in rule.groups if not group.allow
+            template_override.format(group.group.name, group.id)
+            for group in rule.groups
+            if not group.allow
         )
         uallow = " ".join(
-            template_override.format(get_user(user.discord_id), user.id) for user in rule.users if user.allow
+            template_override.format(get_user(user.discord_id), user.id)
+            for user in rule.users
+            if user.allow
         )
         udeny = " ".join(
             template_override.format(get_user(user.discord_id), user.id)
@@ -449,7 +457,6 @@ class ACL(rubbercog.Rubbercog):
             reader = csv.DictReader(csvfile)
 
             for i, rule in enumerate(reader, 1):
-                print(rule)
                 # detect misconfigured rows
                 if len(rule) != 4:
                     skipped.append(f"{i:>3} | wrong line    | {rule['command']}")

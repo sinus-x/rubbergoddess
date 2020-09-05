@@ -105,7 +105,9 @@ class ACLRepository(BaseRepository):
     ## Constraints
     ##
 
-    def addGroupConstraint(self, command: str, identifier: Union[int, str], allow: bool) -> ACL_rule:
+    def addGroupConstraint(
+        self, command: str, identifier: Union[int, str], allow: bool
+    ) -> ACL_rule:
         cmd = self.getRule(command)
         if cmd is None:
             raise ACLException("command", command)
