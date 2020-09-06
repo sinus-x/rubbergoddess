@@ -5,9 +5,17 @@
 		nothing: Nejsou definovány žádné skupiny.
 	}
 
+	group_get: {
+		nothing: Taková skupina neexistuje.
+	}
+
 	group_remove: {
 		ok:      Skupina **((name))** odebrána.
 		nothing: Takovou skupinu jsem nenašla.
+	}
+
+	rule_get: {
+		nothing: Takové pravidlo neexistuje.
 	}
 
 	rule_add: {

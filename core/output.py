@@ -287,18 +287,28 @@ class Event:
         self,
         source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
         message: str,
+        *,
+        escape_markdown: bool = True,
     ):
         """Non-privileged events"""
         await self.getChannel().send(
-            "**USER** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
+            "**USER** "
+            + self._identifier(source)
+            + ": "
+            + (message.replace("@", "@\u200b") if escape_markdown else message)
         )
 
     async def sudo(
         self,
         source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
         message: str,
+        *,
+        escape_markdown: bool = True,
     ):
         """Privileged events"""
         await self.getChannel().send(
-            "**SUDO** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
+            "**SUDO** "
+            + self._identifier(source)
+            + ": "
+            + (message.replace("@", "@\u200b") if escape_markdown else message)
         )

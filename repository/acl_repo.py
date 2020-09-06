@@ -68,15 +68,16 @@ class ACLRepository(BaseRepository):
         session.commit()
         return group
 
-    def delete_group(self, guild_id: int, name: str) -> ACL_group:
+    def delete_group(self, guild_id: int, name: str) -> dict:
         group = self.get_group(guild_id, name)
         if group is None:
             raise NotFound(guild_id=guild_id, name=name)
 
+        result = group.one().mirror()
         group.delete()
         session.commit()
 
-        return group
+        return result
 
     ##
     ## Rules
@@ -109,16 +110,18 @@ class ACLRepository(BaseRepository):
         session.commit()
         return rule
 
-    def delete_rule(self, guild_id: int, command: str) -> bool:
+    def delete_rule(self, guild_id: int, command: str) -> dict:
         if self.get_rule(guild_id, command) is None:
             raise NotFound(guild_id=guild_id, command=command)
-        result = (
-            session.query(ACL_rule)
-            .filter(ACL_rule.guild_id == guild_id, ACL_rule.command == command)
-            .delete()
+
+        rule = session.query(ACL_rule).filter(
+            ACL_rule.guild_id == guild_id, ACL_rule.command == command
         )
+
+        result = rule.one().mirror()
+        rule.delete()
         session.commit()
-        return result > 0
+        return result
 
     def delete_rules(self, guild_id: int) -> int:
         return session.query(ACL_rule).filter(ACL_rule.guild_id == guild_id).delete()
@@ -163,36 +166,26 @@ class ACLRepository(BaseRepository):
 
 
 class ACLException(Exception):
-    def __init__(self, parameter: str, value: Union[str, int]):
-        self.parameter = parameter
-        self.value = value
+    def __init__(self, message: str, **parameters):
+        self.message = message or "ACL exception"
 
-        super().__init__(f"Invalid parameter: {self.parameter} = {self.value}")
+        self.parameters = parameters
+
+        super().__init__(self.__repr__())
 
     def __repr__(self):
-        return f"Invalid parameter: {self.parameter} = {self.value}"
+        params = ", ".join([f"{param}={value}" for param, value in self.parameters.items()])
+        return f"{self.message}: {params}."
 
     def __str__(self):
         return self.__repr__()
 
 
-class NotFound(Exception):
+class NotFound(ACLException):
     def __init__(self, **parameters):
-        self.parameters = parameters
-
-        super().__init__(self.__repr__())
-
-    def __repr__(self):
-        params = ", ".join([f"{param}={value}" for param, value in self.parameters.items()])
-        return f"Not found: {params}."
+        super().__init__("Not found", parameters)
 
 
-class Duplicate(Exception):
+class Duplicate(ACLException):
     def __init__(self, **parameters):
-        self.parameters = parameters
-
-        super().__init__(self.__repr__())
-
-    def __repr__(self):
-        params = ", ".join([f"{param}={value}" for param, value in self.parameters.items()])
-        return f"Duplicate: {params}."
+        super().__init__("Duplicate", parameters)

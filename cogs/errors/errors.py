@@ -139,7 +139,8 @@ class Errors(rubbercog.Rubbercog):
             await self.console.critical(ctx, "Database error", error)
             await self.event.user(
                 ctx,
-                f"Database reported`{error_name}`. The session may be invalidated <@{config.admin_id}>"
+                f"Database reported`{error_name}`. The session may be invalidated <@{config.admin_id}>",
+                escape_markdown=False,
             )
             return False
         # fmt: on

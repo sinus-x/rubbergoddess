@@ -34,6 +34,15 @@ class ACL_group(database.base):
     def __hash__(self):
         return hash((self.id))
 
+    def mirror(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "parent": self.parent,
+            "guild_id": self.guild_id,
+            "role_id": self.role_id,
+        }
+
 
 class ACL_rule(database.base):
     __tablename__ = "acl_rules"
@@ -61,6 +70,16 @@ class ACL_rule(database.base):
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
 
+    def mirror(self):
+        return {
+            "id": self.id,
+            "guild_id": self.guild_id,
+            "command": self.command,
+            "default": self.default,
+            "users": [user.mirror() for user in self.users],
+            "groups": [group.mirror() for group in self.groups],
+        }
+
 
 class ACL_rule_user(database.base):
     __tablename__ = "acl_rule_users"
@@ -81,6 +100,16 @@ class ACL_rule_user(database.base):
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
+
+    def mirror(self):
+        return {
+            "id": self.id,
+            "rule_id": self.rule_id,
+            "guild_id": self.rule.guild_id,
+            "command": self.rule.command,
+            "discord_id": self.discord_id,
+            "allow": self.allow,
+        }
 
 
 class ACL_rule_group(database.base):
@@ -103,3 +132,14 @@ class ACL_rule_group(database.base):
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
+
+    def mirror(self):
+        return {
+            "id": self.id,
+            "rule_id": self.rule_id,
+            "guild_id": self.rule.guild_id,
+            "command": self.rule.command,
+            "group_id": self.group_id,
+            "group": self.group.name,
+            "allow": self.allow,
+        }

@@ -92,6 +92,10 @@ class ACL(rubbercog.Rubbercog):
     async def acl_group_get(self, ctx, name: str):
         """Get ACL group"""
         result = repo_a.get_group(ctx.guild.id, name)
+
+        if result is None:
+            return await ctx.send(self.text.get("group_get", "nothing"))
+
         await ctx.send(self.get_group_representation(ctx.guild, result))
 
     @acl_group.command(name="add", aliases=["a"])
@@ -113,6 +117,7 @@ class ACL(rubbercog.Rubbercog):
             parent = None
         result = repo_a.add_group(ctx.guild.id, name, parent, role_id)
         await ctx.send(self.get_group_representation(ctx.guild, result))
+        await self.event.sudo(ctx, f"ACL group added: **{result.name}** (#{result.id}).")
 
     @acl_group.command(name="edit", aliases=["e"])
     async def acl_group_edit(self, ctx, name: str, param: str, value):
@@ -141,12 +146,16 @@ class ACL(rubbercog.Rubbercog):
             raise discord.BadArgument()
 
         await ctx.send(self.get_group_representation(ctx.guild, result))
+        await self.event.sudo(ctx, f"ACL group **{result.name}** updated: **{param}={value}**.")
 
     @acl_group.command(name="remove", aliases=["delete", "r", "d"])
     async def acl_group_remove(self, ctx, name: str):
         """Remove ACL group"""
         result = repo_a.delete_group(ctx.guild.id, name)
-        await ctx.send(self.get_group_representation(ctx.guild, result))
+        await ctx.send(self.get_group_mirror_representation(ctx.guild, result))
+        await self.event.sudo(
+            ctx, f"ACL group removed: **{result.get('name')}** (#{result.get('id')})."
+        )
 
     ## Rules
 
@@ -159,6 +168,9 @@ class ACL(rubbercog.Rubbercog):
     async def acl_rule_get(self, ctx, command: str):
         """See command's policy"""
         rule = repo_a.get_rule(ctx.guild.id, command)
+        if rule is None:
+            return await ctx.send(self.text.get("rule_get", "nothing"))
+
         await ctx.send("```\n" + self.get_rule_representation(rule) + "```")
 
     @acl_rule.command(name="add")
@@ -168,18 +180,23 @@ class ACL(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("rule_add", "nothing"))
         result = repo_a.add_rule(ctx.guild.id, command)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
+        await self.event.sudo(ctx, f"ACL rule added: **{result.command}** (#{result.id}).")
 
     @acl_rule.command(name="remove", aliases=["delete"])
     async def acl_rule_remove(self, ctx, *, command: str):
         """Remove command"""
         result = repo_a.delete_rule(ctx.guild.id, command)
-        await ctx.send("```" + self.get_rule_representation(result) + "```")
+        await ctx.send("```" + self.get_rule_mirror_representation(result) + "```")
+        await self.event.sudo(
+            ctx, f"ACL rule removed: **{result.get('command')}** (#{result.get('id')})."
+        )
 
     @acl_rule.command(name="flush")
     async def acl_rule_flush(self, ctx):
         """Remove all commands"""
         result = repo_a.delete_rules(ctx.guild.id)
         await ctx.send(self.text.get("rule_flush", count=result))
+        await self.event.sudo(ctx, "ACL rules flushed.")
 
     ## Constraints
 
@@ -188,6 +205,7 @@ class ACL(rubbercog.Rubbercog):
         """Set default response"""
         result = repo_a.edit_rule(ctx.guild.id, command, allow)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
+        await self.event.sudo(ctx, f"ACL rule default for **{result.command}** set to **{allow}**.")
 
     @acl.group(name="user_constraint", aliases=["constraint_user", "uc"])
     async def acl_user_constraint(self, ctx):
@@ -204,6 +222,9 @@ class ACL(rubbercog.Rubbercog):
         """
         result = repo_a.add_user_constraint(ctx.guild.id, discord_id, command, allow)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
+        await self.event.sudo(
+            ctx, f"ACL user constraint for **{result.command}** added: **{discord_id}={allow}**."
+        )
 
     @acl_user_constraint.command(name="remove", aliases=["r"])
     async def acl_user_constraint_remove(self, ctx, constraint_id: int):
@@ -217,6 +238,7 @@ class ACL(rubbercog.Rubbercog):
             if result
             else self.text.get("user_constraint", "nothing")
         )
+        await self.event.sudo(ctx, f"ACL user constraint **#{constraint_id}** removed.")
 
     @acl.group(name="group_constraint", aliases=["constraint_group", "gc"])
     async def acl_group_constraint(self, ctx):
@@ -238,6 +260,9 @@ class ACL(rubbercog.Rubbercog):
 
         result = repo_a.add_group_constraint(ctx.guild.id, group, command, allow)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
+        await self.event.sudo(
+            ctx, f"ACL group constraint for **{result.command}** added: **{group}={allow}**."
+        )
 
     @acl_group_constraint.command(name="remove", aliases=["r"])
     async def acl_group_constraint_remove(self, ctx, constraint_id: int):
@@ -252,6 +277,7 @@ class ACL(rubbercog.Rubbercog):
             if result
             else self.text.get("group_constraint", "nothing")
         )
+        await self.event.sudo(ctx, f"ACL group constraint **#{constraint_id}** removed.")
 
     ## Security
 
@@ -300,6 +326,7 @@ class ACL(rubbercog.Rubbercog):
 
         delta = int((datetime.now() - now).total_seconds())
         await ctx.send(self.text.get("import", "imported", delta=delta))
+        await self.event.sudo(ctx, "ACL rules initiated.")
 
     @acl.command(name="import")
     async def acl_import(self, ctx):
@@ -318,6 +345,7 @@ class ACL(rubbercog.Rubbercog):
 
         delta = int((datetime.now() - now).total_seconds())
         await m.edit(content=self.text.get("import", "imported", delta=delta))
+        await self.event.sudo(ctx, "ACL rules imported.")
 
     @acl.command(name="export")
     async def acl_export(self, ctx):
@@ -346,6 +374,7 @@ class ACL(rubbercog.Rubbercog):
         await m.edit(content=self.text.get("export", "exported", delta=delta))
         await ctx.send(file=discord.File(fp="data/acl/" + filename))
         os.remove("data/acl/" + filename)
+        await ctx.send(ctx, "ACL rules exported.")
 
     ##
     ## Logic
@@ -388,10 +417,25 @@ class ACL(rubbercog.Rubbercog):
 
         return " ".join(message) + "."
 
+    def get_group_mirror_representation(self, guild: discord.Guild, mirror: dict) -> str:
+        """Convert dictionary to human-friendly string"""
+        group_role = getattr(guild.get_role(mirror.get("role_id")), "name", "")
+
+        message = [self.text.get("group_repr", "name", name=mirror.get("name"))]
+        if len(group_role):
+            message.append(
+                self.text.get(
+                    "group_repr", "map", dname=self.sanitise(group_role), did=mirror.get("role_id")
+                )
+            )
+        if mirror.get("parent") is not None:
+            message.append(self.text.get("group_repr", "parent", parent=mirror.get("parent")))
+
+        return " ".join(message) + "."
+
     def get_rule_representation(self, rule: ACL_rule) -> str:
         """Convert ACL_rule object to human-friendly string"""
-
-        template_override = "{}#{}"
+        template = "{}#{}"
 
         def get_user(discord_id: int) -> str:
             return getattr(self.bot.get_user(discord_id), "display_name", str(discord_id))
@@ -404,24 +448,60 @@ class ACL(rubbercog.Rubbercog):
         ]
 
         gallow = " ".join(
-            template_override.format(group.group.name, group.id)
-            for group in rule.groups
-            if group.allow
+            template.format(group.group.name, group.id) for group in rule.groups if group.allow
         )
         gdeny = " ".join(
-            template_override.format(group.group.name, group.id)
-            for group in rule.groups
-            if not group.allow
+            template.format(group.group.name, group.id) for group in rule.groups if not group.allow
         )
         uallow = " ".join(
-            template_override.format(get_user(user.discord_id), user.id)
-            for user in rule.users
-            if user.allow
+            template.format(get_user(user.discord_id), user.id) for user in rule.users if user.allow
         )
         udeny = " ".join(
-            template_override.format(get_user(user.discord_id), user.id)
+            template.format(get_user(user.discord_id), user.id)
             for user in rule.users
             if not user.allow
+        )
+
+        if len(gallow) or len(uallow):
+            result.append(f"  + {' '.join((gallow, uallow))}")
+        if len(gdeny) or len(udeny):
+            result.append(f"  - {' '.join((gdeny, udeny))}")
+
+        return "\n".join(result)
+
+    def get_rule_mirror_representation(self, mirror: dict) -> str:
+        """Convert dictionary to human-friendly string"""
+        template = "{}#{}"
+
+        def get_user(discord_id: int) -> str:
+            return getattr(self.bot.get_user(discord_id), "display_name", str(discord_id))
+
+        result = [
+            "{default} {command}".format(
+                command=mirror.get("command"),
+                default="+" if mirror.get("default") else "-",
+            )
+        ]
+
+        gallow = " ".join(
+            template.format(group.get("name"), group.get("id"))
+            for group in mirror.get("groups")
+            if group.get("allow")
+        )
+        gdeny = " ".join(
+            template.format(group.get("name"), group.get("id"))
+            for group in mirror.get("groups")
+            if not group.get("allow")
+        )
+        uallow = " ".join(
+            template.format(get_user(user.get("discord_id")), user.get("id"))
+            for user in mirror.get("users")
+            if user.get("allow")
+        )
+        udeny = " ".join(
+            template.format(get_user(user.get("discord_id")), user.get("id"))
+            for user in mirror.get("users")
+            if not user.get("allow")
         )
 
         if len(gallow) or len(uallow):
