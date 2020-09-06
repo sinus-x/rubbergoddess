@@ -25,6 +25,11 @@ def git_pull():
     return cmd.pull()
 
 
+def set_presence(bot):
+    activity = discord.Game(start=datetime.datetime.utcnow(), name=config.prefix + "help")
+    bot.change_presence(activity=activity)
+
+
 def id_to_datetime(snowflake_id: int):
     return datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
 

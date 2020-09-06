@@ -4,7 +4,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import help, rubbercog, output, presence, utils
+from core import help, rubbercog, output, utils
 from core.config import config
 from repository.database import database
 from repository.database import session
@@ -22,7 +22,6 @@ bot = commands.Bot(
     allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
 )
 
-presence = presence.Presence(bot)
 event = output.Event(bot)
 
 # fill DB with subjects shortcut, needed for reviews
@@ -47,13 +46,14 @@ async def on_ready():
             level=config.get("bot", "logging"),
             timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
             hash=utils.git_hash()[:7],
+            branch=utils.git_branch(),
         )
         started = True
 
     print(message)
     channel = bot.get_channel(config.get("channels", "stdout"))
     await channel.send(f"```{message}```")
-    await presence.set_presence()
+    await utils.set_presence(bot)
 
 
 @bot.event
