@@ -1,4 +1,4 @@
-name: Rubbergoddess
+name: Rubbergoddess build
 
 on:
   push:
