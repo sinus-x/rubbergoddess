@@ -1,6 +1,6 @@
 import git
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 import discord
 from discord.ext import commands
@@ -150,3 +150,19 @@ async def send_help(ctx: commands.Context):
     if ctx.invoked_subcommand is not None:
         return
     await ctx.send_help(ctx.command.qualified_name)
+
+
+def paginate(text: Union[List[str], str]) -> List[str]:
+    """Convert to messages that will fit into the 2000 character limit"""
+    if type(text) == str:
+        return list(text[0 + i : 1980 + i] for i in range(0, len(text), 1980))
+
+    result = []
+    output = ""
+    for line in text:
+        if len(output) + len(line) > 1980:
+            result.append(output)
+            output = ""
+        output += "\n" + line
+    result.append(output)
+    return result

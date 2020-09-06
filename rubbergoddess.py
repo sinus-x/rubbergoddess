@@ -14,6 +14,7 @@ from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.verification import User
 from repository.database.image import Image
 from repository.database.points import Points
+from repository.database.acl import ACL_group, ACL_rule, ACL_rule_user, ACL_rule_group
 from repository.review_repo import ReviewRepository
 
 bot = commands.Bot(

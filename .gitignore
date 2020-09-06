@@ -17,9 +17,4 @@ __pycache__
 data/*
 !data/*/
 data/*/*
-
-# Sourcetrail
-*.srctrl*
-
-# Outdated
-config/emotes.py
+!data/acl/commands.csv
