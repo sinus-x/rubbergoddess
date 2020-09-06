@@ -30,13 +30,13 @@ class ACL(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.check(acl.check)
     @commands.group(name="acl")
-    async def acl(self, ctx):
+    async def acl_(self, ctx):
         """Permission control"""
         await utils.send_help(ctx)
 
     ## Groups
 
-    @acl.group(name="group", aliases=["g"])
+    @acl_.group(name="group", aliases=["g"])
     async def acl_group(self, ctx):
         """ACL group control"""
         await utils.send_help(ctx)
@@ -159,7 +159,7 @@ class ACL(rubbercog.Rubbercog):
 
     ## Rules
 
-    @acl.group(name="rule")
+    @acl_.group(name="rule")
     async def acl_rule(self, ctx):
         """Command control"""
         await utils.send_help(ctx)
@@ -207,7 +207,7 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send("```" + self.get_rule_representation(result) + "```")
         await self.event.sudo(ctx, f"ACL rule default for **{result.command}** set to **{allow}**.")
 
-    @acl.group(name="user_constraint", aliases=["constraint_user", "uc"])
+    @acl_.group(name="user_constraint", aliases=["constraint_user", "uc"])
     async def acl_user_constraint(self, ctx):
         """Manage command constraints"""
         await utils.send_help(ctx)
@@ -240,7 +240,7 @@ class ACL(rubbercog.Rubbercog):
         )
         await self.event.sudo(ctx, f"ACL user constraint **#{constraint_id}** removed.")
 
-    @acl.group(name="group_constraint", aliases=["constraint_group", "gc"])
+    @acl_.group(name="group_constraint", aliases=["constraint_group", "gc"])
     async def acl_group_constraint(self, ctx):
         """Manage group command constraints"""
         await utils.send_help(ctx)
@@ -281,7 +281,7 @@ class ACL(rubbercog.Rubbercog):
 
     ## Security
 
-    @acl.command(name="audit")
+    @acl_.command(name="audit")
     async def acl_audit(self, ctx, search: str = None):
         """Make security audit
 
@@ -302,7 +302,7 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send(self.text.get("audit"))
 
-    @acl.command(name="check")
+    @acl_.command(name="check")
     async def acl_check(self, ctx):
         """Check, if all commands are in database"""
         commands = self.get_free_commands(ctx.guild.id)
@@ -317,7 +317,7 @@ class ACL(rubbercog.Rubbercog):
 
     ## Import & Export
 
-    @acl.command(name="init")
+    @acl_.command(name="init")
     async def acl_init(self, ctx):
         """Load default settings from file"""
         now = datetime.now()
@@ -328,7 +328,7 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send(self.text.get("import", "imported", delta=delta))
         await self.event.sudo(ctx, "ACL rules initiated.")
 
-    @acl.command(name="import")
+    @acl_.command(name="import")
     async def acl_import(self, ctx):
         """Import settings from attachment"""
         if len(ctx.message.attachments) != 1 or ctx.message.attachments[0].filename != "rules.csv":
@@ -347,7 +347,7 @@ class ACL(rubbercog.Rubbercog):
         await m.edit(content=self.text.get("import", "imported", delta=delta))
         await self.event.sudo(ctx, "ACL rules imported.")
 
-    @acl.command(name="export")
+    @acl_.command(name="export")
     async def acl_export(self, ctx):
         """Export settings to attachment"""
         now = datetime.now()
