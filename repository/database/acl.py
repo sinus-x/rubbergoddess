@@ -85,18 +85,18 @@ class ACL_rule_user(database.base):
     __tablename__ = "acl_rule_users"
 
     # fmt: off
-    id         = Column(Integer, primary_key=True, autoincrement=True)
-    rule_id    = Column(Integer, ForeignKey('acl_rules.id', ondelete="CASCADE"))
-    rule       = relationship("ACL_rule", back_populates="users")
-    discord_id = Column(BigInteger)
-    allow      = Column(Boolean)
+    id      = Column(Integer, primary_key=True, autoincrement=True)
+    rule_id = Column(Integer, ForeignKey('acl_rules.id', ondelete="CASCADE"))
+    rule    = relationship("ACL_rule", back_populates="users")
+    user_id = Column(BigInteger)
+    allow   = Column(Boolean)
     # fmt: on
 
     def __repr__(self):
         return f"RU#{self.id} for R#{self.rule_id}: {self.allow}."
 
     def __str__(self):
-        return f"{self.discord_id}: {self.allow} (RU#{self.id})."
+        return f"{self.user_id}: {self.allow} (RU#{self.id})."
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.id == obj.id
@@ -107,7 +107,7 @@ class ACL_rule_user(database.base):
             "rule_id": self.rule_id,
             "guild_id": self.rule.guild_id,
             "command": self.rule.command,
-            "discord_id": self.discord_id,
+            "user_id": self.user_id,
             "allow": self.allow,
         }
 

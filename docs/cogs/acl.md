@@ -13,7 +13,7 @@ As a starting point for group permissions, we try to map user's top role to ACL 
 If the group does not have behavior for given command set, then its parent group is used. If no group defines the outcome, the check returns function's default value.
 
 
-You can see example group layout below. You can display yours with `?acl group list` command.
+You can see example group layout below. You can display yours with `acl group list` command.
 ```
 1  verify       693029899000000000
 2    VUT        693032801000000000
@@ -23,39 +23,47 @@ You can see example group layout below. You can display yours with `?acl group l
 6      MUNI     740208696000000000
 ```
 
-## User commands
+## Free commands
 
-This module has no commands usable by non-privileged users.
+This module has no commands that are callable by everyone.
 
-## Privileged commands
+## ACL controlled commands
 
 ### acl group list
 
-List ACL groups
+List ACL groups.
 
-### acl group add (name) (parent_id) (role_id)
+### acl group get (name)
+
+Get ACL group.
+
+### acl group add (name) (parent) (role_id)
 
 Add new ACL group.
 
-Set **parent_id** to **0**, if you don't want the group have any parents.
+**name** must match regex `[a-zA-Z-]+`.
 
-Set **role_id** to **0** if it's purpose is to act as parenting group for its children.
+Set **parent** to **\"\"**, if the group should be orphaned.
 
-### acl group edit (id) (param) (value)
+Set **role_id** to **0** if the group should not be mapped to Discord role.
 
-Edit ACL group. Param is **name**, **parent_id** or **role_id**, values are described above.
+### acl group edit (name) (param) (value)
 
-### acl group remove (identifier)
+Edit ACL group. Param is **name**, **parent** or **role_id**, values are described above.
 
-Remove ACL group. Parameter is group ID or name.
+### acl group remove (name)
+
+Remove ACL group.
 
 ### acl rule get (command)
 
 Display settings for given command.
 
-### acl rule add (command)
+### acl rule add (command) (allow)
 
 Add command to database.
+
+**allow** parameter is boolean describing the default allow/deny response.
 
 ### acl rule remove (command)
 
@@ -69,9 +77,9 @@ Set the default outcome for DM or when no group defines it.
 
 Remove all commands. Useful if you plan to re-import the rules.
 
-### acl user_constraint add (command) (discord_id) (allow)
+### acl user_constraint add (command) (user_id) (allow)
 
-Add command constraint. **discord_id** is user ID, **allow** is **True** (**true**, **1**) or **False** (**false**, **0**).
+Add command constraint. **user_id** is user's Discord ID, **allow** is boolean.
 
 ### acl user_constraint remove (constraint_id)
 
@@ -79,7 +87,7 @@ Remove command constraint.
 
 ### acl group_constraint add (command) (group) (allow)
 
-Add command constraint. **group** is group ID or name, **allow** is **True**, **False** or **None**.
+Add command constraint. **group** is group ID or name, **allow** is boolean.
 
 ### acl group_constraint remove (constraint_id)
 
@@ -89,13 +97,17 @@ Remove command constraint.
 
 Print commands along with their default settings. Notifies if unsaved commands are found.
 
+Note that currently all commands are tested, not just those controlled by ACL.
+
 ### acl check
 
 Check if all commands have been saved to the database.
 
+Note that currently all commands are tested, not just those controlled by ACL.
+
 ### acl init
 
-Load recommended settings from file, located at `data/acl/commands.csv`.
+Load recommended settings from file, located at `data/acl/rules.csv`.
 
 ### acl import
 
