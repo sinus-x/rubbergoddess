@@ -296,7 +296,7 @@ class ACL(rubbercog.Rubbercog):
         """Load default settings from file"""
         now = datetime.now()
 
-        await self.import_csv(ctx, "data/acl/commands.csv")
+        await self.import_csv(ctx, "data/acl/rules.csv")
 
         delta = int((datetime.now() - now).total_seconds())
         await ctx.send(self.text.get("import", "imported", delta=delta))
