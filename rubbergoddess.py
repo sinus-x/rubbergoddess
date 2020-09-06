@@ -42,7 +42,7 @@ async def on_ready():
             timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         )
     else:
-        message = "Logged in [{level}]: {timestamp} (hash {hash})".format(
+        message = "Logged in [{level}]: {timestamp} ({hash} on branch {branch})".format(
             level=config.get("bot", "logging"),
             timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
             hash=utils.git_hash()[:7],

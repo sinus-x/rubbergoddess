@@ -9,9 +9,14 @@ from core.config import config
 from core.text import text
 
 
-def git_hash():
+def git_get_hash():
     repo = git.Repo(search_parent_directories=True)
     return repo.head.object.hexsha
+
+
+def git_get_branch():
+    repo = git.Repo(search_parent_directories=True)
+    return repo.active_branch.name
 
 
 def git_commit_msg():

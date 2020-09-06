@@ -193,7 +193,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             guild_name=self.getGuild().name,
             code=code,
             bot_name=self.bot.user.name,
-            git_hash=utils.git_hash()[:7],
+            git_hash=utils.git_get_hash()[:7],
             prefix=config.prefix,
         )
 
@@ -209,7 +209,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             user_name=member.name,
             # codes
             code=code,
-            git_hash=utils.git_hash()[:7],
+            git_hash=utils.git_get_hash()[:7],
             prefix=config.prefix,
             # images
             bot_avatar=self.bot.user.avatar_url_as(static_format="png", size=128),
