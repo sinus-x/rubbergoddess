@@ -183,7 +183,7 @@ class ACL(rubbercog.Rubbercog):
         await self.event.sudo(ctx, f"ACL rule added: **{result.command}** (#{result.id}).")
 
     @acl_rule.command(name="remove", aliases=["delete"])
-    async def acl_rule_remove(self, ctx, *, command: str):
+    async def acl_rule_remove(self, ctx, command: str):
         """Remove command"""
         result = repo_a.delete_rule(ctx.guild.id, command)
         await ctx.send("```" + self.get_rule_mirror_representation(result) + "```")
@@ -213,17 +213,17 @@ class ACL(rubbercog.Rubbercog):
         await utils.send_help(ctx)
 
     @acl_user_constraint.command(name="add", aliases=["a"])
-    async def acl_user_constraint_add(self, ctx, command: str, discord_id: int, allow: bool):
+    async def acl_user_constraint_add(self, ctx, command: str, user_id: int, allow: bool):
         """Add command constraint
 
         command: A command
-        discord_id: User ID
+        user_id: User ID
         allow: True or False
         """
-        result = repo_a.add_user_constraint(ctx.guild.id, discord_id, command, allow)
+        result = repo_a.add_user_constraint(ctx.guild.id, user_id, command, allow)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
         await self.event.sudo(
-            ctx, f"ACL user constraint for **{result.command}** added: **{discord_id}={allow}**."
+            ctx, f"ACL user constraint for **{result.command}** added: **{user_id}={allow}**."
         )
 
     @acl_user_constraint.command(name="remove", aliases=["r"])
@@ -251,12 +251,9 @@ class ACL(rubbercog.Rubbercog):
 
         command: A command
         group: ACL group name or ID
-        allow: True, False or None
+        allow: boolean
         """
-        if allow.lower() in ("none", "skip"):
-            allow = None
-        else:
-            allow = allow in ("True", "true", "1")
+        allow = allow in ("True", "true", "1")
 
         result = repo_a.add_group_constraint(ctx.guild.id, group, command, allow)
         await ctx.send("```" + self.get_rule_representation(result) + "```")
@@ -437,8 +434,8 @@ class ACL(rubbercog.Rubbercog):
         """Convert ACL_rule object to human-friendly string"""
         template = "{}#{}"
 
-        def get_user(discord_id: int) -> str:
-            return getattr(self.bot.get_user(discord_id), "display_name", str(discord_id))
+        def get_user(user_id: int) -> str:
+            return getattr(self.bot.get_user(user_id), "display_name", str(user_id))
 
         result = [
             "{default} {command}".format(
@@ -454,10 +451,10 @@ class ACL(rubbercog.Rubbercog):
             template.format(group.group.name, group.id) for group in rule.groups if not group.allow
         )
         uallow = " ".join(
-            template.format(get_user(user.discord_id), user.id) for user in rule.users if user.allow
+            template.format(get_user(user.user_id), user.id) for user in rule.users if user.allow
         )
         udeny = " ".join(
-            template.format(get_user(user.discord_id), user.id)
+            template.format(get_user(user.user_id), user.id)
             for user in rule.users
             if not user.allow
         )
@@ -473,8 +470,8 @@ class ACL(rubbercog.Rubbercog):
         """Convert dictionary to human-friendly string"""
         template = "{}#{}"
 
-        def get_user(discord_id: int) -> str:
-            return getattr(self.bot.get_user(discord_id), "display_name", str(discord_id))
+        def get_user(user_id: int) -> str:
+            return getattr(self.bot.get_user(user_id), "display_name", str(user_id))
 
         result = [
             "{default} {command}".format(
@@ -494,12 +491,12 @@ class ACL(rubbercog.Rubbercog):
             if not group.get("allow")
         )
         uallow = " ".join(
-            template.format(get_user(user.get("discord_id")), user.get("id"))
+            template.format(get_user(user.get("user_id")), user.get("id"))
             for user in mirror.get("users")
             if user.get("allow")
         )
         udeny = " ".join(
-            template.format(get_user(user.get("discord_id")), user.get("id"))
+            template.format(get_user(user.get("user_id")), user.get("id"))
             for user in mirror.get("users")
             if not user.get("allow")
         )

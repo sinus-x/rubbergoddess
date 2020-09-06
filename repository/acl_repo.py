@@ -149,13 +149,13 @@ class ACLRepository(BaseRepository):
         return result > 0
 
     def add_user_constraint(
-        self, guild_id: int, discord_id: int, command: str, allow: bool
+        self, guild_id: int, user_id: int, command: str, allow: bool
     ) -> ACL_rule:
         rule = self.get_rule(guild_id, command)
         if rule is None:
             raise NotFound(guild_id=guild_id, command=command)
 
-        rule.users.append(ACL_rule_user(discord_id=discord_id, allow=allow))
+        rule.users.append(ACL_rule_user(user_id=user_id, allow=allow))
         session.commit()
         return rule
 

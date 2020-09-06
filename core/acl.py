@@ -22,7 +22,7 @@ def check(ctx: commands.Context) -> bool:
 
     # test for user override
     for user in rule.users:
-        if ctx.author.id == user.discord_id:
+        if ctx.author.id == user.user_id:
             return user.allow
 
     # resolve groups
