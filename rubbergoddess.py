@@ -46,8 +46,8 @@ async def on_ready():
         message = "Logged in [{level}]: {timestamp} ({hash} on branch {branch})".format(
             level=config.get("bot", "logging"),
             timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            hash=utils.git_hash()[:7],
-            branch=utils.git_branch(),
+            hash=utils.git_get_hash()[:7],
+            branch=utils.git_get_branch(),
         )
         started = True
 
