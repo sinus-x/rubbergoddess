@@ -136,7 +136,7 @@ class Animals(rubbercog.Rubbercog):
             return await utils.delete(message)
 
         # delete if the user has changed their avatar since the embed creation
-        if str(message.embeds[0].image.url) != (animal.avatar_url):
+        if str(message.embeds[0].image.url) != str(animal.avatar_url):
             await self.console.info(animal, "Avatar has changed since. Vote aborted.")
             return await utils.delete(message)
 
