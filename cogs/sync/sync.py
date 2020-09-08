@@ -18,6 +18,9 @@ class Sync(rubbercog.Rubbercog):
         self.engineer_ids = self.config.get("roles", "master_engineer_ids")
         self.slave_verify_id = self.config.get("roles", "slave_verify_id")
 
+        self.mapping_ids = self.config.get("roles", "mapping")
+        self.mapping = {}
+
         self.slave_guild = None
         self.slave_verify = None
 
@@ -36,6 +39,15 @@ class Sync(rubbercog.Rubbercog):
 
     def get_slave_member(self, user_id: int) -> discord.Member:
         return self.get_slave_guild().get_member(user_id)
+
+    def get_slave_role(self, master_role_id: int) -> discord.Role:
+        key = str(master_role_id)
+        if key not in self.mapping_ids:
+            return None
+
+        if key not in self.mapping.keys():
+            self.mapping[key] = self.get_slave_guild().get_role(self.mapping_ids[key])
+        return self.mapping[key]
 
     ##
     ## Commands
@@ -86,8 +98,19 @@ class Sync(rubbercog.Rubbercog):
         # get member object on slave guild
         slave_member = self.get_slave_member(member.id)
         if slave_member is not None:
-            await slave_member.add_roles(self.get_slave_verify(), reason="Sync")
-            await self.event.user(slave_member, "Verified on slave server.")
+            # map some of their roles to slave ones
+            to_add = [self.get_slave_verify()]
+            event_roles = []
+            for role in member.roles:
+                if str(role.id) in self.mapping_ids:
+                    mapped = self.get_slave_role(role.id)
+                    to_add.append(mapped)
+                    event_roles.append(mapped.name)
+            roles = ", ".join(f"**{self.sanitise(name)}**" for name in event_roles)
+
+            # add the roles
+            await slave_member.add_roles(*to_add, reason="Sync: verify")
+            await self.event.user(slave_member, f"Verified on slave server with {roles}.")
         else:
             # send invitation
             await member.send(
@@ -99,7 +122,8 @@ class Sync(rubbercog.Rubbercog):
         # get member object on slave guild
         slave_member = self.get_slave_member(member.id)
         if member is not None:
-            await slave_member.remove_roles(self.get_slave_verify(), reason="Sync")
+            roles = slave_member.roles[1:]  # the first is @everyone
+            await slave_member.remove_roles(*roles, reason="Sync: unverify")
             await self.event.user(slave_member, "Unverified on slave server.")
         else:
             await self.event.user(member, "Not on slave server: skipping unverify.")

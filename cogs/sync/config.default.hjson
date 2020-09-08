@@ -10,5 +10,11 @@
 
 		# role ID for verify on slave guild
 		slave_verify_id: 0
+
+		# mapping from master to slave (FEKT, VUT, ... roles)
+		mapping: {
+			"0": 0
+			"1": 1
+		}
 	}
 }
