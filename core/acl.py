@@ -36,7 +36,7 @@ def check(ctx: commands.Context) -> bool:
             group = None
 
         # get group hierarchy
-        while group:
+        while group is not None:
             for rule_group in rule.groups:
                 if rule_group.group == group and rule_group.allow is not None:
                     return rule_group.allow
