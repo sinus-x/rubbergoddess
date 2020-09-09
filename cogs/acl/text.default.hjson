@@ -51,12 +51,12 @@
 
 		saving:    Ukládám...
 		importing: Importuji...
-		imported:  Pravidla jsem importovala za **((delta)) vteřin**.
+		imported:  Pravidla jsem importovala za **((delta)) s**.
 	}
 
 	export: {
 		exporting: Exportuji do souboru `((filename))`...
-		exported:  Pravidla jsem exportovala za **((delta)) vteřin**.
+		exported:  Pravidla jsem exportovala za **((delta)) s**.
 	}
 
 

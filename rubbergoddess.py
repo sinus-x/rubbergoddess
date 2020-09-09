@@ -4,7 +4,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import help, rubbercog, output, utils
+from core import acl, help, rubbercog, output, utils
 from core.config import config
 from repository.database import database
 from repository.database import session
@@ -69,7 +69,7 @@ async def on_error(event, *args, **kwargs):
 
 
 @bot.command()
-@commands.is_owner()
+@commands.check(acl.check)
 async def load(ctx, extension):
     bot.load_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** načteno.")
@@ -78,7 +78,7 @@ async def load(ctx, extension):
 
 
 @bot.command()
-@commands.is_owner()
+@commands.check(acl.check)
 async def unload(ctx, extension):
     bot.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** odebráno.")
@@ -87,7 +87,7 @@ async def unload(ctx, extension):
 
 
 @bot.command()
-@commands.is_owner()
+@commands.check(acl.check)
 async def reload(ctx, extension):
     bot.reload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
