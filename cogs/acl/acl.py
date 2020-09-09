@@ -36,11 +36,13 @@ class ACL(rubbercog.Rubbercog):
 
     ## Groups
 
+    @commands.check(acl.check)
     @acl_.group(name="group", aliases=["g"])
     async def acl_group(self, ctx):
         """ACL group control"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @acl_group.command(name="list", aliases=["l"])
     async def acl_group_list(self, ctx):
         """List ACL groups"""
@@ -88,6 +90,7 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send("```" + result + "```")
 
+    @commands.check(acl.check)
     @acl_group.command(name="get", aliases=["g"])
     async def acl_group_get(self, ctx, name: str):
         """Get ACL group"""
@@ -98,6 +101,7 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send(self.get_group_representation(ctx.guild, result))
 
+    @commands.check(acl.check)
     @acl_group.command(name="add", aliases=["a"])
     async def acl_group_add(self, ctx, name: str, parent: str, role_id: int):
         """Add ACL group
@@ -119,6 +123,7 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send(self.get_group_representation(ctx.guild, result))
         await self.event.sudo(ctx, f"ACL group added: **{result.name}** (#{result.id}).")
 
+    @commands.check(acl.check)
     @acl_group.command(name="edit", aliases=["e"])
     async def acl_group_edit(self, ctx, name: str, param: str, value):
         """Edit ACL group
@@ -148,6 +153,7 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send(self.get_group_representation(ctx.guild, result))
         await self.event.sudo(ctx, f"ACL group **{result.name}** updated: **{param}={value}**.")
 
+    @commands.check(acl.check)
     @acl_group.command(name="remove", aliases=["delete", "r", "d"])
     async def acl_group_remove(self, ctx, name: str):
         """Remove ACL group"""
@@ -159,11 +165,13 @@ class ACL(rubbercog.Rubbercog):
 
     ## Rules
 
+    @commands.check(acl.check)
     @acl_.group(name="rule")
     async def acl_rule(self, ctx):
         """Command control"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @acl_rule.command(name="get")
     async def acl_rule_get(self, ctx, command: str):
         """See command's policy"""
@@ -173,6 +181,7 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send("```\n" + self.get_rule_representation(rule) + "```")
 
+    @commands.check(acl.check)
     @acl_rule.command(name="add")
     async def acl_rule_add(self, ctx, command: str, default: bool = False):
         """Add command"""
@@ -182,6 +191,7 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send("```" + self.get_rule_representation(result) + "```")
         await self.event.sudo(ctx, f"ACL rule added: **{result.command}** (#{result.id}).")
 
+    @commands.check(acl.check)
     @acl_rule.command(name="remove", aliases=["delete"])
     async def acl_rule_remove(self, ctx, command: str):
         """Remove command"""
@@ -191,6 +201,7 @@ class ACL(rubbercog.Rubbercog):
             ctx, f"ACL rule removed: **{result.get('command')}** (#{result.get('id')})."
         )
 
+    @commands.check(acl.check)
     @acl_rule.command(name="flush")
     async def acl_rule_flush(self, ctx):
         """Remove all commands"""
@@ -200,6 +211,7 @@ class ACL(rubbercog.Rubbercog):
 
     ## Constraints
 
+    @commands.check(acl.check)
     @acl_rule.command(name="default")
     async def acl_rule_default(self, ctx, command: str, allow: bool):
         """Set default response"""
@@ -207,11 +219,13 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send("```" + self.get_rule_representation(result) + "```")
         await self.event.sudo(ctx, f"ACL rule default for **{result.command}** set to **{allow}**.")
 
+    @commands.check(acl.check)
     @acl_.group(name="user_constraint", aliases=["constraint_user", "uc"])
     async def acl_user_constraint(self, ctx):
         """Manage command constraints"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @acl_user_constraint.command(name="add", aliases=["a"])
     async def acl_user_constraint_add(self, ctx, command: str, user_id: int, allow: bool):
         """Add command constraint
@@ -226,6 +240,7 @@ class ACL(rubbercog.Rubbercog):
             ctx, f"ACL user constraint for **{result.command}** added: **{user_id}={allow}**."
         )
 
+    @commands.check(acl.check)
     @acl_user_constraint.command(name="remove", aliases=["r"])
     async def acl_user_constraint_remove(self, ctx, constraint_id: int):
         """Remove command constraint
@@ -240,11 +255,13 @@ class ACL(rubbercog.Rubbercog):
         )
         await self.event.sudo(ctx, f"ACL user constraint **#{constraint_id}** removed.")
 
+    @commands.check(acl.check)
     @acl_.group(name="group_constraint", aliases=["constraint_group", "gc"])
     async def acl_group_constraint(self, ctx):
         """Manage group command constraints"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @acl_group_constraint.command(name="add", aliases=["a"])
     async def acl_group_constraint_add(self, ctx, command: str, group: str, allow: str):
         """Add command constraint
@@ -261,6 +278,7 @@ class ACL(rubbercog.Rubbercog):
             ctx, f"ACL group constraint for **{result.command}** added: **{group}={allow}**."
         )
 
+    @commands.check(acl.check)
     @acl_group_constraint.command(name="remove", aliases=["r"])
     async def acl_group_constraint_remove(self, ctx, constraint_id: int):
         """Remove command constraint
@@ -278,6 +296,7 @@ class ACL(rubbercog.Rubbercog):
 
     ## Security
 
+    @commands.check(acl.check)
     @acl_.command(name="audit")
     async def acl_audit(self, ctx, search: str = None):
         """Make security audit
@@ -299,6 +318,7 @@ class ACL(rubbercog.Rubbercog):
 
         await ctx.send(self.text.get("audit"))
 
+    @commands.check(acl.check)
     @acl_.command(name="check")
     async def acl_check(self, ctx):
         """Check, if all commands are in database"""
@@ -314,6 +334,7 @@ class ACL(rubbercog.Rubbercog):
 
     ## Import & Export
 
+    @commands.check(acl.check)
     @acl_.command(name="init")
     async def acl_init(self, ctx):
         """Load default settings from file"""
@@ -325,6 +346,7 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send(self.text.get("import", "imported", delta=delta))
         await self.event.sudo(ctx, "ACL rules initiated.")
 
+    @commands.check(acl.check)
     @acl_.command(name="import")
     async def acl_import(self, ctx):
         """Import settings from attachment"""
@@ -344,6 +366,7 @@ class ACL(rubbercog.Rubbercog):
         await m.edit(content=self.text.get("import", "imported", delta=delta))
         await self.event.sudo(ctx, "ACL rules imported.")
 
+    @commands.check(acl.check)
     @acl_.command(name="export")
     async def acl_export(self, ctx):
         """Export settings to attachment"""
@@ -521,6 +544,9 @@ class ACL(rubbercog.Rubbercog):
             reader = csv.DictReader(csvfile)
 
             for i, rule in enumerate(reader, 1):
+                # skip comments
+                if rule["command"].startswith("#"):
+                    continue
                 # detect misconfigured rows
                 if len(rule) != 4:
                     skipped.append(f"{i:>3} | wrong line    | {rule['command']}")

@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from core.config import config
 from repository import user_repo
 
@@ -28,12 +28,13 @@ class Stalker(rubbercog.Rubbercog):
             return email
         return
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @commands.group(name="whois", aliases=["gdo"])
     async def whois(self, ctx: commands.Context):
         """Get information about user"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @whois.command(name="member", aliases=["tag", "user", "id"])
     async def whois_member(self, ctx: commands.Context, member: discord.Member):
         """Get information about guild member
@@ -47,6 +48,7 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for member **{member}**.")
 
+    @commands.check(acl.check)
     @whois.command(name="email", aliases=["login", "xlogin"])
     async def whois_email(self, ctx: commands.Context, email: str = None):
         """Get information about xlogin
@@ -65,8 +67,8 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for e-mail **{email}**.")
 
+    @commands.check(acl.check)
     @whois.command(name="logins", aliases=["emails"])
-    @commands.check(check.is_elevated)
     async def whois_logins(self, ctx, prefix: str):
         """Filter database by login"""
         users = repository.getByPrefix(prefix=prefix)
@@ -104,13 +106,13 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for e-mail prefix **{prefix}**.")
 
-    @commands.guild_only()
+    @commands.check(acl.check)
     @commands.group(aliases=["db"])
-    @commands.check(check.is_elevated)
     async def database(self, ctx: commands.Context):
         """Manage users"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @database.command(name="add")
     async def database_add(
         self,
@@ -157,6 +159,7 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"New user {member} ({group.name})")
 
+    @commands.check(acl.check)
     @database.command(name="remove", aliases=["delete"])
     async def database_remove(self, ctx: commands.Context, member: discord.Member):
         """Remove user from database"""
@@ -168,6 +171,7 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(self.text.get("db", "delete_success", num=result))
         await self.event.sudo(ctx, f"Member {member} ({member.id}) removed from database.")
 
+    @commands.check(acl.check)
     @database.command(name="update")
     async def database_update(self, ctx, member: discord.Member, key: str, *, value):
         """Update user entry in database
@@ -208,6 +212,7 @@ class Stalker(rubbercog.Rubbercog):
         await self.event.sudo(ctx, f"Updated {member}: {key} = {value}.")
         await ctx.send(self.text.get("db", "update_success"))
 
+    @commands.check(acl.check)
     @database.command(name="show")
     async def database_show(self, ctx, param: str):
         """Filter users by parameter
@@ -219,7 +224,7 @@ class Stalker(rubbercog.Rubbercog):
 
         await self._database_show_filter(ctx, param)
 
-    @commands.guild_only()
+    @commands.check(acl.check)
     @commands.command(name="guild", aliases=["server"])
     async def guild(self, ctx: commands.Context):
         """Display general about guild"""

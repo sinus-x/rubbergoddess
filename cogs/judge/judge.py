@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from repository import review_repo, subject_repo
 
 repo_r = review_repo.ReviewRepository()
@@ -22,12 +22,13 @@ class Judge(rubbercog.Rubbercog):
     ##
 
     @commands.cooldown(rate=5, per=60, type=commands.BucketType.user)
-    @commands.check(check.is_native)
+    @commands.check(acl.check)
     @commands.group(name="review")
     async def review(self, ctx):
         """Manage your subject reviews"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @review.command(name="subject", aliases=["see"])
     async def review_subject(self, ctx, subject: str):
         """See subject's reviews"""
@@ -64,6 +65,7 @@ class Judge(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @commands.check(acl.check)
     @review.command(name="add", aliases=["update"])
     async def review_add(self, ctx, subject: str, mark: int, *, text: str):
         """Add a review
@@ -97,6 +99,7 @@ class Judge(rubbercog.Rubbercog):
         await self.event.user(ctx, f"Added review for {subject}.")
         return await ctx.send(self.text.get("added"))
 
+    @commands.check(acl.check)
     @review.command(name="remove")
     async def review_remove(self, ctx, subject: str):
         """Remove your review
@@ -111,12 +114,13 @@ class Judge(rubbercog.Rubbercog):
         await self.event.user(ctx, f"Removed review for {subject}.")
         return await ctx.send(self.text.get("removed"))
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @commands.group(name="sudo_review")
     async def sudo_review(self, ctx):
         """Manage other user's reviews"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @sudo_review.command(name="remove")
     async def sudo_review_remove(self, ctx, id: int):
         """Remove someone's review"""
@@ -128,12 +132,13 @@ class Judge(rubbercog.Rubbercog):
         await self.event.sudo(ctx, f"Review {id} removed")
         return await ctx.send(self.text.get("removed"))
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @commands.group(name="sudo_subject")
     async def sudo_subject(self, ctx):
         """Manage subjects"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @sudo_subject.command(name="add")
     async def sudo_subject_add(self, ctx, subject: str, name: str, category: str):
         """Add subject
@@ -150,6 +155,7 @@ class Judge(rubbercog.Rubbercog):
         await self.event.sudo(ctx, f"Subject {subject} added")
         await ctx.send(self.text.get("subject_added"))
 
+    @commands.check(acl.check)
     @sudo_subject.command(name="update")
     async def sudo_subject_update(self, ctx, subject: str, name: str, category: str):
         """Update subject
@@ -166,6 +172,7 @@ class Judge(rubbercog.Rubbercog):
         await self.event.sudo(ctx, f"Subject {subject} updated")
         await ctx.send(self.text.get("subject_updated"))
 
+    @commands.check(acl.check)
     @sudo_subject.command(name="remove")
     async def sudo_subject_remove(self, ctx, subject: str):
         """Remove subject
@@ -183,6 +190,7 @@ class Judge(rubbercog.Rubbercog):
     ##
     ## Listeners
     ##
+
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         # check for wanted embed

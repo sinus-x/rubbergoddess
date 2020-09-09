@@ -6,7 +6,7 @@ from discord.ext import commands
 from emoji import demojize
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from core.config import config
 from repository import karma_repo, subject_repo
 from repository.database.karma import Karma as DB_Karma
@@ -27,7 +27,6 @@ class Karma(rubbercog.Rubbercog):
     ##
     ## Commands
     ##
-    @commands.check(check.is_verified)
     @commands.group(name="karma")
     async def karma(self, ctx):
         """Karma"""
@@ -131,7 +130,7 @@ class Karma(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.guild_only()
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @karma.command(name="vote")
     async def karma_vote(self, ctx, emote: str = None):
         """Vote for emote's karma value"""
@@ -193,7 +192,7 @@ class Karma(rubbercog.Rubbercog):
         await ctx.send(self.text.get("vote_result", emoji=emote, value=result))
         await self.event.sudo(ctx, f"{emote} karma value voted as {result}.")
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @karma.command(name="set")
     async def karma_set(self, ctx, emoji: discord.Emoji, value: int):
         """Set karma value without public vote"""
@@ -273,7 +272,7 @@ class Karma(rubbercog.Rubbercog):
 
         await utils.room_check(ctx)
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @karma.command(name="give")
     async def karma_give(self, ctx, member: discord.Member, value: int):
         """Give karma points to someone"""
@@ -281,28 +280,24 @@ class Karma(rubbercog.Rubbercog):
         await ctx.send(self.text.get("give", "given" if value > 0 else "taken"))
         await self.event.sudo(ctx, f"{member} got {value} karma points.")
 
-    @commands.check(check.is_verified)
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
     @commands.command(aliases=["karmaboard"])
     async def leaderboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.sendBoard(ctx, "desc", offset)
 
-    @commands.check(check.is_verified)
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
     @commands.command()
     async def loserboard(self, ctx, offset: int = 0):
         """Karma leaderboard, from the worst"""
         await self.sendBoard(ctx, "asc", offset)
 
-    @commands.check(check.is_verified)
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
     @commands.command()
     async def givingboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.sendBoard(ctx, "give", offset)
 
-    @commands.check(check.is_verified)
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
     @commands.command(aliases=["stealingboard"])
     async def takingboard(self, ctx, offset: int = 0):

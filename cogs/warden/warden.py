@@ -8,7 +8,7 @@ import dhash
 from PIL import Image
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from core.config import config
 from core.emote import emote
 from repository import image_repo, karma_repo
@@ -174,13 +174,13 @@ class Warden(rubbercog.Rubbercog):
             yield h
 
     @commands.group()
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     async def scan(self, ctx):
         """Scan for reposts"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
 
-    @commands.guild_only()
+    @commands.check(acl.check)
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.bot_has_permissions(read_message_history=True)
     @scan.command(name="history")
@@ -242,6 +242,7 @@ class Warden(rubbercog.Rubbercog):
         )
         # fmt: on
 
+    @commands.check(acl.check)
     @scan.command(name="message", hidden=True)
     async def scan_message(self, ctx, link):
         """Scan message attachments in whole database"""
