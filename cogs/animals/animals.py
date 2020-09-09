@@ -187,7 +187,7 @@ class Animals(rubbercog.Rubbercog):
     ## Logic
     ##
 
-    async def check(self, member: discord.Member, source: str, thumbnail_url: str = None):
+    async def check(self, member: discord.Member, source: str):
         """Create vote embed"""
         embed = self.embed(
             title=self.text.get("title"),
@@ -199,8 +199,6 @@ class Animals(rubbercog.Rubbercog):
             inline=False,
         )
         embed.set_image(url=member.avatar_url)
-        if str(thumbnail_url):
-            embed.set_thumbnail(url=thumbnail_url)
         message = await self.getChannel().send(embed=embed)
         await message.add_reaction("☑️")
         await message.add_reaction("❎")
