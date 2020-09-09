@@ -8,6 +8,10 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 
 - `utils.paginate()`, so we don't have to cut messages to fit into 2000 char limit every time
 
+### Added
+
+- Sync cog: Secondary guild management
+
 ## [1.0]
 
 ### Added

@@ -83,8 +83,8 @@ class ACLRepository(BaseRepository):
     ## Rules
     ##
 
-    def get_rules(self) -> Optional[List[ACL_rule]]:
-        return session.query(ACL_rule).all()
+    def get_rules(self, guild_id: int) -> Optional[List[ACL_rule]]:
+        return session.query(ACL_rule).filter(ACL_rule.guild_id == guild_id).all()
 
     def get_rule(self, guild_id: int, command: str) -> Optional[ACL_rule]:
         return (

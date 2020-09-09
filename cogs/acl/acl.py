@@ -546,7 +546,7 @@ class ACL(rubbercog.Rubbercog):
                     continue
 
                 try:
-                    repo_a.addRule(command=rule["command"], allow=(rule["default"] == 1))
+                    repo_a.add_rule(command=rule["command"], allow=(rule["default"] == 1))
                     for group in groups_allowed:
                         repo_a.add_group_constraint(
                             guild_id=ctx.guild.id,

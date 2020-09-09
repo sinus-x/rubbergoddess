@@ -105,6 +105,8 @@ load_subjects()
 
 bot.load_extension("cogs.errors")
 print("Loaded: ERRORS (implicit)")
+bot.load_extension("cogs.acl")
+print("Loaded: ACL (implicit)")
 for extension in config.extensions:
     bot.load_extension(f"cogs.{extension}")
     print(f"Loaded: {extension.upper()}")
