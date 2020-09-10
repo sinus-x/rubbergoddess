@@ -9,7 +9,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from core.config import config
 
 
@@ -33,12 +33,13 @@ class Actress(rubbercog.Rubbercog):
     ##
     ## Commands
     ##
-    @commands.is_owner()
+    @commands.check(acl.check)
     @commands.group(name="send")
     async def send(self, ctx):
         """Send message to given channel"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @send.command(name="text")
     async def send_text(self, ctx, channel: discord.TextChannel, *, content: str):
         """Send a text to text channel
@@ -49,11 +50,11 @@ class Actress(rubbercog.Rubbercog):
         message = await channel.send(content)
         await self.event.sudo(
             ctx,
-            f"Text sent to {channel.mention if hasattr(channel, 'mention') else type(channel).__name__}:\n"
-            f"> _{content}_\n> <{message.jump_url}>",
+            f"Text sent to {channel.mention}:\n<{message.jump_url}>\n>>> _{content}_",
         )
         await self.output.info(ctx, self.text.get("send_text"))
 
+    @commands.check(acl.check)
     @send.command(name="image", aliases=["file"])
     async def send_image(self, ctx, channel: discord.TextChannel, filename):
         """Send an image as a bot
@@ -68,19 +69,20 @@ class Actress(rubbercog.Rubbercog):
                 delta = str(int(time.monotonic() - now))
                 await self.output.info(ctx, self.text.get("send_file", delta=delta))
 
-                mention = channel.mention if hasattr(channel, "mention") else type(channel).__name__
                 await self.event.sudo(
                     ctx,
-                    f"Media file sent to {mention}:\n" f"> _{filename}_\n> <{message.jump_url}>",
+                    f"Media file sent to {channel.mention}:\n"
+                    f"> _{filename}_\n> <{message.jump_url}>",
                 )
         except Exception as e:
             await self.output.error(ctx, self.text.get("FileSendError"), e)
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @commands.group(name="react", aliases=["reaction", "reactions"])
     async def react(self, ctx):
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @react.command(name="overview")
     async def react_overview(self, ctx):
         """List registered reactions"""
@@ -99,6 +101,7 @@ class Actress(rubbercog.Rubbercog):
         embed.add_field(name="\u200b", value="\n".join(f"`{v}`" for v in value), inline=False)
         await ctx.send(embed=embed)
 
+    @commands.check(acl.check)
     @react.command(name="list")
     async def react_list(self, ctx):
         """See details for reactions"""
@@ -119,6 +122,7 @@ class Actress(rubbercog.Rubbercog):
             await message.add_reaction("◀")
             await message.add_reaction("▶")
 
+    @commands.check(acl.check)
     @react.command(name="usage", aliases=["stat", "stats"])
     async def react_usage(self, ctx):
         """See reactions usage since start"""
@@ -141,6 +145,7 @@ class Actress(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @commands.check(acl.check)
     @react.command(name="add")
     async def react_add(self, ctx, name: str = None, *, parameters=None):
         """Add new reaction
@@ -170,6 +175,7 @@ class Actress(rubbercog.Rubbercog):
         await self.output.info(ctx, self.text.get("reaction_add", name=name))
         await self.event.sudo(ctx, f"Reaction **{name}** added.")
 
+    @commands.check(acl.check)
     @react.command(name="edit")
     async def react_edit(self, ctx, name: str = None, *, parameters=None):
         """Edit reaction
@@ -205,6 +211,7 @@ class Actress(rubbercog.Rubbercog):
         await self.output.info(ctx, self.text.get("reaction_edit", name=name))
         await self.event.sudo(ctx, f"Reaction **{name}** updated.")
 
+    @commands.check(acl.check)
     @react.command(name="remove")
     async def react_remove(self, ctx, name: str = None):
         """Remove reaction"""
@@ -219,12 +226,13 @@ class Actress(rubbercog.Rubbercog):
         await self.output.info(ctx, self.text.get("reaction_remove", name=name))
         await self.event.sudo(ctx, f"Reaction **{name}** removed.")
 
-    @commands.is_owner()
+    @commands.check(acl.check)
     @commands.group(name="image", aliases=["img", "images"])
     async def image(self, ctx):
         """Manage images available to the bot"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @image.command(name="list")
     async def image_list(self, ctx):
         """List available commands"""
@@ -245,6 +253,7 @@ class Actress(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @commands.check(acl.check)
     @image.command(name="download", aliases=["dl"])
     async def image_download(self, ctx, url: str, filename: str):
         """Download new image
@@ -265,6 +274,7 @@ class Actress(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @commands.check(acl.check)
     @image.command(name="remove", aliases=["delete", "rm", "del"])
     async def image_remove(self, ctx, filename: str):
         """Remove image
@@ -279,6 +289,7 @@ class Actress(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @commands.check(acl.check)
     @image.command(name="show")
     async def image_show(self, ctx, filename: str):
         """Show an image

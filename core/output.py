@@ -38,7 +38,7 @@ class Output:
         error: Exception = None,
     ):
         if self.level <= logging.DEBUG:
-            await self.send(source, text.get("bot", "debug"), message, error)
+            await self.send(source, "debug", message, error)
 
     async def info(
         self,
@@ -47,7 +47,7 @@ class Output:
         error: Exception = None,
     ):
         if self.level <= logging.INFO:
-            await self.send(source, text.get("bot", "info"), message, error)
+            await self.send(source, "info", message, error)
 
     async def warning(
         self,
@@ -56,7 +56,7 @@ class Output:
         error: Exception = None,
     ):
         if self.level <= logging.WARNING:
-            await self.send(source, text.get("bot", "warning"), message, error)
+            await self.send(source, "warning", message, error)
 
     async def error(
         self,
@@ -65,7 +65,7 @@ class Output:
         error: Exception = None,
     ):
         if self.level <= logging.ERROR:
-            await self.send(source, text.get("bot", "error"), message, error)
+            await self.send(source, "error", message, error)
 
     async def critical(
         self,
@@ -74,7 +74,7 @@ class Output:
         error: Exception = None,
     ):
         if self.level <= logging.CRITICAL:
-            await self.send(source, text.get("bot", "critical"), message, error)
+            await self.send(source, "critical", message, error)
 
     async def send(
         self,
@@ -92,7 +92,7 @@ class Output:
         if message is None and error is None:
             message = "unspecified"
 
-        result = template.format(level=level.upper(), message=message)
+        result = template.format(level=text.get("bot", level.upper()), message=message)
 
         # parse error
         if error is not None:
@@ -106,7 +106,10 @@ class Output:
 
             result += template_cont.format(error=error, traceback=tr)
 
-        await source.send(result, delete_after=config.get("delay", "bot error"))
+        if level in ("debug", "info", "warning"):
+            await source.send(result, delete_after=config.get("delay", "bot error"))
+        else:
+            await source.send(result)
 
 
 class Console:
@@ -126,9 +129,6 @@ class Console:
                 return
             self.log_channel = self.bot.get_channel(log_channel_id)
         return self.log_channel
-
-    def bot(self, bot: discord.ext.commands.Bot):
-        self.bot = bot
 
     async def debug(
         self,
@@ -287,18 +287,28 @@ class Event:
         self,
         source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
         message: str,
+        *,
+        escape_markdown: bool = True,
     ):
         """Non-privileged events"""
         await self.getChannel().send(
-            "**USER** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
+            "**USER** "
+            + self._identifier(source)
+            + ": "
+            + (message.replace("@", "@\u200b") if escape_markdown else message)
         )
 
     async def sudo(
         self,
         source: Union[commands.Context, discord.Message, discord.User, discord.Member, str],
         message: str,
+        *,
+        escape_markdown: bool = True,
     ):
         """Privileged events"""
         await self.getChannel().send(
-            "**SUDO** " + self._identifier(source) + ": " + message.replace("@", "@\u200b")
+            "**SUDO** "
+            + self._identifier(source)
+            + ": "
+            + (message.replace("@", "@\u200b") if escape_markdown else message)
         )

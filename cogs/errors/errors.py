@@ -114,7 +114,7 @@ class Errors(rubbercog.Rubbercog):
             )
             return False
         if isinstance(error, commands.ExtensionError):
-            await self.output.error(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
+            await self.output.critical(ctx, self.text.get(type(error).__name__, extension=f"{error.name!r}"))
             return False
 
         # The rest of client exceptions
@@ -139,7 +139,8 @@ class Errors(rubbercog.Rubbercog):
             await self.console.critical(ctx, "Database error", error)
             await self.event.user(
                 ctx,
-                f"Database reported`{error_name}`. The session may be invalidated <@{config.admin_id}>"
+                f"Database reported`{error_name}`. The session may be invalidated <@{config.admin_id}>",
+                escape_markdown=False,
             )
             return False
         # fmt: on

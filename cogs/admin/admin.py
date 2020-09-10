@@ -3,7 +3,7 @@ import subprocess
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from core.config import config
 
 
@@ -22,13 +22,14 @@ class Admin(rubbercog.Rubbercog):
     ## Commands
     ##
 
-    @commands.is_owner()
+    @commands.check(acl.check)
     @commands.group(name="system")
     async def system(self, ctx):
         """Prepare the guild for shutdown"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.invoked_with)
 
+    @commands.check(acl.check)
     @system.command(name="off", aliases=["down"])
     async def system_off(self, ctx, *, reason: str = None):
         """Prepare for power off
@@ -65,6 +66,7 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send(self.text.get("system_fail"))
         await self.event.sudo(ctx, "System off" + f": {reason}." if len(reason) else ".")
 
+    @commands.check(acl.check)
     @system.command(name="on", aliases=["up"])
     async def system_on(self, ctx):
         """Restore"""
@@ -97,6 +99,7 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send(self.text.get("power_fail"))
         await self.event.sudo(ctx, "System on.")
 
+    @commands.check(acl.check)
     @system.command(name="shutdown")
     async def system_shutdown(self, ctx):
         """Shutdown the bot"""
@@ -104,8 +107,8 @@ class Admin(rubbercog.Rubbercog):
         await self.console.critical(ctx, "System shutdown initiated.")
         await self.bot.logout()
 
+    @commands.check(acl.check)
     @commands.command(name="status")
-    @commands.check(check.is_mod)
     async def status(self, ctx: commands.Context):
         """Display systemd status"""
         if config.loader != "systemd":
@@ -123,8 +126,8 @@ class Admin(rubbercog.Rubbercog):
 
         await ctx.send("```\n{}\n```".format(stdout))
 
+    @commands.check(acl.check)
     @commands.command(name="journalctl")
-    @commands.check(check.is_mod)
     async def journalctl(self, ctx: commands.Context):
         """See bot logs"""
         cmd = None
@@ -145,7 +148,7 @@ class Admin(rubbercog.Rubbercog):
             await ctx.send("```{}```".format(o))
         await utils.delete(ctx)
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @commands.command()
     async def config(self, ctx):
         """See configuration from 'bot' section"""
@@ -187,7 +190,7 @@ class Admin(rubbercog.Rubbercog):
         await utils.delete(ctx)
 
     @commands.cooldown(rate=2, per=20, type=commands.BucketType.channel)
-    @commands.check(check.is_verified)
+    @commands.check(acl.check)
     @commands.command(name="commands")
     async def command_stats(self, ctx):
         """Command invocation statistics"""

@@ -1,4 +1,4 @@
-name: Rubbergoddess
+name: Rubbergoddess build
 
 on:
   push:
@@ -55,4 +55,4 @@ jobs:
 
     - name: Run Black
       run: |
-        black --diff .
+        black . -l 100 --diff

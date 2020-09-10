@@ -18,7 +18,7 @@ class Seeking(rubbercog.Rubbercog):
 
     @commands.guild_only()
     @commands.check(check.is_verified)
-    @commands.group(name="hledam", aliases=["hledám", "seeking"])
+    @commands.group(name="seeking", aliases=["hledám", "hledam"])
     async def seeking(self, ctx):
         """List items for current channel"""
         if ctx.invoked_subcommand is not None:

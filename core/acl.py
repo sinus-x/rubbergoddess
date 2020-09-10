@@ -7,66 +7,40 @@ repo = acl_repo.ACLRepository()
 
 
 def check(ctx: commands.Context) -> bool:
-    if ctx.author.id == config.author_id:
+    if ctx.author.id == config.admin_id:
         return True
 
-    # TODO Take into account DMs
-
-    acl_command = repo.getCommand(ctx.qualified_name)  # ??? Is it qualified name ???
-    user_role_ids = [role.id for role in ctx.author.roles]
-
-    ##
-    ## Initiate variables
-    ##
-
-    # The default is blocking: only deny where allow is False.
-    # If there is just one entry with allow set to True, only those will be accepted.
-    allow_channel = False
-    channels_strict = False
-    allow_group = False
-    groups_strict = False
-
-    allow_user = False
-
-    ##
-    ## Resolve
-    ##
-
-    # get channel information
-    for channel in acl_command.channels:
-        if ctx.channel.id == channel.item_id and channel.allow == False:
-            return False
-
-        if channel.allow == True:
-            channels_strict = True
-
-        if ctx.channel.id == channel.item_id and channel.allow == True:
-            allow_channel = True
-
-    if channels_strict and not allow_channel:
+    if ctx.guild is None:
+        # do not allow invocation in DM
         return False
 
-    # get user information
-    for user in acl_command.users:
-        if ctx.author.id == user.item_id and user.allow == False:
-            return False
+    rule = repo.get_rule(ctx.guild.id, ctx.command.qualified_name)
 
-        if ctx.author.id == user.item_id and user.allow == True:
-            allow_user = True
-            break
-
-    # get group information
-    for group in acl_command.groups:
-        # do not return False if group.allow is False, there can be user override
-
-        if group.allow == True:
-            groups_strict = True
-
-        if group.item_id in user_role_ids and group.allow == True:
-            allow_group = True
-
-    if groups_strict and not allow_group and not allow_user:
+    # do not allow execution of unknown functions
+    if rule is None:
         return False
 
-    # we do not need to check channel, it has been filtered
-    return allow_user or allow_group
+    # test for user override
+    for user in rule.users:
+        if ctx.author.id == user.user_id:
+            return user.allow
+
+    # resolve groups
+    if hasattr(ctx.author, "roles"):
+        # get user's top role
+        for role in ctx.author.roles[::-1]:
+            group = repo.get_group_by_role(role.id)
+            if group is not None:
+                break
+        else:
+            group = None
+
+        # get group hierarchy
+        while group is not None:
+            for rule_group in rule.groups:
+                if rule_group.group == group and rule_group.allow is not None:
+                    return rule_group.allow
+            group = repo.get_group(group.guild_id, group.parent)
+
+    # no settings found, return default
+    return rule.default

@@ -2,6 +2,10 @@
 
 # Rubbergoddess modules
 
+## [ACL](acl.md)
+
+Access controll. This extension is loaded by default.
+
 ## [Account](account.md)
 
 Set bot's name and avatar.
@@ -65,6 +69,10 @@ Pick between options or select number in interval. Or get random image from Unsp
 ## [Seeking](seeking.md)
 
 Announce that you're seeking something/someone.
+
+## [Semester](semester.md)
+
+Reset guild and make it ready for another semester.
 
 ## [Stalker](stalker.md)
 

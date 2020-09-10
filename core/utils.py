@@ -1,6 +1,6 @@
 import git
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 import discord
 from discord.ext import commands
@@ -9,9 +9,14 @@ from core.config import config
 from core.text import text
 
 
-def git_hash():
+def git_get_hash():
     repo = git.Repo(search_parent_directories=True)
     return repo.head.object.hexsha
+
+
+def git_get_branch():
+    repo = git.Repo(search_parent_directories=True)
+    return repo.active_branch.name
 
 
 def git_commit_msg():
@@ -23,6 +28,11 @@ def git_pull():
     repo = git.Repo(search_parent_directories=True)
     cmd = repo.git
     return cmd.pull()
+
+
+async def set_presence(bot):
+    activity = discord.Game(start=datetime.utcnow(), name=config.prefix + "help")
+    await bot.change_presence(activity=activity)
 
 
 def id_to_datetime(snowflake_id: int):
@@ -140,3 +150,27 @@ async def send_help(ctx: commands.Context):
     if ctx.invoked_subcommand is not None:
         return
     await ctx.send_help(ctx.command.qualified_name)
+
+
+def paginate(text: Union[List[str], str]) -> List[str]:
+    """Convert to messages that will fit into the 2000 character limit"""
+    if type(text) == str:
+        return list(text[0 + i : 1980 + i] for i in range(0, len(text), 1980))
+
+    result = []
+    output = ""
+    for line in text:
+        if len(output) + len(line) > 1980:
+            result.append(output)
+            output = ""
+        output += "\n" + line
+    result.append(output)
+    return result
+
+
+def get_digit_emoji(number: int) -> str:
+    """Convert digit to emoji"""
+    numbers = ("0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣")
+    if number > len(numbers) or number < 0:
+        raise ValueError("Number must be between 0 and 9.")
+    return numbers[number]

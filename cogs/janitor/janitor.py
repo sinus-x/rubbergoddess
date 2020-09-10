@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import check, rubbercog
+from core import acl, rubbercog
 from core.config import config
 
 
@@ -17,7 +17,7 @@ class Janitor(rubbercog.Rubbercog):
         self.text = CogText("janitor")
 
     @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @commands.command()
     async def hoarders(self, ctx: commands.Context, warn: str = None):
         """Check for users with multiple programme roles
@@ -74,7 +74,7 @@ class Janitor(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
 
     @commands.guild_only()
-    @commands.check(check.is_elevated)
+    @commands.check(acl.check)
     @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
     async def purge(self, ctx, limit: int, pinMode: str = "pinSkip"):
@@ -105,7 +105,7 @@ class Janitor(rubbercog.Rubbercog):
         delta = str(int(time.monotonic() - now))
         await self.event.sudo(ctx, f"Purged {total} posts in {delta}s.")
 
-    @commands.check(check.is_mod)
+    @commands.check(acl.check)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.command(name="teacher_channel", aliases=["teacher-channel"])
     async def teacher_channel(self, ctx, channel: discord.TextChannel):

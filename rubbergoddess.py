@@ -4,7 +4,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import help, rubbercog, output, presence, utils
+from core import acl, help, rubbercog, output, utils
 from core.config import config
 from repository.database import database
 from repository.database import session
@@ -14,6 +14,7 @@ from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.verification import User
 from repository.database.image import Image
 from repository.database.points import Points
+from repository.database.acl import ACL_group, ACL_rule, ACL_rule_user, ACL_rule_group
 from repository.review_repo import ReviewRepository
 
 bot = commands.Bot(
@@ -22,7 +23,6 @@ bot = commands.Bot(
     allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
 )
 
-presence = presence.Presence(bot)
 event = output.Event(bot)
 
 # fill DB with subjects shortcut, needed for reviews
@@ -43,17 +43,18 @@ async def on_ready():
             timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         )
     else:
-        message = "Logged in [{level}]: {timestamp} (hash {hash})".format(
+        message = "Logged in [{level}]: {timestamp} ({hash} on branch {branch})".format(
             level=config.get("bot", "logging"),
             timestamp=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            hash=utils.git_hash()[:7],
+            hash=utils.git_get_hash()[:7],
+            branch=utils.git_get_branch(),
         )
         started = True
 
     print(message)
     channel = bot.get_channel(config.get("channels", "stdout"))
     await channel.send(f"```{message}```")
-    await presence.set_presence()
+    await utils.set_presence(bot)
 
 
 @bot.event
@@ -68,7 +69,7 @@ async def on_error(event, *args, **kwargs):
 
 
 @bot.command()
-@commands.is_owner()
+@commands.check(acl.check)
 async def load(ctx, extension):
     bot.load_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** načteno.")
@@ -77,7 +78,7 @@ async def load(ctx, extension):
 
 
 @bot.command()
-@commands.is_owner()
+@commands.check(acl.check)
 async def unload(ctx, extension):
     bot.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** odebráno.")
@@ -86,7 +87,7 @@ async def unload(ctx, extension):
 
 
 @bot.command()
-@commands.is_owner()
+@commands.check(acl.check)
 async def reload(ctx, extension):
     bot.reload_extension(f"cogs.{extension}")
     await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
@@ -104,6 +105,8 @@ load_subjects()
 
 bot.load_extension("cogs.errors")
 print("Loaded: ERRORS (implicit)")
+bot.load_extension("cogs.acl")
+print("Loaded: ACL (implicit)")
 for extension in config.extensions:
     bot.load_extension(f"cogs.{extension}")
     print(f"Loaded: {extension.upper()}")

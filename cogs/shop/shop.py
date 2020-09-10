@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import rubbercog, check, utils
+from core import acl, rubbercog, utils
 from repository import user_repo, karma_repo
 
 repo_u = user_repo.UserRepository()
@@ -37,13 +37,14 @@ class Shop(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.bot_has_permissions(manage_nicknames=True)
-    @commands.check(check.is_verified)
+    @commands.check(acl.check)
     @commands.group(name="nickname")
     async def nickname(self, ctx):
         """Change your nickname"""
         await utils.send_help(ctx)
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
+    @commands.check(acl.check)
     @nickname.command(name="set")
     async def nickname_set(self, ctx, *, nick: str):
         """Set the nickname
@@ -90,6 +91,7 @@ class Shop(rubbercog.Rubbercog):
         await self.event.user(ctx, f"Nickname changed to {nick}.")
 
     @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
+    @commands.check(acl.check)
     @nickname.command(name="unset")
     async def nickname_unset(self, ctx):
         """Unset the nickname"""

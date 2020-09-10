@@ -1,0 +1,20 @@
+{
+	# guild ID for slave guild
+	slave_guild_id: 0
+	# slave guild invite link: https://discord.gg/......
+	slave_invite_link: ""
+
+	roles: {
+		# role IDs for engineer roles on master guild
+		master_engineer_ids: [0]
+
+		# role ID for verify on slave guild
+		slave_verify_id: 0
+
+		# mapping from master to slave (FEKT, VUT, ... roles)
+		mapping: {
+			"0": 0
+			"1": 1
+		}
+	}
+}
