@@ -165,6 +165,11 @@ class Faceshifter(rubbercog.Rubbercog):
             return
 
         emote_channel_list = await self._message_to_tuple_list(message)
+
+        if emote_channel_list is None:
+            # do not throw errors if nothing is found
+            return
+
         for emote_channel in emote_channel_list:
             try:
                 await message.add_reaction(emote_channel[0])

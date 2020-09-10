@@ -1,0 +1,14 @@
+{
+	bachelor: {
+		"0": Byli jste přijatí a v září nastupujete
+		"1": První ročník bakalářského programu
+		"2": Druhý ročník bakalářského programu
+		"3": Třetí ročník bakalářského programu
+	}
+
+	master: {
+		"0": Byli jste přijatí a v září nastupujete
+		"1": První ročník magisterského programu
+		"2": Druhý ročník magisterského programu
+	}
+}

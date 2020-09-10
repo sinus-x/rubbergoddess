@@ -166,3 +166,11 @@ def paginate(text: Union[List[str], str]) -> List[str]:
         output += "\n" + line
     result.append(output)
     return result
+
+
+def get_digit_emoji(number: int) -> str:
+    """Convert digit to emoji"""
+    numbers = ("0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣")
+    if number > len(numbers) or number < 0:
+        raise ValueError("Number must be between 0 and 9.")
+    return numbers[number]
