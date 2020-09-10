@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import rubbercog
 
 
 class Sync(rubbercog.Rubbercog):

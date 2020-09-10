@@ -1,4 +1,4 @@
-from typing import Union, Optional, List
+from typing import Optional, List
 
 from repository.base_repository import BaseRepository
 from repository.database import session
