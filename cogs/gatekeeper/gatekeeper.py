@@ -10,7 +10,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from core.config import config
 from repository import user_repo
 
@@ -30,8 +30,7 @@ class Gatekeeper(rubbercog.Rubbercog):
     ## Commands
     ##
 
-    @commands.check(check.is_in_jail)
-    @commands.check(check.is_not_verified)
+    @commands.check(acl.check)
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command()
     async def verify(self, ctx, email: str):
@@ -71,7 +70,7 @@ class Gatekeeper(rubbercog.Rubbercog):
             delete_after=config.get("delay", "verify"),
         )
 
-    @commands.check(check.is_not_verified)
+    @commands.check(acl.check)
     @commands.cooldown(rate=3, per=120, type=commands.BucketType.user)
     @commands.command()
     async def submit(self, ctx, code: str):

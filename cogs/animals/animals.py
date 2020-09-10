@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import rubbercog, utils
+from core import acl, rubbercog, utils
 from repository import user_repo
 
 repo_u = user_repo.UserRepository()
@@ -37,7 +37,7 @@ class Animals(rubbercog.Rubbercog):
     ## Commands
     ##
 
-    @commands.is_owner()
+    @commands.check(acl.check)
     @commands.command()
     async def animal(self, ctx, member: discord.Member):
         """Send vote embed"""

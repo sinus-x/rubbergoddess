@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import check, rubbercog, utils
+from core import acl, rubbercog, utils
 from core.config import config
 from repository.subject_repo import SubjectRepository
 
@@ -43,13 +43,13 @@ class Faceshifter(rubbercog.Rubbercog):
     ## Commands
     ##
 
-    @commands.guild_only()
-    @commands.check(check.is_verified)
+    @commands.check(acl.check)
     @commands.group(name="subject")
     async def subject(self, ctx):
         """Add or remove subject"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @subject.command(name="add")
     async def subject_add(self, ctx, *, subjects: str):
         """Add subject
@@ -73,6 +73,7 @@ class Faceshifter(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @commands.check(acl.check)
     @subject.command(name="remove")
     async def subject_remove(self, ctx, *, subjects: str):
         """Remove subject
@@ -96,13 +97,13 @@ class Faceshifter(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
-    @commands.guild_only()
-    @commands.check(check.is_verified)
+    @commands.check(acl.check)
     @commands.group(name="role", aliases=["programme"])
     async def role(self, ctx):
         """Add or remove role"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @role.command(name="add")
     async def role_add(self, ctx, *, roles: str):
         """Add role
@@ -128,6 +129,7 @@ class Faceshifter(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
+    @commands.check(acl.check)
     @role.command(name="remove")
     async def role_remove(self, ctx, *, roles: str):
         """Remove role

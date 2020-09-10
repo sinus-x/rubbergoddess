@@ -183,9 +183,9 @@ class ACLException(Exception):
 
 class NotFound(ACLException):
     def __init__(self, **parameters):
-        super().__init__("Not found", parameters)
+        super().__init__("Not found", **parameters)
 
 
 class Duplicate(ACLException):
     def __init__(self, **parameters):
-        super().__init__("Duplicate", parameters)
+        super().__init__("Duplicate", **parameters)
