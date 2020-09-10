@@ -1,4 +1,10 @@
 {
+	init_subjects:   Vygenerovala jsem ((subjects)) předmětů v ((category)) kategoriích.
+	init_programmes: Poslala jsem ((counter)) zpráv.
+	reset_overwrite: Odebráno ((counter)) uživatelů z kanálu **((channel))**.
+	reset_roles:     Roli ((role)) jsem odebrala ((counter)) uživatelům.
+	done: Hotovo!
+
 	bachelor: {
 		"0": Byli jste přijatí a v září nastupujete
 		"1": První ročník bakalářského programu
