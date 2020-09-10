@@ -43,7 +43,7 @@ class Judge(rubbercog.Rubbercog):
 
         db_reviews = repo_r.get_subject_reviews(subject)
         if db_reviews.count() == 0:
-            return await ctx.send(self.text.get("no reviews", mention=ctx.author.mention))
+            return await ctx.send(self.text.get("no_reviews", mention=ctx.author.mention))
 
         _total = 0
         for db_review in db_reviews:
