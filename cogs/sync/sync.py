@@ -121,7 +121,7 @@ class Sync(rubbercog.Rubbercog):
     async def unverify_member(self, member: discord.Member):
         # get member object on slave guild
         slave_member = self.get_slave_member(member.id)
-        if member is not None:
+        if slave_member is not None:
             roles = slave_member.roles[1:]  # the first is @everyone
             await slave_member.remove_roles(*roles, reason="Sync: unverify")
             await self.event.user(slave_member, "Unverified on slave server.")
