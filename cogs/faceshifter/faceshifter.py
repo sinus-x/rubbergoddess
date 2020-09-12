@@ -392,6 +392,11 @@ class Faceshifter(rubbercog.Rubbercog):
             return False
 
         await member.add_roles(role)
+
+        # optionally, hide channel
+        if channel.id in self.config.get("r2h_channels"):
+            await channel.set_permissions(member, read_messages=False)
+
         return True
 
     async def _role_remove(
