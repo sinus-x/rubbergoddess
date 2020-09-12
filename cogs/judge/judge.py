@@ -77,9 +77,6 @@ class Judge(rubbercog.Rubbercog):
         if mark < 1 or mark > 5:
             return await ctx.send(self.text.get("wrong_mark"))
 
-        if len(text) > 1024:
-            return await ctx.send(self.text.get("text_too_long"))
-
         # check if subject is in database
         db_subject = repo_s.get(subject)
         if db_subject is None:
@@ -313,10 +310,17 @@ class Judge(rubbercog.Rubbercog):
             name=self.text.get("embed", "mark"),
             value=review.tier
         )
-        embed.add_field(inline=False,
+        embed.add_field(
+            inline=False,
             name=self.text.get("embed", "text"),
-            value=review.text_review,
+            value=review.text_review[:1024],
         )
+        if len(review.text_review) > 1024:
+            embed.add_field(
+                inline=False,
+                name="\u200b",
+                value=review.text_review[1024:],
+            )
         # fmt: on
 
         embed.add_field(name="👍", value=f"{repo_r.get_votes_count(review.id, True)}")
