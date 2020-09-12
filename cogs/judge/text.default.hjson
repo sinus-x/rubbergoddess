@@ -15,8 +15,8 @@
 	}
 
 	# review add
-	text_too_long: Maximální počet znaků je 1024.
-	wrong_mark:    Známka je číslo 1-5 jako ve škole.
+	no_text:       Chybí ti text.
+	wrong_mark:    Známka je číslo 1-5 jako ve škole: jedna je nejlepší.
 	added:         Hodnocení předmětu bylo úspěšně přidáno.
 
 	# review remove

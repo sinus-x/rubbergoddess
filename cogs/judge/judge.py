@@ -74,27 +74,27 @@ class Judge(rubbercog.Rubbercog):
         mark: 1-5 (one being best)
         text: Your review
         """
-        if mark < 1 or mark > 5:
-            return await ctx.send(self.text.get("wrong_mark"))
+        result = await self.add_review(ctx, subject, mark, text, anonymous=False)
 
-        # check if subject is in database
-        db_subject = repo_s.get(subject)
-        if db_subject is None:
-            return await ctx.send(self.text.get("no_subject"))
+        if result is not None:
+            await self.event.user(ctx, f"Review **#{result.id}** for **{subject}**.")
+            await ctx.send(self.text.get("added"))
 
-        anonymous = isinstance(ctx.channel, discord.DMChannel)
-        past_review = repo_r.get_review_by_author_subject(ctx.author.id, subject)
+    @commands.check(acl.check)
+    @review.command(name="add-anonymous", aliases=["anonymous", "anon"])
+    async def review_add_anonymous(self, ctx, subject: str, mark: int, *, text: str):
+        """Add anonymous review
 
-        if past_review is None:
-            # add
-            repo_r.add_review(ctx.author.id, subject, mark, anonymous, text)
-        else:
-            # update
-            repo_r.update_review(past_review.id, mark, anonymous, text)
+        subject: Subject code
+        mark: 1-5 (one being best)
+        text: Your review
+        """
+        result = await self.add_review(ctx, subject, mark, text, anonymous=True)
 
-        # send confirmation
-        await self.event.user(ctx, f"Added review for {subject}.")
-        return await ctx.send(self.text.get("added"))
+        if result is not None:
+            await utils.delete(ctx.message)
+            await self.event.user(ctx, f"Anonymous review **#{result.id}** for **{subject}**.")
+            await ctx.send(self.text.get("added"))
 
     @commands.check(acl.check)
     @review.command(name="remove")
@@ -286,6 +286,7 @@ class Judge(rubbercog.Rubbercog):
     ##
     ## Logic
     ##
+
     def fill_subject_embed(
         self, embed: discord.Embed, review: object, average: float
     ) -> discord.Embed:
@@ -327,6 +328,32 @@ class Judge(rubbercog.Rubbercog):
         embed.add_field(name="👎", value=f"{repo_r.get_votes_count(review.id, False)}")
 
         return embed
+
+    async def add_review(self, ctx, subject: str, mark: int, text: str, anonymous: bool):
+        """Add and return review"""
+        if mark < 1 or mark > 5:
+            return await ctx.send(self.text.get("wrong_mark"))
+
+        # check if subject is in database
+        db_subject = repo_s.get(subject)
+        if db_subject is None:
+            await ctx.send(self.text.get("no_subject"))
+            return
+
+        if text is None or not len(text):
+            await ctx.send(self.text.get("no_text"))
+            return
+
+        past_review = repo_r.get_review_by_author_subject(ctx.author.id, subject)
+
+        if past_review is None:
+            # add
+            result = repo_r.add_review(ctx.author.id, subject, mark, anonymous, text)
+        else:
+            # update
+            result = repo_r.update_review(past_review.id, mark, anonymous, text)
+
+        return result
 
     ##
     ## Error handlers

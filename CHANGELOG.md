@@ -4,6 +4,11 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+### Added
+
+- Reviews are not limited to 1024 characters.
+- `review add-anonymous`, because commands no longer work in DMs.
+
 ## [1.1.0]
 
 ### Developers
