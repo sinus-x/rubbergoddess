@@ -24,11 +24,13 @@ class Semester(rubbercog.Rubbercog):
         """Prepare server for the next semester"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @semester.group(name="init")
     async def semester_init(self, ctx):
         """Initiate new semester"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @semester_init.command(name="subjects")
     async def semester_init_subjects(self, ctx, target: discord.TextChannel):
         """Send react-to-subject messages
@@ -73,6 +75,7 @@ class Semester(rubbercog.Rubbercog):
             self.text.get("init_subjects", subjects=counter_subject, category=counter_category)
         )
 
+    @commands.check(acl.check)
     @semester_init.command(name="programmes")
     async def semester_init_programmes(
         self, ctx, target: discord.TextChannel, category: str, zeroes: bool = True
@@ -113,11 +116,13 @@ class Semester(rubbercog.Rubbercog):
 
         await ctx.send(self.text.get("init_programmes", counter=counter))
 
+    @commands.check(acl.check)
     @semester.group(name="reset")
     async def semester_reset(self, ctx):
         """Remove roles and user overwrites"""
         await utils.send_help(ctx)
 
+    @commands.check(acl.check)
     @semester_reset.command(name="subjects")
     async def semester_reset_subjects(self, ctx):
         """Remove overwrites from all subject channels"""
@@ -145,6 +150,23 @@ class Semester(rubbercog.Rubbercog):
 
         await ctx.send(self.text.get("done"))
 
+    @commands.check(acl.check)
+    @semester_reset.command(name="overwrites")
+    async def semester_reset_overwrites(self, ctx, channel: discord.TextChannel):
+        """Remove overwrites from a single channel"""
+        counter = 0
+        for target in channel.overwrites:
+            if type(target) != discord.Member:
+                continue
+
+            await channel.set_permissions(target, overwrite=None)
+            counter += 1
+
+        await ctx.send(
+            self.text.get("reset_overwrite", counter=counter, channel=self.sanitise(channel.name))
+        )
+
+    @commands.check(acl.check)
     @semester_reset.command(name="programmes")
     async def semester_reset_programmes(self, ctx):
         """Remove all programme roles"""

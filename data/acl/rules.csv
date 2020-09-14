@@ -91,6 +91,12 @@ seeking add,0,VERIFY,
 seeking remove,0,VERIFY,
 # Semester
 semester,0,MOD,
+semester init,0,,
+semester init subjects,0,,
+semester init programmes,0,,
+semester reset subjects,0,,
+semester reset overwrites,0,MOD,
+semester reset programmes,0,,
 # Shop
 nickname,0,VERIFY,
 nickname set,0,VERIFY,
