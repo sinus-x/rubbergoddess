@@ -99,7 +99,7 @@ class Animals(rubbercog.Rubbercog):
             now = datetime.now()
             if (now - timestamp).total_seconds() > 5:
                 # this was probably temporary unverify, they have been checked before
-                await self.event.user(f"{after} reverified", "Not an animal (unverify).")
+                await self.event.user(f"{after} reverified", "Skipping (unverify).")
                 return
 
         await self.check(after, "on_member_update")
