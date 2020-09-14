@@ -63,16 +63,20 @@ Remove all programme roles form users
 
 The goal is not to cause any damage and prevent any problems from desynchronisation.
 
-- [ ] Temporarly disable verification
-- [ ] Update welcome message, if needed
+- [ ] Disable verification
+- [ ] Update Gatekeeper's welcome message, if needed
 - [ ] Remove `read messages` permission in the #add-subjects, #add-programme channels
 - [ ] Update Faceshifter's `r2h_channels`, if needed (#add-programme)
-- [ ] **semester reset subjects**
-- [ ] **semester reset programmes**
-- [ ] **semester init subjects #add-subjects**
-- [ ] **semester init programmes #add-programme bachelor False**
+- [ ] **semester reset subjects** (~10 minutes)
+- [ ] Optional: Unload Sync
+- [ ] **semester reset programmes** (~10 minutes)
+- [ ] Optional: Load Sync
+- [ ] **semester init subjects #add-subjects** (3 minutes)
+- [ ] **semester init programmes #add-programme bachelor False** (2 minutes)
 - [ ] Return permissions in given channels
-- [ ] Reload Gatekeeper cog
+- [ ] Load Gatekeeper cog
 - [ ] Enable verification
+
+There is significant lag when you `init` reaction channels. The bot has to add reactions to the messages, which takes time. Then the internal cache probably needs flushing: it takes several minutes before reacting adds role or channel overwrite.
 
 ← Back to [module list](index.md) or [home](../index.md)

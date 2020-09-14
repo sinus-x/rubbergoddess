@@ -8,6 +8,7 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 
 - Reviews are not limited to 1024 characters.
 - `review add-anonymous`, because commands no longer work in DMs.
+- `semester reset overwrites`
 
 ## [1.1.0]
 

@@ -62,7 +62,7 @@ class Semester(rubbercog.Rubbercog):
 
             message = []
             for i, subject in enumerate(subjects):
-                if i > 9:
+                if i > 9 and i % 10 == 0:
                     await target.send("\n".join(message))
                     message = []
 
