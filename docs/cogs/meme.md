@@ -16,6 +16,10 @@ Send UwUized message back.
 
 Send message wItH rANdoM cApiTaLIsatIoN
 
+### fish
+
+Go fishing!
+
 ## Privileged commands
 
 This module has no commands only usable by privileged users.

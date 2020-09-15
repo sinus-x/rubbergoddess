@@ -3,7 +3,7 @@ import random
 import discord
 from discord.ext import commands
 
-from cogs.resource import CogText
+from cogs.resource import CogConfig, CogText
 from core import rubbercog
 from core.emote import emote
 
@@ -15,6 +15,9 @@ class Meme(rubbercog.Rubbercog):
         super().__init__(bot)
 
         self.text = CogText("meme")
+        self.config = CogConfig("meme")
+
+        self.fishing_pool = self.config.get("fishing")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
@@ -60,6 +63,21 @@ class Meme(rubbercog.Rubbercog):
                 else:
                     text += letter
         await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
+
+    @commands.cooldown(rate=3, per=10, type=commands.BucketType.user)
+    @commands.command()
+    async def fish(self, ctx):
+        """Go fishing!"""
+        roll = random.uniform(0, 1)
+        options = None
+        for probabilty, harvest in self.fishing_pool.items():
+            if roll >= float(probabilty):
+                options = harvest
+                break
+        else:
+            return await ctx.send(self.text.get("fishing_fail", mention=ctx.author.mention))
+
+        await ctx.send(random.choice(options))
 
     ##
     ## Logic
