@@ -60,7 +60,7 @@
 			# managed role and channel assignment, react-to-role functionality
 			faceshifter
 			# server verification
-			gatekeeper
+			verify
 			# information cog
 			howto
 			# purge messages, duplicate subject channel for teacher

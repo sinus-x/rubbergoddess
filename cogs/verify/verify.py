@@ -17,7 +17,7 @@ from repository import user_repo
 repo_u = user_repo.UserRepository()
 
 
-class Gatekeeper(rubbercog.Rubbercog):
+class Verify(rubbercog.Rubbercog):
     """Verify your account"""
 
     def __init__(self, bot):

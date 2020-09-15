@@ -10,6 +10,10 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 - `review add-anonymous`, because commands no longer work in DMs.
 - `semester reset overwrites`
 
+### Maintenance
+
+- Gatekeeper cog is renamed back to Verify
+
 ## [1.1.0]
 
 ### Developers

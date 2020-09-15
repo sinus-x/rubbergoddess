@@ -30,10 +30,6 @@ Basic bot information: uptime, ping.
 
 Role management, both via command and by react-to-role.
 
-## [Gatekeeper](gatekeeper.md)
-
-Verifiation module.
-
 ## [Howto](howto.md)
 
 Simple help module for common questions.
@@ -77,6 +73,10 @@ Reset guild and make it ready for another semester.
 ## [Stalker](stalker.md)
 
 See whois information. Manage user database.
+
+## [Verify](verify.md)
+
+Verifiation module.
 
 ## [Voice](voice.md)
 
