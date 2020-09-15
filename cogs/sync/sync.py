@@ -101,8 +101,9 @@ class Sync(rubbercog.Rubbercog):
             # map some of their roles to slave ones
             to_add = [self.get_slave_verify()]
             event_roles = []
+
             for role in member.roles:
-                if str(role.id) in self.mapping_ids:
+                if str(role.id) in self.mapping_ids.keys():
                     mapped = self.get_slave_role(role.id)
                     to_add.append(mapped)
                     event_roles.append(mapped.name)
