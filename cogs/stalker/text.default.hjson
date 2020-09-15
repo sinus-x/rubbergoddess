@@ -14,6 +14,7 @@
 		email:   E-mail
 		code:    Kód
 		status:  Status
+		group:   Skupina
 		changed: Poslední úprava
 		comment: Komentář
 		roles:   Role
