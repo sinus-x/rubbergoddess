@@ -61,7 +61,7 @@ class Semester(rubbercog.Rubbercog):
             await target.send(file=discord.File(fp=header, filename=f"{category.name}.png"))
 
             message = []
-            for i, subject in enumerate(subjects):
+            for i, subject in enumerate(sorted(subjects, key=lambda s: s.name)):
                 if i > 9 and i % 10 == 0:
                     await target.send("\n".join(message))
                     message = []
