@@ -108,7 +108,7 @@ class Review(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_review", mention=ctx.author.mention))
 
         repo_r.remove(review.id)
-        await self.event.user(ctx, f"Removed review for {subject}.")
+        await self.event.user(ctx, f"Removed review for **{subject}**.")
         return await ctx.send(self.text.get("removed"))
 
     @commands.check(acl.check)
@@ -126,7 +126,7 @@ class Review(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_review", mention=ctx.author.mention))
 
         repo_r.remove(id)
-        await self.event.sudo(ctx, f"Review {id} removed")
+        await self.event.sudo(ctx, f"Review **#{id}** removed")
         return await ctx.send(self.text.get("removed"))
 
     @commands.check(acl.check)
@@ -149,7 +149,7 @@ class Review(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("subject_exists"))
 
         repo_s.add(subject, name, category)
-        await self.event.sudo(ctx, f"Subject {subject} added")
+        await self.event.sudo(ctx, f"Subject **{subject}** added.")
         await ctx.send(self.text.get("subject_added"))
 
     @commands.check(acl.check)
@@ -166,7 +166,7 @@ class Review(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_subject"))
 
         repo_s.update(subject, name, category)
-        await self.event.sudo(ctx, f"Subject {subject} updated")
+        await self.event.sudo(ctx, f"Subject **{subject}** updated.")
         await ctx.send(self.text.get("subject_updated"))
 
     @commands.check(acl.check)
@@ -181,7 +181,7 @@ class Review(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_subject"))
 
         repo_s.remove(subject)
-        await self.event.sudo(ctx, f"Subject {subject} removed")
+        await self.event.sudo(ctx, f"Subject **{subject}** removed.")
         await ctx.send(self.text.get("subject_removed"))
 
     ##
