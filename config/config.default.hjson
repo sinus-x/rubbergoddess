@@ -61,8 +61,6 @@
 			howto
 			# purge messages, duplicate subject channel for teacher
 			janitor
-			# allow students to review their subjects
-			judge
 			# see and manage karma
 			karma
 			# nameday, weather
@@ -73,6 +71,8 @@
 			points
 			# pick, flip, roll
 			random
+			# allow students to review their subjects
+			review
 			# managed role and channel assignment, react-to-role functionality
 			roles
 			# allow users to buy stuff for their karma

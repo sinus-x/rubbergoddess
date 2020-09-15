@@ -34,10 +34,6 @@ Simple help module for common questions.
 
 Management, such role hoarding prevention or purge.
 
-## [Judge](judge.md)
-
-Subject review functions.
-
 ## [Karma](karma.md)
 
 Complete management for karma system: reaction tracking, emoji value voting, leaderboards.
@@ -57,6 +53,10 @@ MEE6-like XP points gained by participating in conversations.
 ## [Random](random.md)
 
 Pick between options or select number in interval. Or get random image from Unsplash.
+
+## [Review](review.md)
+
+Subject review functions.
 
 ## [Roles](roles.md)
 

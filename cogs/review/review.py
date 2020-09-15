@@ -9,13 +9,13 @@ repo_r = review_repo.ReviewRepository()
 repo_s = subject_repo.SubjectRepository()
 
 
-class Judge(rubbercog.Rubbercog):
+class Review(rubbercog.Rubbercog):
     """Subject reviews"""
 
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.text = CogText("judge")
+        self.text = CogText("review")
 
     ##
     ## Commands
@@ -354,11 +354,3 @@ class Judge(rubbercog.Rubbercog):
             result = repo_r.update_review(past_review.id, mark, anonymous, text)
 
         return result
-
-    ##
-    ## Error handlers
-    ##
-
-
-def setup(bot):
-    bot.add_cog(Judge(bot))

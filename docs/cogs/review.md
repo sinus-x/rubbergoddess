@@ -1,6 +1,6 @@
 ← Back to [module list](index.md) or [home](../index.md)
 
-# Judge
+# Review
 
 ## User commands
 
