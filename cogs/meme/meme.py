@@ -17,7 +17,7 @@ class Meme(rubbercog.Rubbercog):
         self.text = CogText("meme")
         self.config = CogConfig("meme")
 
-        self.fishing_pool = self.config.get("fishing")
+        self.fishing_pool = self.config.get("_fishing")
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()

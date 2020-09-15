@@ -1,5 +1,5 @@
 {
-    fishing: {
+    _fishing: {
         # Nubers represent percentage needed to get them.
 
         # The bigger the difference between the key number and the number above,

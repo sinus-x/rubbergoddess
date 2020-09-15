@@ -19,7 +19,9 @@ class CogConfig:
 
             for key, value in self.config.items():
                 # allow two layers
-                if isinstance(value, OrderedDict) or isinstance(value, dict):
+                if not key.startswith("_") and (
+                    isinstance(value, OrderedDict) or isinstance(value, dict)
+                ):
                     for subkey in value.keys():
                         if key in custom.keys() and subkey in custom[key].keys():
                             self.config[key][subkey] = custom[key][subkey]
