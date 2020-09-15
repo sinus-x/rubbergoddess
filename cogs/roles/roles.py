@@ -9,7 +9,7 @@ from repository.subject_repo import SubjectRepository
 repo_s = SubjectRepository()
 
 
-class Faceshifter(rubbercog.Rubbercog):
+class Roles(rubbercog.Rubbercog):
     """Manage roles and subjects"""
 
     def __init__(self, bot):

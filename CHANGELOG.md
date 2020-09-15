@@ -12,7 +12,10 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 
 ### Maintenance
 
+Some cogs were renamed, you'll have to alter your main config.
+
 - Gatekeeper cog is renamed back to Verify
+- Faceshifter cog is renamed to Roles
 
 ## [1.1.0]
 

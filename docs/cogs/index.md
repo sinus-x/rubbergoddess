@@ -26,10 +26,6 @@ Elite channel for users with animal as their avatar image.
 
 Basic bot information: uptime, ping.
 
-## [Faceshifter](faceshifter.md)
-
-Role management, both via command and by react-to-role.
-
 ## [Howto](howto.md)
 
 Simple help module for common questions.
@@ -61,6 +57,10 @@ MEE6-like XP points gained by participating in conversations.
 ## [Random](random.md)
 
 Pick between options or select number in interval. Or get random image from Unsplash.
+
+## [Roles](roles.md)
+
+Role management, both via command and by react-to-role.
 
 ## [Seeking](seeking.md)
 
