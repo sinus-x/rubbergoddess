@@ -16,6 +16,10 @@ This module has no commands usable by non-privileged users.
 
 Owner only. Send a text to given text channel.
 
+### send dm (user) (text)
+
+Send direct message to specified user.
+
 ### send image (channel) (path)
 
 Owner only. Send an image to given text channel. That image has to be in module's directory; the best way to add images is to add them with **image download** command (see below).

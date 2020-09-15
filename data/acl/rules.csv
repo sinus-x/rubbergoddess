@@ -30,6 +30,7 @@ acl group_constraint remove,0,,
 # Actress
 send,0,,
 send text,0,,
+send dm,0,,
 send image,0,,
 react,0,MOD,
 react overview,0,MOD,

@@ -55,6 +55,18 @@ class Actress(rubbercog.Rubbercog):
         await self.output.info(ctx, self.text.get("send_text"))
 
     @commands.check(acl.check)
+    @send.command(name="dm", aliases=["text-dm"])
+    async def send_dm(self, ctx, user: discord.User, *, content: str):
+        """Send a DM to a user"""
+        try:
+            message = await user.send(content)
+        except discord.Forbidden:
+            return await ctx.send(self.text.get("dm_forbidden"))
+
+        await self.event.sudo(ctx, f"DM sent to {user}:\n>>> _{content}_")
+        await self.output.info(ctx, self.text.get("send_text"))
+
+    @commands.check(acl.check)
     @send.command(name="image", aliases=["file"])
     async def send_image(self, ctx, channel: discord.TextChannel, filename):
         """Send an image as a bot
