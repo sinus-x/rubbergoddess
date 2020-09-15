@@ -124,6 +124,9 @@ class Verify(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         """Add them their roles back, if they have been verified before"""
+        if member.guild.id != config.guild_id:
+            return
+
         db_user = repo_u.get(member.id)
         if db_user is None or db_user.status != "verified":
             return
