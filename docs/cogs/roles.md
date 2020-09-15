@@ -1,6 +1,6 @@
 ← Back to [module list](index.md) or [home](../index.md)
 
-# Faceshifter
+# Roles
 
 This module allows users to self-assign some roles via commands or react-to-role mechanics.
 

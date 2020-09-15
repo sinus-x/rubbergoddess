@@ -336,6 +336,11 @@ class Stalker(rubbercog.Rubbercog):
             )
 
             embed.add_field(
+                name=self.text.get("whois", "group"),
+                value=db_member.group if db_member.group else self.text.get("whois", "missing"),
+            )
+
+            embed.add_field(
                 name=self.text.get("whois", "changed"),
                 value=db_member.changed if db_member.changed else self.text.get("whois", "missing"),
             )

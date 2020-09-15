@@ -10,7 +10,7 @@ class ReviewRepository(BaseRepository):
     def __init__(self):
         super().__init__()
 
-    def get(self, id: int):
+    def get(self, id: int) -> Review:
         return session.query(Review).filter(Review.id == id).one_or_none()
 
     def get_subject_reviews(self, subject):
@@ -27,21 +27,22 @@ class ReviewRepository(BaseRepository):
     def get_all_reviews(self):
         return session.query(Review)
 
-    def get_review_by_author_subject(self, author_id, subject):
+    def get_review_by_author_subject(self, author_id, subject) -> Review:
         return (
             session.query(Review)
             .filter(Review.subject == subject, Review.discord_id == str(author_id))
             .first()
         )
 
-    def update_review(self, id, tier, anonym: bool, text):
+    def update_review(self, id, tier, anonym: bool, text) -> Review:
         review = Review(
             id=id, tier=tier, anonym=anonym, text_review=text, date=datetime.date.today()
         )
         session.merge(review)
         session.commit()
+        return review
 
-    def add_review(self, author, subject, tier, anonym: bool, text):
+    def add_review(self, author, subject, tier, anonym: bool, text) -> Review:
         try:
             review = Review(
                 discord_id=str(author),
@@ -56,6 +57,7 @@ class ReviewRepository(BaseRepository):
         except Exception:
             session.rollback()
             raise
+        return review
 
     def remove(self, id):
         session.query(Review).filter(Review.id == id).delete()

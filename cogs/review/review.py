@@ -9,13 +9,13 @@ repo_r = review_repo.ReviewRepository()
 repo_s = subject_repo.SubjectRepository()
 
 
-class Judge(rubbercog.Rubbercog):
+class Review(rubbercog.Rubbercog):
     """Subject reviews"""
 
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.text = CogText("judge")
+        self.text = CogText("review")
 
     ##
     ## Commands
@@ -43,7 +43,7 @@ class Judge(rubbercog.Rubbercog):
 
         db_reviews = repo_r.get_subject_reviews(subject)
         if db_reviews.count() == 0:
-            return await ctx.send(self.text.get("no reviews", mention=ctx.author.mention))
+            return await ctx.send(self.text.get("no_reviews", mention=ctx.author.mention))
 
         _total = 0
         for db_review in db_reviews:
@@ -74,30 +74,27 @@ class Judge(rubbercog.Rubbercog):
         mark: 1-5 (one being best)
         text: Your review
         """
-        if mark < 1 or mark > 5:
-            return await ctx.send(self.text.get("wrong_mark"))
+        result = await self.add_review(ctx, subject, mark, text, anonymous=False)
 
-        if len(text) > 1024:
-            return await ctx.send(self.text.get("text_too_long"))
+        if result is not None:
+            await self.event.user(ctx, f"Review **#{result.id}** for **{subject}**.")
+            await ctx.send(self.text.get("added"))
 
-        # check if subject is in database
-        db_subject = repo_s.get(subject)
-        if db_subject is None:
-            return await ctx.send(self.text.get("no_subject"))
+    @commands.check(acl.check)
+    @review.command(name="add-anonymous", aliases=["anonymous", "anon"])
+    async def review_add_anonymous(self, ctx, subject: str, mark: int, *, text: str):
+        """Add anonymous review
 
-        anonymous = isinstance(ctx.channel, discord.DMChannel)
-        past_review = repo_r.get_review_by_author_subject(ctx.author.id, subject)
+        subject: Subject code
+        mark: 1-5 (one being best)
+        text: Your review
+        """
+        result = await self.add_review(ctx, subject, mark, text, anonymous=True)
 
-        if past_review is None:
-            # add
-            repo_r.add_review(ctx.author.id, subject, mark, anonymous, text)
-        else:
-            # update
-            repo_r.update_review(past_review.id, mark, anonymous, text)
-
-        # send confirmation
-        await self.event.user(ctx, f"Added review for {subject}.")
-        return await ctx.send(self.text.get("added"))
+        if result is not None:
+            await utils.delete(ctx.message)
+            await self.event.user(ctx, f"Anonymous review **#{result.id}** for **{subject}**.")
+            await ctx.send(self.text.get("added"))
 
     @commands.check(acl.check)
     @review.command(name="remove")
@@ -111,7 +108,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_review", mention=ctx.author.mention))
 
         repo_r.remove(review.id)
-        await self.event.user(ctx, f"Removed review for {subject}.")
+        await self.event.user(ctx, f"Removed review for **{subject}**.")
         return await ctx.send(self.text.get("removed"))
 
     @commands.check(acl.check)
@@ -129,7 +126,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_review", mention=ctx.author.mention))
 
         repo_r.remove(id)
-        await self.event.sudo(ctx, f"Review {id} removed")
+        await self.event.sudo(ctx, f"Review **#{id}** removed")
         return await ctx.send(self.text.get("removed"))
 
     @commands.check(acl.check)
@@ -152,7 +149,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("subject_exists"))
 
         repo_s.add(subject, name, category)
-        await self.event.sudo(ctx, f"Subject {subject} added")
+        await self.event.sudo(ctx, f"Subject **{subject}** added.")
         await ctx.send(self.text.get("subject_added"))
 
     @commands.check(acl.check)
@@ -169,7 +166,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_subject"))
 
         repo_s.update(subject, name, category)
-        await self.event.sudo(ctx, f"Subject {subject} updated")
+        await self.event.sudo(ctx, f"Subject **{subject}** updated.")
         await ctx.send(self.text.get("subject_updated"))
 
     @commands.check(acl.check)
@@ -184,7 +181,7 @@ class Judge(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("no_subject"))
 
         repo_s.remove(subject)
-        await self.event.sudo(ctx, f"Subject {subject} removed")
+        await self.event.sudo(ctx, f"Subject **{subject}** removed.")
         await ctx.send(self.text.get("subject_removed"))
 
     ##
@@ -289,6 +286,7 @@ class Judge(rubbercog.Rubbercog):
     ##
     ## Logic
     ##
+
     def fill_subject_embed(
         self, embed: discord.Embed, review: object, average: float
     ) -> discord.Embed:
@@ -313,10 +311,17 @@ class Judge(rubbercog.Rubbercog):
             name=self.text.get("embed", "mark"),
             value=review.tier
         )
-        embed.add_field(inline=False,
+        embed.add_field(
+            inline=False,
             name=self.text.get("embed", "text"),
-            value=review.text_review,
+            value=review.text_review[:1024],
         )
+        if len(review.text_review) > 1024:
+            embed.add_field(
+                inline=False,
+                name="\u200b",
+                value=review.text_review[1024:],
+            )
         # fmt: on
 
         embed.add_field(name="👍", value=f"{repo_r.get_votes_count(review.id, True)}")
@@ -324,10 +329,28 @@ class Judge(rubbercog.Rubbercog):
 
         return embed
 
-    ##
-    ## Error handlers
-    ##
+    async def add_review(self, ctx, subject: str, mark: int, text: str, anonymous: bool):
+        """Add and return review"""
+        if mark < 1 or mark > 5:
+            return await ctx.send(self.text.get("wrong_mark"))
 
+        # check if subject is in database
+        db_subject = repo_s.get(subject)
+        if db_subject is None:
+            await ctx.send(self.text.get("no_subject"))
+            return
 
-def setup(bot):
-    bot.add_cog(Judge(bot))
+        if text is None or not len(text):
+            await ctx.send(self.text.get("no_text"))
+            return
+
+        past_review = repo_r.get_review_by_author_subject(ctx.author.id, subject)
+
+        if past_review is None:
+            # add
+            result = repo_r.add_review(ctx.author.id, subject, mark, anonymous, text)
+        else:
+            # update
+            result = repo_r.update_review(past_review.id, mark, anonymous, text)
+
+        return result

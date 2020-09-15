@@ -55,6 +55,18 @@ class Actress(rubbercog.Rubbercog):
         await self.output.info(ctx, self.text.get("send_text"))
 
     @commands.check(acl.check)
+    @send.command(name="dm", aliases=["text-dm"])
+    async def send_dm(self, ctx, user: discord.User, *, content: str):
+        """Send a DM to a user"""
+        try:
+            message = await user.send(content)
+        except discord.Forbidden:
+            return await ctx.send(self.text.get("dm_forbidden"))
+
+        await self.event.sudo(ctx, f"DM sent to {user}:\n>>> _{content}_")
+        await self.output.info(ctx, self.text.get("send_text"))
+
+    @commands.check(acl.check)
     @send.command(name="image", aliases=["file"])
     async def send_image(self, ctx, channel: discord.TextChannel, filename):
         """Send an image as a bot
@@ -157,6 +169,7 @@ class Actress(rubbercog.Rubbercog):
         sensitive <true | false>
         triggers "a b c" "d e" f
         responses "abc def"
+        enabled <true | false>
 
         users 0 1 2
         channels 0 1 2
@@ -187,6 +200,7 @@ class Actress(rubbercog.Rubbercog):
         sensitive <true | false>
         triggers "a b c" "d e" f
         responses "abc def"
+        enabled <true | false>
 
         users 0 1 2
         channels 0 1 2
@@ -201,9 +215,8 @@ class Actress(rubbercog.Rubbercog):
         new_reaction = await self.parse_react_message(ctx.message, strict=False)
         reaction = self.reactions[name]
 
-        for key, value in reaction.items():
-            if key in new_reaction.keys():
-                reaction[key] = new_reaction[key]
+        for key, value in new_reaction.items():
+            reaction[key] = new_reaction[key]
 
         self.reactions[name] = reaction
         self._save_reactions()
@@ -340,9 +353,10 @@ class Actress(rubbercog.Rubbercog):
                 if reaction["counter"] > 1:
                     self.reactions[name]["counter"] -= 1
                 else:
-                    # last usage, delete from config
-                    del self.reactions[name]
-                    await self.console.info("Reaction removed: {name}")
+                    # last usage, disable
+                    del self.reactions[name]["counter"]
+                    self.reactions[name]["enabled"] = False
+                    await self.event.user(message, "Reaction disabled: **{name}**.")
                 self._save_reactions()
 
             break
@@ -409,6 +423,10 @@ class Actress(rubbercog.Rubbercog):
             pass
 
     def _reaction_matches(self, message, reaction) -> bool:
+        # check if it is enabled
+        if not reaction["enabled"]:
+            return False
+
         # normalise
         if reaction["sensitive"]:
             text = message.content
@@ -466,6 +484,7 @@ class Actress(rubbercog.Rubbercog):
                 "sensitive",
                 "triggers",
                 "responses",
+                "enabled",
                 "users",
                 "channels",
                 "counter",
@@ -478,6 +497,7 @@ class Actress(rubbercog.Rubbercog):
             if key == "type" and value not in ("text", "image") \
             or key == "match" and value not in ("full", "start", "end", "any") \
             or key == "sensitive" and value not in ("true", "false") \
+            or key == "enabled" and value not in ("true", "false") \
             or key == "triggers" and len(value) < 1 \
             or key == "responses" and len(value) < 1:
                 invalid = True
@@ -487,7 +507,7 @@ class Actress(rubbercog.Rubbercog):
                 raise ReactionParsingException(key, value)
 
             # parse
-            if key == "sensitive":
+            if key in ("sensitive", "enabled"):
                 value = value == "true"
             elif key in ("triggers", "responses"):
                 # convert to list
@@ -522,7 +542,7 @@ class Actress(rubbercog.Rubbercog):
         for key in ("triggers", "responses"):
             value = "\n".join(reaction[key])
             embed.add_field(name=key, value=value, inline=False)
-        for key in ("type", "match", "sensitive"):
+        for key in ("type", "match", "sensitive", "enabled"):
             embed.add_field(name=key, value=reaction[key])
         if "users" in reaction.keys() and reaction["users"] is not None:
             users = [self.bot.get_user(x) for x in reaction["users"]]
@@ -536,7 +556,7 @@ class Actress(rubbercog.Rubbercog):
             value = "\n".join(f"`{channel.id}` {channel.mention}" for channel in channels)
             embed.add_field(name="channels", value=value, inline=False)
         if "counter" in reaction.keys() and reaction["counter"] is not None:
-            embed.add_field(name="countdown", value=str(reaction["counter"]))
+            embed.add_field(name="counter", value=str(reaction["counter"]))
 
         return embed
 

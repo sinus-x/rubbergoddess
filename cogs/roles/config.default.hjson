@@ -2,6 +2,9 @@
 	# react-to-role channels
 	r2r_channels: []
 
+	# react-to-hide channels (add "deny" overwrite on reaction)
+	r2h_channels: []
+
 	# which role IDs are allowed to assign programmes
 	programme_roles: []
 	# which role IDs are allowed to assign subjects

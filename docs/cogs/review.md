@@ -1,6 +1,6 @@
 ← Back to [module list](index.md) or [home](../index.md)
 
-# Judge
+# Review
 
 ## User commands
 
@@ -8,11 +8,13 @@
 
 Native users only. Display user reviews for given subject.
 
-### review add (subject shortcut) (mark) _(text)_
+### review add (subject shortcut) (mark) (text)
 
 Add subject review. Mark is integer (1 to 5, one being the best).
 
-If the user sends the review via DM, their nickname won't be visible, granting them anonymity.
+### review add-anonymous (subject shortcut) (mark) (text)
+
+Add anonymous review. Mark is integer (1 to 5, one being the best).
 
 ### review remove (subject shortcut)
 

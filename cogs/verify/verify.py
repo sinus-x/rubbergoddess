@@ -17,14 +17,14 @@ from repository import user_repo
 repo_u = user_repo.UserRepository()
 
 
-class Gatekeeper(rubbercog.Rubbercog):
+class Verify(rubbercog.Rubbercog):
     """Verify your account"""
 
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.text = CogText("gatekeeper")
-        self.config = CogConfig("gatekeeper")
+        self.text = CogText("verify")
+        self.config = CogConfig("verify")
 
     ##
     ## Commands
@@ -124,6 +124,9 @@ class Gatekeeper(rubbercog.Rubbercog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         """Add them their roles back, if they have been verified before"""
+        if member.guild.id != config.guild_id:
+            return
+
         db_user = repo_u.get(member.id)
         if db_user is None or db_user.status != "verified":
             return

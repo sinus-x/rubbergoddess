@@ -92,7 +92,7 @@ class Output:
         if message is None and error is None:
             message = "unspecified"
 
-        result = template.format(level=text.get("bot", level.upper()), message=message)
+        result = template.format(level=text.get("bot", level).upper(), message=message)
 
         # parse error
         if error is not None:

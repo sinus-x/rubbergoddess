@@ -19,7 +19,9 @@ class CogConfig:
 
             for key, value in self.config.items():
                 # allow two layers
-                if isinstance(value, OrderedDict) or isinstance(value, dict):
+                if not key.startswith("_") and (
+                    isinstance(value, OrderedDict) or isinstance(value, dict)
+                ):
                     for subkey in value.keys():
                         if key in custom.keys() and subkey in custom[key].keys():
                             self.config[key][subkey] = custom[key][subkey]
@@ -35,7 +37,7 @@ class CogConfig:
             if arg in result:
                 result = result[arg]
             else:
-                raise ValueError(f"`{'/'.join(args)}` is not valid argument for given config file.")
+                raise ValueError(f"Could not get config value at `{'/'.join(args)}`.")
         return result
 
 
@@ -69,7 +71,7 @@ class CogText:
             if arg in result:
                 result = result[arg]
             else:
-                raise ValueError(f"`{'/'.join(args)}` is not valid argument for given text file.")
+                raise ValueError(f"Could not get text at `{'/'.join(args)}`.")
 
         def replace(result: str):
             # apply emojis

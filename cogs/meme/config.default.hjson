@@ -1,0 +1,26 @@
+{
+    _fishing: {
+        # Nubers represent percentage needed to get them.
+
+        # The bigger the difference between the key number and the number above,
+        # the bigger the chance of catching it.
+        0.95: [
+            # 5%
+            🐢
+            🦆
+            🦈
+        ]
+        0.70: [
+            # 15%
+            ⚽
+            🏐
+            📱
+        ]
+        0.20: [
+            # 50%
+            🐟
+            🐠
+            🥾
+        ]
+    }
+}

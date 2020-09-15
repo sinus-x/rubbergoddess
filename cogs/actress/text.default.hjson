@@ -6,6 +6,8 @@
 	reaction_edit:   Reakce **((name))** upravena.
 	reaction_remove: Reakce **((name))** odstraněna.
 
+	dm_forbidden: Uživatel má zakázané DM.
+
 	image: {
 		no_files:   Žádné soubory jsem nenašla.
 		downloaded: Soubor byl úspěšně stažen.

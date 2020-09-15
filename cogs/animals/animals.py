@@ -49,8 +49,8 @@ class Animals(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        # only act if Gatekeeper cog is not used
-        if "Gatekeeper" in self.bot.cogs.keys():
+        # only act if Verify cog is not used
+        if "Verify" in self.bot.cogs.keys():
             return
 
         # only act if their avatar is not default
@@ -67,8 +67,8 @@ class Animals(rubbercog.Rubbercog):
         if member is None:
             return
 
-        # only act if Gatekeeper cog is used
-        if "Gatekeeper" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
+        # only act if Verify cog is used
+        if "Verify" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
             return
 
         # only act if user has changed their avatar
@@ -80,8 +80,8 @@ class Animals(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
-        # if the gatekeeper is loaded, only act user has been verified
-        if "Gatekeeper" in self.bot.cogs.keys():
+        # if the Verify is loaded, only act user has been verified
+        if "Verify" in self.bot.cogs.keys():
             verify = self.getVerifyRole()
             if not (verify not in before.roles and verify in after.roles):
                 return
@@ -99,7 +99,7 @@ class Animals(rubbercog.Rubbercog):
             now = datetime.now()
             if (now - timestamp).total_seconds() > 5:
                 # this was probably temporary unverify, they have been checked before
-                await self.event.user(f"{after} reverified", "Not an animal (unverify).")
+                await self.event.user(f"{after} reverified", "Skipping (unverify).")
                 return
 
         await self.check(after, "on_member_update")

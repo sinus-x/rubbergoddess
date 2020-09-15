@@ -9,14 +9,14 @@ from repository.subject_repo import SubjectRepository
 repo_s = SubjectRepository()
 
 
-class Faceshifter(rubbercog.Rubbercog):
+class Roles(rubbercog.Rubbercog):
     """Manage roles and subjects"""
 
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.config = CogConfig("faceshifter")
-        self.text = CogText("faceshifter")
+        self.config = CogConfig("roles")
+        self.text = CogText("roles")
 
         self.limit_programmes = {}
         self.limit_interests = {}
@@ -392,6 +392,11 @@ class Faceshifter(rubbercog.Rubbercog):
             return False
 
         await member.add_roles(role)
+
+        # optionally, hide channel
+        if channel.id in self.config.get("r2h_channels"):
+            await channel.set_permissions(member, read_messages=False)
+
         return True
 
     async def _role_remove(

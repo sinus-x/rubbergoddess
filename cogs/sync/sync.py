@@ -101,8 +101,9 @@ class Sync(rubbercog.Rubbercog):
             # map some of their roles to slave ones
             to_add = [self.get_slave_verify()]
             event_roles = []
+
             for role in member.roles:
-                if str(role.id) in self.mapping_ids:
+                if str(role.id) in self.mapping_ids.keys():
                     mapped = self.get_slave_role(role.id)
                     to_add.append(mapped)
                     event_roles.append(mapped.name)
@@ -121,7 +122,7 @@ class Sync(rubbercog.Rubbercog):
     async def unverify_member(self, member: discord.Member):
         # get member object on slave guild
         slave_member = self.get_slave_member(member.id)
-        if member is not None:
+        if slave_member is not None:
             roles = slave_member.roles[1:]  # the first is @everyone
             await slave_member.remove_roles(*roles, reason="Sync: unverify")
             await self.event.user(slave_member, "Unverified on slave server.")

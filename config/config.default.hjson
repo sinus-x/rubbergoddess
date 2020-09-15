@@ -57,16 +57,10 @@
 			animals
 			# uptime, ping
 			base
-			# managed role and channel assignment, react-to-role functionality
-			faceshifter
-			# server verification
-			gatekeeper
 			# information cog
 			howto
 			# purge messages, duplicate subject channel for teacher
 			janitor
-			# allow students to review their subjects
-			judge
 			# see and manage karma
 			karma
 			# nameday, weather
@@ -77,10 +71,16 @@
 			points
 			# pick, flip, roll
 			random
+			# allow students to review their subjects
+			review
+			# managed role and channel assignment, react-to-role functionality
+			roles
 			# allow users to buy stuff for their karma
 			shop
 			# manage users and make database lookups
 			stalker
+			# server verification
+			verify
 			# automatic voice channel creation
 			voice
 			# check against image reposts

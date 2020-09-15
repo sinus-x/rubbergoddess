@@ -26,14 +26,6 @@ Elite channel for users with animal as their avatar image.
 
 Basic bot information: uptime, ping.
 
-## [Faceshifter](faceshifter.md)
-
-Role management, both via command and by react-to-role.
-
-## [Gatekeeper](gatekeeper.md)
-
-Verifiation module.
-
 ## [Howto](howto.md)
 
 Simple help module for common questions.
@@ -41,10 +33,6 @@ Simple help module for common questions.
 ## [Janitor](janitor.md)
 
 Management, such role hoarding prevention or purge.
-
-## [Judge](judge.md)
-
-Subject review functions.
 
 ## [Karma](karma.md)
 
@@ -66,6 +54,14 @@ MEE6-like XP points gained by participating in conversations.
 
 Pick between options or select number in interval. Or get random image from Unsplash.
 
+## [Review](review.md)
+
+Subject review functions.
+
+## [Roles](roles.md)
+
+Role management, both via command and by react-to-role.
+
 ## [Seeking](seeking.md)
 
 Announce that you're seeking something/someone.
@@ -77,6 +73,10 @@ Reset guild and make it ready for another semester.
 ## [Stalker](stalker.md)
 
 See whois information. Manage user database.
+
+## [Verify](verify.md)
+
+Verifiation module.
 
 ## [Voice](voice.md)
 
