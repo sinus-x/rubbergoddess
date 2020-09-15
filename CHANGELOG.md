@@ -4,20 +4,27 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+## [1.1.1]
+
 ### Added
 
 - Reviews are not limited to 1024 characters.
 - `review add-anonymous`, because commands no longer work in DMs.
 - `semester reset overwrites`
 - `send dm`
+- React-to-hide functionality
+- `fish` command in Meme cog
+
+### Removed
+
+- Gatekeeper cog is renamed back to Verify
+- Faceshifter cog is renamed to Roles
+- Judge cog is renamed back to Review
 
 ### Maintenance
 
 Some cogs were renamed, you'll have to alter your main config.
 
-- Gatekeeper cog is renamed back to Verify
-- Faceshifter cog is renamed to Roles
-- Judge cog is renamed back to Review
 - Actress reactions require new boolean parameter `enabled`
 - Actress countdown disables the reaction
 
@@ -160,7 +167,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 
 
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.1...devel
+[1.1.1]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.3...v1.1.0
 [1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.3
 [0.6]: https://github.com/sinus-x/rubbergoddess/compare/v0.5.3...v0.6.1
