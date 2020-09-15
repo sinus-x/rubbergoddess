@@ -46,6 +46,7 @@ Mod only. This command has special formatting, as each parameter has its own lin
 | users      | no       | _ID(s)_               | Space separated                                |
 | channels   | no       | _ID(s)_               | Space separated                                |
 | counter    | no       | _integer_             | Delete after number of invocations             |
+| enabled    | yes      | true, false           |      |
 
 Example command:
 
@@ -56,7 +57,10 @@ match any
 sensitive true
 triggers "uh oh"
 responses "uh oh"
+enabled true
 ```
+
+The counter is decremented every time the reaction is invoked. When it reaches zero, the reaction is disabled.
 
 If the text contains `((name))`, it will be replaced with author's nickname; `((mention))` will be replaced with author's tag.
 _Note: Before the v1.0 version, the mention string was `{mention}`._
