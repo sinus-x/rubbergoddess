@@ -23,8 +23,8 @@ class Verify(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.text = CogText("gatekeeper")
-        self.config = CogConfig("gatekeeper")
+        self.text = CogText("verify")
+        self.config = CogConfig("verify")
 
     ##
     ## Commands
