@@ -1,4 +1,5 @@
 import traceback
+import smtplib
 
 import sqlalchemy
 
@@ -102,6 +103,11 @@ class Errors(rubbercog.Rubbercog):
             return False
 
         # All cog-related errors
+        if type(error) == smtplib.SMTPServerDisconnected:
+            await self.stdout.error(ctx, "Could not send e-mail", error)
+            await ctx.send(self.text.get(type(error).__name__))
+            return False
+
         if type(error) == commands.ExtensionFailed:
             await self.output.error(
                 ctx,
