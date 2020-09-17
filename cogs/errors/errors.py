@@ -103,9 +103,9 @@ class Errors(rubbercog.Rubbercog):
             return False
 
         # All cog-related errors
-        if type(error) == smtplib.SMTPServerDisconnected:
+        if isinstance(error, smtplib.SMTPException):
             await self.stdout.error(ctx, "Could not send e-mail", error)
-            await ctx.send(self.text.get(type(error).__name__))
+            await ctx.send(self.text.get("SMTPException", name=type(error).__name__))
             return False
 
         if type(error) == commands.ExtensionFailed:

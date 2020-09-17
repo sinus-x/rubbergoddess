@@ -60,8 +60,8 @@ class Verify(rubbercog.Rubbercog):
         # send mail
         try:
             await self._send_verification_email(ctx.author, email, code)
-        except smtplib.SMTPServerDisconnected:
-            await self.output.warning(ctx, "SMTP server disconnected, trying for the second time.")
+        except smtplib.SMTPException as e:
+            await self.console.warning(ctx, type(e).__name__)
             await self._send_verification_email(ctx.author, email, code)
 
         anonymised = "[redacted]@" + email.split("@")[1]

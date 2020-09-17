@@ -56,5 +56,5 @@
 	CommandRegistrationError: Chyba při registraci příkazu.
 
 	# library errors
-	SMTPServerDisconnected: Při odesílání e-mailu došlo k chybě. Kontaktuj někoho z mod týmu.
+	SMTPException: Při odesílání e-mailu došlo k chybě (`((name))`). Kontaktuj někoho z mod týmu.
 }
