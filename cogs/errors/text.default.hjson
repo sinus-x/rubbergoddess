@@ -54,4 +54,7 @@
 		'''
 	ExtensionNotFound:      Rozšíření **((extension))** jsem nenašla.
 	CommandRegistrationError: Chyba při registraci příkazu.
+
+	# library errors
+	SMTPException: Při odesílání e-mailu došlo k chybě (`((name))`). Kontaktuj někoho z mod týmu.
 }

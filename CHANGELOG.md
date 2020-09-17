@@ -4,6 +4,12 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+## [1.1.2]
+
+- Animals require Verify
+- Verify deals with SMTP errors a bit better
+- Fixed typo in Warden
+
 ## [1.1.1]
 
 ### Added
@@ -15,7 +21,7 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 - React-to-hide functionality
 - `fish` command in Meme cog
 
-### Removed
+### Updated
 
 - Gatekeeper cog is renamed back to Verify
 - Faceshifter cog is renamed to Roles
@@ -167,7 +173,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 
 
 
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.1...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...devel
+[1.1.2]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.3...v1.1.0
 [1.0]: https://github.com/sinus-x/rubbergoddess/compare/v0.6.1...v1.0.3

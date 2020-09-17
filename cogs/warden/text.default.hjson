@@ -5,7 +5,7 @@
 	"repost content":
 		'''
 		Pokud je obrázek repost, dej mu ♻️.
-		Jestli není, klikni tady na ❎ a při ((limit)) takových reakcích se toho upozornění smaže.
+		Jestli není, klikni tady na ❎ a při ((limit)) takových reakcích se toto upozornění smaže.
 		Pokud jsi autor a jde o repost, klikni na 🆗.
 		'''
 }

@@ -58,7 +58,12 @@ class Verify(rubbercog.Rubbercog):
         code = await self._add_user(ctx.author, login=email, role=role)
 
         # send mail
-        await self._send_verification_email(ctx.author, email, code)
+        try:
+            await self._send_verification_email(ctx.author, email, code)
+        except smtplib.SMTPException as e:
+            await self.console.warning(ctx, type(e).__name__)
+            await self._send_verification_email(ctx.author, email, code)
+
         anonymised = "[redacted]@" + email.split("@")[1]
         await ctx.send(
             self.text.get(
