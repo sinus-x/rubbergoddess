@@ -35,7 +35,7 @@ This bot takes care of user management, karma and other functions on [VUT FEKT][
 
 - [Installation and setup](https://github.com/sinus-x/rubbergoddess/wiki) on project Wiki
 - [Management and commands](https://sinus-x.github.io/rubbergoddess/) on GitHub Pages
-- You can read [the changelog](CHANGELOG.md) to learn about past and upcoming changes
+- [CHANGELOG](CHANGELOG.md)
 
 ## Related bots
 [Amadeus], mantained by [Czechbol], is younger brother, sharing a lot of core code from before the v0.1.0 release. It complements Rubbergoddess with functions like vote, graph, latex or message leaderboards.
