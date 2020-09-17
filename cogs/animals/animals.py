@@ -48,27 +48,14 @@ class Animals(rubbercog.Rubbercog):
     ##
 
     @commands.Cog.listener()
-    async def on_member_join(self, member: discord.Member):
-        # only act if Verify cog is not used
-        if "Verify" in self.bot.cogs.keys():
-            return
-
-        # only act if their avatar is not default
-        if member.avatar_url == member.default_avatar_url:
-            await self.event.user(f"{member} joined", "Not an animal (default avatar).")
-            return
-
-        await self.check(member, "on_member_join")
-
-    @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
         # only act if user is verified
         member = self.getGuild().get_member(after.id)
         if member is None:
             return
 
-        # only act if Verify cog is used
-        if "Verify" in self.bot.cogs.keys() and self.getVerifyRole() not in member.roles:
+        # only act if user is verified
+        if self.getVerifyRole() not in member.roles:
             return
 
         # only act if user has changed their avatar
@@ -80,18 +67,17 @@ class Animals(rubbercog.Rubbercog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
-        # if the Verify is loaded, only act user has been verified
-        if "Verify" in self.bot.cogs.keys():
-            verify = self.getVerifyRole()
-            if not (verify not in before.roles and verify in after.roles):
-                return
+        # only act if the user has been verified
+        verify = self.getVerifyRole()
+        if not (verify not in before.roles and verify in after.roles):
+            return
 
         # only act if their avatar is not default
         if after.avatar_url == after.default_avatar_url:
             await self.event.user(f"{after} verified", "Not an animal (default avatar).")
             return
 
-        # Lookup user timestamp, only allow new verifications
+        # lookup user timestamp, only allow new verifications
         db_user = repo_u.get(after.id)
         if db_user is not None and db_user.status == "verified":
             db_user = repo_u.get(after.id)
