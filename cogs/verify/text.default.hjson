@@ -2,8 +2,6 @@
 	# success
 	"verify successful":  "((mention)), na e-mail **((email))** jsem ti poslala kód. Pro verifikaci použij `((prefix))submit kód`."
 	"verification public": Nový uživatel ((mention)) byl úspěšně přidán s rolí **((role))**.
-	"reverify successful": "((mention)), na tvůj e-mail jsem ti poslala nový kód."
-	"reverification public": "Uživatel ((mention)) se úspěšně vrátil zprátky na server."
 	# note: you probably want to change this in text.hjson file
 	"verification DM native": '''
 		Gratuluji k verifikaci!
@@ -41,20 +39,14 @@
 		'''
 	"mail subject": "((guild_name)) → ((user_name))"
 
-	# Exceptions
-	VerificationException:   Chyba ve verifikaci.
-	# Exceptions: ?verify/?reverify change
-	NotAnEmail:              To není e-mail.
-	PlaceholderEmail:        `xlogin00` je tam jen na ukázku, potřebuji tvůj osobní xlogin.
-	AlreadyInDatabase:       Ty už v databázi jsi.
-	EmailAlreadyInDatabase:  Tvůj e-mail už v databázi jsi.
-	IDAlreadyInDatabase:     Tvůj účet už v databázi je.
-	BadEmail:                Neplatný e-mail, uživatelské jméno musí splňovat podmínku `((constraint))`.
-	# Exceptions: ?reverify prove
-	NotInDatabase:           Nejsi vůbec v databázi. ((admin))?
-	UnexpectedReverify:      Nesedí mi záznam databáze. ((admin))?
-	# Exceptions: ?submit
-	SubmitWithoutCode:       Nejdřív musíš zažádat o kód.
+	# errors and exceptions
+	VerificationException: Chyba ve verifikaci.
+	placeholder:       `xlogin00` je tam jen na ukázku, potřebuji tvůj osobní xlogin.
+	BadEmail:          Neplatný e-mail, uživatelské jméno musí splňovat podmínku `((constraint))`.
+	not_email:         To není e-mail.
+	id_in_database:    Tvůj účet už v databázi je.
+	email_in_database: Tvůj e-mail už v databázi je.
+	no_code:       Nejdřív musíš zažádat o kód.
 	ProblematicVerification: Hmm, ((admin)), je tu pokus o verifikaci se záznamem ((status))...
 	WrongVerificationCode:   Špatný kód, ((mention)).
 }
