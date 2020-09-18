@@ -4,6 +4,10 @@
 
 See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
 
+### Added
+
+- `roleinfo`
+
 ## [1.1.2]
 
 - Animals require Verify

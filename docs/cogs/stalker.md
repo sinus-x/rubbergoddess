@@ -10,6 +10,10 @@ Display general information about guild and users.
 
 ## Privileged commands
 
+### roleinfo (role)
+
+Get information about role.
+
 ### whois member (member)
 
 Display database information about user. If the command is invoked in mod channel, everything in database is shown.
