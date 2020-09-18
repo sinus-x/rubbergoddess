@@ -120,7 +120,7 @@ class Janitor(rubbercog.Rubbercog):
 
         ch = await channel.clone(name=channel.name + config.get("channels", "teacher suffix"))
         await ch.edit(position=channel.position + 1)
-        await ctx.send(self.text.get("teacher_channel", channel=channel.mention))
+        await ctx.send(self.text.get("teacher_channel", channel=ch.mention))
 
         await self.event.sudo(ctx, f"Teacher channel {ch.name}")
 
