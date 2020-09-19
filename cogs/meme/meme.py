@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import rubbercog
+from core import rubbercog, utils
 from core.emote import emote
 
 
@@ -48,6 +48,7 @@ class Meme(rubbercog.Rubbercog):
         else:
             text = self.sanitise(self.uwuize(message), limit=1900, markdown=True)
         await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text)
+        await utils.delete(ctx.message)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["rcase", "randomise"])
@@ -63,6 +64,7 @@ class Meme(rubbercog.Rubbercog):
                 else:
                     text += letter
         await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
+        await utils.delete(ctx.message)
 
     @commands.cooldown(rate=3, per=10, type=commands.BucketType.user)
     @commands.command()
