@@ -94,7 +94,11 @@ class Verify(rubbercog.Rubbercog):
         # repair the code
         code = code.replace("I", "1").replace("O", "0").upper()
         if code != db_user.code:
-            raise WrongVerificationCode(ctx.author, code, db_user.code)
+            await ctx.send(
+                self.text.get("WrongVerificationCode", mention=ctx.author.mention), delete_after=120
+            )
+            await self.event.user(ctx, f"Rejecting code `{code}` (has `{db_user.code}`.")
+            return
 
         # user is verified now
         repo_u.save_verified(ctx.author.id)
@@ -285,16 +289,6 @@ class Verify(rubbercog.Rubbercog):
         elif isinstance(error, BadEmail):
             await ctx.send(self.text.get("BadEmail", constraint=error.constraint), delete_after=120)
 
-        elif isinstance(error, WrongVerificationCode):
-            await ctx.send(
-                ctx,
-                self.text.get("WrongVerificationCode", mention=ctx.author.mention),
-                delete_after=120,
-            )
-            await self.event.user(
-                ctx, f"User ({error.login}) code mismatch: `{error.their}` != `{error.database}`"
-            )
-
         # exceptions without parameters
         elif isinstance(error, VerificationException):
             await ctx.send(self.text.get(type(error).__name__), delete_after=120)
@@ -320,12 +314,3 @@ class ProblematicVerification(VerificationException):
         super().__init__()
         self.status = status
         self.login = login
-
-
-class WrongVerificationCode(VerificationException):
-    def __init__(self, member: discord.Member, login: str, their: str, database: str):
-        super().__init__()
-        self.member = member
-        self.login = login
-        self.their = their
-        self.database = database
