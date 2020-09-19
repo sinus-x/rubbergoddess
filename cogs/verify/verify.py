@@ -33,7 +33,7 @@ class Verify(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
-    @commands.command()
+    @commands.command(aliases=["VERIFY"])
     async def verify(self, ctx, email: str):
         """Ask for verification code"""
         await utils.delete(ctx)
@@ -78,7 +78,7 @@ class Verify(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @commands.cooldown(rate=3, per=120, type=commands.BucketType.user)
-    @commands.command()
+    @commands.command(aliases=["SUBMIT"])
     async def submit(self, ctx, code: str):
         """Submit verification code"""
         await utils.delete(ctx)
