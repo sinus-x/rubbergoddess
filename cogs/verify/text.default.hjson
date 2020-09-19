@@ -15,7 +15,7 @@
 	"plaintext mail":
 		'''
 		Tvůj verifikační kód pro ((guild_name)) Discord server je: ((code)).
-		Ověříš se příkazem ((prefix))submit ((code)).
+		Ověř se příkazem ((prefix))submit ((code)) v místnosti #jail.
 
 		- ((bot_name)) (hash ((git_hash)))
 		'''
@@ -30,7 +30,7 @@
 			</p>
 			<p style="display:block;color:((color_fg));font-family:((font_family));">Tvůj verifikační kód pro <span style="font-weight:bold;">((guild_name))</span> Discord server:</p>
 			<p style="color:((color_bg));font-family:monospace;font-size:30px;letter-spacing:6px;font-weight:bold;background-color:((color_fg));display:inline-block;padding:16px 26px;margin:16px 0;border-radius:4px;">((code))</p>
-			<p style="color:((color_fg));font-family:((font_family));margin:10px 0;">Můžeš ho použít jako <span style="font-weight:bold;color:((color_bg));padding:5px 10px;font-family:monospace;background-color:((color_fg));border-radius:2px;">((prefix))submit ((code))</span></p>
+			<p style="color:((color_fg));font-family:((font_family));margin:10px 0;">Pošli ho do #jail ve formátu <span style="font-weight:bold;color:((color_bg));padding:5px 10px;font-family:monospace;background-color:((color_fg));border-radius:2px;">((prefix))submit ((code))</span></p>
 			<p style="display:block;color:((color_fg));font-family:((font_family));">
 				<a style="color:((color_fg));text-decoration:none;font-weight:bold;" href="https://github.com/sinus-x/rubbergoddess" target="_blank">((bot_name))</a>
 				, hash ((git_hash))</p>
