@@ -107,20 +107,24 @@ class Verify(rubbercog.Rubbercog):
         await self._add_verify_roles(ctx.author, db_user)
 
         # send messages
-        for role_id in config.get("roles", "native"):
-            if role_id in [x.id for x in ctx.author.roles]:
-                await ctx.author.send(self.text.get("verification DM native"))
+        try:
+            for role_id in config.get("roles", "native"):
+                if role_id in [x.id for x in ctx.author.roles]:
+                    await ctx.author.send(self.text.get("verification DM native"))
                 break
-        else:
-            await ctx.author.send(self.text.get("verification DM guest"))
-        # fmt: off
+            else:
+                await ctx.author.send(self.text.get("verification DM guest"))
+        except discord.Forbidden:
+            await self.event.user(ctx, "DMs are forbidden, no welcome message sent.")
         # announce the verification
-        await ctx.channel.send(self.text.get(
+        await ctx.channel.send(
+            self.text.get(
                 "verification public",
                 mention=ctx.author.mention,
                 role=db_user.group,
-        ), delete_after=config.get("delay", "verify"))
-        # fmt: on
+            ),
+            delete_after=config.get("delay", "verify"),
+        )
 
         await self.event.user(
             ctx,
