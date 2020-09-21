@@ -97,7 +97,7 @@ class Verify(rubbercog.Rubbercog):
             await ctx.send(
                 self.text.get("WrongVerificationCode", mention=ctx.author.mention), delete_after=120
             )
-            await self.event.user(ctx, f"Rejecting code `{code}` (has `{db_user.code}`.")
+            await self.event.user(ctx, f"Rejecting code `{code}` (has `{db_user.code}`).")
             return
 
         # user is verified now

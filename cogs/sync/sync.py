@@ -87,7 +87,7 @@ class Sync(rubbercog.Rubbercog):
 
         for engineer_id in self.engineer_ids:
             if engineer_id in master_member_roles:
-                await self.verify_member(member)
+                await self.verify_member(master_member)
                 return
 
     ##

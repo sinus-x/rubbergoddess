@@ -115,6 +115,12 @@ class Animals(rubbercog.Rubbercog):
         animal = self.getChannel().guild.get_member(animal_id)
 
         if animal is None:
+            try:
+                animal = await self.getChannel().guild.fetch_member(animal_id)
+            except discord.HTTPException:
+                animal = None
+
+        if animal is None:
             await self.console.error(
                 "animals", f"Could not find member with ID {animal_id}. Vote aborted."
             )
