@@ -1,7 +1,10 @@
 [Unit]
-Description    = Rubbergoddess Discord bot
-Requires       = postgresql.service
-After          = postgresql.service
+Description = Rubbergoddess
+
+Requires = postgresql.service
+After    = postgresql.service
+Requires = network-online.target
+After    = network-online.target
 
 [Service]
 Restart          = always

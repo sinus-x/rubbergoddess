@@ -8,6 +8,10 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 
 - `roleinfo`
 
+### Updated
+
+- Systemd services. Manual `.service` file update is required -- follow instructions from the Wiki.
+
 ## [1.1.2]
 
 - Animals require Verify
