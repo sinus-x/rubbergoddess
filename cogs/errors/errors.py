@@ -9,6 +9,7 @@ from discord.ext import commands
 from cogs.resource import CogText
 from core import rubbercog, utils
 from core.config import config
+from repository import acl_repo
 
 
 class Errors(rubbercog.Rubbercog):
@@ -52,6 +53,10 @@ class Errors(rubbercog.Rubbercog):
         """Return True if error should be thrown"""
 
         # fmt: off
+        if isinstance(error, acl_repo.ACLException):
+            await self.output.error(ctx, self.text.get("acl", type(error).__name__, error=str(error)))
+            return False
+
         # cog exceptions are handled in their cogs
         if isinstance(error, rubbercog.RubbercogException):
             if type(error) is not rubbercog.RubbercogException:
