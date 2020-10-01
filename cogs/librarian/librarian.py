@@ -1,9 +1,9 @@
 import base64
-import requests
 import hashlib
 from datetime import date
 
 from discord.ext import commands
+import aiohttp
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
@@ -20,10 +20,17 @@ class Librarian(rubbercog.Rubbercog):
         self.config = CogConfig("librarian")
         self.text = CogText("librarian")
 
+    async def fetch_data(self, url: str):
+        """Fetch data from a URL and return a dict"""
+
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(url) as r:
+                return await r.json()
+
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
         url = f"http://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
-        res = requests.get(url).json()
+        res = await self.fetch_data(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -32,7 +39,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
         url = f"http://svatky.adresa.info/json?lang=sk&date={date.today().strftime('%d%m')}"
-        res = requests.get(url).json()
+        res = await self.fetch_data(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -73,7 +80,7 @@ class Librarian(rubbercog.Rubbercog):
             + "&units=metric&lang=cz&appid="
             + token
         )
-        res = requests.get(url).json()
+        res = await self.fetch_data(url)
 
         """ Example response
         {
