@@ -1,9 +1,9 @@
+import aiohttp
 import base64
 import hashlib
 from datetime import date
 
 from discord.ext import commands
-import aiohttp
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
@@ -20,17 +20,10 @@ class Librarian(rubbercog.Rubbercog):
         self.config = CogConfig("librarian")
         self.text = CogText("librarian")
 
-    async def fetch_data(self, url: str):
-        """Fetch data from a URL and return a dict"""
-
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get(url) as r:
-                return await r.json()
-
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
         url = f"http://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
-        res = await self.fetch_data(url)
+        res = await self.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -39,7 +32,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
         url = f"http://svatky.adresa.info/json?lang=sk&date={date.today().strftime('%d%m')}"
-        res = await self.fetch_data(url)
+        res = await self.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -56,10 +49,12 @@ class Librarian(rubbercog.Rubbercog):
 
         embed = self.embed(ctx=ctx)
         embed.add_field(
-            name=self.text.get("week", "study"), value="{} ({})".format(stud_type, stud_week)
+            name=self.text.get("week", "study"),
+            value="{} ({})".format(stud_type, stud_week),
         )
         embed.add_field(
-            name=self.text.get("week", "calendar"), value="{} ({})".format(cal_type, cal_week)
+            name=self.text.get("week", "calendar"),
+            value="{} ({})".format(cal_type, cal_week),
         )
         await ctx.send(embed=embed)
 
@@ -80,7 +75,7 @@ class Librarian(rubbercog.Rubbercog):
             + "&units=metric&lang=cz&appid="
             + token
         )
-        res = await self.fetch_data(url)
+        res = await self.fetch_json(url)
 
         """ Example response
         {
@@ -133,7 +128,9 @@ class Librarian(rubbercog.Rubbercog):
         elif str(res["cod"]) == "401":
             return await ctx.send(self.text.get("weather", "token"))
         elif str(res["cod"]) != "200":
-            return await ctx.send(self.text.get("weather", "place_error", message=res["message"]))
+            return await ctx.send(
+                self.text.get("weather", "place_error", message=res["message"])
+            )
 
         title = res["weather"][0]["description"]
         description = self.text.get(
@@ -141,9 +138,13 @@ class Librarian(rubbercog.Rubbercog):
         )
         if description.endswith("CZ"):
             description = description[:-4]
-        embed = self.embed(ctx=ctx, title=title[0].upper() + title[1:], description=description)
+        embed = self.embed(
+            ctx=ctx, title=title[0].upper() + title[1:], description=description
+        )
         embed.set_thumbnail(
-            url="https://openweathermap.org/img/w/{}.png".format(res["weather"][0]["icon"])
+            url="https://openweathermap.org/img/w/{}.png".format(
+                res["weather"][0]["icon"]
+            )
         )
 
         embed.add_field(
@@ -162,14 +163,17 @@ class Librarian(rubbercog.Rubbercog):
             value=str(res["main"]["humidity"]) + " %",
         )
         embed.add_field(
-            name=self.text.get("weather", "clouds"), value=(str(res["clouds"]["all"]) + " %")
+            name=self.text.get("weather", "clouds"),
+            value=(str(res["clouds"]["all"]) + " %"),
         )
         if "visibility" in res:
             embed.add_field(
                 name=self.text.get("weather", "visibility"),
                 value=f"{int(res['visibility']/1000)} km",
             )
-        embed.add_field(name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s")
+        embed.add_field(
+            name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s"
+        )
 
         await utils.send(ctx, embed=embed)
         await utils.room_check(ctx)
@@ -223,3 +227,10 @@ class Librarian(rubbercog.Rubbercog):
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
         await ctx.send(f"**{fn}** ({quote}):\n> ```{result}```")
+
+    async def fetch_json(self, url: str) -> dict:
+        """Fetch data from a URL and return a dict"""
+
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(url) as r:
+                return await r.json()
