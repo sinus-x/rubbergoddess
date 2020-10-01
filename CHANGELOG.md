@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an idea on what you can expect in the future.
+See [Milestones] to get an idea on what you can expect in the future.
 
 ### Added
 
@@ -11,6 +11,7 @@ See [Milestones](https://github.com/sinus-x/rubbergoddess/milestones) to get an 
 ### Updated
 
 - Systemd services. Manual `.service` file update is required -- follow instructions from the Wiki.
+- Librarian uses `aiohttp` to fetch information ([PR-214] by [LakshyaShastri]).
 
 ## [1.1.2]
 
@@ -69,9 +70,9 @@ Some cogs were renamed, you'll have to alter your main config.
 ### Maintenance
 
 - All cogs were moved to their separate directories, along with their strings and configuration. Manual transfer of config and text files is needed.
-- Removed config key faceshifter/r2r_prefix ([GH-177](https://github.com/sinus-x/rubbergoddess/issues/177))
-- Database dumps are compressed at the end of the month ([GH-163](https://github.com/sinus-x/rubbergoddess/issues/163))
-- Altered text key errors/ExtensionFailed ([GH-170](https://github.com/sinus-x/rubbergoddess/issues/170))
+- Removed config key faceshifter/r2r_prefix
+- Database dumps are compressed at the end of the month
+- Altered text key errors/ExtensionFailed
 - Removed Quarantine mechanics (too much confusion)
 - Lot of fixes (see commits)
 
@@ -180,7 +181,9 @@ ADD COLUMN name VARCHAR;
 Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/Toaster192/rubbergod).
 
 
+<!-- Releases -->
 
+[Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
 [Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...devel
 [1.1.2]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.0...v1.1.1
@@ -192,3 +195,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 [0.3]: https://github.com/sinus-x/rubbergoddess/compare/v0.2.2...v0.3.0
 [0.2]: https://github.com/sinus-x/rubbergoddess/compare/v0.1.0...v0.2.2
 [0.1]: https://github.com/sinus-x/rubbergoddess/releases/tag/v0.1.0
+
+<!-- PRs and user links -->
+
+[PR-214]: https://github.com/sinus-x/rubbergoddess/pull/214
+[LakshyaShastri]: https://github.com/LakshyaShastri
