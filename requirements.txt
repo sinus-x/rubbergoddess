@@ -8,3 +8,4 @@ pre-commit
 psycopg2-binary
 requests
 sqlalchemy
+aiohttp
