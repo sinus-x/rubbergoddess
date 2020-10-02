@@ -4,14 +4,16 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.1.3]
+
 ### Added
 
 - Stalker: `roleinfo`, `channelinfo`
 
 ### Updated
 
-- Systemd services. Manual `.service` file update is required -- follow instructions from the Wiki.
-- Librarian uses `aiohttp` to fetch information ([PR-214] by [LakshyaShastri]).
+- Systemd services. Manual `.service` file update is required -- follow instructions from the Wiki
+- Librarian uses `aiohttp` to fetch information ([PR-214] by [LakshyaShastri])
 
 ### Maintenance
 
@@ -188,7 +190,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.3...devel
+[1.1.3]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.0.3...v1.1.0
