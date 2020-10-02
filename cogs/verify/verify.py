@@ -165,8 +165,8 @@ class Verify(rubbercog.Rubbercog):
 
     async def _email_to_role(self, ctx, email: str) -> discord.Role:
         """Get role from email address"""
-        registered = self.config.get("suffixes")
-        constraints = self.config.get("constraints")
+        registered = self.config.get("_suffixes")
+        constraints = self.config.get("_constraints")
         username = email.split("@")[0]
 
         for domain, role_id in list(registered.items())[:-1]:

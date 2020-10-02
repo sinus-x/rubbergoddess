@@ -13,6 +13,10 @@ See [Milestones] to get an idea on what you can expect in the future.
 - Systemd services. Manual `.service` file update is required -- follow instructions from the Wiki.
 - Librarian uses `aiohttp` to fetch information ([PR-214] by [LakshyaShastri]).
 
+### Maintenance
+
+- Verify config keys `suffixes` and `constraints` now require underscore before them. Manual config adjustment is required.
+
 ## [1.1.2]
 
 - Animals require Verify
