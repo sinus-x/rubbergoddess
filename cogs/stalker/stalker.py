@@ -379,3 +379,44 @@ class Stalker(rubbercog.Rubbercog):
         )
 
         return embed
+
+    @commands.check(acl.check)
+    @commands.command(name="channelinfo", aliases=['ci'])
+    async def channelinfo(self, ctx: commands.Context, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+
+        webhooks = await channel.webhooks()
+
+        channel_embed = discord.Embed(
+            title=f"Information about `#{str(channel)}`",
+            description="```css\nRole overwrites```",
+            colour = discord.Color.green()
+        )
+        channel_embed.set_footer(text=f"Channel ID: {channel.id}")
+
+        channel_embed.add_field(name="Channel topic", value=channel.topic)
+        channel_embed.add_field(name="Number of people in channel", value=len(channel.members))
+        channel_embed.add_field(name="Webhooks", value=len(webhooks))
+
+        roles = []
+        users = []
+        for overwrite in channel.overwrites:
+            if isinstance(overwrite, discord.Role):
+                roles.append(overwrite)
+            else:
+                users.append(overwrite)
+
+        if roles:
+            channel_embed.description += '\n'.join(
+            [f"{count}) {role.mention} (Permissions value: {role.permissions.value})"
+            for count, role in enumerate(roles, start=1)]
+        )
+
+        if users:
+            channel_embed.description += '\n\n```css\nUser overwrites```' + '\n'.join(
+            [f"{count}) {user.mention} (Permissions value: {channel.permissions_for(user).value})"
+            for count, user in enumerate(users, start=1)]
+        )
+
+        await ctx.channel.send(embed=channel_embed)
