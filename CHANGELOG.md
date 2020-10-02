@@ -6,7 +6,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 ### Added
 
-- `roleinfo`
+- Stalker: `roleinfo`, `channelinfo`
 
 ### Updated
 

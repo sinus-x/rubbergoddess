@@ -18,16 +18,9 @@ class Stalker(rubbercog.Rubbercog):
 
         self.text = CogText("stalker")
 
-    def dbobj2email(self, user):
-        if user is not None:
-            if user.group == "FEKT" and "@" not in user.login:
-                email = user.login + "@stud.feec.vutbr.cz"
-            elif user.group == "VUT" and "@" not in user.login:
-                email = user.login + "@vutbr.cz"
-            else:
-                email = user.login
-            return email
-        return
+    ##
+    ## Commands
+    ##
 
     @commands.check(acl.check)
     @commands.command()
@@ -45,6 +38,39 @@ class Stalker(rubbercog.Rubbercog):
                 count=len(role.members),
                 mentionable=role.mentionable,
                 acl_group=group.name if group is not None else "---",
+            ),
+        )
+
+        await ctx.send(embed=embed)
+
+    @commands.check(acl.check)
+    @commands.command(name="channelinfo")
+    async def channelinfo(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+
+        topic = f"{channel.topic}\n" if channel.topic is not None else ""
+        embed = self.embed(ctx=ctx, title=channel.name, description=f"{topic}{channel.id}")
+
+        # gather information
+        webhooks = await channel.webhooks()
+        roles = []
+        users = []
+        for overwrite in channel.overwrites:
+            if isinstance(overwrite, discord.Role):
+                roles.append(overwrite)
+            else:
+                users.append(overwrite)
+
+        # fill embed
+        embed.add_field(
+            name="\u200b",
+            value=self.text.get(
+                "channelinfo",
+                count=len(channel.members),
+                webhooks=len(webhooks),
+                role_count=len(roles),
+                user_count=len(users),
             ),
         )
 
@@ -293,7 +319,7 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
 
     ##
-    ## Logic
+    ## Helper functions
     ##
 
     async def _database_show_filter(self, ctx: commands.Context, status: str = None):
@@ -380,43 +406,17 @@ class Stalker(rubbercog.Rubbercog):
 
         return embed
 
-    @commands.check(acl.check)
-    @commands.command(name="channelinfo", aliases=['ci'])
-    async def channelinfo(self, ctx: commands.Context, channel: discord.TextChannel = None):
-        if channel is None:
-            channel = ctx.channel
+    ##
+    ## Helper functions
+    ##
 
-        webhooks = await channel.webhooks()
-
-        channel_embed = discord.Embed(
-            title=f"Information about `#{str(channel)}`",
-            description="```css\nRole overwrites```",
-            colour = discord.Color.green()
-        )
-        channel_embed.set_footer(text=f"Channel ID: {channel.id}")
-
-        channel_embed.add_field(name="Channel topic", value=channel.topic)
-        channel_embed.add_field(name="Number of people in channel", value=len(channel.members))
-        channel_embed.add_field(name="Webhooks", value=len(webhooks))
-
-        roles = []
-        users = []
-        for overwrite in channel.overwrites:
-            if isinstance(overwrite, discord.Role):
-                roles.append(overwrite)
+    def dbobj2email(self, user):
+        if user is not None:
+            if user.group == "FEKT" and "@" not in user.login:
+                email = user.login + "@stud.feec.vutbr.cz"
+            elif user.group == "VUT" and "@" not in user.login:
+                email = user.login + "@vutbr.cz"
             else:
-                users.append(overwrite)
-
-        if roles:
-            channel_embed.description += '\n'.join(
-            [f"{count}) {role.mention} (Permissions value: {role.permissions.value})"
-            for count, role in enumerate(roles, start=1)]
-        )
-
-        if users:
-            channel_embed.description += '\n\n```css\nUser overwrites```' + '\n'.join(
-            [f"{count}) {user.mention} (Permissions value: {channel.permissions_for(user).value})"
-            for count, user in enumerate(users, start=1)]
-        )
-
-        await ctx.channel.send(embed=channel_embed)
+                email = user.login
+            return email
+        return
