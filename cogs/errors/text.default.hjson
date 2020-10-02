@@ -1,6 +1,12 @@
 {
 	RubbercogException: Neznámá chyba jádra.
 
+	acl: {
+		ACLException: Chyba v ACL operaci. `((error))`
+		NotFound:     Nenalezeno. `((error))`
+		Duplicate:    Duplikát. `((error))`
+	}
+
 	# discord.errors
 	DiscordException: Chyba discord.py knihovny.
 	ClientException:  Chyba na straně klienta.

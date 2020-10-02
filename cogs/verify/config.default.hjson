@@ -3,14 +3,14 @@
 	# we do not want our users to try to use it (they see it and blindly follow the manual)
 	placeholder: "xlogin00"
 
-	suffixes: {
+	_suffixes: {
 		stud.feec.vutbr.cz: 0
 		vutbr.cz:           0
 		muni.cz:            0
 		# guest role
 		.:                  0
 	}
-	constraints: {
+	_constraints: {
 		stud.feec.vutbr.cz: "x[a-z]{5}[0-9][a-z0-9]"
 		vutbr.cz:           "x[a-z]{5}[0-9][a-z0-9]"
 		# the rest

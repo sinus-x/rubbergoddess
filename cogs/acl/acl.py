@@ -349,7 +349,10 @@ class ACL(rubbercog.Rubbercog):
     @commands.check(acl.check)
     @acl_.command(name="import")
     async def acl_import(self, ctx):
-        """Import settings from attachment"""
+        """Import settings from attachment
+
+        Attached filename must have filename of `rules.csv`.
+        """
         if len(ctx.message.attachments) != 1 or ctx.message.attachments[0].filename != "rules.csv":
             return await ctx.send(self.text.get("import", "wrong_file"))
 

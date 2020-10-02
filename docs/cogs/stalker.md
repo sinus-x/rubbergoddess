@@ -2,13 +2,19 @@
 
 # Stalker
 
-## User commands
+## ACL controlled commands
 
 ### guild
 
 Display general information about guild and users.
 
-## Privileged commands
+### roleinfo (role)
+
+Get information about role.
+
+### channelinfo (channel)
+
+Get information about channel.
 
 ### whois member (member)
 

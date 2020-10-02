@@ -100,6 +100,8 @@ nickname,0,VERIFY,
 nickname set,0,VERIFY,
 nickname unset,0,VERIFY,
 # Stalker
+roleinfo,0,MOD SUBMOD HELPER,
+channelnifo,0,MOD SUBMOD HELPER,
 whois,0,MOD SUBMOD,
 whois member,0,MOD SUBMOD,
 whois email,0,MOD SUBMOD,

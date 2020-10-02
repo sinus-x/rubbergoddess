@@ -1,7 +1,10 @@
 [Unit]
-Description = Rubbergoddess: Bot
-PartOf      = rubbergoddess.service
-After       = rubbergoddess.service
+Description = Rubbergoddess
+
+Requires = network-online.target
+After    = network-online.target
+Requires = docker.service
+After    = docker.service
 
 [Service]
 Restart          = always
@@ -13,4 +16,4 @@ ExecStart        = /usr/bin/docker-compose up --build
 ExecStop         = /usr/bin/docker-compose down
 
 [Install]
-WantedBy = rubbergoddess.service
+WantedBy = multi-user.service

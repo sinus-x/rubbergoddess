@@ -4,9 +4,10 @@ from discord.ext import commands
 from cogs.resource import CogText
 from core import acl, rubbercog, utils
 from core.config import config
-from repository import user_repo
+from repository import acl_repo, user_repo
 
 repository = user_repo.UserRepository()
+repo_a = acl_repo.ACLRepository()
 
 
 class Stalker(rubbercog.Rubbercog):
@@ -17,16 +18,63 @@ class Stalker(rubbercog.Rubbercog):
 
         self.text = CogText("stalker")
 
-    def dbobj2email(self, user):
-        if user is not None:
-            if user.group == "FEKT" and "@" not in user.login:
-                email = user.login + "@stud.feec.vutbr.cz"
-            elif user.group == "VUT" and "@" not in user.login:
-                email = user.login + "@vutbr.cz"
+    ##
+    ## Commands
+    ##
+
+    @commands.check(acl.check)
+    @commands.command()
+    async def roleinfo(self, ctx, role: discord.Role):
+        """Get information about role on current server"""
+        # TODO Add permission list
+
+        group = repo_a.get_group_by_role(role.id)
+
+        embed = self.embed(ctx=ctx, title=role.name, description=role.id, color=role.color)
+        embed.add_field(
+            name="\u200b",
+            value=self.text.get(
+                "roleinfo",
+                count=len(role.members),
+                mentionable=role.mentionable,
+                acl_group=group.name if group is not None else "---",
+            ),
+        )
+
+        await ctx.send(embed=embed)
+
+    @commands.check(acl.check)
+    @commands.command(name="channelinfo")
+    async def channelinfo(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+
+        topic = f"{channel.topic}\n" if channel.topic is not None else ""
+        embed = self.embed(ctx=ctx, title=channel.name, description=f"{topic}{channel.id}")
+
+        # gather information
+        webhooks = await channel.webhooks()
+        roles = []
+        users = []
+        for overwrite in channel.overwrites:
+            if isinstance(overwrite, discord.Role):
+                roles.append(overwrite)
             else:
-                email = user.login
-            return email
-        return
+                users.append(overwrite)
+
+        # fill embed
+        embed.add_field(
+            name="\u200b",
+            value=self.text.get(
+                "channelinfo",
+                count=len(channel.members),
+                webhooks=len(webhooks),
+                role_count=len(roles),
+                user_count=len(users),
+            ),
+        )
+
+        await ctx.send(embed=embed)
 
     @commands.check(acl.check)
     @commands.group(name="whois", aliases=["gdo"])
@@ -271,7 +319,7 @@ class Stalker(rubbercog.Rubbercog):
         await ctx.send(embed=embed)
 
     ##
-    ## Logic
+    ## Helper functions
     ##
 
     async def _database_show_filter(self, ctx: commands.Context, status: str = None):
@@ -357,3 +405,18 @@ class Stalker(rubbercog.Rubbercog):
         )
 
         return embed
+
+    ##
+    ## Helper functions
+    ##
+
+    def dbobj2email(self, user):
+        if user is not None:
+            if user.group == "FEKT" and "@" not in user.login:
+                email = user.login + "@stud.feec.vutbr.cz"
+            elif user.group == "VUT" and "@" not in user.login:
+                email = user.login + "@vutbr.cz"
+            else:
+                email = user.login
+            return email
+        return

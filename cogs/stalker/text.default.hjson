@@ -1,4 +1,21 @@
 {
+	# roleinfo
+	roleinfo:
+		'''
+		Počet uživatelů: **((count))**
+		ACL skupina: **((acl_group))**
+		Tagovatelná role: **((mentionable))**
+		'''
+	# channelinfo
+	channelinfo:
+		'''
+		Počet uživatelů: **((count))**
+		Počet webhooků: **((webhooks))**
+
+		Role: **((role_count))**
+		Uživatelé: **((user_count))**
+		'''
+
 	# whois
 	not_found:    Nikoho takového jsem nenašla.
 	not_in_guild: Na serveru není.

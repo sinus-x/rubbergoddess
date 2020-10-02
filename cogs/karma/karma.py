@@ -134,6 +134,8 @@ class Karma(rubbercog.Rubbercog):
     @karma.command(name="vote")
     async def karma_vote(self, ctx, emote: str = None):
         """Vote for emote's karma value"""
+        await utils.delete(ctx.message)
+
         if emote is None:
             emojis = await ctx.guild.fetch_emojis()
             emojis = [e for e in emojis if not e.animated]

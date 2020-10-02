@@ -2,6 +2,7 @@ import random
 import re
 import smtplib
 import string
+from typing import Union
 
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -32,24 +33,24 @@ class Verify(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
-    @commands.command()
+    @commands.command(aliases=["VERIFY"])
     async def verify(self, ctx, email: str):
         """Ask for verification code"""
         await utils.delete(ctx)
 
         if email.count("@") != 1:
-            raise NotAnEmail()
+            return await ctx.send(self.text.get("not_email"), delete_after=120)
 
         if self.config.get("placeholder") in email:
-            raise PlaceholderEmail()
+            return await ctx.send(self.text.get("placeholder"), delete_after=120)
 
         # check the database for member ID
         if repo_u.get(ctx.author.id) is not None:
-            raise IDAlreadyInDatabase()
+            return await ctx.send(self.text.get("id_in_database"), delete_after=120)
 
         # check the database for email
         if repo_u.getByLogin(email) is not None:
-            raise EmailAlreadyInDatabase()
+            return await ctx.send(self.text.get("email_in_database"), delete_after=120)
 
         # check e-mail format
         role = await self._email_to_role(ctx, email)
@@ -77,7 +78,7 @@ class Verify(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @commands.cooldown(rate=3, per=120, type=commands.BucketType.user)
-    @commands.command()
+    @commands.command(aliases=["SUBMIT"])
     async def submit(self, ctx, code: str):
         """Submit verification code"""
         await utils.delete(ctx)
@@ -85,7 +86,7 @@ class Verify(rubbercog.Rubbercog):
         db_user = repo_u.get(ctx.author.id)
 
         if db_user is None or db_user.status in ("unknown", "unverified") or db_user.code is None:
-            raise SubmitWithoutCode()
+            return await ctx.send(self.text.get("no_code"), delete_after=120)
 
         if db_user.status != "pending":
             raise ProblematicVerification(status=db_user.status, login=db_user.login)
@@ -93,7 +94,11 @@ class Verify(rubbercog.Rubbercog):
         # repair the code
         code = code.replace("I", "1").replace("O", "0").upper()
         if code != db_user.code:
-            raise WrongVerificationCode(ctx.author, code, db_user.code)
+            await ctx.send(
+                self.text.get("WrongVerificationCode", mention=ctx.author.mention), delete_after=120
+            )
+            await self.event.user(ctx, f"Rejecting code `{code}` (has `{db_user.code}`).")
+            return
 
         # user is verified now
         repo_u.save_verified(ctx.author.id)
@@ -102,20 +107,24 @@ class Verify(rubbercog.Rubbercog):
         await self._add_verify_roles(ctx.author, db_user)
 
         # send messages
-        for role_id in config.get("roles", "native"):
-            if role_id in [x.id for x in ctx.author.roles]:
-                await ctx.author.send(self.text.get("verification DM native"))
+        try:
+            for role_id in config.get("roles", "native"):
+                if role_id in [x.id for x in ctx.author.roles]:
+                    await ctx.author.send(self.text.get("verification DM native"))
                 break
-        else:
-            await ctx.author.send(self.text.get("verification DM guest"))
-        # fmt: off
+            else:
+                await ctx.author.send(self.text.get("verification DM guest"))
+        except discord.Forbidden:
+            await self.event.user(ctx, "DMs are forbidden, no welcome message sent.")
         # announce the verification
-        await ctx.channel.send(self.text.get(
+        await ctx.channel.send(
+            self.text.get(
                 "verification public",
                 mention=ctx.author.mention,
                 role=db_user.group,
-        ), delete_after=config.get("delay", "verify"))
-        # fmt: on
+            ),
+            delete_after=config.get("delay", "verify"),
+        )
 
         await self.event.user(
             ctx,
@@ -140,14 +149,24 @@ class Verify(rubbercog.Rubbercog):
         await self._add_verify_roles(member, db_user)
         await self.event.user(member, f"Verification skipped (**{db_user.group}**)")
 
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, member: Union[discord.Member, discord.User]):
+        """Update database status"""
+        db_user = repo_u.get(member.id)
+        if db_user is None:
+            return
+
+        repo_u.update(member.id, status="banned")
+        await self.event.sudo(member, "User was banned.")
+
     ##
     ## Helper functions
     ##
 
     async def _email_to_role(self, ctx, email: str) -> discord.Role:
         """Get role from email address"""
-        registered = self.config.get("suffixes")
-        constraints = self.config.get("constraints")
+        registered = self.config.get("_suffixes")
+        constraints = self.config.get("_constraints")
         username = email.split("@")[0]
 
         for domain, role_id in list(registered.items())[:-1]:
@@ -244,7 +263,6 @@ class Verify(rubbercog.Rubbercog):
             server.send_message(msg)
 
     async def _add_verify_roles(self, member: discord.Member, db_user: object):
-        """Return True if reverified"""
         verify = self.getVerifyRole()
         group = discord.utils.get(self.getGuild().roles, name=db_user.group)
 
@@ -265,40 +283,19 @@ class Verify(rubbercog.Rubbercog):
         if not isinstance(error, rubbercog.RubbercogException):
             return
 
-        # fmt: off
         # exceptions with parameters
         if isinstance(error, ProblematicVerification):
-            await self.output.warning(
-                ctx,
-                self.text.get("ProblematicVerification", status=error.status)
+            await ctx.send(
+                self.text.get("ProblematicVerification", status=error.status), delete_after=120
             )
-
-            await self.event.user(
-                ctx,
-                f"Problem with verification: {error.login}: {error.status}"
-            )
+            await self.event.user(ctx, f"Problem with verification: {error.login}: {error.status}")
 
         elif isinstance(error, BadEmail):
-            await self.output.warning(
-                ctx,
-                self.text.get("BadEmail", constraint=error.constraint)
-            )
-
-        elif isinstance(error, WrongVerificationCode):
-            await self.output.warning(
-                ctx,
-                self.text.get("WrongVerificationCode", mention=ctx.author.mention)
-            )
-
-            await self.event.user(
-                ctx,
-                f"User ({error.login}) code mismatch: `{error.their}` != `{error.database}`"
-            )
+            await ctx.send(self.text.get("BadEmail", constraint=error.constraint), delete_after=120)
 
         # exceptions without parameters
         elif isinstance(error, VerificationException):
-            await self.output.error(ctx, self.text.get(type(error).__name__))
-        # fmt: on
+            await ctx.send(self.text.get(type(error).__name__), delete_after=120)
 
 
 ##
@@ -310,42 +307,10 @@ class VerificationException(rubbercog.RubbercogException):
     pass
 
 
-class NotInDatabase(VerificationException):
-    pass
-
-
-class NotAnEmail(VerificationException):
-    pass
-
-
-class PlaceholderEmail(VerificationException):
-    pass
-
-
-class AlreadyInDatabase(VerificationException):
-    pass
-
-
-class EmailAlreadyInDatabase(AlreadyInDatabase):
-    pass
-
-
-class IDAlreadyInDatabase(AlreadyInDatabase):
-    pass
-
-
 class BadEmail(VerificationException):
     def __init__(self, message: str = None, constraint: str = None):
         super().__init__(message)
         self.constraint = constraint
-
-
-class UnexpectedReverify(VerificationException):
-    pass
-
-
-class SubmitWithoutCode(VerificationException):
-    pass
 
 
 class ProblematicVerification(VerificationException):
@@ -353,12 +318,3 @@ class ProblematicVerification(VerificationException):
         super().__init__()
         self.status = status
         self.login = login
-
-
-class WrongVerificationCode(VerificationException):
-    def __init__(self, member: discord.Member, login: str, their: str, database: str):
-        super().__init__()
-        self.member = member
-        self.login = login
-        self.their = their
-        self.database = database
