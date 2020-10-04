@@ -17,10 +17,20 @@ from repository.database.points import Points
 from repository.database.acl import ACL_group, ACL_rule, ACL_rule_user, ACL_rule_group
 from repository.review_repo import ReviewRepository
 
+intents = discord.Intents.none()
+intents.guilds = True
+intents.members = True
+intents.bans = True  # Used for database update
+intents.emojis = True  # Used for Karma
+intents.voice_states = True  # Used for Voice
+intents.messages = True  # Used all over the place
+intents.reactions = True  # Used for Karma and scrolling
+
 bot = commands.Bot(
     command_prefix=config.prefix,
     help_command=help.Help(),
     allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
+    intents=intents,
 )
 
 event = output.Event(bot)

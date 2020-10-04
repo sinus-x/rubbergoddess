@@ -4,6 +4,10 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Updated
+
+Because of API change, we're upgrading discord.py to 1.5.
+
 ## [1.1.3]
 
 ### Added
