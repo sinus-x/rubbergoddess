@@ -1,4 +1,7 @@
 import random
+import requests
+from io import BytesIO
+from PIL import Image, ImageDraw
 
 import discord
 from discord.ext import commands
@@ -34,10 +37,53 @@ class Meme(rubbercog.Rubbercog):
 
         await ctx.send(emote.hug_right + f" **{self.sanitise(user.display_name)}**")
 
-    @hug.error
-    async def hugError(self, ctx, error):
-        if isinstance(error, commands.BadArgument):
-            await ctx.send(self.text.get("cannot_hug"))
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.command()
+    async def pet(self, ctx, member: discord.Member = None):
+        """Pet someone!
+
+        member: Discord user. If none, the bot will hug yourself.
+        """
+        if member is None:
+            member = ctx.author
+        url = member.avatar_url_as(format="jpg")
+        response = requests.get(url)
+        avatar = Image.open(BytesIO(response.content))
+
+        frames = []
+        deform_width = (-1, -2, 1, 2, 1)
+        defom_height = (4, 3, 2, 2, -4)
+        width, height = 80, 80
+
+        for i in range(5):
+            frame = Image.new("RGBA", (112, 112), (255, 255, 255, 1))
+            hand = Image.open(f"data/meme/pet_{i}.png")
+            width -= deform_width[i]
+            height -= defom_height[i]
+            frame_avatar = avatar.resize((width, height))
+            frame_mask = Image.new("1", frame_avatar.size, 0)
+            draw = ImageDraw.Draw(frame_mask)
+            draw.ellipse((0, 0) + frame_avatar.size, fill=255)
+            frame_avatar.putalpha(frame_mask)
+
+            frame.paste(frame_avatar, (112 - width, 112 - height), frame_avatar)
+            frame.paste(hand, (0, 0), hand)
+            frames.append(frame)
+
+        with BytesIO() as image_binary:
+            frames[0].save(
+                image_binary,
+                format="GIF",
+                save_all=True,
+                append_images=frames[1:],
+                duration=40,
+                loop=0,
+                transparency=0,
+                disposal=2,
+                optimize=False,
+            )
+            image_binary.seek(0)
+            await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])

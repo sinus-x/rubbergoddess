@@ -8,6 +8,10 @@
 
 Hug someone.
 
+### pet _(member)_
+
+Pet someone.
+
 ### uwu (text)
 
 Send UwUized message back.

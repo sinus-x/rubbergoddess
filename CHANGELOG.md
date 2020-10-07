@@ -4,9 +4,13 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Added
+
+- Meme: `pet` (ported from Rubbergod)
+
 ### Updated
 
-Because of API change, we're upgrading discord.py to 1.5.
+Because of API change, we're upgrading discord.py to 1.5. It's neccesary to enable Members intent on Discord Developers page.
 
 ## [1.1.3]
 
