@@ -33,6 +33,15 @@
 	PrivateMessageOnly:    Tohle funguje jen v DM.
 	NoPrivateMessage:      Tohle v DM nefunguje.
 	NotOwner:              Tohle může dělat jenom vlastník.
+	MessageNotFound:       Takovou zprávu jsem nenašla.
+	MemberNotFound:        Takový uživatel tu není.
+	UserNotFound:          Takového uživatele jsem nenašla.
+	ChannelNotFound:       Takový kanál jsem nenašla.
+	ChannelNotReadable:    Do toho kanálu nevidím.
+	RoleNotFound:          Takovou roli jsem nenašla.
+	EmojiNotFound:         Takové emoji jsem nenašla.
+	PartialEmojiConversionFailure: Chyba konverze emoji.
+	BadBoolArgument:       Argument `((arg))` není binární.
 	DisabledCommand:       Příkaz je zakázaný.
 	CommandInvokeError:    Chyba při vykonávání příkazu.
 	CommandOnCooldown:     Trochu zpomal, počkej ((time)).
