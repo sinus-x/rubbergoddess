@@ -76,26 +76,28 @@ class Meme(rubbercog.Rubbercog):
         """
         if member is None:
             member = ctx.author
-        url = member.avatar_url_as(format="jpg")
-        response = requests.get(url)
-        avatar = Image.open(BytesIO(response.content))
 
-        frames = self.construct_gif(avatar, hue=True)
+        with ctx.channel.typing():
+            url = member.avatar_url_as(format="jpg")
+            response = requests.get(url)
+            avatar = Image.open(BytesIO(response.content))
 
-        with BytesIO() as image_binary:
-            frames[0].save(
-                image_binary,
-                format="GIF",
-                save_all=True,
-                append_images=frames[1:],
-                duration=40,
-                loop=0,
-                transparency=0,
-                disposal=2,
-                optimize=False,
-            )
-            image_binary.seek(0)
-            await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
+            frames = self.construct_gif(avatar, hue=True)
+
+            with BytesIO() as image_binary:
+                frames[0].save(
+                    image_binary,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=40,
+                    loop=0,
+                    transparency=0,
+                    disposal=2,
+                    optimize=False,
+                )
+                image_binary.seek(0)
+                await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
 
     def construct_gif(self, avatar: Image, hue: bool = False) -> list:
         frames = []
