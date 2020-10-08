@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import acl, rubbercog, utils, image_generator
+from core import acl, rubbercog, utils, image_utils
 from repository import subject_repo
 
 repo_s = subject_repo.SubjectRepository()
@@ -57,7 +57,7 @@ class Semester(rubbercog.Rubbercog):
         # send messages to channel
         for category, subjects in listing.items():
 
-            header = image_generator.text_to_image(category.name.upper())
+            header = image_utils.text_to_image(category.name.upper())
             await target.send(file=discord.File(fp=header, filename=f"{category.name}.png"))
 
             message = []

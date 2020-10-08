@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import rubbercog, utils
+from core import rubbercog, image_utils, utils
 from core.emote import emote
 
 
@@ -50,25 +50,7 @@ class Meme(rubbercog.Rubbercog):
         response = requests.get(url)
         avatar = Image.open(BytesIO(response.content))
 
-        frames = []
-        deform_width = (-1, -2, 1, 2, 1)
-        defom_height = (4, 3, 2, 2, -4)
-        width, height = 80, 80
-
-        for i in range(5):
-            frame = Image.new("RGBA", (112, 112), (255, 255, 255, 1))
-            hand = Image.open(f"data/meme/pet_{i}.png")
-            width -= deform_width[i]
-            height -= defom_height[i]
-            frame_avatar = avatar.resize((width, height))
-            frame_mask = Image.new("1", frame_avatar.size, 0)
-            draw = ImageDraw.Draw(frame_mask)
-            draw.ellipse((0, 0) + frame_avatar.size, fill=255)
-            frame_avatar.putalpha(frame_mask)
-
-            frame.paste(frame_avatar, (112 - width, 112 - height), frame_avatar)
-            frame.paste(hand, (0, 0), hand)
-            frames.append(frame)
+        frames = self.construct_gif(avatar)
 
         with BytesIO() as image_binary:
             frames[0].save(
@@ -84,6 +66,66 @@ class Meme(rubbercog.Rubbercog):
             )
             image_binary.seek(0)
             await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
+
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.command()
+    async def hyperpet(self, ctx, member: discord.Member = None):
+        """Pet someone really hard
+
+        member: Discord user. If none, the bot will hug yourself.
+        """
+        if member is None:
+            member = ctx.author
+        url = member.avatar_url_as(format="jpg")
+        response = requests.get(url)
+        avatar = Image.open(BytesIO(response.content))
+
+        frames = self.construct_gif(avatar, hue=True)
+
+        with BytesIO() as image_binary:
+            frames[0].save(
+                image_binary,
+                format="GIF",
+                save_all=True,
+                append_images=frames[1:],
+                duration=40,
+                loop=0,
+                transparency=0,
+                disposal=2,
+                optimize=False,
+            )
+            image_binary.seek(0)
+            await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
+
+    def construct_gif(self, avatar: Image, hue: bool = False) -> list:
+        frames = []
+        deform_width = (-1, -2, 1, 2, 1)
+        defom_height = (4, 3, 2, 2, -4)
+        width, height = 80, 80
+
+        git_hash = int(utils.git_get_hash(), 16)
+
+        for i in range(5):
+            if hue:
+                # get random values based on current hash -- last ten decimal digits
+                deform_hue = git_hash % 100 ** (i + 1) // 100 ** i / 100
+                avatar = Image.fromarray(image_utils.shift_hue(avatar, deform_hue))
+
+            frame = Image.new("RGBA", (112, 112), (255, 255, 255, 1))
+            hand = Image.open(f"data/meme/pet_{i}.png")
+            width -= deform_width[i]
+            height -= defom_height[i]
+            frame_avatar = avatar.resize((width, height))
+            frame_mask = Image.new("1", frame_avatar.size, 0)
+            draw = ImageDraw.Draw(frame_mask)
+            draw.ellipse((0, 0) + frame_avatar.size, fill=255)
+            frame_avatar.putalpha(frame_mask)
+
+            frame.paste(frame_avatar, (112 - width, 112 - height), frame_avatar)
+            frame.paste(hand, (0, 0), hand)
+            frames.append(frame)
+
+        return frames
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])

@@ -12,6 +12,10 @@ Hug someone.
 
 Pet someone.
 
+### hyperpet _(member)_
+
+When pet is not enough.
+
 ### uwu (text)
 
 Send UwUized message back.
