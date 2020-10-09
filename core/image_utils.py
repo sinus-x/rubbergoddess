@@ -33,6 +33,8 @@ def text_to_image(
     return filepath
 
 
+# Taken from https://stackoverflow.com/a/7274986
+# unutbu, September 2011 (https://stackoverflow.com/users/190597/unutbu)
 def rgb_to_hsv(rgb):
     # Translated from source of colorsys.rgb_to_hsv
     # r,g,b should be a numpy arrays with values between 0 and 255

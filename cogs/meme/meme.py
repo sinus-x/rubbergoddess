@@ -3,7 +3,7 @@ import requests
 import numpy as np
 from io import BytesIO
 from PIL import Image, ImageDraw
-from typing import Union
+from typing import List, Union
 
 import discord
 from discord.ext import commands
@@ -185,7 +185,7 @@ class Meme(rubbercog.Rubbercog):
         return result
 
     @staticmethod
-    def get_pet_frames(self, avatar: Image, hue: bool = False) -> list:
+    def get_pet_frames(avatar: Image.Image, hue: bool = False) -> List[Image.Image]:
         """Get frames for the pet
 
         avatar: Image
@@ -226,6 +226,6 @@ class Meme(rubbercog.Rubbercog):
         return frames
 
     @staticmethod
-    def get_pet_name(self, author: Union[discord.Member, discord.User]) -> str:
+    def get_pet_name(author: Union[discord.Member, discord.User]) -> str:
         """Get virtual filename for the pet gif"""
         return f"PetThe{author.display_name.replace(' ', '')}.gif"
