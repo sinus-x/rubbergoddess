@@ -59,7 +59,7 @@ class Actress(rubbercog.Rubbercog):
     async def send_dm(self, ctx, user: discord.User, *, content: str):
         """Send a DM to a user"""
         try:
-            message = await user.send(content)
+            await user.send(content)
         except discord.Forbidden:
             return await ctx.send(self.text.get("dm_forbidden"))
 
