@@ -1,11 +1,12 @@
+aiohttp
 dhash
-discord.py >= 1.4.1
+discord.py >= 1.5.0
 emoji
 GitPython
 hjson
+numpy
 Pillow >= 7.0
 pre-commit
 psycopg2-binary
 requests
 sqlalchemy
-aiohttp

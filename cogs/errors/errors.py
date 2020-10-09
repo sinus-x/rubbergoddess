@@ -106,6 +106,9 @@ class Errors(rubbercog.Rubbercog):
         if type(error) == commands.BadUnionArgument:
             await self.output.warning(ctx, self.text.get("BadUnionArgument", param=error.param.name))
             return False
+        if type(error) == commands.BadBoolArgument:
+            await self.output.warning(ctx, self.text.get("BadBoolArgument", arg=error.argument))
+            return False
 
         # All cog-related errors
         if isinstance(error, smtplib.SMTPException):
