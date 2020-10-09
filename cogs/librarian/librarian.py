@@ -128,9 +128,7 @@ class Librarian(rubbercog.Rubbercog):
         elif str(res["cod"]) == "401":
             return await ctx.send(self.text.get("weather", "token"))
         elif str(res["cod"]) != "200":
-            return await ctx.send(
-                self.text.get("weather", "place_error", message=res["message"])
-            )
+            return await ctx.send(self.text.get("weather", "place_error", message=res["message"]))
 
         title = res["weather"][0]["description"]
         description = self.text.get(
@@ -138,13 +136,9 @@ class Librarian(rubbercog.Rubbercog):
         )
         if description.endswith("CZ"):
             description = description[:-4]
-        embed = self.embed(
-            ctx=ctx, title=title[0].upper() + title[1:], description=description
-        )
+        embed = self.embed(ctx=ctx, title=title[0].upper() + title[1:], description=description)
         embed.set_thumbnail(
-            url="https://openweathermap.org/img/w/{}.png".format(
-                res["weather"][0]["icon"]
-            )
+            url="https://openweathermap.org/img/w/{}.png".format(res["weather"][0]["icon"])
         )
 
         embed.add_field(
@@ -171,9 +165,7 @@ class Librarian(rubbercog.Rubbercog):
                 name=self.text.get("weather", "visibility"),
                 value=f"{int(res['visibility']/1000)} km",
             )
-        embed.add_field(
-            name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s"
-        )
+        embed.add_field(name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s")
 
         await utils.send(ctx, embed=embed)
         await utils.room_check(ctx)
