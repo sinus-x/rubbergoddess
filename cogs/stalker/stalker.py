@@ -105,10 +105,11 @@ class Stalker(rubbercog.Rubbercog):
         """
         db_member = repository.getByLogin(email)
         if db_member is None:
-            return self.output.info(ctx, self.text.get("not_found"))
+            # TODO Should we raise MemberNotFound?
+            return await self.output.info(ctx, self.text.get("not_found"))
         member = self.getGuild().get_member(db_member.discord_id)
         if member is None:
-            return self.output.info(ctx, self.text.get("not_in_guild"))
+            return await self.output.info(ctx, self.text.get("not_in_guild"))
 
         embed = self.whois_embed(ctx, member, db_member)
 
@@ -138,7 +139,8 @@ class Stalker(rubbercog.Rubbercog):
                 fields.append(field)
                 field = ""
             field = field + "\n" + item
-        fields.append(field)
+        if len(field):
+            fields.append(field)
 
         # create embed
         embed = self.embed(ctx=ctx, description=self.text.get("prefix", "result", num=len(users)))
