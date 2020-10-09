@@ -4,6 +4,8 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.1.4]
+
 ### Added
 
 - Meme: `pet` (ported from Rubbergod), `hyperpet`
