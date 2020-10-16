@@ -59,9 +59,9 @@ class Karma(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
-    @karma.command(name="emote", aliases=["emoji"])
-    async def karma_emote(self, ctx, emote: str):
-        """See emote's karma"""
+    @karma.command(name="emoji", aliases=["emote"])
+    async def karma_emoji(self, ctx, emote: str):
+        """See emojis's karma"""
         if not self._isUnicode(emote):
             try:
                 emote_id = int(self._emoteToID(emote))
@@ -79,10 +79,10 @@ class Karma(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.guild_only()
-    @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
-    @karma.command(name="emotes", aliases=["emojis"])
-    async def karma_emotes(self, ctx):
-        """See karma for all emotes"""
+    @commands.cooldown(rate=1, per=300, type=commands.BucketType.guild)
+    @karma.command(name="emojis", aliases=["emotes"])
+    async def karma_emojis(self, ctx):
+        """See karma for all emojis"""
         emotes = await ctx.guild.fetch_emojis()
         emotes = [e for e in emotes if not e.animated]
         content = []
