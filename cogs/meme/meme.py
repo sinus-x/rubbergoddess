@@ -38,6 +38,20 @@ class Meme(rubbercog.Rubbercog):
             return
 
         await ctx.send(emote.hug_right + f" **{self.sanitise(user.display_name)}**")
+    
+    @commands.command()
+    @commands.guild_only()
+    async def slap(self,ctx):
+        hugGifs = ["https://media1.tenor.com/images/612e257ab87f30568a9449998d978a22/tenor.gif?itemid=16057834","https://media1.tenor.com/images/153b2f1bfd3c595c920ce60f1553c5f7/tenor.gif?itemid=10936993","https://media1.tenor.com/images/9ea4fb41d066737c0e3f2d626c13f230/tenor.gif?itemid=7355956","https://media.tenor.com/images/091e0502e5fda1201ee76f5f26eea195/tenor.gif"]
+        randomGif = random.choice(hugGifs)
+        if len(ctx.message.mentions) == 1:
+            embed = discord.Embed(title="Slap!",description=f"**{ctx.author.mention} slapped {ctx.message.mentions[0].mention}**")
+            embed.set_image(randomGif)
+            await ctx.send(embed=embed) 
+        elif len(ctx.message.mentions) == 0:
+            embed = discord.Embed(title="Slap!",description=f"**Bot slapped {ctx.author.mention}**")
+            embed.set_image(randomGif)
+            await ctx.send(embed=embed) 
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
