@@ -16,6 +16,14 @@ Pet someone.
 
 When pet is not enough.
 
+### slap _(member)_
+
+Slap someone.
+
+### relations _(member)_
+
+Display statistics about hugs, pets and slaps.
+
 ### uwu (text)
 
 Send UwUized message back.

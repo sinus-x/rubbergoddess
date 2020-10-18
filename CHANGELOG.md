@@ -4,6 +4,10 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Added
+
+- Meme: `slap` and `relations` commands
+
 ## [1.1.4]
 
 ### Added

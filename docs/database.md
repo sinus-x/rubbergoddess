@@ -143,4 +143,22 @@ Files for SQLAlchemy initialisation are saved in `repository/database`.
 | channel_id | BigInteger |         |
 | text       | String     |         |
 
+## Meme
+
+**meme**
+
+| name           | type       | note    |
+|----------------|------------|---------|
+| id             | Integer    | primary |
+| user_id        | BigInteger |         |
+| guild_id       | BigInteger |         |
+| hugs_gave      | Integer    |         |
+| hugs_recv      | Integer    |         |
+| pets_gave      | Integer    |         |
+| pets_recv      | Integer    |         |
+| hyperpets_gave | Integer    |         |
+| hyperpets_recv | Integer    |         |
+| slaps_gave     | Integer    |         |
+| slaps_recv     | Integer    |         |
+
 ← Back to [home](index.md)

@@ -11,6 +11,9 @@ from discord.ext import commands
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, image_utils, utils
 from core.emote import emote
+from repository.meme_repo import MemeRepository
+
+repo_m = MemeRepository()
 
 
 class Meme(rubbercog.Rubbercog):
@@ -24,6 +27,7 @@ class Meme(rubbercog.Rubbercog):
 
         self.fishing_pool = self.config.get("_fishing")
 
+    @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def hug(self, ctx, user: discord.Member = None):
@@ -32,13 +36,16 @@ class Meme(rubbercog.Rubbercog):
         user: Discord user. If none, the bot will hug yourself.
         """
         if user is None:
-            user = ctx.author
-        elif user == self.bot.user:
-            await ctx.send(emote.hug_left)
-            return
+            hugger = self.bot.user
+            hugged = ctx.author
+        else:
+            hugger = ctx.author
+            hugged = user
 
-        await ctx.send(emote.hug_right + f" **{self.sanitise(user.display_name)}**")
+        repo_m.hug(ctx.guild.id, hugger.id, hugged.id)
+        await ctx.send(f"{emote.hug_right} **{self.sanitise(hugged.display_name)}**")
 
+    @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def pet(self, ctx, member: discord.Member = None):
@@ -47,10 +54,16 @@ class Meme(rubbercog.Rubbercog):
         member: Discord user. If none, the bot will hug yourself.
         """
         if member is None:
-            member = ctx.author
+            petter = self.bot.user
+            petted = ctx.author
+        else:
+            petter = ctx.author
+            petted = member
+
+        repo_m.pet(ctx.guild.id, petter.id, petted.id)
 
         async with ctx.typing():
-            url = member.avatar_url_as(format="jpg")
+            url = petted.avatar_url_as(format="jpg")
             response = requests.get(url)
             avatar = Image.open(BytesIO(response.content))
 
@@ -69,9 +82,10 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                filename = self.get_pet_name(member)
+                filename = self.get_pet_name(petted)
                 await ctx.send(file=discord.File(fp=image_binary, filename=filename))
 
+    @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def hyperpet(self, ctx, member: discord.Member = None):
@@ -80,10 +94,16 @@ class Meme(rubbercog.Rubbercog):
         member: Discord user. If none, the bot will hug yourself.
         """
         if member is None:
-            member = ctx.author
+            petter = self.bot.user
+            petted = ctx.author
+        else:
+            petter = ctx.author
+            petted = member
+
+        repo_m.hyperpet(ctx.guild.id, petter.id, petted.id)
 
         async with ctx.typing():
-            url = member.avatar_url_as(format="jpg")
+            url = petted.avatar_url_as(format="jpg")
             response = requests.get(url)
             avatar = Image.open(BytesIO(response.content))
 
@@ -102,8 +122,69 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                filename = self.get_pet_name(member)
+                filename = self.get_pet_name(petted)
                 await ctx.send(file=discord.File(fp=image_binary, filename=filename))
+
+    @commands.guild_only()
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.command()
+    async def slap(self, ctx, member: discord.Member = None):
+        """Slap someone!
+
+        member: Discord user. If none, the bot will slap yourself.
+        """
+        if member is None:
+            slapper = self.bot.user
+            slapped = ctx.author
+        else:
+            slapper = ctx.author
+            slapped = member
+
+        options = ["つ", "づ", "ノ"]
+
+        repo_m.slap(ctx.guild.id, slapper.id, slapped.id)
+        await ctx.send(
+            "**{}**{} {}".format(
+                self.sanitise(slapper.display_name),
+                random.choice(options),
+                self.sanitise(slapped.display_name),
+            )
+        )
+
+    @commands.guild_only()
+    @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
+    @commands.command()
+    async def relations(self, ctx, user: discord.User = None):
+        """Get your information about hugs, pets, ..."""
+        if user is None:
+            user = ctx.author
+
+        lookup = repo_m.get(ctx.guild.id, user.id)
+        if lookup is None:
+            return await ctx.send(self.text.get("no_relations"))
+
+        embed = self.embed(ctx=ctx, description=self.sanitise(user.display_name))
+        embed.add_field(
+            name="?hug",
+            value=self.text.get("value", gave=lookup.hugs_gave, got=lookup.hugs_recv),
+            inline=False,
+        )
+        embed.add_field(
+            name="?pet",
+            value=self.text.get("value", gave=lookup.pets_gave, got=lookup.pets_recv),
+            inline=False,
+        )
+        embed.add_field(
+            name="?hyperpet",
+            value=self.text.get("value", gave=lookup.hyperpets_gave, got=lookup.hyperpets_recv),
+            inline=False,
+        )
+        embed.add_field(
+            name="?slap",
+            value=self.text.get("value", gave=lookup.slaps_gave, got=lookup.slaps_recv),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])
