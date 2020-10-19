@@ -205,10 +205,13 @@ class Voice(rubbercog.Rubbercog):
                     pass
 
         # Move 'Empty' to end
-        if empty:
-            await empty.edit(name="Empty", position=len(voices.channels))
-            if empty.id in self.locked:
-                self.locked.remove(empty.id)
+        if empty is not None:
+            try:
+                await empty.edit(name="Empty", position=len(voices.channels))
+                if empty.id in self.locked:
+                    self.locked.remove(empty.id)
+            except discord.NotFound:
+                pass
         else:
             v = await self.getGuild().create_voice_channel(name="Empty", category=voices)
             await v.set_permissions(self.getVerifyRole(), view_channel=True)
