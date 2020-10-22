@@ -8,6 +8,10 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 - Meme: `slap` and `relations` commands
 
+### Updated
+
+- Voice: Working channel locking.
+
 ## [1.1.4]
 
 ### Added

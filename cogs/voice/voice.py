@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -6,16 +7,6 @@ from discord.ext import commands
 from cogs.resource import CogConfig, CogText
 from core.config import config
 from core import check, rubbercog, utils
-
-"""
-The renaming has some kind of problem.
-
-First time the function works as expected. When run again (both ?voice lock
-and ?voice rename), it freezes for several minutes and throws an NotFound
-error.
-
-I assume that it has to do something with caching inside of the library.
-"""
 
 
 class Voice(rubbercog.Rubbercog):
@@ -27,11 +18,7 @@ class Voice(rubbercog.Rubbercog):
         self.config = CogConfig("voice")
         self.text = CogText("voice")
 
-        self.lock = self.text.get("lock")
         self.locked = []
-
-    def getVoiceChannel(self, ctx: commands.Context):
-        return ctx.author.voice.channel
 
     ##
     ## Commands
@@ -41,182 +28,146 @@ class Voice(rubbercog.Rubbercog):
     @commands.check(check.is_in_voice)
     @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
     @commands.group(name="voice")
-    async def voice(self, ctx: commands.Context):
-        """Manage your voice channel"""
+    async def voice(self, ctx):
+        """Manage voice channels"""
         await utils.send_help(ctx)
 
-    @voice.command(name="lock", aliases=["close"], hidden=True)
-    async def voice_lock(self, ctx: commands.Context):
+    @voice.command(name="lock", aliases=["close"])
+    async def voice_lock(self, ctx):
         """Make current voice channel invisible"""
-        await ctx.send(self.text.get("wip", mention=ctx.author.mention), delete_after=10)
-        await utils.delete(ctx)
-        return
+        voice = self.users_voice_channel(ctx)
+        # Lock
+        await voice.set_permissions(self.getVerifyRole(), overwrite=None)
+        if ctx.channel.id not in self.locked:
+            self.locked.append(ctx.channel.id)
+        # Report
+        await ctx.send(self.text.get("locked", name=self.sanitise(voice.name)), delete_after=10)
+        await utils.delete(ctx.message)
 
-        channel = self.getVoiceChannel(ctx)
-        if channel.id in self.locked:
-            await ctx.send(
-                delete_after=config.get("delay", "user error"),
-                content=self.text.get(
-                    "lock_error", nickname=self.sanitise(ctx.author.display_name)
-                ),
-            )
-            return
-        await channel.set_permissions(self.getVerifyRole(), overwrite=None)
-        channel_name = channel.name + " " + self.lock
-        await channel.edit(name=channel_name)
-        self.locked.append(channel.id)
-
-        await utils.delete(ctx)
-
-    @voice.command(name="unlock", aliases=["open"], hidden=True)
-    async def voice_unlock(self, ctx: commands.Context):
+    @voice.command(name="unlock", aliases=["open"])
+    async def voice_unlock(self, ctx):
         """Make current voice channel visible"""
-        await ctx.send(self.text.get("wip", mention=ctx.author.mention), delete_after=10)
-        await utils.delete(ctx)
-        return
-
-        channel = self.getVoiceChannel(ctx)
-        if channel.id not in self.locked:
-            await ctx.send(
-                delete_after=config.get("delay", "user error"),
-                content=self.text.get(
-                    "unlock_error", nickname=self.sanitise(ctx.author.display_name)
-                ),
-            )
-            return
-        await channel.set_permissions(self.getVerifyRole(), view_channel=True)
-        channel_name = channel.name.replace(" " + self.lock, "")
-        await channel.edit(name=channel_name)
-        self.locked.remove(channel.id)
-
-        await utils.delete(ctx)
-
-    @voice.command(name="rename", hidden=True)
-    async def voice_rename(self, ctx: commands.Context, *args):
-        """Rename current voice channel"""
-        await ctx.send(self.text.get("wip", mention=ctx.author.mention), delete_after=10)
-        await utils.delete(ctx)
-        return
-
-        name = " ".join(args)
-        if len(name) <= 0:
-            await ctx.send(
-                delete_after=config.delay_embed,
-                content=self.text.get(
-                    "rename_empty", nickname=self.sanitise(ctx.author.display_name)
-                ),
-            )
-            return
-        if len(name) > 25:
-            await ctx.send(
-                delete_after=config.delay_embed,
-                content=self.text.get(
-                    "rename_long", nickname=self.sanitise(ctx.author.display_name)
-                ),
-            )
-            return
-
-        v = self.getVoiceChannel(ctx)
-        name = name.replace(" " + self.lock, "").replace(self.lock, "")
-        if v.id in self.locked:
-            name = name + " " + self.lock
-        await v.edit(name=name)
-
-        await utils.delete(ctx)
+        voice = self.users_voice_channel(ctx)
+        # Unlock
+        await voice.set_permissions(self.getVerifyRole(), view_channel=True)
+        if ctx.channel.id in self.locked:
+            self.locked.remove(ctx.channel.id)
+        # Report
+        await ctx.send(self.text.get("unlocked", name=self.sanitise(voice.name)), delete_after=10)
+        await utils.delete(ctx.message)
 
     ##
     ## Listeners
     ##
 
     @commands.Cog.listener()
-    async def on_voice_state_update(
-        self, user: discord.Member, beforeState: discord.VoiceState, afterState: discord.VoiceState
-    ):
+    async def on_voice_state_update(self, member, beforeState, afterState):
         """Detect changes in voice channels"""
-        # Get voice objects
+
+        # get voice objects
         before = beforeState.channel
         after = afterState.channel
 
-        # Do not act if no one has joined or left, or the action is on another server
-        if (
-            before == after
-            or (before is None and after is None)
-            or before not in self.getGuild().channels
-            and after not in self.getGuild().channels
-        ):
+        # Do not act if no one has left or joined
+        if before == after or (before is None and after is None):
+            return
+        # Do not act if the action is not on main guild
+        if before not in self.getGuild().channels and after not in self.getGuild().channels:
             return
 
+        # Get voice-no-mic channel
         nomic = self.getGuild().get_channel(config.channel_nomic)
 
-        # alter access to the channels
+        # Manage channel overwrites
         if before is None:
-            await after.set_permissions(user, view_channel=True)
-            await nomic.set_permissions(user, read_messages=True)
+            # User joined
+            await after.set_permissions(member, view_channel=True)
+            await nomic.set_permissions(member, view_channel=True)
+            await self.set_channel_name_join(after)
 
-            # await nomic.send(
-            #     delete_after=config.delay_embed,
-            #     content=text.fill("voice", "welcome", nickname=user),
-            # )
+            # Send welcome message
+            await nomic.send(
+                self.text.get(
+                    "welcome", nickname=self.sanitise(member.display_name), prefix=config.prefix
+                ),
+                delete_after=30,
+            )
 
         elif after is None:
-            await before.set_permissions(user, overwrite=None)
-            await nomic.set_permissions(user, overwrite=None)
+            # User left
+            await before.set_permissions(member, overwrite=None)
+            await nomic.set_permissions(member, overwrite=None)
+            await self.set_channel_name_leave(before)
 
         else:
-            await before.set_permissions(user, overwrite=None)
-            await after.set_permissions(user, view_channel=True)
+            # User moved
+            await before.set_permissions(member, overwrite=None)
+            await after.set_permissions(member, view_channel=True)
+            await self.set_channel_name_leave(before)
+            await self.set_channel_name_join(after)
 
-        await self.voiceCleanup()
+        # Do cleanup
+        await self.cleanup_channels()
 
     ##
     ## Logic
     ##
 
-    async def setVoiceName(self, channel: discord.VoiceChannel):
+    async def set_channel_name_join(self, channel: discord.VoiceChannel):
         """Set voice channel name"""
+        # This is not needed, names are not set to Empty now
+        return
+        if len(channel.members) == 1:
+            await channel.edit(name=self.gen_channel_name())
+
+    async def set_channel_name_leave(self, channel: discord.VoiceChannel):
+        """Set voice channel name"""
+        # API seems to freeze if this is done several times.
+        # This is an attempt to mitigate that.
+        return
+
         if len(channel.members) == 0:
             await channel.edit(name="Empty")
-            return
 
-        adjs = self.config.get("adjectives")
-        nouns = self.config.get("nouns")
-        name = "{} {}".format(random.choice(adjs), random.choice(nouns))
-        await channel.edit(name=name)
-
-    async def voiceCleanup(self):
-        """Clear nomic, rename channels"""
-        voices = self.getGuild().get_channel(config.channel_voices)
+    async def cleanup_channels(self):
+        """Remove empty voice channels"""
+        category = self.getGuild().get_channel(config.channel_voices)
         nomic = self.getGuild().get_channel(config.channel_nomic)
 
-        empty = None
-        # Rename populated 'Empty' channels. Get last empty channel
-        for v in voices.voice_channels:
-            if len(v.members) == 0:
-                empty = v
-            elif len(v.members) > 0 and v.name == "Empty":
-                await self.setVoiceName(v)
+        empty = []
+        for voice in category.voice_channels:
+            if len(voice.members) == 0:
+                empty.append(voice)
 
-        # Remove all previous 'Empty' channels
-        for v in voices.voice_channels:
-            if len(v.members) == 0 and v is not empty:
-                try:
-                    await v.delete()
-                except discord.NotFound:
-                    pass
+        if len(empty) == 0:
+            # Need to add one
+            voice = await self.getGuild().create_voice_channel(
+                name=self.gen_channel_name(), category=category
+            )
+            await voice.set_permissions(self.getVerifyRole(), view_channel=True)
+            return
 
-        # Move 'Empty' to end
-        if empty is not None:
-            try:
-                await empty.edit(name="Empty", position=len(voices.channels))
-                if empty.id in self.locked:
-                    self.locked.remove(empty.id)
-            except discord.NotFound:
-                pass
-        else:
-            v = await self.getGuild().create_voice_channel(name="Empty", category=voices)
-            await v.set_permissions(self.getVerifyRole(), view_channel=True)
+        # Delete all except the last one
+        for voice in empty[:-1]:
+            await voice.delete()
 
-        # Clear nomic if no one is left
-        if len(voices.voice_channels) == 1:
+        # Make sure the empty is writable
+        await empty[-1].set_permissions(self.getVerifyRole(), view_channel=True)
+
+        if len(category.voice_channels) == 1:
+            # No one inside, can safely wipe no-mic channel
             await nomic.purge()
+            # Just to make sure
             self.locked = []
+
+    ##
+    ## Helper functions
+    ##
+
+    def users_voice_channel(self, ctx: commands.Context):
+        return ctx.author.voice.channel
+
+    def gen_channel_name(self) -> str:
+        adjectives = self.config.get("adjectives")
+        nouns = self.config.get("nouns")
+        return "{} {}".format(random.choice(adjectives), random.choice(nouns))
