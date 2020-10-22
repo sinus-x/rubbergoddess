@@ -213,6 +213,25 @@ class Meme(rubbercog.Rubbercog):
         await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
         await utils.delete(ctx.message)
 
+    @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
+    @commands.command(aliases=["vl"])
+    async def lv(self, ctx, *, message: str = None):
+        """Switch l's and v's"""
+        if message is None:
+            return
+
+        # lowercase
+        text = message.replace("l", "¯")
+        text = text.replace("v", "l")
+        text = text.replace("¯", "v")
+        # uppercase
+        text = text.replace("L", "¯")
+        text = text.replace("V", "L")
+        text = text.replace("¯", "V")
+
+        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
+        await utils.delete(ctx.message)
+
     @commands.cooldown(rate=3, per=10, type=commands.BucketType.user)
     @commands.command()
     async def fish(self, ctx):

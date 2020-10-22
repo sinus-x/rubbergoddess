@@ -6,7 +6,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 ### Added
 
-- Meme: `slap` and `relations` commands
+- Meme: `slap`, `relations` and `lv` commands
 
 ### Updated
 

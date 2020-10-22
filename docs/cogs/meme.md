@@ -30,7 +30,11 @@ Send UwUized message back.
 
 ### randomcase (text)
 
-Send message wItH rANdoM cApiTaLIsatIoN
+Send message wItH rANdoM cApiTaLIsatIoN.
+
+### lv (text)
+
+Switch l's and v's.
 
 ### fish
 
