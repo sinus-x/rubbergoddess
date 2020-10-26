@@ -26,6 +26,7 @@ intents.emojis = True  # Used for Karma
 intents.voice_states = True  # Used for Voice
 intents.messages = True  # Used all over the place
 intents.reactions = True  # Used for Karma and scrolling
+intents.presences = True
 
 bot = commands.Bot(
     command_prefix=config.prefix,

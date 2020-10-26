@@ -7,6 +7,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 ### Added
 
 - Meme: `slap`, `relations` and `lv` commands
+- Stalker: `db add-missing`
 
 ### Updated
 

@@ -22,27 +22,31 @@ Display database information about user. If the command is invoked in mod channe
 
 ### whois login (login)
 
-Elevated roles only. Search database for given login and see if person is registered on server.
+Search database for given login and see if person is registered on server.
 
 ### whois logins (prefix)
 
-Elevated roles only. Search database for users where their login starts with prefix.
+Search database for users where their login starts with prefix.
 
 ### database add (member) (email) (group)
 
-Elevated roles only. Add entry to database, bypasing the verification.
+Add entry to database, bypasing the verification.
+
+### databse add-missing (member id) (email) (group)
+
+Add member to databse, even if they are not present on the server.
 
 ### database remove (member) _(force)_
 
-Elevated roles only. Remove member from database. If the "force" string is missing, display changes.
+Remove member from database. If the "force" string is missing, display changes.
 
 ### database update (member) (key) (value)
 
-Elevated roles only. Update user entry in database. See **users** table in  [database](../database.md) page.
+Update user entry in database. See **users** table in  [database](../database.md) page.
 
 ### database show (parameter)
 
-Elevated roles only. Show database entries. Parameter options: unverified, pending, kicked, banned.
+Show database entries. Parameter options: unverified, pending, kicked, banned.
 
 
 

@@ -1,3 +1,5 @@
+import random
+
 import discord
 from discord.ext import commands
 
@@ -167,9 +169,9 @@ class Stalker(rubbercog.Rubbercog):
     async def database_add(
         self,
         ctx: commands.Context,
-        member: discord.Member = None,
-        login: str = None,
-        group: discord.Role = None,
+        member: discord.Member,
+        login: str,
+        group: discord.Role,
     ):
         """Add user to database
 
@@ -177,9 +179,6 @@ class Stalker(rubbercog.Rubbercog):
         login: e-mail
         group: A role from `roles_native` or `roles_guest` in config file
         """
-        if member is None or login is None or group is None:
-            return await utils.send_help(ctx)
-
         # define variables
         guild = self.bot.get_guild(config.guild_id)
         verify = discord.utils.get(guild.roles, name="VERIFY")
@@ -207,7 +206,33 @@ class Stalker(rubbercog.Rubbercog):
         # display the result
         embed = self.whois_embed(ctx, member, repository.get(member.id))
         await ctx.send(embed=embed)
-        await self.event.sudo(ctx, f"New user {member} ({group.name})")
+        await self.event.sudo(ctx, f"New member {member} ({group.name}).")
+
+    @commands.check(acl.check)
+    @database.command(name="add-missing", aliases=["add_missing"])
+    async def database_add_missing(self, ctx, user_id: int, login: str, group: str):
+        """Add user ID to database
+
+        user_id: User ID or zero, if not known
+        login: e-mail
+        group: A role name
+        """
+        if repository.getByLogin(login) is not None:
+            return await self.output.error(ctx, self.text.get("db", "duplicate"))
+
+        # generate something random
+        if user_id == 0:
+            user_id = random.randint(1000000000, 9999999999)
+
+        try:
+            repository.add(discord_id=user_id, login=login, group=group, status="unknown", code="")
+        except Exception as e:
+            return await self.output.error(ctx, self.text.get("db", "write_error"), e)
+
+        # display the result
+        embed = self.whois_embed(ctx, None, repository.get(user_id))
+        await ctx.send(embed=embed)
+        await self.event.sudo(ctx, f"New virtual member **{user_id}**.")
 
     @commands.check(acl.check)
     @database.command(name="remove", aliases=["delete"])
@@ -353,23 +378,26 @@ class Stalker(rubbercog.Rubbercog):
 
     def whois_embed(self, ctx, member: discord.Member, db_member: object) -> discord.Embed:
         """Construct the whois embed"""
-        embed = self.embed(ctx=ctx, title="Whois", description=member.mention)
-
-        embed.add_field(
-            name=self.text.get("whois", "information"),
-            value=self.text.get(
-                "whois",
-                "account_information",
-                name=self.sanitise(member.display_name),
-                account_since=utils.id_to_datetime(member.id).strftime("%Y-%m-%d"),
-                member_since=member.joined_at.strftime("%Y-%m-%d"),
-            ),
-            inline=False,
+        embed = self.embed(
+            ctx=ctx, title="Whois", description=member.mention if member is not None else "???"
         )
+
+        if member is not None:
+            embed.add_field(
+                name=self.text.get("whois", "information"),
+                value=self.text.get(
+                    "whois",
+                    "account_information",
+                    name=self.sanitise(member.display_name),
+                    account_since=utils.id_to_datetime(member.id).strftime("%Y-%m-%d"),
+                    member_since=member.joined_at.strftime("%Y-%m-%d"),
+                ),
+                inline=False,
+            )
 
         if db_member is not None:
             embed.add_field(
-                name=self.text.get("whois", "email"),
+                name=self.text.get("whois", "login"),
                 value=self.dbobj2email(db_member)
                 if db_member.login
                 else self.text.get("whois", "missing"),
@@ -400,11 +428,12 @@ class Stalker(rubbercog.Rubbercog):
                     name=self.text.get("whois", "comment"), value=db_member.comment, inline=False
                 )
 
-        role_list = ", ".join(list((r.name) for r in member.roles[::-1])[:-1])
-        embed.add_field(
-            name=self.text.get("whois", "roles"),
-            value=role_list if len(role_list) else self.text.get("whois", "missing"),
-        )
+        if member is not None:
+            role_list = ", ".join(list((r.name) for r in member.roles[::-1])[:-1])
+            embed.add_field(
+                name=self.text.get("whois", "roles"),
+                value=role_list if len(role_list) else self.text.get("whois", "missing"),
+            )
 
         return embed
 

@@ -28,7 +28,7 @@
 			Účet založen ((account_since))
 			Na serveru od ((member_since))
 			'''
-		email:   E-mail
+		email:   Login
 		code:    Kód
 		status:  Status
 		group:   Skupina
