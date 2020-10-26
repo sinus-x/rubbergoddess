@@ -162,51 +162,7 @@ class Stalker(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @database.command(name="add")
-    async def database_add(
-        self,
-        ctx: commands.Context,
-        member: discord.Member,
-        login: str,
-        group: discord.Role,
-    ):
-        """Add user to database
-
-        member: A server member
-        login: e-mail
-        group: A role from `roles_native` or `roles_guest` in config file
-        """
-        # define variables
-        guild = self.bot.get_guild(config.guild_id)
-        verify = discord.utils.get(guild.roles, name="VERIFY")
-
-        if repository.get(member.id) is not None:
-            return await self.output.error(ctx, self.text.get("db", "duplicate"))
-
-        try:
-            repository.add(
-                discord_id=member.id,
-                login=login,
-                group=group.name,
-                status="verified",
-                code="MANUAL",
-            )
-        except Exception as e:
-            return await self.output.error(ctx, self.text.get("db", "write_error"), e)
-
-        # assign roles, if neccesary
-        if verify not in member.roles:
-            await member.add_roles(verify)
-        if group not in member.roles:
-            await member.add_roles(group)
-
-        # display the result
-        embed = self.whois_embed(ctx, member, repository.get(member.id))
-        await ctx.send(embed=embed)
-        await self.event.sudo(ctx, f"New member {member} ({group.name}).")
-
-    @commands.check(acl.check)
-    @database.command(name="add-missing", aliases=["add_missing"])
-    async def database_add_missing(self, ctx, user_id: int, login: str, group: str):
+    async def database_add(self, ctx, user_id: int, login: str, group: str):
         """Add user ID to database
 
         user_id: User ID or zero, if not known
@@ -220,6 +176,9 @@ class Stalker(rubbercog.Rubbercog):
         if user_id == 0:
             user_id = random.randint(1000000000, 9999999999)
 
+        if repository.get(user_id) is not None:
+            return await self.output.error(ctx, self.text.get("db", "duplicate"))
+
         try:
             repository.add(discord_id=user_id, login=login, group=group, status="unknown", code="")
         except Exception as e:
@@ -228,23 +187,23 @@ class Stalker(rubbercog.Rubbercog):
         # display the result
         embed = self.whois_embed(ctx, None, repository.get(user_id))
         await ctx.send(embed=embed)
-        await self.event.sudo(ctx, f"New virtual member **{user_id}**.")
+        await self.event.sudo(ctx, f"New member **{user_id}**.")
 
     @commands.check(acl.check)
     @database.command(name="remove", aliases=["delete"])
-    async def database_remove(self, ctx: commands.Context, member: discord.Member):
+    async def database_remove(self, ctx: commands.Context, user_id: int):
         """Remove user from database"""
-        result = repository.deleteId(discord_id=member.id)
+        result = repository.deleteId(discord_id=user_id)
 
         if result < 1:
             return await self.output.error(ctx, self.text.get("db", "delete_error"))
 
         await ctx.send(self.text.get("db", "delete_success", num=result))
-        await self.event.sudo(ctx, f"Member {member} ({member.id}) removed from database.")
+        await self.event.sudo(ctx, f"Member {user_id} removed from database.")
 
     @commands.check(acl.check)
     @database.command(name="update")
-    async def database_update(self, ctx, member: discord.Member, key: str, *, value):
+    async def database_update(self, ctx, user_id: int, key: str, *, value):
         """Update user entry in database
 
         key: value
@@ -257,7 +216,7 @@ class Stalker(rubbercog.Rubbercog):
             return await self.output.error(ctx, self.text.get("db", "invalid_key"))
 
         if key == "login":
-            repository.update(member.id, login=value)
+            repository.update(user_id, login=value)
 
         elif key == "group":
             # get list of role names, defined in
@@ -270,17 +229,17 @@ class Stalker(rubbercog.Rubbercog):
             value = value.upper()
             if value not in role_names:
                 return await self.output.error(ctx, self.text.get("db", "invalid_value"))
-            repository.update(member.id, group=value)
+            repository.update(user_id, group=value)
 
         elif key == "status":
             if value not in ("unknown", "pending", "verified", "kicked", "banned"):
                 return await self.output.error(ctx, self.text.get("db", "invalid_value"))
-            repository.update(member.id, status=value)
+            repository.update(user_id, status=value)
 
         elif key == "comment":
-            repository.update(member.id, comment=value)
+            repository.update(user_id, comment=value)
 
-        await self.event.sudo(ctx, f"Updated {member}: {key} = {value}.")
+        await self.event.sudo(ctx, f"Updated {user_id}: {key} = {value}.")
         await ctx.send(self.text.get("db", "update_success"))
 
     @commands.check(acl.check)
