@@ -110,9 +110,6 @@ class Stalker(rubbercog.Rubbercog):
             # TODO Should we raise MemberNotFound?
             return await self.output.info(ctx, self.text.get("not_found"))
         member = self.getGuild().get_member(db_member.discord_id)
-        if member is None:
-            return await self.output.info(ctx, self.text.get("not_in_guild"))
-
         embed = self.whois_embed(ctx, member, db_member)
 
         await ctx.send(embed=embed)
@@ -152,7 +149,6 @@ class Stalker(rubbercog.Rubbercog):
             embed.add_field(
                 name=self.text.get("prefix", "too_many"),
                 value=self.text.get("prefix", "omitted"),
-                inline=False,
             )
 
         await ctx.send(embed=embed)
