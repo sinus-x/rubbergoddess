@@ -43,6 +43,7 @@ class Voice(rubbercog.Rubbercog):
         # Report
         await ctx.send(self.text.get("locked", name=self.sanitise(voice.name)), delete_after=10)
         await utils.delete(ctx.message)
+        await self.event.user(ctx, f"Channel locked: **{voice.name}**.")
 
     @voice.command(name="unlock", aliases=["open"])
     async def voice_unlock(self, ctx):
@@ -55,6 +56,7 @@ class Voice(rubbercog.Rubbercog):
         # Report
         await ctx.send(self.text.get("unlocked", name=self.sanitise(voice.name)), delete_after=10)
         await utils.delete(ctx.message)
+        await self.event.user(ctx, f"Channel unlocked: **{voice.name}**.")
 
     ##
     ## Listeners
