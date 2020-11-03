@@ -4,7 +4,7 @@
 
 We only support the latest [tag](https://github.com/sinus-x/rubbergoddess/tags).
 
-`devel` branch is considered highly unstable, contains bugs and is not meant to be used in production in any way. Things change and break -- daily.
+`devel` branch is considered highly unstable, contains bugs and is not meant to be used in production in any way. Things change and break. Our bot usually runs on the `devel` so we can test the code before it goes official.
 
 ## Reporting a Vulnerability
 
