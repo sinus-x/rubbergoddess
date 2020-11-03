@@ -83,9 +83,11 @@ class Voice(rubbercog.Rubbercog):
         # Manage channel overwrites
         if before is None:
             # User joined
-            await after.set_permissions(member, view_channel=True)
             await nomic.set_permissions(member, view_channel=True)
-            await self.set_channel_name_join(after)
+            try:
+                await after.set_permissions(member, view_channel=True)
+            except Exception as e:
+                await self.console.warning(member, f"Could not add overwrite to {after}.", e)
 
             # Send welcome message
             await nomic.send(
@@ -97,16 +99,22 @@ class Voice(rubbercog.Rubbercog):
 
         elif after is None:
             # User left
-            await before.set_permissions(member, overwrite=None)
             await nomic.set_permissions(member, overwrite=None)
-            await self.set_channel_name_leave(before)
+            try:
+                await before.set_permissions(member, overwrite=None)
+            except Exception as e:
+                await self.console.warning(member, f"Could not remove overwrite from {before}.", e)
 
         else:
             # User moved
-            await before.set_permissions(member, overwrite=None)
-            await after.set_permissions(member, view_channel=True)
-            await self.set_channel_name_leave(before)
-            await self.set_channel_name_join(after)
+            try:
+                await before.set_permissions(member, overwrite=None)
+            except Exception as e:
+                await self.console.warning(member, f"Could not remove overwrite from {before}.", e)
+            try:
+                await after.set_permissions(member, view_channel=True)
+            except Exception as e:
+                await self.console.warning(member, f"Could not add overwrite to {before}.", e)
 
         # Do cleanup
         await self.cleanup_channels()
@@ -114,22 +122,6 @@ class Voice(rubbercog.Rubbercog):
     ##
     ## Logic
     ##
-
-    async def set_channel_name_join(self, channel: discord.VoiceChannel):
-        """Set voice channel name"""
-        # This is not needed, names are not set to Empty now
-        return
-        if len(channel.members) == 1:
-            await channel.edit(name=self.gen_channel_name())
-
-    async def set_channel_name_leave(self, channel: discord.VoiceChannel):
-        """Set voice channel name"""
-        # API seems to freeze if this is done several times.
-        # This is an attempt to mitigate that.
-        return
-
-        if len(channel.members) == 0:
-            await channel.edit(name="Empty")
 
     async def cleanup_channels(self):
         """Remove empty voice channels"""
@@ -151,7 +143,10 @@ class Voice(rubbercog.Rubbercog):
 
         # Delete all except the last one
         for voice in empty[:-1]:
-            await voice.delete()
+            try:
+                await voice.delete()
+            except discord.NotFound as e:
+                await self.console.warning("Voice cleanup", f"Channel {voice} not found.", e)
 
         # Make sure the empty is writable
         await empty[-1].set_permissions(self.getVerifyRole(), view_channel=True)
