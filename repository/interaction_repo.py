@@ -43,8 +43,10 @@ class InteractionRepository(BaseRepository):
 
     # Filters by user
 
-    def get_user_action(self, user_id: int, action: str) -> Tuple[int, int]:
-        user = session.query(Interaction).filter(Interaction.name == action)
+    def get_user_action(self, user_id: int, guild_id: int, action: str) -> Tuple[int, int]:
+        user = session.query(Interaction).filter(
+            Interaction.name == action, Interaction.guild_id == guild_id
+        )
         return (
             user.filter(Interaction.giver == user_id).count(),
             user.filter(Interaction.receiver == user_id).count(),
