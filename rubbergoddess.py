@@ -11,7 +11,7 @@ from repository.database import session
 from repository.database.acl import ACL_group, ACL_rule, ACL_rule_user, ACL_rule_group
 from repository.database.image import Image
 from repository.database.karma import Karma, Karma_emoji
-from repository.database.meme import Meme
+from repository.database.interactions import Interaction
 from repository.database.points import Points
 from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.seeking import Seeking

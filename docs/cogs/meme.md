@@ -20,6 +20,14 @@ When pet is not enough.
 
 Slap someone.
 
+### whip _(member)_
+
+Whip someone.
+
+### spank _(member)_
+
+Spank someone.
+
 ### relations _(member)_
 
 Display statistics about hugs, pets and slaps.

@@ -2,5 +2,5 @@
 	fishing_fail: Smůla, ((mention)) ((emoji.sad))
 
 	no_relations: Žádné informace nemám ((emoji.sad))
-	value:        ((gave)) rozdáno, ((got)) získáno
+	value:        ((gave)) / ((got))
 }

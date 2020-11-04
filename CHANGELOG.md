@@ -6,7 +6,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 ### Added
 
-- Meme: `slap`, `relations` and `lv` commands
+- Meme: `slap`, `spank` and `relations` commands
 - Stalker: `db` commands only accept user ID
 
 ### Updated

@@ -8,12 +8,13 @@ from typing import List, Union
 import discord
 from discord.ext import commands
 
+from core.config import config
 from cogs.resource import CogConfig, CogText
-from core import rubbercog, image_utils, utils
+from core import image_utils, rubbercog, utils
 from core.emote import emote
-from repository.meme_repo import MemeRepository
+from repository.interaction_repo import InteractionRepository
 
-repo_m = MemeRepository()
+repo_i = InteractionRepository()
 
 
 class Meme(rubbercog.Rubbercog):
@@ -42,8 +43,38 @@ class Meme(rubbercog.Rubbercog):
             hugger = ctx.author
             hugged = user
 
-        repo_m.hug(ctx.guild.id, hugger.id, hugged.id)
+        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, hugged.id)
         await ctx.send(f"{emote.hug_right} **{self.sanitise(hugged.display_name)}**")
+
+    @commands.guild_only()
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.command()
+    async def whip(self, ctx, user: discord.Member = None):
+        """Whip someone"""
+        if user is None:
+            whipper = self.bot.user
+            whipped = ctx.author
+        else:
+            whipper = ctx.author
+            whipped = user
+
+        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "whip", whipper.id, whipped.id)
+        await ctx.send(f"{self.config.get('whip')} **{self.sanitise(whipped.display_name)}**")
+
+    @commands.guild_only()
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.command()
+    async def spank(self, ctx, user: discord.Member = None):
+        """Spank someone"""
+        if user is None:
+            spanker = self.bot.user
+            spanked = ctx.author
+        else:
+            spanker = ctx.author
+            spanked = user
+
+        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "spank", spanker.id, spanked.id)
+        await ctx.send(f"{self.config.get('spank')} **{self.sanitise(spanked.display_name)}**")
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -60,7 +91,7 @@ class Meme(rubbercog.Rubbercog):
             petter = ctx.author
             petted = member
 
-        repo_m.pet(ctx.guild.id, petter.id, petted.id)
+        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "pet", petter.id, petted.id)
 
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
@@ -82,6 +113,7 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
+
                 filename = self.get_pet_name(petted)
                 await ctx.send(file=discord.File(fp=image_binary, filename=filename))
 
@@ -100,7 +132,7 @@ class Meme(rubbercog.Rubbercog):
             petter = ctx.author
             petted = member
 
-        repo_m.hyperpet(ctx.guild.id, petter.id, petted.id)
+        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hyperpet", petter.id, petted.id)
 
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
@@ -142,7 +174,8 @@ class Meme(rubbercog.Rubbercog):
 
         options = ["つ", "づ", "ノ"]
 
-        repo_m.slap(ctx.guild.id, slapper.id, slapped.id)
+        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "slap", slapper.id, slapped.id)
+
         await ctx.send(
             "**{}**{} {}".format(
                 self.sanitise(slapper.display_name),
@@ -159,31 +192,13 @@ class Meme(rubbercog.Rubbercog):
         if user is None:
             user = ctx.author
 
-        lookup = repo_m.get(ctx.guild.id, user.id)
-        if lookup is None:
-            return await ctx.send(self.text.get("no_relations"))
-
         embed = self.embed(ctx=ctx, description=self.sanitise(user.display_name))
-        embed.add_field(
-            name="?hug",
-            value=self.text.get("value", gave=lookup.hugs_gave, got=lookup.hugs_recv),
-            inline=False,
-        )
-        embed.add_field(
-            name="?pet",
-            value=self.text.get("value", gave=lookup.pets_gave, got=lookup.pets_recv),
-            inline=False,
-        )
-        embed.add_field(
-            name="?hyperpet",
-            value=self.text.get("value", gave=lookup.hyperpets_gave, got=lookup.hyperpets_recv),
-            inline=False,
-        )
-        embed.add_field(
-            name="?slap",
-            value=self.text.get("value", gave=lookup.slaps_gave, got=lookup.slaps_recv),
-            inline=False,
-        )
+
+        for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip"):
+            lookup = repo_i.get_user_action(user.id, action)
+            value = self.text.get("value", gave=lookup[0], got=lookup[1])
+            embed.add_field(name=f"{config.prefix}{action}", value=value)
+
         await ctx.send(embed=embed)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
@@ -210,25 +225,6 @@ class Meme(rubbercog.Rubbercog):
                     text += letter.upper() if random.choice((True, False)) else letter.lower()
                 else:
                     text += letter
-        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
-        await utils.delete(ctx.message)
-
-    @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
-    @commands.command(aliases=["vl"])
-    async def lv(self, ctx, *, message: str = None):
-        """Switch l's and v's"""
-        if message is None:
-            return
-
-        # lowercase
-        text = message.replace("l", "¯")
-        text = text.replace("v", "l")
-        text = text.replace("¯", "v")
-        # uppercase
-        text = text.replace("L", "¯")
-        text = text.replace("V", "L")
-        text = text.replace("¯", "V")
-
         await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
         await utils.delete(ctx.message)
 
