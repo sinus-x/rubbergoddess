@@ -173,7 +173,16 @@ class Animals(rubbercog.Rubbercog):
                 break
         else:
             return
-        await utils.delete(message)
+
+        # Edit original message
+        result = [0, 0]
+        for r in message.reactions:
+            if r.emoji == "☑️":
+                result[0] = r.count - 1
+            elif r.emoji == "❎":
+                result[1] = r.count - 1
+
+        await message.edit(content=self.text.get("edit", yes=result[0], no=result[1]))
 
     ##
     ## Logic

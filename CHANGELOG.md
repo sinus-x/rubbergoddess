@@ -12,6 +12,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 ### Updated
 
 - Voice: Working channel locking.
+- Animals: Vote embed is not deleted; it's replaced by vote statistics.
 
 ## [1.1.4]
 
