@@ -182,7 +182,12 @@ class Animals(rubbercog.Rubbercog):
             elif r.emoji == "❎":
                 result[1] = r.count - 1
 
-        await message.edit(content=self.text.get("edit", yes=result[0], no=result[1]))
+        await message.edit(
+            embed=None,
+            content=self.text.get(
+                "edit", nickname=self.sanitise(animal.display_name), yes=result[0], no=result[1]
+            ),
+        )
 
     ##
     ## Logic
