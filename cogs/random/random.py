@@ -62,7 +62,7 @@ class Random(rubbercog.Rubbercog):
     @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
     @commands.check(check.is_verified)
     @commands.command(aliases=["unsplash"])
-    async def picsum(self, ctx, seed: str = None):
+    async def picsum(self, ctx, *, seed: str = None):
         """Get random image from picsum.photos"""
         size = "450/300"
         url = "https://picsum.photos/"
