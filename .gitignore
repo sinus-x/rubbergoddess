@@ -18,5 +18,6 @@ data/*
 !data/*/
 data/*/*
 !data/acl/commands.csv
-!data/meme/pet_*.png
+!data/meme/pet
+!data/meme/hyperpet
 !data/Vafle VUT.pfb

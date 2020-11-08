@@ -82,7 +82,7 @@ class Meme(rubbercog.Rubbercog):
     async def pet(self, ctx, member: discord.Member = None):
         """Pet someone!
 
-        member: Discord user. If none, the bot will hug yourself.
+        member: Discord user. If none, the bot will pet yourself.
         """
         if member is None:
             petter = self.bot.user
@@ -106,11 +106,11 @@ class Meme(rubbercog.Rubbercog):
                     format="GIF",
                     save_all=True,
                     append_images=frames[1:],
-                    duration=40,
+                    duration=30,
                     loop=0,
                     transparency=0,
                     disposal=2,
-                    optimize=False,
+                    optimize=True,
                 )
                 image_binary.seek(0)
 
@@ -123,7 +123,7 @@ class Meme(rubbercog.Rubbercog):
     async def hyperpet(self, ctx, member: discord.Member = None):
         """Pet someone really hard
 
-        member: Discord user. If none, the bot will hug yourself.
+        member: Discord user. If none, the bot will hyperpet yourself.
         """
         if member is None:
             petter = self.bot.user
@@ -139,7 +139,7 @@ class Meme(rubbercog.Rubbercog):
             response = requests.get(url)
             avatar = Image.open(BytesIO(response.content))
 
-            frames = self.get_pet_frames(avatar, hue=True)
+            frames = self.get_hyperpet_frames(avatar, hue=True)
 
             with BytesIO() as image_binary:
                 frames[0].save(
@@ -281,7 +281,30 @@ class Meme(rubbercog.Rubbercog):
         return result
 
     @staticmethod
-    def get_pet_frames(avatar: Image.Image, hue: bool = False) -> List[Image.Image]:
+    def get_pet_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the pet"""
+        frames = []
+        width, height = 200, 200
+        vertical_offset = (0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0)
+
+        for i in range(15):
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (256, 256), (32, 34, 37, 1))
+            hand = Image.open(f"data/meme/pet/{img}.png")
+            frame_avatar = avatar.resize((width, height))
+            frame_mask = Image.new("1", frame_avatar.size, 0)
+            draw = ImageDraw.Draw(frame_mask)
+            draw.ellipse((0, 0) + frame_avatar.size, fill=255)
+            frame_avatar.putalpha(frame_mask)
+
+            frame.paste(frame_avatar, (50, 40 + vertical_offset[i]), frame_avatar)
+            frame.paste(hand, (0, 0), hand)
+            frames.append(frame)
+
+        return frames
+
+    @staticmethod
+    def get_hyperpet_frames(avatar: Image.Image, hue: bool = False) -> List[Image.Image]:
         """Get frames for the pet
 
         avatar: Image
@@ -306,7 +329,7 @@ class Meme(rubbercog.Rubbercog):
                 avatar = Image.fromarray(image_utils.shift_hue(avatar_pixels, deform_hue))
 
             frame = Image.new("RGBA", (112, 112), (255, 255, 255, 1))
-            hand = Image.open(f"data/meme/pet_{i}.png")
+            hand = Image.open(f"data/meme/hyperpet/0{i+1}.png")
             width -= deform_width[i]
             height -= defom_height[i]
             frame_avatar = avatar.resize((width, height))
