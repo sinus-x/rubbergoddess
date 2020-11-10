@@ -27,6 +27,7 @@
 		humidity:          Vlhkost
 		clouds:            Oblačnost
 		visibility:        Viditelnost
+		visibility_max:    Plná
 		wind:              Vítr
 	}
 
