@@ -188,6 +188,10 @@ class Animals(rubbercog.Rubbercog):
                 "edit", nickname=self.sanitise(animal.display_name), yes=result[0], no=result[1]
             ),
         )
+        try:
+            await message.unpin()
+        except Exception as e:
+            await self.console.error(message, "Could not unpin Animal vote embed", e)
 
     ##
     ## Logic
