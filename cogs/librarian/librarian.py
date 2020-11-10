@@ -161,9 +161,13 @@ class Librarian(rubbercog.Rubbercog):
             value=(str(res["clouds"]["all"]) + " %"),
         )
         if "visibility" in res:
+            if res["visibility"] == 10000:
+                value = self.text.get("weather", "visibility_max")
+            else:
+                value = f"{res['visibility']/1000} km"
             embed.add_field(
                 name=self.text.get("weather", "visibility"),
-                value=f"{int(res['visibility']/1000)} km",
+                value=value,
             )
         embed.add_field(name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s")
 

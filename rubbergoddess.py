@@ -8,13 +8,14 @@ from core import acl, help, rubbercog, output, utils
 from core.config import config
 from repository.database import database
 from repository.database import session
-from repository.database.karma import Karma, Karma_emoji
-from repository.database.seeking import Seeking
-from repository.database.review import Review, ReviewRelevance, Subject
-from repository.database.verification import User
-from repository.database.image import Image
-from repository.database.points import Points
 from repository.database.acl import ACL_group, ACL_rule, ACL_rule_user, ACL_rule_group
+from repository.database.image import Image
+from repository.database.karma import Karma, Karma_emoji
+from repository.database.interactions import Interaction
+from repository.database.points import Points
+from repository.database.review import Review, ReviewRelevance, Subject
+from repository.database.seeking import Seeking
+from repository.database.verification import User
 from repository.review_repo import ReviewRepository
 
 intents = discord.Intents.none()
@@ -25,6 +26,7 @@ intents.emojis = True  # Used for Karma
 intents.voice_states = True  # Used for Voice
 intents.messages = True  # Used all over the place
 intents.reactions = True  # Used for Karma and scrolling
+intents.presences = True
 
 bot = commands.Bot(
     command_prefix=config.prefix,
@@ -80,29 +82,35 @@ async def on_error(event, *args, **kwargs):
 
 @bot.command()
 @commands.check(acl.check)
-async def load(ctx, extension):
-    bot.load_extension(f"cogs.{extension}")
-    await ctx.send(f"Rozšíření **{extension}** načteno.")
-    await event.sudo(ctx, f"Loaded: {extension.upper()}")
-    print(f"Loaded: {extension.upper()}")
+async def load(ctx, *, extensions: str):
+    """Load modules"""
+    for extension in extensions.split(" "):
+        bot.load_extension(f"cogs.{extension}")
+        await ctx.send(f"Rozšíření **{extension}** načteno.")
+        await event.sudo(ctx, f"Loaded: {extension.upper()}")
+    print(f"Loaded: {', '.join(extensions.upper())}")
 
 
 @bot.command()
 @commands.check(acl.check)
-async def unload(ctx, extension):
-    bot.unload_extension(f"cogs.{extension}")
-    await ctx.send(f"Rozšíření **{extension}** odebráno.")
-    await event.sudo(ctx, f"Unloaded: {extension.upper()}")
-    print(f"Unloaded: {extension.upper()}")
+async def unload(ctx, *, extensions: str):
+    """Unload modules"""
+    for extension in extensions.split(" "):
+        bot.unload_extension(f"cogs.{extension}")
+        await ctx.send(f"Rozšíření **{extension}** odebráno.")
+        await event.sudo(ctx, f"Unloaded: {extension.upper()}")
+    print(f"Unloaded: {', '.join(extensions.upper())}")
 
 
 @bot.command()
 @commands.check(acl.check)
-async def reload(ctx, extension):
-    bot.reload_extension(f"cogs.{extension}")
-    await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
-    await event.sudo(ctx, f"Reloaded: {extension.upper()}")
-    print(f"Reloaded: {extension.upper()}")
+async def reload(ctx, *, extensions: str):
+    """Reload modules"""
+    for extension in extensions.split(" "):
+        bot.reload_extension(f"cogs.{extension}")
+        await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
+        await event.sudo(ctx, f"Reloaded: {extension.upper()}")
+    print(f"Reloaded: {', '.join(extensions.upper())}")
     if "docker" in config.loader:
         await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
 

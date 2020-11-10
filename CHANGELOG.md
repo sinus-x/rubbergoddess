@@ -4,6 +4,20 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.1.5]
+
+### Added
+
+- Meme: `slap`, `spank` and `relations` commands
+- Stalker: `db` commands only accept user ID
+
+### Updated
+
+- Voice: Working channel locking.
+- Animals: Vote embed is not deleted; it's replaced by vote statistics.
+- Points: Only official guilds are counter. Per-guild system is planned.
+- `load`, `unload` and `reload` commands support multiple modules at the same time.
+
 ## [1.1.4]
 
 ### Added
@@ -204,7 +218,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...devel
+[1.1.4]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.1...v1.1.2

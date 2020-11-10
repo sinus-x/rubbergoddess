@@ -14,7 +14,7 @@
 		stud.feec.vutbr.cz: "x[a-z]{5}[0-9][a-z0-9]"
 		vutbr.cz:           "x[a-z]{5}[0-9][a-z0-9]"
 		# the rest
-		.:                  "[a-z0-9.]+"
+		.:                  "[a-zA-Z0-9.]+"
 	}
 
 	# SMTP credentials for verification

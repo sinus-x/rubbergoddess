@@ -1,3 +1,5 @@
+import random
+
 import discord
 from discord.ext import commands
 
@@ -108,9 +110,6 @@ class Stalker(rubbercog.Rubbercog):
             # TODO Should we raise MemberNotFound?
             return await self.output.info(ctx, self.text.get("not_found"))
         member = self.getGuild().get_member(db_member.discord_id)
-        if member is None:
-            return await self.output.info(ctx, self.text.get("not_in_guild"))
-
         embed = self.whois_embed(ctx, member, db_member)
 
         await ctx.send(embed=embed)
@@ -150,7 +149,6 @@ class Stalker(rubbercog.Rubbercog):
             embed.add_field(
                 name=self.text.get("prefix", "too_many"),
                 value=self.text.get("prefix", "omitted"),
-                inline=False,
             )
 
         await ctx.send(embed=embed)
@@ -164,66 +162,48 @@ class Stalker(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @database.command(name="add")
-    async def database_add(
-        self,
-        ctx: commands.Context,
-        member: discord.Member = None,
-        login: str = None,
-        group: discord.Role = None,
-    ):
-        """Add user to database
+    async def database_add(self, ctx, user_id: int, login: str, group: str):
+        """Add user ID to database
 
-        member: A server member
+        user_id: User ID or zero, if not known
         login: e-mail
-        group: A role from `roles_native` or `roles_guest` in config file
+        group: A role name
         """
-        if member is None or login is None or group is None:
-            return await utils.send_help(ctx)
+        if repository.getByLogin(login) is not None:
+            return await self.output.error(ctx, self.text.get("db", "duplicate"))
 
-        # define variables
-        guild = self.bot.get_guild(config.guild_id)
-        verify = discord.utils.get(guild.roles, name="VERIFY")
+        # generate something random
+        if user_id == 0:
+            user_id = random.randint(1000000000, 9999999999)
 
-        if repository.get(member.id) is not None:
+        if repository.get(user_id) is not None:
             return await self.output.error(ctx, self.text.get("db", "duplicate"))
 
         try:
-            repository.add(
-                discord_id=member.id,
-                login=login,
-                group=group.name,
-                status="verified",
-                code="MANUAL",
-            )
+            repository.add(discord_id=user_id, login=login, group=group, status="unknown", code="")
         except Exception as e:
             return await self.output.error(ctx, self.text.get("db", "write_error"), e)
 
-        # assign roles, if neccesary
-        if verify not in member.roles:
-            await member.add_roles(verify)
-        if group not in member.roles:
-            await member.add_roles(group)
-
         # display the result
-        embed = self.whois_embed(ctx, member, repository.get(member.id))
+        embed = self.whois_embed(ctx, None, repository.get(user_id))
         await ctx.send(embed=embed)
-        await self.event.sudo(ctx, f"New user {member} ({group.name})")
+        await self.event.sudo(ctx, f"New member **{user_id}**.")
 
     @commands.check(acl.check)
     @database.command(name="remove", aliases=["delete"])
-    async def database_remove(self, ctx: commands.Context, member: discord.Member):
+    async def database_remove(self, ctx: commands.Context, user_id: int):
         """Remove user from database"""
-        result = repository.deleteId(discord_id=member.id)
+        result = repository.deleteId(discord_id=user_id)
 
         if result < 1:
             return await self.output.error(ctx, self.text.get("db", "delete_error"))
 
         await ctx.send(self.text.get("db", "delete_success", num=result))
-        await self.event.sudo(ctx, f"Member {member} ({member.id}) removed from database.")
+        await self.event.sudo(ctx, f"Member {user_id} removed from database.")
 
     @commands.check(acl.check)
     @database.command(name="update")
-    async def database_update(self, ctx, member: discord.Member, key: str, *, value):
+    async def database_update(self, ctx, user_id: int, key: str, *, value):
         """Update user entry in database
 
         key: value
@@ -236,7 +216,7 @@ class Stalker(rubbercog.Rubbercog):
             return await self.output.error(ctx, self.text.get("db", "invalid_key"))
 
         if key == "login":
-            repository.update(member.id, login=value)
+            repository.update(user_id, login=value)
 
         elif key == "group":
             # get list of role names, defined in
@@ -249,17 +229,17 @@ class Stalker(rubbercog.Rubbercog):
             value = value.upper()
             if value not in role_names:
                 return await self.output.error(ctx, self.text.get("db", "invalid_value"))
-            repository.update(member.id, group=value)
+            repository.update(user_id, group=value)
 
         elif key == "status":
             if value not in ("unknown", "pending", "verified", "kicked", "banned"):
                 return await self.output.error(ctx, self.text.get("db", "invalid_value"))
-            repository.update(member.id, status=value)
+            repository.update(user_id, status=value)
 
         elif key == "comment":
-            repository.update(member.id, comment=value)
+            repository.update(user_id, comment=value)
 
-        await self.event.sudo(ctx, f"Updated {member}: {key} = {value}.")
+        await self.event.sudo(ctx, f"Updated {user_id}: {key} = {value}.")
         await ctx.send(self.text.get("db", "update_success"))
 
     @commands.check(acl.check)
@@ -353,23 +333,26 @@ class Stalker(rubbercog.Rubbercog):
 
     def whois_embed(self, ctx, member: discord.Member, db_member: object) -> discord.Embed:
         """Construct the whois embed"""
-        embed = self.embed(ctx=ctx, title="Whois", description=member.mention)
-
-        embed.add_field(
-            name=self.text.get("whois", "information"),
-            value=self.text.get(
-                "whois",
-                "account_information",
-                name=self.sanitise(member.display_name),
-                account_since=utils.id_to_datetime(member.id).strftime("%Y-%m-%d"),
-                member_since=member.joined_at.strftime("%Y-%m-%d"),
-            ),
-            inline=False,
+        embed = self.embed(
+            ctx=ctx, title="Whois", description=member.mention if member is not None else "???"
         )
+
+        if member is not None:
+            embed.add_field(
+                name=self.text.get("whois", "information"),
+                value=self.text.get(
+                    "whois",
+                    "account_information",
+                    name=self.sanitise(member.display_name),
+                    account_since=utils.id_to_datetime(member.id).strftime("%Y-%m-%d"),
+                    member_since=member.joined_at.strftime("%Y-%m-%d"),
+                ),
+                inline=False,
+            )
 
         if db_member is not None:
             embed.add_field(
-                name=self.text.get("whois", "email"),
+                name=self.text.get("whois", "login"),
                 value=self.dbobj2email(db_member)
                 if db_member.login
                 else self.text.get("whois", "missing"),
@@ -400,11 +383,12 @@ class Stalker(rubbercog.Rubbercog):
                     name=self.text.get("whois", "comment"), value=db_member.comment, inline=False
                 )
 
-        role_list = ", ".join(list((r.name) for r in member.roles[::-1])[:-1])
-        embed.add_field(
-            name=self.text.get("whois", "roles"),
-            value=role_list if len(role_list) else self.text.get("whois", "missing"),
-        )
+        if member is not None:
+            role_list = ", ".join(list((r.name) for r in member.roles[::-1])[:-1])
+            embed.add_field(
+                name=self.text.get("whois", "roles"),
+                value=role_list if len(role_list) else self.text.get("whois", "missing"),
+            )
 
         return embed
 

@@ -173,7 +173,25 @@ class Animals(rubbercog.Rubbercog):
                 break
         else:
             return
-        await utils.delete(message)
+
+        # Edit original message
+        result = [0, 0]
+        for r in message.reactions:
+            if r.emoji == "☑️":
+                result[0] = r.count - 1
+            elif r.emoji == "❎":
+                result[1] = r.count - 1
+
+        await message.edit(
+            embed=None,
+            content=self.text.get(
+                "edit", nickname=self.sanitise(animal.display_name), yes=result[0], no=result[1]
+            ),
+        )
+        try:
+            await message.unpin()
+        except Exception as e:
+            await self.console.error(message, "Could not unpin Animal vote embed", e)
 
     ##
     ## Logic

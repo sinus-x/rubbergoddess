@@ -187,48 +187,33 @@ class Console:
         if self.getLogChannel() is None:
             return
 
-        template = "{timestamp} {level} [{command}] {message}\n{author}, {source_name}"
+        result = f"|{level.upper()}:"
 
         # command
         if isinstance(source, commands.Context) and hasattr(source.command, "qualified_name"):
-            command = source.command.qualified_name
-        else:
-            command = "not a command"
+            result += f"\n|{source.command.qualified_name}"
 
         # author
         if hasattr(source, "author") and type(source.author) in (discord.User, discord.Member):
-            author = str(source.author)
-        else:
-            author = "unknown author"
+            result += f"\n|{source.author}"
 
-        # source_name
+        # source
         if hasattr(source, "channel") and isinstance(source.channel, discord.TextChannel):
-            source_name = f"{source.channel.name} in {source.channel.guild}"
+            result += f"\n|{source.channel.name} in {source.channel.guild}"
         elif hasattr(source, "channel"):
-            source_name = type(source.channel).__name__
+            result += f"\n|{type(source.channel).__name__}"
         else:
-            source_name = "unknown location"
+            result += f"\n|{source}"
 
         # message
-        if message is None and error is not None:
-            message = str(error)
-        elif message is None:
-            message = "no message"
+        if message is not None:
+            result += f"\n|{message}"
 
         # traceback
         if error and len(str(error.__traceback__)):
             tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
         else:
             tb = ""
-
-        result = template.format(
-            timestamp=getTimestamp(),
-            level=level.upper(),
-            command=command,
-            message=message,
-            author=author,
-            source_name=source_name,
-        )
         if len(tb):
             result += "\n\n" + tb
 
@@ -240,13 +225,14 @@ class Console:
             await self.getLogChannel().send(f"```{r}```")
 
         # try to include trigger message
-        content = None
         if isinstance(source, discord.Message):
             content = source.content
         elif isinstance(source, commands.Context):
             content = source.message.content
-        if content is not None:
-            await self.getLogChannel().send(f"Original:\n```{content[:1980]}```")
+        else:
+            return
+
+        await self.getLogChannel().send(f"Original:\n```{content[:1980]}```")
 
 
 class Event:

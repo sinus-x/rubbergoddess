@@ -16,13 +16,33 @@ Pet someone.
 
 When pet is not enough.
 
+### slap _(member)_
+
+Slap someone.
+
+### whip _(member)_
+
+Whip someone.
+
+### spank _(member)_
+
+Spank someone.
+
+### relations _(member)_
+
+Display statistics about hugs, pets and slaps.
+
 ### uwu (text)
 
 Send UwUized message back.
 
 ### randomcase (text)
 
-Send message wItH rANdoM cApiTaLIsatIoN
+Send message wItH rANdoM cApiTaLIsatIoN.
+
+### lv (text)
+
+Switch l's and v's.
 
 ### fish
 

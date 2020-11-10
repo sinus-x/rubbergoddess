@@ -19,4 +19,6 @@
 		yes_no:  ((mention)) už zvířátko není ((emoji.sad))
 		no_no:   ((mention)) zvířátko není ((emoji.sad))
 	}
+
+	edit: Hlasování o **((nickname))** ukončeno: ((yes)) pro, ((no)) proti.
 }
