@@ -88,7 +88,7 @@ async def load(ctx, *, extensions: str):
         bot.load_extension(f"cogs.{extension}")
         await ctx.send(f"Rozšíření **{extension}** načteno.")
         await event.sudo(ctx, f"Loaded: {extension.upper()}")
-    print(f"Loaded: {', '.join(extensions.upper())}")
+        print(f"Loaded: {extension.upper()}.")
 
 
 @bot.command()
@@ -99,7 +99,7 @@ async def unload(ctx, *, extensions: str):
         bot.unload_extension(f"cogs.{extension}")
         await ctx.send(f"Rozšíření **{extension}** odebráno.")
         await event.sudo(ctx, f"Unloaded: {extension.upper()}")
-    print(f"Unloaded: {', '.join(extensions.upper())}")
+        print(f"Unloaded: {extension.upper()}.")
 
 
 @bot.command()
@@ -110,9 +110,7 @@ async def reload(ctx, *, extensions: str):
         bot.reload_extension(f"cogs.{extension}")
         await ctx.send(f"Rozšíření **{extension}** aktualizováno.")
         await event.sudo(ctx, f"Reloaded: {extension.upper()}")
-    print(f"Reloaded: {', '.join(extensions.upper())}")
-    if "docker" in config.loader:
-        await ctx.send("Jsem ale zavřená v Dockeru, víš o tom?")
+        print(f"Reloaded: {extension.upper()}.")
 
 
 # database.base.metadata.drop_all(database.db)
