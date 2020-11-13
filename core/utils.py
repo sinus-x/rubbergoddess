@@ -86,6 +86,10 @@ async def room_check(ctx: commands.Context):
     if not isinstance(ctx.channel, discord.TextChannel):
         return
 
+    # Do not send message if the message has been sent to other guild
+    if ctx.guild.id != config.guild_id:
+        return
+
     if ctx.channel.id not in config.get("channels", "bot allowed"):
         # we do not have `bot` variable, so we have to construct the botroom mention directly
         await ctx.send(
