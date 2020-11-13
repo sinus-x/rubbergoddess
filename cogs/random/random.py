@@ -90,6 +90,23 @@ class Random(rubbercog.Rubbercog):
 
         await utils.room_check(ctx)
 
+    @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
+    @commands.check(check.is_verified)
+    @commands.command()
+    async def cat(self, ctx):
+        """Get random image of a cat"""
+        data = requests.get("https://api.thecatapi.com/v1/images/search")
+        if data.status_code != 200:
+            return await ctx.send(f"E{data.status_code}")
+
+        embed = self.embed(
+            ctx=ctx, title=discord.Embed.Empty, description="The Cat API", footer="thecatapi.com"
+        )
+        embed.set_image(url=data.json()[0]["url"])
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)
+
 
 def setup(bot):
     bot.add_cog(Random(bot))
