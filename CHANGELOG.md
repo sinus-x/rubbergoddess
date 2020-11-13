@@ -4,6 +4,10 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Added
+
+- Random: The Cat API, The Dog API (`cat`, `dog`)
+
 ## [1.1.5]
 
 ### Added

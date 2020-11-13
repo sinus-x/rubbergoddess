@@ -99,9 +99,22 @@ class Random(rubbercog.Rubbercog):
         if data.status_code != 200:
             return await ctx.send(f"E{data.status_code}")
 
-        embed = self.embed(
-            ctx=ctx, title=discord.Embed.Empty, description="The Cat API", footer="thecatapi.com"
-        )
+        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, footer="thecatapi.com")
+        embed.set_image(url=data.json()[0]["url"])
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)
+
+    @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
+    @commands.check(check.is_verified)
+    @commands.command()
+    async def dog(self, ctx):
+        """Get random image of a cat"""
+        data = requests.get("https://api.thedogapi.com/v1/images/search")
+        if data.status_code != 200:
+            return await ctx.send(f"E{data.status_code}")
+
+        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, footer="thedogapi.com")
         embed.set_image(url=data.json()[0]["url"])
         await ctx.send(embed=embed)
 

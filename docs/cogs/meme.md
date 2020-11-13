@@ -40,9 +40,13 @@ Send UwUized message back.
 
 Send message wItH rANdoM cApiTaLIsatIoN.
 
-### lv (text)
+### cat
 
-Switch l's and v's.
+Get random cat image via [The Cat API](https://thecatapi.com).
+
+### dog
+
+Get random dog image via [The Dog API](https://thedogapi.com).
 
 ### fish
 
