@@ -10,7 +10,7 @@ from discord.ext import commands
 
 from core.config import config
 from cogs.resource import CogConfig, CogText
-from core import image_utils, rubbercog, utils
+from core import image_utils, image_utils_gif, rubbercog, utils
 from core.emote import emote
 from repository.interaction_repo import InteractionRepository
 
@@ -101,17 +101,7 @@ class Meme(rubbercog.Rubbercog):
             frames = self.get_pet_frames(avatar)
 
             with BytesIO() as image_binary:
-                frames[0].save(
-                    image_binary,
-                    format="GIF",
-                    save_all=True,
-                    append_images=frames[1:],
-                    duration=30,
-                    loop=0,
-                    transparency=0,
-                    disposal=2,
-                    optimize=True,
-                )
+                image_utils_gif.save_transparent_gif(frames, 30, image_binary)
                 image_binary.seek(0)
 
                 filename = self.get_pet_name(petted)
