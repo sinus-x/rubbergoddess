@@ -158,3 +158,20 @@ class KarmaRepository(BaseRepository):
 
     def getLeaderboard(self, order: str, offset: int = 0, limit: int = 10):
         return session.query(Karma).order_by(order).offset(offset).limit(limit)
+
+    # Mover module
+
+    def move_user(self, before_id: int, after_id: int) -> int:
+        """Replace old user ID with new one.
+
+        Returns
+        -------
+        `int`: number of altered rows
+        """
+        user = session.query(Karma).filter(Karma.discord_id == before_id).one_or_none()
+        if user is None:
+            return 0
+
+        user.discord_id = after_id
+        session.commit()
+        return 1

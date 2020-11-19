@@ -7,6 +7,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 ### Added
 
 - Random: The Cat API, The Dog API (`cat`, `dog`)
+- Mover: Two commands to allow migrate old member account data to new one
 
 ## [1.1.5]
 

@@ -112,6 +112,10 @@ database remove,0,MOD,
 database update,0,MOD,
 database show,0,MOD,
 guild,0,MOD,
+# Mover
+move,0,MOD,
+move member,0,MOD,
+move user,0,MOD,
 # Verify
 verify,1,,VERIFY
 submit,1,,VERIFY

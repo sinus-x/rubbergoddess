@@ -51,3 +51,24 @@ class InteractionRepository(BaseRepository):
             user.filter(Interaction.giver == user_id).count(),
             user.filter(Interaction.receiver == user_id).count(),
         )
+
+    # Mover module
+
+    def move_user(self, before_id: int, after_id: int) -> int:
+        """Replace old user IDs with new one.
+
+        Returns
+        -------
+        `int`: number of altered interactions
+        """
+        interactions = session.query(Interaction).all()
+        counter = 0
+        for interaction in interactions:
+            if interaction.giver == before_id:
+                interaction.giver == after_id
+                counter += 1
+            if interaction.receiver == before_id:
+                interaction.receiver == after_id
+                counter += 1
+        session.commit()
+        return counter
