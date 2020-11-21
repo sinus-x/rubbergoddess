@@ -112,13 +112,7 @@ class Animals(rubbercog.Rubbercog):
         animal_id = int(message.embeds[0].description.split(" | ")[1])
         if animal_id == payload.member.id:
             return await message.remove_reaction(payload.emoji, payload.member)
-        animal = self.getChannel().guild.fetch_member(animal_id)
-
-        if animal is None:
-            try:
-                animal = await self.getChannel().guild.fetch_member(animal_id)
-            except discord.HTTPException:
-                animal = None
+        animal = await self.getChannel().guild.fetch_member(animal_id)
 
         if animal is None:
             await self.console.error(
