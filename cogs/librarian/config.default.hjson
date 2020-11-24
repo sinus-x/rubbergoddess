@@ -4,4 +4,7 @@
 
 	# openweathermap.com token
 	weather_token: 678a5932f6dd92ac668b20e9f89c0318
+
+	# https://maclookup.app API key
+	maclookup_token: 0
 }

@@ -32,4 +32,15 @@
 	}
 
 	invalid_hash: Takovou hashovací funkci neznám ((emoji.sad))
+
+	maclookup: {
+		no_token: Nemám nastavený token! ((emoji.sad))
+		bad_mac:  ((mention)), MAC adresa takový formát nemá.
+		error:    Došlo k chybě ((errcode)).
+		not_found: Tuhle MAC adresu neznám ((emoji.sad))
+
+		company:  Společnost
+		country:  Stát
+		block:    Blok
+	}
 }

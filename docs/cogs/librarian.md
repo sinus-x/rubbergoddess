@@ -32,6 +32,10 @@ Get hash of given string.
 
 Get list of available functions usable for **hash**.
 
+### macaddress
+
+Get information about MAC address from the [maclookup.app](https://maclookup.app) API.
+
 ## Privileged commands
 
 This module has no commands only usable by privileged users.

@@ -6,7 +6,7 @@ from datetime import date
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import rubbercog, utils
+from core import config, rubbercog, utils
 
 
 class Librarian(rubbercog.Rubbercog):
@@ -223,6 +223,55 @@ class Librarian(rubbercog.Rubbercog):
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
         await ctx.send(f"**{fn}** ({quote}):\n> ```{result}```")
+
+    @commands.command(aliases=["maclookup"])
+    async def macaddress(self, ctx, mac: str):
+        """Get information about MAC address"""
+        apikey = self.config.get("maclookup_token")
+        if apikey == 0:
+            return await self.text.get("maclookup", "no_token")
+        if "&" in mac or "?" in mac:
+            return await self.text.get("maclookup", "bad_mac", mention=ctx.author.mention)
+
+        url = f"https://api.maclookup.app/v2/macs/{mac}?format=json&apiKey={apikey}"
+        res = await self.fetch_json(url)
+
+        if res["success"] == False:
+            embed = self.embed(
+                ctx=ctx,
+                title=self.text.get("maclookup", "error", errcode=res["errorCode"]),
+                description=res["error"],
+                footer="maclookup.app",
+            )
+            return await ctx.send(embed=embed)
+
+        if res["found"] == False:
+            embed = self.embed(
+                ctx=ctx,
+                title=self.text.get("maclookup", "error", errcode="404"),
+                description=self.text.get("maclookup", "not_found"),
+                footer="maclookup.app",
+            )
+            return await ctx.send(embed=embed)
+
+        embed = self.embed(ctx=ctx, title=res["macPrefix"], footer="maclookup.app")
+        embed.add_field(
+            name=self.text.get("maclookup", "company"),
+            value=res["company"],
+            inline=False,
+        )
+        embed.add_field(name=self.text.get("maclookup", "country"), value=res["country"])
+
+        block = f"`{res['blockStart']}`"
+        if res["blockStart"] != res["blockEnd"]:
+            block += f"\n`{res['blockEnd']}`"
+        embed.add_field(name=self.text.get("maclookup", "block"), value=f'`{res["blockStart"]}`')
+
+        await ctx.send(embed=embed)
+
+    ##
+    ## Logic
+    ##
 
     async def fetch_json(self, url: str) -> dict:
         """Fetch data from a URL and return a dict"""
