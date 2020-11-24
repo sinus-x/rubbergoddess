@@ -8,6 +8,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 - Random: The Cat API, The Dog API (`cat`, `dog`)
 - Mover: Two commands to allow migrate old member account data to new one
+- Librarian: `ipaddress` and `macaddress` commands
 
 ## [1.1.5]
 
