@@ -60,7 +60,6 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if user has changed their avatar
         if before.avatar_url == after.avatar_url:
-            await self.event.user(f"{after} updated", "Not an animal (default avatar).")
             return
 
         await self.check(after, "on_user_update")
