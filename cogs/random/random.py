@@ -84,7 +84,10 @@ class Random(rubbercog.Rubbercog):
         except:
             image_url = discord.Embed.Empty
 
-        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, description=image_url, footer=seed)
+        footer = "picsum.photos"
+        if seed:
+            footer += f" ({seed})"
+        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, description=image_url, footer=footer)
         embed.set_image(url=image.url)
         await ctx.send(embed=embed)
 
