@@ -138,6 +138,8 @@ class Random(rubbercog.Rubbercog):
         # get random
         if number is None or number < 1 or number > fetched["num"]:
             number = random.randint(1, fetched["num"])
+        # fetch requested
+        if number != fetched["num"]:
             fetched = await utils.fetch_json(f"https://xkcd.com/{number}/info.0.json")
 
         embed = self.embed(
