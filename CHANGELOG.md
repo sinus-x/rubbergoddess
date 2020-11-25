@@ -6,9 +6,13 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 ### Added
 
-- Random: The Cat API, The Dog API (`cat`, `dog`)
+- Random: The Cat API, The Dog API (`cat`, `dog`), `xkcd`
 - Mover: Two commands to allow migrate old member account data to new one
 - Librarian: `ipaddress` and `macaddress` commands
+
+### Developers
+
+- Moved `fetch_json()` to utils.py
 
 ## [1.1.5]
 

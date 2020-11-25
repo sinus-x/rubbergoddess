@@ -123,6 +123,39 @@ class Random(rubbercog.Rubbercog):
 
         await utils.room_check(ctx)
 
+    @commands.cooldown(rate=5, per=60, type=commands.BucketType.channel)
+    @commands.check(check.is_verified)
+    @commands.command()
+    async def xkcd(self, ctx, number: int = None):
+        """Get random xkcd comics
 
-def setup(bot):
-    bot.add_cog(Random(bot))
+        Arguments
+        ---------
+        number: Comics number. Omit to get random one.
+        """
+        # get maximal
+        fetched = await utils.fetch_json("https://xkcd.com/info.0.json")
+        # get random
+        if number is None or number < 1 or number > fetched["num"]:
+            number = random.randint(1, fetched["num"])
+            fetched = await utils.fetch_json(f"https://xkcd.com/{number}/info.0.json")
+
+        embed = self.embed(
+            ctx=ctx,
+            title=fetched["title"],
+            description="_" + fetched["alt"][:2046] + "_",
+            footer="xkcd.com",
+        )
+        embed.add_field(
+            name=(
+                f"{fetched['year']}"
+                f"-{str(fetched['month']).zfill(2)}"
+                f"-{str(fetched['day']).zfill(2)}"
+            ),
+            value=f"https://xkcd.com/{number}",
+            inline=False,
+        )
+        embed.set_image(url=fetched["img"])
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)

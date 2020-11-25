@@ -23,7 +23,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
         url = f"http://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -32,7 +32,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
         url = f"http://svatky.adresa.info/json?lang=sk&date={date.today().strftime('%d%m')}"
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -75,7 +75,7 @@ class Librarian(rubbercog.Rubbercog):
             + "&units=metric&lang=cz&appid="
             + token
         )
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
 
         """ Example response
         {
@@ -242,7 +242,7 @@ class Librarian(rubbercog.Rubbercog):
             )
 
         url = f"https://api.maclookup.app/v2/macs/{mac}?format=json&apiKey={apikey}"
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
 
         if res["success"] == False:
             embed = self.embed(
@@ -293,7 +293,7 @@ class Librarian(rubbercog.Rubbercog):
             f"http://ip-api.com/json/{query}"
             "?fields=query,status,message,country,regionName,city,lat,lon,isp,org"
         )
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
         # TODO The API states that we should be listening for the `X-Rl` header.
         # If it is `0`, we must stop for `X-ttl` seconds.
         # https://ip-api.com/docs/api:json
@@ -327,14 +327,3 @@ class Librarian(rubbercog.Rubbercog):
         )
 
         await ctx.send(embed=embed)
-
-    ##
-    ## Logic
-    ##
-
-    async def fetch_json(self, url: str) -> dict:
-        """Fetch data from a URL and return a dict"""
-
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get(url) as r:
-                return await r.json()
