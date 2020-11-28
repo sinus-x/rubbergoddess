@@ -116,3 +116,8 @@ class Mover(rubbercog.Rubbercog):
             value="\n".join(value),
         )
         return embed
+
+
+def setup(bot):
+    """Load cog"""
+    bot.add_cog(Mover(bot))
