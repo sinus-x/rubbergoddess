@@ -172,6 +172,8 @@ class KarmaRepository(BaseRepository):
         if user is None:
             return 0
 
+        session.query(Karma).filter(Karma.discord_id == after_id).delete()
+
         user.discord_id = after_id
         session.commit()
         return 1

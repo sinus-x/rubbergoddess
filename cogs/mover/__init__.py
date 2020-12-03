@@ -25,7 +25,6 @@ class Mover(rubbercog.Rubbercog):
     def __init__(self, bot):
         super().__init__(bot)
 
-        self.config = CogConfig("mover")
         self.text = CogText("mover")
 
     ##
@@ -66,7 +65,7 @@ class Mover(rubbercog.Rubbercog):
     ## Logic
     ##
 
-    async def move_user_data(self, before_id: int, after_id: int) -> Dict[str, int]:
+    def move_user_data(self, before_id: int, after_id: int) -> Dict[str, int]:
         """Move user data
 
         Arguments
@@ -107,13 +106,13 @@ class Mover(rubbercog.Rubbercog):
         -------
         `discord.Embed`
         """
-        embed = self.embed(ctx, title=self.text.get("user", "move"), description=str(after))
-        value = []
+        embed = self.embed(ctx=ctx, title=self.text.get("user", "move"), description=str(after))
+        result_items = []
         for key, value in result.items():
-            value.append(f"{key}: `{value}`")
+            result_items.append(f"{key}: `{value}`")
         embed.add_field(
             name=self.text.get("user", "result"),
-            value="\n".join(value),
+            value="\n".join(result_items),
         )
         return embed
 

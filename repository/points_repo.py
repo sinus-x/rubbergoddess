@@ -47,6 +47,7 @@ class PointsRepository(BaseRepository):
         user = session.query(Points).filter(Points.user_id == before_id).one_or_none()
         if user is None:
             return 0
+        session.query(Points).filter(Points.user_id == after_id).delete()
 
         user.user_id = after_id
         session.commit()

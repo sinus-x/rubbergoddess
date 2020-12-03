@@ -115,6 +115,7 @@ class UserRepository(BaseRepository):
         user = session.query(User).filter(User.discord_id == before_id).one_or_none()
         if user is None:
             return 0
+        session.query(User).filter(User.discord_id == after_id).delete()
 
         user.discord_id = after_id
         session.commit()
