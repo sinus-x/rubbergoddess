@@ -8,4 +8,12 @@
 		Jestli není, klikni tady na ❎ a při ((limit)) takových reakcích se toto upozornění smaže.
 		Pokud jsi autor a jde o repost, klikni na 🆗.
 		'''
+
+    comparison: {
+        not_found:     Zpráva `((message_id))` není v databázi.
+
+        header: Zpráva **`((message_id))`**
+        line:   > `((hash))`
+        footer: Podobnost **((percent)) %** (((bits)) bitů).
+    }
 }
