@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from cogs.resource import CogText
 from core import check, rubbercog, utils
+from core.config import config
 from repository import seeking_repo
 
 repo_s = seeking_repo.SeekingRepository()
@@ -59,7 +60,12 @@ class Seeking(rubbercog.Rubbercog):
 
     @seeking.command(name="add")
     async def seeking_add(self, ctx, *, text: str):
-        """Announce that you're seeking something"""
+        """Announce that you're seeking something
+
+        Arguments
+        ---------
+        text: Any text under 140 characters
+        """
         if len(text) > 140:
             return await ctx.send(self.text.get("add", "too_long"))
 
@@ -69,14 +75,32 @@ class Seeking(rubbercog.Rubbercog):
         await ctx.send(self.text.get("add", "ok"))
 
     @seeking.command(name="remove")
-    async def seeking_remove(self, ctx, id: int):
-        """Remove your item"""
-        item = repo_s.get(item_id=id)
+    async def seeking_remove(self, ctx, *, ids: str):
+        """Remove your item
 
-        if item is None:
-            return await ctx.send(self.text.get("remove", "not_found"))
-        if item.user_id != ctx.author.id:
-            return await ctx.send(self.text.get("remove", "not_allowed"))
+        Arguments
+        ---------
+        ids: space separated integers
+        """
+        ids = ids.split(" ")
+        items = [repo_s.get(item_id=x) for x in ids]
+        deleted = 0
 
-        repo_s.delete(id)
-        await ctx.send(self.text.get("remove", "ok"))
+        for i, item in enumerate(items):
+            if item is None:
+                await ctx.send(self.text.get("remove", "not_found", id=ids[i]))
+                continue
+            if item.user_id != ctx.author.id and ctx.author.id != config.admin_id:
+                await ctx.send(self.text.get("remove", "not_allowed", id=item.id))
+                continue
+
+            repo_s.delete(item.id)
+            deleted += 1
+
+        if deleted == len(items) and deleted == 1:
+            text = "ok_one"
+        elif deleted < len(items):
+            text = "ok_some"
+        else:
+            text = "ok_all"
+        await ctx.send(self.text.get("remove", text))
