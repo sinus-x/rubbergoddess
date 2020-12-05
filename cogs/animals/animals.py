@@ -73,7 +73,7 @@ class Animals(rubbercog.Rubbercog):
 
         # only act if their avatar is not default
         if after.avatar_url == after.default_avatar_url:
-            await self.event.user(f"{after} verified", "Not an animal (default avatar).")
+            await self.console.debug(f"{after} verified", "Not an animal (default avatar).")
             return
 
         # lookup user timestamp, only allow new verifications
@@ -84,7 +84,7 @@ class Animals(rubbercog.Rubbercog):
             now = datetime.now()
             if (now - timestamp).total_seconds() > 5:
                 # this was probably temporary unverify, they have been checked before
-                await self.event.user(f"{after} reverified", "Skipping (unverify).")
+                await self.console.debug(f"{after} reverified", "Skipping (unverify).")
                 return
 
         await self.check(after, "on_member_update")
@@ -117,7 +117,7 @@ class Animals(rubbercog.Rubbercog):
             await self.console.error(
                 "animals", f"Could not find member with ID {animal_id}. Vote aborted."
             )
-            await self.event.user("animals", f"Could not find user {animal_id}, vote aborted.")
+            await self.console.info("animals", f"Could not find user {animal_id}, vote aborted.")
             return await utils.delete(message)
 
         # delete if the user has changed their avatar since the embed creation
@@ -209,7 +209,7 @@ class Animals(rubbercog.Rubbercog):
         try:
             await message.pin()
         except Exception as e:
-            await self.event.user(member, "Could not pin Animal check embed.", e)
+            await self.console.warning(member, "Could not pin Animal check embed.", e)
 
         await asyncio.sleep(0.5)
         messages = await message.channel.history(limit=5, after=message).flatten()
