@@ -31,20 +31,31 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def hug(self, ctx, user: discord.Member = None):
+    async def hug(self, ctx, target: Union[discord.Member, discord.Role] = None):
         """Hug someone!
 
-        user: Discord user. If none, the bot will hug yourself.
+        target: Discord user or role. If none, the bot will hug yourself.
         """
-        if user is None:
+        if target is None:
             hugger = self.bot.user
             hugged = ctx.author
         else:
             hugger = ctx.author
-            hugged = user
+            hugged = target
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, hugged.id)
-        await ctx.send(f"{emote.hug_right} **{self.sanitise(hugged.display_name)}**")
+        if type(hugged) == discord.Role:
+            repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, None)
+        else:
+            repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, hugged.id)
+
+        await ctx.send(
+            emote.hug_right
+            + (
+                "**" + hugged.display_name + "**"
+                if type(target) == discord.Member
+                else "***" + hugged.name + "***"
+            )
+        )
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
