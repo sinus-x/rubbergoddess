@@ -23,6 +23,9 @@ class ImageRepository(BaseRepository):
     def getHash(self, dhash: str):
         return session.query(Image).filter(Image.dhash == dhash).all()
 
+    def get_by_message(self, message_id: int):
+        return session.query(Image).filter(Image.message_id == message_id).all()
+
     def getByAttachment(self, attachment_id: int):
         return session.query(Image).filter(Image.attachment_id == attachment_id).one_or_none()
 

@@ -1,4 +1,3 @@
-import aiohttp
 import base64
 import hashlib
 from datetime import date
@@ -23,7 +22,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
         url = f"http://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -32,7 +31,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
         url = f"http://svatky.adresa.info/json?lang=sk&date={date.today().strftime('%d%m')}"
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
@@ -75,7 +74,7 @@ class Librarian(rubbercog.Rubbercog):
             + "&units=metric&lang=cz&appid="
             + token
         )
-        res = await self.fetch_json(url)
+        res = await utils.fetch_json(url)
 
         """ Example response
         {
@@ -224,9 +223,106 @@ class Librarian(rubbercog.Rubbercog):
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
         await ctx.send(f"**{fn}** ({quote}):\n> ```{result}```")
 
-    async def fetch_json(self, url: str) -> dict:
-        """Fetch data from a URL and return a dict"""
+    @commands.command(aliases=["maclookup"])
+    async def macaddress(self, ctx, mac: str):
+        """Get information about MAC address"""
+        apikey = self.config.get("maclookup_token")
 
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get(url) as r:
-                return await r.json()
+        if apikey == 0:
+            return await self.output.error(
+                ctx,
+                self.text.get("maclookup", "no_token"),
+            )
+
+        if "&" in mac or "?" in mac:
+            return await self.output.error(
+                ctx,
+                self.text.get("maclookup", "bad_mac", mention=ctx.author.mention),
+            )
+
+        url = f"https://api.maclookup.app/v2/macs/{mac}?format=json&apiKey={apikey}"
+        res = await utils.fetch_json(url)
+
+        if res["success"] is False:
+            embed = self.embed(
+                ctx=ctx,
+                title=self.text.get("maclookup", "error", errcode=res["errorCode"]),
+                description=res["error"],
+                footer="maclookup.app",
+            )
+            return await ctx.send(embed=embed)
+
+        if res["found"] is False:
+            embed = self.embed(
+                ctx=ctx,
+                title=self.text.get("maclookup", "error", errcode="404"),
+                description=self.text.get("maclookup", "not_found"),
+                footer="maclookup.app",
+            )
+            return await ctx.send(embed=embed)
+
+        embed = self.embed(ctx=ctx, title=res["macPrefix"], footer="maclookup.app")
+        embed.add_field(
+            name=self.text.get("maclookup", "company"),
+            value=res["company"],
+            inline=False,
+        )
+        embed.add_field(name=self.text.get("maclookup", "country"), value=res["country"])
+
+        block = f"`{res['blockStart']}`"
+        if res["blockStart"] != res["blockEnd"]:
+            block += f"\n`{res['blockEnd']}`"
+        embed.add_field(name=self.text.get("maclookup", "block"), value=f'`{res["blockStart"]}`')
+
+        await ctx.send(embed=embed)
+
+    @commands.cooldown(rate=2, per=20, type=commands.BucketType.user)
+    # The API has limit of 45 requests per minute
+    @commands.cooldown(rate=45, per=55, type=commands.BucketType.default)
+    @commands.command(aliases=["iplookup"])
+    async def ipaddress(self, ctx, query: str):
+        """Get information about an IP address or a domain name"""
+        if "&" in query or "?" in query:
+            return await self.output.error(
+                ctx,
+                self.text.get("iplookup", "bad_query", mention=ctx.author.mention),
+            )
+
+        url = (
+            f"http://ip-api.com/json/{query}"
+            "?fields=query,status,message,country,regionName,city,lat,lon,isp,org"
+        )
+        res = await utils.fetch_json(url)
+        # TODO The API states that we should be listening for the `X-Rl` header.
+        # If it is `0`, we must stop for `X-ttl` seconds.
+        # https://ip-api.com/docs/api:json
+
+        if res["status"] == "fail":
+            embed = self.embed(
+                ctx=ctx,
+                title=self.text.get("iplookup", "error"),
+                description="`" + res["message"] + "`",
+                footer="ip-api.com",
+            )
+            return await ctx.send(embed=embed)
+
+        embed = self.embed(ctx=ctx, title=res["query"], footer="ip-api.com")
+        embed.add_field(
+            name=res["city"],
+            value=f"{res['regionName']}, {res['country']}",
+            inline=False,
+        )
+        embed.add_field(
+            name=self.text.get("iplookup", "geo"),
+            value=f"{res['lon']}, {res['lat']}",
+        )
+        embed.add_field(
+            name=self.text.get("iplookup", "org"),
+            value=res["org"],
+        )
+        embed.add_field(
+            name=self.text.get("iplookup", "isp"),
+            value=res["isp"],
+        )
+
+        await ctx.send(embed=embed)

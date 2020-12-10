@@ -1,3 +1,4 @@
+import aiohttp
 import git
 from datetime import datetime
 from typing import List, Union
@@ -84,6 +85,10 @@ def seconds2str(time):
 
 async def room_check(ctx: commands.Context):
     if not isinstance(ctx.channel, discord.TextChannel):
+        return
+
+    # Do not send message if the message has been sent to other guild
+    if ctx.guild.id != config.guild_id:
         return
 
     if ctx.channel.id not in config.get("channels", "bot allowed"):
@@ -174,3 +179,11 @@ def get_digit_emoji(number: int) -> str:
     if number > len(numbers) or number < 0:
         raise ValueError("Number must be between 0 and 9.")
     return numbers[number]
+
+
+async def fetch_json(url: str) -> dict:
+    """Fetch data from a URL and return a dict"""
+
+    async with aiohttp.ClientSession() as cs:
+        async with cs.get(url) as r:
+            return await r.json()

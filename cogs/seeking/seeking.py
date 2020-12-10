@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from cogs.resource import CogText
 from core import check, rubbercog, utils
+from core.config import config
 from repository import seeking_repo
 
 repo_s = seeking_repo.SeekingRepository()
@@ -59,7 +60,12 @@ class Seeking(rubbercog.Rubbercog):
 
     @seeking.command(name="add")
     async def seeking_add(self, ctx, *, text: str):
-        """Announce that you're seeking something"""
+        """Announce that you're seeking something
+
+        Arguments
+        ---------
+        text: Any text under 140 characters
+        """
         if len(text) > 140:
             return await ctx.send(self.text.get("add", "too_long"))
 
@@ -69,14 +75,45 @@ class Seeking(rubbercog.Rubbercog):
         await ctx.send(self.text.get("add", "ok"))
 
     @seeking.command(name="remove")
-    async def seeking_remove(self, ctx, id: int):
-        """Remove your item"""
-        item = repo_s.get(item_id=id)
+    async def seeking_remove(self, ctx, *, ids: str):
+        """Remove your item
 
-        if item is None:
-            return await ctx.send(self.text.get("remove", "not_found"))
-        if item.user_id != ctx.author.id:
-            return await ctx.send(self.text.get("remove", "not_allowed"))
+        Arguments
+        ---------
+        ids: space separated integers
+        """
+        ids = ids.split(" ")
 
-        repo_s.delete(id)
-        await ctx.send(self.text.get("remove", "ok"))
+        rejected = []
+
+        items = []
+        for item in ids:
+            if not len(ids):
+                continue
+
+            try:
+                items.append(int(item))
+            except:
+                rejected.append(item)
+
+        for item_id in items:
+            item = repo_s.get(item_id)
+            if item is None:
+                rejected.append(item_id)
+                continue
+
+            if item.user_id != ctx.author.id and ctx.author.id != config.admin_id:
+                rejected.append(item_id)
+                continue
+
+            repo_s.delete(item_id)
+
+        await ctx.send(self.text.get("remove", "done"))
+        if len(rejected):
+            await ctx.send(
+                self.text.get(
+                    "remove",
+                    "rejected",
+                    rejected=", ".join(f"`{self.sanitise(str(x))}`" for x in rejected),
+                )[:2000]
+            )

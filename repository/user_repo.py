@@ -102,3 +102,21 @@ class UserRepository(BaseRepository):
 
     def countGroup(self, group: str):
         return session.query(User).filter(User.group == group).count()
+
+    # Mover module
+
+    def move_user(self, before_id: int, after_id: int) -> int:
+        """Replace old user ID with new one.
+
+        Returns
+        -------
+        `int`: number of altered rows
+        """
+        user = session.query(User).filter(User.discord_id == before_id).one_or_none()
+        if user is None:
+            return 0
+        session.query(User).filter(User.discord_id == after_id).delete()
+
+        user.discord_id = after_id
+        session.commit()
+        return 1

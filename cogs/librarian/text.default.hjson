@@ -32,4 +32,23 @@
 	}
 
 	invalid_hash: Takovou hashovací funkci neznám ((emoji.sad))
+
+	maclookup: {
+		no_token: Nemám nastavený token! ((emoji.sad))
+		bad_mac:  ((mention)), MAC adresa takový formát nemá.
+		error:    Došlo k chybě ((errcode)) ((emoji.sad))
+		not_found: Tuhle MAC adresu neznám ((emoji.sad))
+
+		company:  Společnost
+		country:  Stát
+		block:    Blok
+	}
+
+	iplookup: {
+		bad_query: ((mention)), tohle není IP adresa ani DNS jméno.
+		error:     Došlo k chybě ((emoji.sad))
+		geo:       Geolokace
+		isp:       Registrátor
+		org:       Organizace
+	}
 }

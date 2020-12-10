@@ -219,16 +219,6 @@ class Stalker(rubbercog.Rubbercog):
             repository.update(user_id, login=value)
 
         elif key == "group":
-            # get list of role names, defined in
-            role_ids = config.get("roles", "native") + config.get("roles", "guests")
-            role_names = [
-                x.name
-                for x in [self.getGuild().get_role(x) for x in role_ids]
-                if hasattr(x, "name")
-            ]
-            value = value.upper()
-            if value not in role_names:
-                return await self.output.error(ctx, self.text.get("db", "invalid_value"))
             repository.update(user_id, group=value)
 
         elif key == "status":

@@ -139,6 +139,10 @@ class Points(rubbercog.Rubbercog):
         if message.author.bot:
             return
 
+        # Ignore DMs
+        if not isinstance(message.channel, discord.TextChannel):
+            return
+
         # Before the database is updated, only count primary guild
         if message.guild.id not in (config.guild_id, config.slave_id):
             return

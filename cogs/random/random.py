@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import check, rubbercog, utils
+from core import rubbercog, utils
 
 
 class Random(rubbercog.Rubbercog):
@@ -17,7 +17,6 @@ class Random(rubbercog.Rubbercog):
         self.text = CogText("random")
 
     @commands.cooldown(rate=3, per=20.0, type=commands.BucketType.user)
-    @commands.check(check.is_verified)
     @commands.command()
     async def pick(self, ctx, *args):
         """"Pick an option"""
@@ -36,7 +35,6 @@ class Random(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=3, per=20.0, type=commands.BucketType.user)
-    @commands.check(check.is_verified)
     @commands.command()
     async def flip(self, ctx):
         """Yes/No"""
@@ -45,7 +43,6 @@ class Random(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
-    @commands.check(check.is_verified)
     @commands.command()
     async def random(self, ctx, first: int, second: int = None):
         """Pick number from interval"""
@@ -60,7 +57,6 @@ class Random(rubbercog.Rubbercog):
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
-    @commands.check(check.is_verified)
     @commands.command(aliases=["unsplash"])
     async def picsum(self, ctx, *, seed: str = None):
         """Get random image from picsum.photos"""
@@ -84,12 +80,77 @@ class Random(rubbercog.Rubbercog):
         except:
             image_url = discord.Embed.Empty
 
-        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, description=image_url, footer=seed)
+        footer = "picsum.photos"
+        if seed:
+            footer += f" ({seed})"
+        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, description=image_url, footer=footer)
         embed.set_image(url=image.url)
         await ctx.send(embed=embed)
 
         await utils.room_check(ctx)
 
+    @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
+    @commands.command()
+    async def cat(self, ctx):
+        """Get random image of a cat"""
+        data = requests.get("https://api.thecatapi.com/v1/images/search")
+        if data.status_code != 200:
+            return await ctx.send(f"E{data.status_code}")
 
-def setup(bot):
-    bot.add_cog(Random(bot))
+        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, footer="thecatapi.com")
+        embed.set_image(url=data.json()[0]["url"])
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)
+
+    @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
+    @commands.command()
+    async def dog(self, ctx):
+        """Get random image of a cat"""
+        data = requests.get("https://api.thedogapi.com/v1/images/search")
+        if data.status_code != 200:
+            return await ctx.send(f"E{data.status_code}")
+
+        embed = self.embed(ctx=ctx, title=discord.Embed.Empty, footer="thedogapi.com")
+        embed.set_image(url=data.json()[0]["url"])
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)
+
+    @commands.cooldown(rate=5, per=60, type=commands.BucketType.channel)
+    @commands.command()
+    async def xkcd(self, ctx, number: int = None):
+        """Get random xkcd comics
+
+        Arguments
+        ---------
+        number: Comics number. Omit to get random one.
+        """
+        # get maximal
+        fetched = await utils.fetch_json("https://xkcd.com/info.0.json")
+        # get random
+        if number is None or number < 1 or number > fetched["num"]:
+            number = random.randint(1, fetched["num"])
+        # fetch requested
+        if number != fetched["num"]:
+            fetched = await utils.fetch_json(f"https://xkcd.com/{number}/info.0.json")
+
+        embed = self.embed(
+            ctx=ctx,
+            title=fetched["title"],
+            description="_" + fetched["alt"][:2046] + "_",
+            footer="xkcd.com",
+        )
+        embed.add_field(
+            name=(
+                f"{fetched['year']}"
+                f"-{str(fetched['month']).zfill(2)}"
+                f"-{str(fetched['day']).zfill(2)}"
+            ),
+            value=f"https://xkcd.com/{number}",
+            inline=False,
+        )
+        embed.set_image(url=fetched["img"])
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)

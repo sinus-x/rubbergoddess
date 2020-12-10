@@ -243,10 +243,43 @@ class Warden(rubbercog.Rubbercog):
         # fmt: on
 
     @commands.check(acl.check)
-    @scan.command(name="message", hidden=True)
-    async def scan_message(self, ctx, link):
-        """Scan message attachments in whole database"""
-        pass
+    @scan.command(name="compare", aliases=["messages"])
+    async def scan_compare(self, ctx, first: int, second: int):
+        """Scan two messages and report comparison result
+
+        Arguments
+        ---------
+        first: Message ID
+        second: Message ID
+        """
+        hashes1 = repo_i.get_by_message(first)
+        hashes2 = repo_i.get_by_message(second)
+
+        if len(hashes1) == 0:
+            return await ctx.send(self.text.get("comparison", "not_found", message_id=str(first)))
+        if len(hashes2) == 0:
+            return await ctx.send(self.text.get("comparison", "not_found", message_id=str(second)))
+
+        text = []
+        text.append(self.text.get("comparison", "header", message_id=str(first)))
+        for h in hashes1:
+            text.append(self.text.get("comparison", "line", hash=str(h.dhash)[2:]))
+        text.append("")
+        text.append(self.text.get("comparison", "header", message_id=str(second)))
+        for h in hashes2:
+            text.append(self.text.get("comparison", "line", hash=str(h.dhash)))
+
+        if len(hashes1) == 1 or len(hashes2) == 1:
+            hash1 = int(hashes1[0].dhash, 16)
+            hash2 = int(hashes2[0].dhash, 16)
+
+            hamming = dhash.get_num_bits_different(hash1, hash2)
+            prob = "{:.1f}".format((1 - hamming / 128) * 100)
+
+            text.append("")
+            text.append(self.text.get("comparison", "footer", percent=str(prob), bits=str(hamming)))
+
+        await ctx.send("\n".join(text))
 
     async def checkDuplicate(self, message: discord.Message):
         """Check if uploaded files are known"""

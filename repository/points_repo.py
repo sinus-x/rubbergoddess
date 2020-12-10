@@ -34,3 +34,21 @@ class PointsRepository(BaseRepository):
         else:
             raise Exception("Invalid order: " + order)
         return session.query(Points).order_by(order).offset(offset).limit(limit)
+
+    # Mover module
+
+    def move_user(self, before_id: int, after_id: int) -> int:
+        """Replace old user IDs with new one.
+
+        Returns
+        -------
+        `int`: number of altered interactions
+        """
+        user = session.query(Points).filter(Points.user_id == before_id).one_or_none()
+        if user is None:
+            return 0
+        session.query(Points).filter(Points.user_id == after_id).delete()
+
+        user.user_id = after_id
+        session.commit()
+        return 1
