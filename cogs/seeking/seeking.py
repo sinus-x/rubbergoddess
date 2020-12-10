@@ -82,34 +82,25 @@ class Seeking(rubbercog.Rubbercog):
         ---------
         ids: space separated integers
         """
-        supplied_ids = ids.split(" ")
+        ids = ids.split(" ")
+
         items = []
-        for supplied_id in supplied_ids:
+        for item in ids:
             try:
-                await ctx.send(self.text.get("remove", "not_id", id=self.sanitise(supplied_id)))
+                items.append(int(item))
             except:
-                continue
-            items.append(repo_s.get(item_id=int(supplied_id)))
+                await ctx.send(self.text.get("remove", "not_id", id=self.sanitise(item)))
 
-        deleted = 0
-        for i, item in enumerate(items):
+        for item_id in items:
+            item = repo_s.get(item_id)
             if item is None:
-                await ctx.send(self.text.get("remove", "not_found", id=ids[i]))
+                await ctx.send(self.text.get("remove", "not_found", id=item_id))
                 continue
+
             if item.user_id != ctx.author.id and ctx.author.id != config.admin_id:
-                await ctx.send(self.text.get("remove", "not_allowed", id=item.id))
+                await ctx.send(self.text.get("remove", "not_allowed", id=item_id))
                 continue
 
-            repo_s.delete(item.id)
-            deleted += 1
+            repo_s.delete(item_id)
 
-        if deleted == len(items) and deleted == 1:
-            text = "ok_one"
-        elif deleted < len(items):
-            text = "ok_some"
-        elif deleted > 0:
-            text = "ok_all"
-        else:
-            # nothing was deleted
-            return
-        await ctx.send(self.text.get("remove", text))
+        await ctx.send(self.text.get("remove", "done"))

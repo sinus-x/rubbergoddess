@@ -7,10 +7,7 @@
 		not_id:      **((id))** není identifikátor.
 		not_found:   **((id))** tu nemám ((emoji.sad))
 		not_allowed: Na smazání **((id))** nemáš právo!
-
-		ok_one:  V pořádku, položku jsem smazala.
-		ok_some: Zbytek jsem smazala.
-		ok_all:  V pořádku, všechny jsem smazala.
+		done:        Hotovo.
 	}
 
 	embed: {

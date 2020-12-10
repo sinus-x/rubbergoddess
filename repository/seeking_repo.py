@@ -23,7 +23,7 @@ class SeekingRepository(BaseRepository):
             return session.query(Seeking).all()
         return session.query(Seeking).filter(Seeking.channel_id == channel_id).all()
 
-    def delete(self, item_id: int) -> int:
+    def delete(self, item_id: int) -> bool:
         num = session.query(Seeking).filter(Seeking.id == item_id).delete()
         session.commit()
-        return num
+        return num > 0
