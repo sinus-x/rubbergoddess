@@ -4,6 +4,7 @@
 		ok:       V pořádku, položku jsem přidala.
 	}
 	remove: {
+		not_id:      **((id))** není identifikátor.
 		not_found:   **((id))** tu nemám ((emoji.sad))
 		not_allowed: Na smazání **((id))** nemáš právo!
 

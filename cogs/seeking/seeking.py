@@ -82,10 +82,15 @@ class Seeking(rubbercog.Rubbercog):
         ---------
         ids: space separated integers
         """
-        ids = ids.split(" ")
-        items = [repo_s.get(item_id=x) for x in ids]
-        deleted = 0
+        supplied_ids = ids.split(" ")
+        items = []
+        for supplied_id in supplied_ids:
+            if not supplied_id.isdigit():
+                await ctx.send(self.text.get("remove", "not_id", id=self.sanitise(supplied_id)))
+                continue
+            items.append(repo_s.get(item_id=int(supplied_id)))
 
+        deleted = 0
         for i, item in enumerate(items):
             if item is None:
                 await ctx.send(self.text.get("remove", "not_found", id=ids[i]))
