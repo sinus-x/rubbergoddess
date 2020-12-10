@@ -85,8 +85,9 @@ class Seeking(rubbercog.Rubbercog):
         supplied_ids = ids.split(" ")
         items = []
         for supplied_id in supplied_ids:
-            if not supplied_id.isdigit():
+            try:
                 await ctx.send(self.text.get("remove", "not_id", id=self.sanitise(supplied_id)))
+            except:
                 continue
             items.append(repo_s.get(item_id=int(supplied_id)))
 
@@ -106,6 +107,9 @@ class Seeking(rubbercog.Rubbercog):
             text = "ok_one"
         elif deleted < len(items):
             text = "ok_some"
-        else:
+        elif deleted > 0:
             text = "ok_all"
+        else:
+            # nothing was deleted
+            return
         await ctx.send(self.text.get("remove", text))

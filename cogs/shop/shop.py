@@ -23,7 +23,7 @@ class Shop(rubbercog.Rubbercog):
         """Display prices for various services"""
         embed = self.embed(
             ctx=ctx,
-            title=self.text.get("info", "change"),
+            title=self.text.get("info", "title"),
             description=self.text.get("info", "description"),
         )
 
@@ -46,7 +46,7 @@ class Shop(rubbercog.Rubbercog):
         """Change your nickname"""
         await utils.send_help(ctx)
 
-    @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
+    @commands.cooldown(rate=5, per=60, type=commands.BucketType.member)
     @commands.check(acl.check)
     @nickname.command(name="set")
     async def nickname_set(self, ctx, *, nick: str):
@@ -71,7 +71,7 @@ class Shop(rubbercog.Rubbercog):
 
         for char in ("@", "#", "`", "'", '"'):
             if char in nick:
-                return await ctx.send(self.text.get("bad_character"))
+                return await ctx.send(self.text.get("bad_character", mention=ctx.author.mention))
 
         # set nickname
         try:
@@ -90,7 +90,7 @@ class Shop(rubbercog.Rubbercog):
         )
         await self.event.user(ctx, f"Nickname changed to {nick}.")
 
-    @commands.cooldown(rate=1, per=3600 * 24, type=commands.BucketType.member)
+    @commands.cooldown(rate=1, per=60, type=commands.BucketType.member)
     @commands.check(acl.check)
     @nickname.command(name="unset")
     async def nickname_unset(self, ctx):
