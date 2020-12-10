@@ -10,6 +10,10 @@ See [Milestones] to get an idea on what you can expect in the future.
 - Mover: Two commands to allow migrate old member account data to new one
 - Librarian: `ipaddress` and `macaddress` commands
 
+### Updated
+
+- Mover also migrates member roles
+
 ### Developers
 
 - Moved `fetch_json()` to utils.py

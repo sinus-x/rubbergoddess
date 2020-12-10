@@ -46,6 +46,10 @@ class Mover(rubbercog.Rubbercog):
         """
         async with ctx.typing():
             result = self.move_user_data(before.id, after.id)
+            try:
+                await self.move_member_roles(before, after)
+            except Exception as e:
+                await self.console.error(ctx, "Could not migrate member roles", e)
             embed = self.move_user_embed(ctx, after, result)
             await ctx.send(embed=embed)
 
@@ -84,6 +88,12 @@ class Mover(rubbercog.Rubbercog):
         result["user"] = repo_user.move_user(before_id, after_id)
 
         return result
+
+    async def move_member_roles(self, before: discord.Member, after: discord.Member):
+        """Move roles from the before member to the after one."""
+        roles = before.roles[1:]
+        await after.add_roles(*roles, reason="Member migration")
+        await before.remove_roles(*roles, reason="Member migration")
 
     ##
     ## Helper functions
