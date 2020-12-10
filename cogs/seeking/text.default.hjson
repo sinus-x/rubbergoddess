@@ -8,6 +8,7 @@
 		not_found:   **((id))** tu nemám ((emoji.sad))
 		not_allowed: Na smazání **((id))** nemáš právo!
 		done:        Hotovo.
+		rejected:    Odmítnuto: ((rejected)).
 	}
 
 	embed: {

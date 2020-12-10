@@ -84,23 +84,36 @@ class Seeking(rubbercog.Rubbercog):
         """
         ids = ids.split(" ")
 
+        rejected = []
+
         items = []
         for item in ids:
+            if not len(ids):
+                continue
+
             try:
                 items.append(int(item))
             except:
-                await ctx.send(self.text.get("remove", "not_id", id=self.sanitise(item)))
+                rejected.append(item)
 
         for item_id in items:
             item = repo_s.get(item_id)
             if item is None:
-                await ctx.send(self.text.get("remove", "not_found", id=item_id))
+                rejected.append(item_id)
                 continue
 
             if item.user_id != ctx.author.id and ctx.author.id != config.admin_id:
-                await ctx.send(self.text.get("remove", "not_allowed", id=item_id))
+                rejected.append(item_id)
                 continue
 
             repo_s.delete(item_id)
 
         await ctx.send(self.text.get("remove", "done"))
+        if len(rejected):
+            await ctx.send(
+                self.text.get(
+                    "remove",
+                    "rejected",
+                    rejected=", ".join(f"`{self.sanitise(str(x))}`" for x in rejected),
+                )[:2000]
+            )
