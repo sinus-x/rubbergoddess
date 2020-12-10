@@ -260,7 +260,7 @@ class Event:
                 author = str(source.author)
             else:
                 author = "unknown"
-            identifier = f"{discord.utils.escape_markdown(author)} in {location}"
+            identifier = f"{author} in {location}"
         elif isinstance(source, discord.User) or isinstance(source, discord.Member):
             # user or member
             identifier = str(source)
