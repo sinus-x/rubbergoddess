@@ -3,7 +3,7 @@ from typing import Dict, Union
 import discord
 from discord.ext import commands
 
-from cogs.resource import CogConfig, CogText
+from cogs.resource import CogText
 from core import acl, rubbercog, utils
 
 from repository import (

@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogText
-from core import check, rubbercog, utils
+from core import rubbercog, utils
 
 
 class Random(rubbercog.Rubbercog):

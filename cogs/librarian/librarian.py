@@ -1,4 +1,3 @@
-import aiohttp
 import base64
 import hashlib
 from datetime import date
@@ -6,7 +5,7 @@ from datetime import date
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import config, rubbercog, utils
+from core import rubbercog, utils
 
 
 class Librarian(rubbercog.Rubbercog):
@@ -244,7 +243,7 @@ class Librarian(rubbercog.Rubbercog):
         url = f"https://api.maclookup.app/v2/macs/{mac}?format=json&apiKey={apikey}"
         res = await utils.fetch_json(url)
 
-        if res["success"] == False:
+        if res["success"] is False:
             embed = self.embed(
                 ctx=ctx,
                 title=self.text.get("maclookup", "error", errcode=res["errorCode"]),
@@ -253,7 +252,7 @@ class Librarian(rubbercog.Rubbercog):
             )
             return await ctx.send(embed=embed)
 
-        if res["found"] == False:
+        if res["found"] is False:
             embed = self.embed(
                 ctx=ctx,
                 title=self.text.get("maclookup", "error", errcode="404"),
