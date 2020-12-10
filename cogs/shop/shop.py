@@ -21,19 +21,22 @@ class Shop(rubbercog.Rubbercog):
     @commands.command()
     async def shop(self, ctx):
         """Display prices for various services"""
-        embed = self.embed(ctx=ctx)
+        embed = self.embed(
+            ctx=ctx,
+            title=self.text.get("info", "change"),
+            description=self.text.get("info", "description"),
+        )
 
-        items = ("nickname",)
-
-        prices = []
-        template = "`{item:<12}` … {price} k"
-        for item in items:
-            price_tag = template.format(item=item, price=self.config.get("prices", item))
-            prices.append(price_tag)
-        embed.add_field(name="\u200b", value="\n".join(prices))
+        embed.add_field(
+            name=self.text.get("info", "set"),
+            value=self.config.get("set"),
+        )
+        embed.add_field(
+            name=self.text.get("info", "reset"),
+            value=self.config.get("reset"),
+        )
 
         await ctx.send(embed=embed)
-        await utils.delete(ctx)
         await utils.room_check(ctx)
 
     @commands.bot_has_permissions(manage_nicknames=True)
@@ -47,35 +50,32 @@ class Shop(rubbercog.Rubbercog):
     @commands.check(acl.check)
     @nickname.command(name="set")
     async def nickname_set(self, ctx, *, nick: str):
-        """Set the nickname
+        """Set the nickname. Use command `shop` to see prices
 
-        Use command `shop` to see prices
-
+        Attributes
+        ----------
         nick: Your new nickname
         """
         # stop if user does not have nickname set
-        if ctx.author.nick is None and nick is None:
-            return await utils.send_help(ctx)
+        if ctx.author.nick is None and nick is None or not len(nick):
+            return await ctx.send(self.text.get("no_nick", mention=ctx.author.mention))
 
         # check if user has karma
-        user = repo_k.getMember(ctx.author.id)
-        if user is None:
-            return await ctx.send(self.text.get("no_karma", mention=ctx.author.mention))
-        if user.karma < self.price_nick:
+        if self.get_user_karma(ctx.author.id) < self.config.get("set"):
             return await ctx.send(
                 self.text.get(
                     "not_enough_karma",
                     mention=ctx.author.mention,
-                    value=self.price_nick - user.karma,
                 )
             )
 
-        if "@" in nick:
-            raise ForbiddenNicknameCharacter("@")
+        for char in ("@", "#", "`", "'", '"'):
+            if char in nick:
+                return await ctx.send(self.text.get("bad_character"))
 
         # set nickname
         try:
-            await ctx.author.edit(nick=nick, reason="?nickname")
+            await ctx.author.edit(nick=nick, reason="Nickname purchase")
         except discord.Forbidden:
             return await ctx.send(self.text.get("higher_role"))
 
@@ -98,55 +98,30 @@ class Shop(rubbercog.Rubbercog):
         if ctx.author.nick is None:
             return await ctx.send(self.text.get("no_nick", mention=ctx.author.mention))
 
+        # check if user has karma
+        if self.get_user_karma(ctx.author.id) < self.config.get("reset"):
+            return await ctx.send(
+                self.text.get(
+                    "not_enough_karma",
+                    mention=ctx.author.mention,
+                )
+            )
+
         nick = ctx.author.nick
 
-        await ctx.author.edit(nick=None, reason="?nickname unset")
+        await ctx.author.edit(nick=None, reason="Nickname reset")
         await ctx.send(
             self.text.get(
                 "nick_removed",
                 mention=ctx.author.mention,
-                nick=discord.utils.escape_markdown(nick),
+                nick=self.sanitise(nick),
             )
         )
         await self.event.user(ctx, "Nickname reset.")
 
     ##
-    ## Error catching
+    ## Logic
     ##
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error):
-        # try to get original error
-        if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
-            return
-        error = getattr(error, "original", error)
-
-        # non-rubbergoddess exceptions are handled globally
-        if not isinstance(error, rubbercog.RubbercogException):
-            return
-
-        # fmt: off
-        # exceptions with parameters
-        if isinstance(error, ForbiddenNicknameCharacter):
-            await self.output.error(ctx, self.text.get(
-                "ForbiddenNicknameCharacter", characters=error.forbidden))
-
-        # exceptions without parameters
-        elif isinstance(error, ShopException):
-            await self.output.error(ctx, self.text.get(type(error).__name__))
-        # fmt: on
-
-
-##
-## Exceptions
-##
-
-
-class ShopException(rubbercog.RubbercogException):
-    pass
-
-
-class ForbiddenNicknameCharacter(ShopException):
-    def __init__(self, forbidden: str):
-        super().__init__()
-        self.forbidden = forbidden
+    def get_user_karma(self, user_id: int) -> int:
+        return getattr(repo_k.getMember(user_id), "karma", 0)

@@ -1,5 +1,4 @@
 {
-	prices: {
-		nickname: 500
-	}
+	set:   500
+    reset: 200
 }

@@ -15,6 +15,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 ### Updated
 
 - Mover also migrates member roles
+- Shop code has been simplified
 
 ### Developers
 

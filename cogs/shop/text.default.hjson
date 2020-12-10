@@ -1,13 +1,17 @@
 {
-	no_karma: ((mention)), zatím nemáš žádnou karmu.
-	not_enough_karma: ((mention)), nemáš dost karmy. Chybí ti **((value))** bodů.
+    info: {
+        title:       Změna přezdívky
+        description: Hodnoty jsou v karma bodech
 
-	new_nick: ((mention)), za ((value)) karma bodů jsem ti nastavila přezdívku na **((nick))**.
-	no_nick:  ((mention)), nemáš nastavenou žádnou přezdívku.
+        set:   Nastavení
+        reset: Reset
+    }
+
+	not_enough_karma: ((mention)), nemáš dost karmy.
+    bad_character:    ((mention)), jméno obsahuje zakázané znaky.
+	higher_role:      To nemůžu, máš vyšší oprávnění.
+
+	new_nick:     ((mention)), za ((value)) karma bodů jsem ti nastavila přezdívku na **((nick))**.
+	no_nick:      ((mention)), nemáš nastavenou žádnou přezdívku.
 	nick_removed: ((mention)), přezdívku **((nick))** jsem ti odebrala.
-
-	ShopException: Chyba při transakci.
-	ForbiddenNicknameCharacter: Jméno nesmí obsahovat ((characters))
-
-	higher_role: To nemůžu, máš vyšší oprávnění.
 }
