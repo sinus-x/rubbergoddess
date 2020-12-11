@@ -236,7 +236,7 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
 [Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...devel
-[1.1.5]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
+[1.1.6]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...v1.1.3

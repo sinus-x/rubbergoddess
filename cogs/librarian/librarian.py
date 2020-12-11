@@ -282,7 +282,7 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["iplookup"])
     async def ipaddress(self, ctx, query: str):
         """Get information about an IP address or a domain name"""
-        if "&" in query or "?" in query:
+        if "&" in query or "?" in query or not len(query):
             return await self.output.error(
                 ctx,
                 self.text.get("iplookup", "bad_query", mention=ctx.author.mention),
