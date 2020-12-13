@@ -51,9 +51,9 @@ class Meme(rubbercog.Rubbercog):
         await ctx.send(
             emote.hug_right
             + (
-                "**" + hugged.display_name + "**"
+                " **" + hugged.display_name + "**"
                 if type(target) == discord.Member
-                else "***" + hugged.name + "***"
+                else " ***" + hugged.name + "***"
             )
         )
 
