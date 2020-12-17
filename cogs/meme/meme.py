@@ -101,6 +101,27 @@ class Meme(rubbercog.Rubbercog):
             frames = self.get_pet_frames(avatar)
 
             with BytesIO() as image_binary:
+                frames[0].save(
+                    image_binary,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=40,
+                    loop=0,
+                    transparency=0,
+                    disposal=2,
+                    optimize=False,
+                )
+                image_binary.seek(0)
+                filename = self.get_pet_name(petted)
+                await ctx.send(file=discord.File(fp=image_binary, filename=filename))
+
+            return
+
+            # this is a more intensive solution that creates non-transparent
+            # background without it being glitched
+
+            with BytesIO() as image_binary:
                 image_utils.save_gif(frames, 30, image_binary)
                 image_binary.seek(0)
 
@@ -271,24 +292,29 @@ class Meme(rubbercog.Rubbercog):
         return result
 
     @staticmethod
+    def round_image(frame_avatar: Image.Image) -> Image.Image:
+        """Convert square avatar to circle"""
+        frame_mask = Image.new("1", frame_avatar.size, 0)
+        draw = ImageDraw.Draw(frame_mask)
+        draw.ellipse((0, 0) + frame_avatar.size, fill=255)
+        frame_avatar.putalpha(frame_mask)
+        return frame_avatar
+
+    @staticmethod
     def get_pet_frames(avatar: Image.Image) -> List[Image.Image]:
         """Get frames for the pet"""
         frames = []
-        width, height = 200, 200
-        vertical_offset = (0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0)
+        width, height = 148, 148
+        vertical_offset = (0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1)
 
-        for i in range(15):
+        frame_avatar = Meme.round_image(avatar.resize((100, 100)))
+
+        for i in range(14):
             img = "%02d" % (i + 1)
-            frame = Image.new("RGBA", (256, 256), (32, 34, 37, 1))
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
             hand = Image.open(f"data/meme/pet/{img}.png")
-            frame_avatar = avatar.resize((width, height))
-            frame_mask = Image.new("1", frame_avatar.size, 0)
-            draw = ImageDraw.Draw(frame_mask)
-            draw.ellipse((0, 0) + frame_avatar.size, fill=255)
-            frame_avatar.putalpha(frame_mask)
-
-            frame.paste(frame_avatar, (50, 40 + vertical_offset[i]), frame_avatar)
-            frame.paste(hand, (0, 0), hand)
+            frame.paste(frame_avatar, (35, 25 + vertical_offset[i]), frame_avatar)
+            frame.paste(hand, (10, 5), hand)
             frames.append(frame)
 
         return frames
