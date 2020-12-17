@@ -4,6 +4,25 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.1.6]
+
+### Added
+
+- Random: The Cat API, The Dog API (`cat`, `dog`), `xkcd`
+- Mover: Two commands to allow migrate old member account data to new one
+- Librarian: `ipaddress` and `macaddress` commands
+
+### Updated
+
+- Mover also migrates member roles
+- Shop code has been simplified
+
+### Developers
+
+- Moved `fetch_json()` to utils.py
+
+## [1.1.5]
+
 ### Added
 
 - Meme: `slap`, `spank` and `relations` commands
@@ -13,6 +32,8 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 - Voice: Working channel locking.
 - Animals: Vote embed is not deleted; it's replaced by vote statistics.
+- Points: Only official guilds are counter. Per-guild system is planned.
+- `load`, `unload` and `reload` commands support multiple modules at the same time.
 
 ## [1.1.4]
 
@@ -214,7 +235,9 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...devel
+[1.1.6]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
+[1.1.5]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.1...v1.1.2

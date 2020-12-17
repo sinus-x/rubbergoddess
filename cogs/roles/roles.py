@@ -111,6 +111,7 @@ class Roles(rubbercog.Rubbercog):
         roles: Space separated role shortcuts
         """
         roles = self.sanitise(roles, limit=200).split(" ")
+        result = None
         for role in roles:
             guild_role = await self._get_role(ctx, role)
             if guild_role is None:

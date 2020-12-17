@@ -7,6 +7,7 @@ from discord.ext import commands, tasks
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
+from core.config import config
 from repository.points_repo import PointsRepository
 
 repo_p = PointsRepository()
@@ -136,6 +137,14 @@ class Points(rubbercog.Rubbercog):
     async def on_message(self, message):
         """Add points on message"""
         if message.author.bot:
+            return
+
+        # Ignore DMs
+        if not isinstance(message.channel, discord.TextChannel):
+            return
+
+        # Before the database is updated, only count primary guild
+        if message.guild.id not in (config.guild_id, config.slave_id):
             return
 
         now = datetime.datetime.now()

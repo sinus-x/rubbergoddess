@@ -4,9 +4,11 @@
 		ok:       V pořádku, položku jsem přidala.
 	}
 	remove: {
-		not_found:   Takovou položku tu nemám.
-		not_allowed: Na to nemáš právo!
-		ok: V pořádku, položku jsem smazala.
+		not_id:      **((id))** není identifikátor.
+		not_found:   **((id))** tu nemám ((emoji.sad))
+		not_allowed: Na smazání **((id))** nemáš právo!
+		done:        Hotovo.
+		rejected:    Odmítnuto: ((rejected)).
 	}
 
 	embed: {

@@ -40,10 +40,6 @@ Send UwUized message back.
 
 Send message wItH rANdoM cApiTaLIsatIoN.
 
-### lv (text)
-
-Switch l's and v's.
-
 ### fish
 
 Go fishing!
