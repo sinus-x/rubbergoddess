@@ -193,7 +193,7 @@ class Meme(rubbercog.Rubbercog):
 
         repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "bonk", bonker.id, bonked.id)
 
-        await ctx.send(f"{self.config.get('bonk')} **{self.sanitise(bonked.display_name)}**")
+        await ctx.send(f"{self.config.get('bonk')}**{self.sanitise(bonked.display_name)}**")
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
