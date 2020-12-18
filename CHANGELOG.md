@@ -4,6 +4,14 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Added
+
+- Meme: `bonk` command
+
+### Updated
+
+- Meme: New animations for `pet` and `hyperpet`
+
 ## [1.1.6]
 
 ### Added
