@@ -28,4 +28,6 @@
     whip: ":egg:"
     # Spank emoji, used for the spank command
     spank: ":egg:"
+    # Bonk emoji, used for the bonk command
+    bonk: ":egg:"
 }

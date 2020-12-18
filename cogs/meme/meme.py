@@ -179,6 +179,25 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
+    async def bonk(self, ctx, member: discord.Member = None):
+        """Bonk someone
+
+        member: Discord user. If none, the bot will bonk yourself.
+        """
+        if member is None:
+            bonker = self.bot.user
+            bonked = ctx.author
+        else:
+            bonker = ctx.author
+            bonked = member
+
+        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "bonk", bonker.id, bonked.id)
+
+        await ctx.send(f"{self.config.get('bonk')} **{self.sanitise(bonked.display_name)}**")
+
+    @commands.guild_only()
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.command()
     async def slap(self, ctx, member: discord.Member = None):
         """Slap someone!
 
@@ -344,14 +363,9 @@ class Meme(rubbercog.Rubbercog):
 
             img = "%02d" % (i + 1)
             frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
-            hand = Image.open(f"data/meme/hyperpetr/{img}.png")
+            hand = Image.open(f"data/meme/hyperpet/{img}.png")
             frame.paste(frame_avatar, (35, 25 + vertical_offset[i]), frame_avatar)
             frame.paste(hand, (10, 5), hand)
             frames.append(frame)
 
         return frames
-
-    @staticmethod
-    def get_pet_name(author: Union[discord.Member, discord.User]) -> str:
-        """Get virtual filename for the pet gif"""
-        return f"PetThe{author.display_name.replace(' ', '')}.gif"
