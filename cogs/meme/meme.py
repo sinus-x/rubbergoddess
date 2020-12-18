@@ -124,8 +124,7 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                filename = self.get_pet_name(petted)
-                await ctx.send(file=discord.File(fp=image_binary, filename=filename))
+                await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
 
             return
 
@@ -136,8 +135,7 @@ class Meme(rubbercog.Rubbercog):
                 image_utils.save_gif(frames, 30, image_binary)
                 image_binary.seek(0)
 
-                filename = self.get_pet_name(petted)
-                await ctx.send(file=discord.File(fp=image_binary, filename=filename))
+                await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -161,7 +159,7 @@ class Meme(rubbercog.Rubbercog):
             response = requests.get(url)
             avatar = Image.open(BytesIO(response.content))
 
-            frames = self.get_hyperpet_frames(avatar, hue=True)
+            frames = self.get_hyperpet_frames(avatar)
 
             with BytesIO() as image_binary:
                 frames[0].save(
@@ -169,15 +167,14 @@ class Meme(rubbercog.Rubbercog):
                     format="GIF",
                     save_all=True,
                     append_images=frames[1:],
-                    duration=40,
+                    duration=30,
                     loop=0,
                     transparency=0,
                     disposal=2,
                     optimize=False,
                 )
                 image_binary.seek(0)
-                filename = self.get_pet_name(petted)
-                await ctx.send(file=discord.File(fp=image_binary, filename=filename))
+                await ctx.send(file=discord.File(fp=image_binary, filename="hyperpet.gif"))
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -316,7 +313,7 @@ class Meme(rubbercog.Rubbercog):
         """Get frames for the pet"""
         frames = []
         width, height = 148, 148
-        vertical_offset = (0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1)
+        vertical_offset = (0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 2, 1, 0)
 
         frame_avatar = Meme.round_image(avatar.resize((100, 100)))
 
@@ -331,42 +328,25 @@ class Meme(rubbercog.Rubbercog):
         return frames
 
     @staticmethod
-    def get_hyperpet_frames(avatar: Image.Image, hue: bool = False) -> List[Image.Image]:
-        """Get frames for the pet
-
-        avatar: Image
-        hue: boolean; if set to True, avatar's hue is randomly offset
-        """
+    def get_hyperpet_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the hyperpet"""
         frames = []
-        deform_width = (-1, -2, 1, 2, 1)
-        defom_height = (4, 3, 2, 2, -4)
-        width, height = 80, 80
+        width, height = 148, 148
+        vertical_offset = (0, 1, 2, 3, 1, 0)
 
-        if hue:
-            git_hash = int(utils.git_get_hash(), 16)
-            avatar_pixels = np.array(avatar)
-        else:
-            git_hash = None
-            avatar_pixels = None
+        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar_pixels = np.array(avatar)
+        git_hash = int(utils.git_get_hash(), 16)
 
-        for i in range(5):
-            if hue:
-                # get random values based on current hash -- last ten decimal digits
-                deform_hue = git_hash % 100 ** (i + 1) // 100 ** i / 100
-                avatar = Image.fromarray(image_utils.shift_hue(avatar_pixels, deform_hue))
+        for i in range(6):
+            deform_hue = git_hash % 100 ** (i + 1) // 100 ** i / 100
+            frame_avatar = Image.fromarray(image_utils.shift_hue(avatar_pixels, deform_hue))
 
-            frame = Image.new("RGBA", (112, 112), (255, 255, 255, 1))
-            hand = Image.open(f"data/meme/hyperpet/0{i+1}.png")
-            width -= deform_width[i]
-            height -= defom_height[i]
-            frame_avatar = avatar.resize((width, height))
-            frame_mask = Image.new("1", frame_avatar.size, 0)
-            draw = ImageDraw.Draw(frame_mask)
-            draw.ellipse((0, 0) + frame_avatar.size, fill=255)
-            frame_avatar.putalpha(frame_mask)
-
-            frame.paste(frame_avatar, (112 - width, 112 - height), frame_avatar)
-            frame.paste(hand, (0, 0), hand)
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            hand = Image.open(f"data/meme/hyperpetr/{img}.png")
+            frame.paste(frame_avatar, (35, 25 + vertical_offset[i]), frame_avatar)
+            frame.paste(hand, (10, 5), hand)
             frames.append(frame)
 
         return frames
