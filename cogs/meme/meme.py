@@ -232,7 +232,7 @@ class Meme(rubbercog.Rubbercog):
 
         embed = self.embed(ctx=ctx, description=self.sanitise(user.display_name))
 
-        for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip"):
+        for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip", "bonk"):
             lookup = repo_i.get_user_action(user.id, ctx.guild.id, action)
             value = self.text.get("value", gave=lookup[0], got=lookup[1])
             embed.add_field(name=f"{config.prefix}{action}", value=value)
