@@ -6,7 +6,7 @@
 	"not duplicate limit": 5
 
 	# maximal attachment size to be scanned, in kB
-	max_size: 4000
+	max_size: 8000
 
 	# Look for these strings in messages
 	"penalty strings": []
