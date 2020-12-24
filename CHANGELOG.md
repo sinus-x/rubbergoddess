@@ -10,7 +10,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 ### Updated
 
-- Meme: New animations for `pet` and `hyperpet`
+- Meme: New animations for `pet`, `hyperpet` and `whip`
 
 ## [1.1.6]
 

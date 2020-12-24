@@ -24,8 +24,6 @@
         ]
     }
 
-    # Whip emoji, used for the whip command
-    whip: ":egg:"
     # Spank emoji, used for the spank command
     spank: ":egg:"
 }

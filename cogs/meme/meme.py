@@ -70,7 +70,30 @@ class Meme(rubbercog.Rubbercog):
             whipped = user
 
         repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "whip", whipper.id, whipped.id)
-        await ctx.send(f"{self.config.get('whip')} **{self.sanitise(whipped.display_name)}**")
+
+        async with ctx.typing():
+            url = whipped.avatar_url_as(format="jpg")
+            response = requests.get(url)
+            avatar = Image.open(BytesIO(response.content))
+
+            frames = self.get_whip_frames(avatar)
+
+            with BytesIO() as image_binary:
+                frames[0].save(
+                    image_binary,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=30,
+                    loop=0,
+                    transparency=0,
+                    disposal=2,
+                    optimize=False,
+                )
+                image_binary.seek(0)
+                await ctx.send(file=discord.File(fp=image_binary, filename="whip.gif"))
+
+            return
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -254,6 +277,10 @@ class Meme(rubbercog.Rubbercog):
 
         for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip", "bonk"):
             lookup = repo_i.get_user_action(user.id, ctx.guild.id, action)
+
+            if lookup[0] == 0 and lookup[1] == 0:
+                continue
+
             value = self.text.get("value", gave=lookup[0], got=lookup[1])
             embed.add_field(name=f"{config.prefix}{action}", value=value)
 
@@ -408,6 +435,29 @@ class Meme(rubbercog.Rubbercog):
 
             frame.paste(frame_avatar, (80, 60 + deformation[i]), frame_avatar)
             frame.paste(bat, (10, 5), bat)
+            frames.append(frame)
+
+        return frames
+
+    @staticmethod
+    def get_whip_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the whip"""
+        frames = []
+        width, height = 250, 150
+        deformation = (0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 9, 6, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        translation = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+        avatar = Meme.round_image(avatar.resize((100, 100)))
+
+        for i in range(26):
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            whip_frame = Image.open(f"data/meme/whip/{img}.png").resize((150, 150))
+
+            frame_avatar = avatar.resize((100 - deformation[i], 100))
+
+            frame.paste(frame_avatar, (135 + deformation[i] + translation[i], 25), frame_avatar)
+            frame.paste(whip_frame, (0, 0), whip_frame)
             frames.append(frame)
 
         return frames
