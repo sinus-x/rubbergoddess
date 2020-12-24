@@ -187,27 +187,27 @@ class Console:
         if self.getLogChannel() is None:
             return
 
-        result = f"|{level.upper()}:"
+        result = f"{level.upper()}:"
 
         # command
         if isinstance(source, commands.Context) and hasattr(source.command, "qualified_name"):
-            result += f"\n|{source.command.qualified_name}"
+            result += f"\n{source.command.qualified_name}"
 
         # author
         if hasattr(source, "author") and type(source.author) in (discord.User, discord.Member):
-            result += f"\n|{source.author}"
+            result += f"\n{source.author}"
 
         # source
         if hasattr(source, "channel") and isinstance(source.channel, discord.TextChannel):
-            result += f"\n|{source.channel.name} in {source.channel.guild}"
+            result += f"\n{source.channel.name} in {source.channel.guild}"
         elif hasattr(source, "channel"):
-            result += f"\n|{type(source.channel).__name__}"
+            result += f"\n{type(source.channel).__name__}"
         else:
-            result += f"\n|{source}"
+            result += f"\n{source}"
 
         # message
         if message is not None:
-            result += f"\n|{message}"
+            result += f"\n{message}"
 
         # traceback
         if error and len(str(error.__traceback__)):
