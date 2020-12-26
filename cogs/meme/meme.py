@@ -294,7 +294,7 @@ class Meme(rubbercog.Rubbercog):
             text = "OwO!"
         else:
             text = self.sanitise(self.uwuize(message), limit=1900, markdown=True)
-        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text)
+        await ctx.send(f"**{self.sanitise(ctx.author.display_name)}**\n>>> " + text)
         await utils.delete(ctx.message)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
@@ -310,7 +310,8 @@ class Meme(rubbercog.Rubbercog):
                     text += letter.upper() if random.choice((True, False)) else letter.lower()
                 else:
                     text += letter
-        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
+            text = self.sanitise(text[:1900])
+        await ctx.send(f"**{self.sanitise(ctx.author.display_name)}**\n>>> " + text)
         await utils.delete(ctx.message)
 
     @commands.cooldown(rate=3, per=10, type=commands.BucketType.user)
@@ -355,7 +356,7 @@ class Meme(rubbercog.Rubbercog):
 
             return string
 
-        result = " ".join([uwuize_word(s) for s in string.split(" ")])
+        result = " ".join([uwuize_word(s) for s in string.split(" ") if len(s)])
         if result[-1] == "?":
             result += " UwU"
         if result[-1] == "!":
