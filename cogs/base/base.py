@@ -84,5 +84,6 @@ class Base(rubbercog.Rubbercog):
             try:
                 await message.pin()
                 await reaction.clear()
+                await message.add_reaction("📍")
             except discord.HTTPException:
                 break
