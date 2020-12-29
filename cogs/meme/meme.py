@@ -108,7 +108,28 @@ class Meme(rubbercog.Rubbercog):
             spanked = user
 
         repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "spank", spanker.id, spanked.id)
-        await ctx.send(f"{self.config.get('spank')} **{self.sanitise(spanked.display_name)}**")
+
+        async with ctx.typing():
+            url = spanked.avatar_url_as(format="jpg")
+            response = requests.get(url)
+            avatar = Image.open(BytesIO(response.content))
+
+            frames = self.get_spank_frames(avatar)
+
+            with BytesIO() as image_binary:
+                frames[0].save(
+                    image_binary,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=30,
+                    loop=0,
+                    transparency=0,
+                    disposal=2,
+                    optimize=False,
+                )
+                image_binary.seek(0)
+                await ctx.send(file=discord.File(fp=image_binary, filename="spank.gif"))
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -459,6 +480,28 @@ class Meme(rubbercog.Rubbercog):
 
             frame.paste(frame_avatar, (135 + deformation[i] + translation[i], 25), frame_avatar)
             frame.paste(whip_frame, (0, 0), whip_frame)
+            frames.append(frame)
+
+        return frames
+
+    @staticmethod
+    def get_spank_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the spank"""
+        frames = []
+        width, height = 200, 120
+        deformation = (4, 2, 1, 0, 0, 0, 0, 3)
+
+        avatar = Meme.round_image(avatar.resize((100, 100)))
+
+        for i in range(8):
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            spoon = Image.open(f"data/meme/spank/{img}.png").resize((100, 100))
+
+            frame_avatar = avatar.resize((100 + 2 * deformation[i], 100 + 2 * deformation[i]))
+
+            frame.paste(spoon, (10, 15), spoon)
+            frame.paste(frame_avatar, (80 - deformation[i], 10 - deformation[i]), frame_avatar)
             frames.append(frame)
 
         return frames
