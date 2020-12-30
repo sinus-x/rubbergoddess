@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import rubbercog
+from core import rubbercog, utils
 from core.config import config
 
 boottime = datetime.datetime.now().replace(microsecond=0)
@@ -71,17 +71,12 @@ class Base(rubbercog.Rubbercog):
             user_names = ", ".join([str(user) for user in users])
             log_embed = self.embed(title=self.text.get("pinned"), description=user_names)
             if len(message.content):
-                value = message.content[:200] + ("…" if len(message.content) > 200 else "")
+                value = utils.id_to_datetime(message.id).strftime("%Y-%m-%d %H:%M:%S")
                 log_embed.add_field(name=str(message.author), value=value)
             url_text = self.text.get(
                 "link text",
                 channel=channel.name,
                 guild=channel.guild.name,
-            )
-            log_embed.add_field(
-                name=self.text.get("link"),
-                value=f"[{url_text}]({message.jump_url})",
-                inline=False,
             )
             if len(message.content):
                 log_embed.add_field(
@@ -101,6 +96,11 @@ class Base(rubbercog.Rubbercog):
                     value=self.text.get("attachments", count=len(message.attachments)),
                     inline=False,
                 )
+            log_embed.add_field(
+                name=self.text.get("link"),
+                value=f"[{url_text}]({message.jump_url})",
+                inline=False,
+            )
 
             try:
                 await message.pin()
