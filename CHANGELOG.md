@@ -12,6 +12,10 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 - Meme: New animations for `pet`, `hyperpet` and `whip`
 
+### Maintenance
+
+- Database backup script has been updated: an error was deleting the new compressed archive
+
 ## [1.1.6]
 
 ### Added
