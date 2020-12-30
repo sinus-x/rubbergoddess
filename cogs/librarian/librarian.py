@@ -130,8 +130,10 @@ class Librarian(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("weather", "place_error", message=res["message"]))
 
         title = res["weather"][0]["description"]
-        description = self.text.get(
-            "weather", "description", name=res["name"], country=res["sys"]["country"]
+        description = (
+            self.text.get("weather", "description", name=res["name"], country=res["sys"]["country"])
+            if "country" in res["sys"]
+            else self.text.get("weather", "description_short", name=res["name"])
         )
         if description.endswith("CZ"):
             description = description[:-4]
@@ -147,6 +149,13 @@ class Librarian(rubbercog.Rubbercog):
                 "temperature_value",
                 real=round(res["main"]["temp"], 1),
                 feel=round(res["main"]["feels_like"], 1),
+            )
+            + "\n"
+            + self.text.get(
+                "weather",
+                "temperature_minmax",
+                min=round(res["main"]["temp_min"], 1),
+                max=round(res["main"]["temp_max"], 1),
             ),
             inline=False,
         )
