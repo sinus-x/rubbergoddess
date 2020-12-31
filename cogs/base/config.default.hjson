@@ -1,4 +1,8 @@
 {
 	# how many people have to react with 📌 in order to pin the message
 	pins: 5
+
+    # list of IDs representing channels
+    "unpinnable": {
+    }
 }

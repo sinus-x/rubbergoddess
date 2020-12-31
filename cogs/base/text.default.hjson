@@ -1,0 +1,9 @@
+{
+    pinned:      📌  Zpráva byla připnuta
+    "link text": Kanál **((channel))** na serveru **((guild))**
+    link:        Odkaz
+    content:     Obsah
+    attachments: Zpráva obsahuje přílohy: **((count))**
+
+    "pin error": Zprávu se mi nepovedlo připnout ((emoji.sad))
+}

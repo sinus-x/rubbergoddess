@@ -3,8 +3,8 @@ import datetime
 import discord
 from discord.ext import commands
 
-from cogs.resource import CogConfig
-from core import rubbercog
+from cogs.resource import CogConfig, CogText
+from core import rubbercog, utils
 from core.config import config
 
 boottime = datetime.datetime.now().replace(microsecond=0)
@@ -17,6 +17,7 @@ class Base(rubbercog.Rubbercog):
         super().__init__(bot)
 
         self.config = CogConfig("base")
+        self.text = CogText("base")
 
     ##
     ## Commands
@@ -56,10 +57,6 @@ class Base(rubbercog.Rubbercog):
         if payload.emoji.is_custom_emoji() or payload.emoji.name != "📌":
             return
 
-        if message.pinned:
-            # TODO Remove the reaction
-            return
-
         for reaction in message.reactions:
             if reaction.emoji != "📌":
                 continue
@@ -67,22 +64,61 @@ class Base(rubbercog.Rubbercog):
             if message.pinned:
                 return await reaction.clear()
 
+            if channel.id in self.config.get("unpinnable"):
+                return await reaction.clear()
+
             if reaction.count < self.config.get("pins"):
                 return
 
             users = await reaction.users().flatten()
             user_names = ", ".join([str(user) for user in users])
-
-            embed = self.embed(title="📌 " + message.channel.name, description=user_names)
+            log_embed = self.embed(title=self.text.get("pinned"), description=user_names)
             if len(message.content):
-                value = message.content[:200] + ("…" if len(message.content) > 200 else "")
-                embed.add_field(name=str(message.author), value=value)
-            embed.add_field(name="URL", value=message.jump_url, inline=False)
+                value = utils.id_to_datetime(message.id).strftime("%Y-%m-%d %H:%M:%S")
+                log_embed.add_field(name=str(message.author), value=value)
+            url_text = self.text.get(
+                "link text",
+                channel=channel.name,
+                guild=channel.guild.name,
+            )
+            if len(message.content):
+                log_embed.add_field(
+                    name=self.text.get("content"),
+                    value=message.content[:1024],
+                    inline=False,
+                )
+            if len(message.content) >= 1024:
+                log_embed.add_field(
+                    name="\u200b",
+                    value=message.content[1024:],
+                    inline=False,
+                )
+            if len(message.attachments):
+                log_embed.add_field(
+                    name=self.text.get("content"),
+                    value=self.text.get("attachments", count=len(message.attachments)),
+                    inline=False,
+                )
+            log_embed.add_field(
+                name=self.text.get("link"),
+                value=f"[{url_text}]({message.jump_url})",
+                inline=False,
+            )
 
-            channel = self.bot.get_channel(config.get("channels", "events"))
-            await channel.send(embed=embed)
             try:
                 await message.pin()
-                await reaction.clear()
-            except discord.HTTPException:
-                break
+            except discord.HTTPException as e:
+                await self.event.user(channel, "Could not pin message.", e)
+                error_embed = self.embed(
+                    title=self.text.get("pin error"),
+                    description=user_names,
+                    url=message.jump_url,
+                )
+                await message.channel.send(embed=error_embed)
+                return
+
+            event_channel = self.bot.get_channel(config.get("channels", "events"))
+            await event_channel.send(embed=log_embed)
+
+            await reaction.clear()
+            await message.add_reaction("📍")

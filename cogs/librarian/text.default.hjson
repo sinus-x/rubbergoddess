@@ -22,8 +22,10 @@
 			'''
 
 		description:       ((name)), ((country))
+		description_short: ((name))
 		temperature:       Teplota
-		temperature_value: ((real)) °C (pocitová ((feel)) °C)
+		temperature_value: **((real)) °C**, pocitová **((feel)) °C**
+		temperature_minmax: (minimální ((min)) °C, maximální ((max)) °C)
 		humidity:          Vlhkost
 		clouds:            Oblačnost
 		visibility:        Viditelnost

@@ -28,6 +28,10 @@ Whip someone.
 
 Spank someone.
 
+### bonk _(member)_
+
+Bonk someone.
+
 ### relations _(member)_
 
 Display statistics about hugs, pets and slaps.

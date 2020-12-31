@@ -474,6 +474,9 @@ class Actress(rubbercog.Rubbercog):
 
         # fill values
         for line in content:
+            if not len(line):
+                continue
+
             line = line.split(" ", 1)
             key = line[0]
             value = line[1]

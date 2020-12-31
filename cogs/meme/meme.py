@@ -44,16 +44,16 @@ class Meme(rubbercog.Rubbercog):
             hugged = target
 
         if type(hugged) == discord.Role:
-            repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, None)
+            repo_i.add(ctx.guild.id, "hug", hugger.id, None)
         else:
-            repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, hugged.id)
+            repo_i.add(ctx.guild.id, "hug", hugger.id, hugged.id)
 
         await ctx.send(
             emote.hug_right
             + (
-                "**" + hugged.display_name + "**"
+                " **" + hugged.display_name + "**"
                 if type(target) == discord.Member
-                else "***" + hugged.name + "***"
+                else " ***" + hugged.name + "***"
             )
         )
 
@@ -69,8 +69,31 @@ class Meme(rubbercog.Rubbercog):
             whipper = ctx.author
             whipped = user
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "whip", whipper.id, whipped.id)
-        await ctx.send(f"{self.config.get('whip')} **{self.sanitise(whipped.display_name)}**")
+        repo_i.add(ctx.guild.id, "whip", whipper.id, whipped.id)
+
+        async with ctx.typing():
+            url = whipped.avatar_url_as(format="jpg")
+            response = requests.get(url)
+            avatar = Image.open(BytesIO(response.content))
+
+            frames = self.get_whip_frames(avatar)
+
+            with BytesIO() as image_binary:
+                frames[0].save(
+                    image_binary,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=30,
+                    loop=0,
+                    transparency=0,
+                    disposal=2,
+                    optimize=False,
+                )
+                image_binary.seek(0)
+                await ctx.send(file=discord.File(fp=image_binary, filename="whip.gif"))
+
+            return
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -84,8 +107,29 @@ class Meme(rubbercog.Rubbercog):
             spanker = ctx.author
             spanked = user
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "spank", spanker.id, spanked.id)
-        await ctx.send(f"{self.config.get('spank')} **{self.sanitise(spanked.display_name)}**")
+        repo_i.add(ctx.guild.id, "spank", spanker.id, spanked.id)
+
+        async with ctx.typing():
+            url = spanked.avatar_url_as(format="jpg")
+            response = requests.get(url)
+            avatar = Image.open(BytesIO(response.content))
+
+            frames = self.get_spank_frames(avatar)
+
+            with BytesIO() as image_binary:
+                frames[0].save(
+                    image_binary,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=30,
+                    loop=0,
+                    transparency=0,
+                    disposal=2,
+                    optimize=False,
+                )
+                image_binary.seek(0)
+                await ctx.send(file=discord.File(fp=image_binary, filename="spank.gif"))
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -93,7 +137,7 @@ class Meme(rubbercog.Rubbercog):
     async def pet(self, ctx, member: discord.Member = None):
         """Pet someone!
 
-        member: Discord user. If none, the bot will hug yourself.
+        member: Discord user. If none, the bot will pet yourself.
         """
         if member is None:
             petter = self.bot.user
@@ -102,7 +146,7 @@ class Meme(rubbercog.Rubbercog):
             petter = ctx.author
             petted = member
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "pet", petter.id, petted.id)
+        repo_i.add(ctx.guild.id, "pet", petter.id, petted.id)
 
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
@@ -124,9 +168,18 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
+                await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
 
-                filename = self.get_pet_name(petted)
-                await ctx.send(file=discord.File(fp=image_binary, filename=filename))
+            return
+
+            # this is a more intensive solution that creates non-transparent
+            # background without it being glitched
+
+            with BytesIO() as image_binary:
+                image_utils.save_gif(frames, 30, image_binary)
+                image_binary.seek(0)
+
+                await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -134,7 +187,7 @@ class Meme(rubbercog.Rubbercog):
     async def hyperpet(self, ctx, member: discord.Member = None):
         """Pet someone really hard
 
-        member: Discord user. If none, the bot will hug yourself.
+        member: Discord user. If none, the bot will hyperpet yourself.
         """
         if member is None:
             petter = self.bot.user
@@ -143,14 +196,14 @@ class Meme(rubbercog.Rubbercog):
             petter = ctx.author
             petted = member
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hyperpet", petter.id, petted.id)
+        repo_i.add(ctx.guild.id, "hyperpet", petter.id, petted.id)
 
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
             response = requests.get(url)
             avatar = Image.open(BytesIO(response.content))
 
-            frames = self.get_pet_frames(avatar, hue=True)
+            frames = self.get_hyperpet_frames(avatar)
 
             with BytesIO() as image_binary:
                 frames[0].save(
@@ -158,15 +211,53 @@ class Meme(rubbercog.Rubbercog):
                     format="GIF",
                     save_all=True,
                     append_images=frames[1:],
-                    duration=40,
+                    duration=30,
                     loop=0,
                     transparency=0,
                     disposal=2,
                     optimize=False,
                 )
                 image_binary.seek(0)
-                filename = self.get_pet_name(petted)
-                await ctx.send(file=discord.File(fp=image_binary, filename=filename))
+                await ctx.send(file=discord.File(fp=image_binary, filename="hyperpet.gif"))
+
+    @commands.guild_only()
+    @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
+    @commands.command()
+    async def bonk(self, ctx, member: discord.Member = None):
+        """Bonk someone
+
+        member: Discord user. If none, the bot will bonk yourself.
+        """
+        if member is None:
+            bonker = self.bot.user
+            bonked = ctx.author
+        else:
+            bonker = ctx.author
+            bonked = member
+
+        repo_i.add(ctx.guild.id, "bonk", bonker.id, bonked.id)
+
+        async with ctx.typing():
+            url = bonked.avatar_url_as(format="jpg")
+            response = requests.get(url)
+            avatar = Image.open(BytesIO(response.content))
+
+            frames = self.get_bonk_frames(avatar)
+
+            with BytesIO() as image_binary:
+                frames[0].save(
+                    image_binary,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=30,
+                    loop=0,
+                    transparency=0,
+                    disposal=2,
+                    optimize=False,
+                )
+                image_binary.seek(0)
+                await ctx.send(file=discord.File(fp=image_binary, filename="bonk.gif"))
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -185,7 +276,7 @@ class Meme(rubbercog.Rubbercog):
 
         options = ["つ", "づ", "ノ"]
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "slap", slapper.id, slapped.id)
+        repo_i.add(ctx.guild.id, "slap", slapper.id, slapped.id)
 
         await ctx.send(
             "**{}**{} {}".format(
@@ -205,12 +296,17 @@ class Meme(rubbercog.Rubbercog):
 
         embed = self.embed(ctx=ctx, description=self.sanitise(user.display_name))
 
-        for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip"):
+        for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip", "bonk"):
             lookup = repo_i.get_user_action(user.id, ctx.guild.id, action)
+
+            if lookup[0] == 0 and lookup[1] == 0:
+                continue
+
             value = self.text.get("value", gave=lookup[0], got=lookup[1])
             embed.add_field(name=f"{config.prefix}{action}", value=value)
 
         await ctx.send(embed=embed)
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])
@@ -220,7 +316,7 @@ class Meme(rubbercog.Rubbercog):
             text = "OwO!"
         else:
             text = self.sanitise(self.uwuize(message), limit=1900, markdown=True)
-        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text)
+        await ctx.send(f"**{self.sanitise(ctx.author.display_name)}**\n>>> " + text)
         await utils.delete(ctx.message)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
@@ -236,7 +332,8 @@ class Meme(rubbercog.Rubbercog):
                     text += letter.upper() if random.choice((True, False)) else letter.lower()
                 else:
                     text += letter
-        await ctx.send(f"**{ctx.author.display_name}**\n>>> " + text[:1900])
+            text = self.sanitise(text[:1900])
+        await ctx.send(f"**{self.sanitise(ctx.author.display_name)}**\n>>> " + text)
         await utils.delete(ctx.message)
 
     @commands.cooldown(rate=3, per=10, type=commands.BucketType.user)
@@ -281,7 +378,7 @@ class Meme(rubbercog.Rubbercog):
 
             return string
 
-        result = " ".join([uwuize_word(s) for s in string.split(" ")])
+        result = " ".join([uwuize_word(s) for s in string.split(" ") if len(s)])
         if result[-1] == "?":
             result += " UwU"
         if result[-1] == "!":
@@ -292,47 +389,120 @@ class Meme(rubbercog.Rubbercog):
         return result
 
     @staticmethod
-    def get_pet_frames(avatar: Image.Image, hue: bool = False) -> List[Image.Image]:
-        """Get frames for the pet
+    def round_image(frame_avatar: Image.Image) -> Image.Image:
+        """Convert square avatar to circle"""
+        frame_mask = Image.new("1", frame_avatar.size, 0)
+        draw = ImageDraw.Draw(frame_mask)
+        draw.ellipse((0, 0) + frame_avatar.size, fill=255)
+        frame_avatar.putalpha(frame_mask)
+        return frame_avatar
 
-        avatar: Image
-        hue: boolean; if set to True, avatar's hue is randomly offset
-        """
+    @staticmethod
+    def get_pet_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the pet"""
         frames = []
-        deform_width = (-1, -2, 1, 2, 1)
-        defom_height = (4, 3, 2, 2, -4)
-        width, height = 80, 80
+        width, height = 148, 148
+        vertical_offset = (0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 2, 1, 0)
 
-        if hue:
-            git_hash = int(utils.git_get_hash(), 16)
-            avatar_pixels = np.array(avatar)
-        else:
-            git_hash = None
-            avatar_pixels = None
+        frame_avatar = Meme.round_image(avatar.resize((100, 100)))
 
-        for i in range(5):
-            if hue:
-                # get random values based on current hash -- last ten decimal digits
-                deform_hue = git_hash % 100 ** (i + 1) // 100 ** i / 100
-                avatar = Image.fromarray(image_utils.shift_hue(avatar_pixels, deform_hue))
-
-            frame = Image.new("RGBA", (112, 112), (255, 255, 255, 1))
-            hand = Image.open(f"data/meme/pet_{i}.png")
-            width -= deform_width[i]
-            height -= defom_height[i]
-            frame_avatar = avatar.resize((width, height))
-            frame_mask = Image.new("1", frame_avatar.size, 0)
-            draw = ImageDraw.Draw(frame_mask)
-            draw.ellipse((0, 0) + frame_avatar.size, fill=255)
-            frame_avatar.putalpha(frame_mask)
-
-            frame.paste(frame_avatar, (112 - width, 112 - height), frame_avatar)
-            frame.paste(hand, (0, 0), hand)
+        for i in range(14):
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            hand = Image.open(f"data/meme/pet/{img}.png")
+            frame.paste(frame_avatar, (35, 25 + vertical_offset[i]), frame_avatar)
+            frame.paste(hand, (10, 5), hand)
             frames.append(frame)
 
         return frames
 
     @staticmethod
-    def get_pet_name(author: Union[discord.Member, discord.User]) -> str:
-        """Get virtual filename for the pet gif"""
-        return f"PetThe{author.display_name.replace(' ', '')}.gif"
+    def get_hyperpet_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the hyperpet"""
+        frames = []
+        width, height = 148, 148
+        vertical_offset = (0, 1, 2, 3, 1, 0)
+
+        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar_pixels = np.array(avatar)
+        git_hash = int(utils.git_get_hash(), 16)
+
+        for i in range(6):
+            deform_hue = git_hash % 100 ** (i + 1) // 100 ** i / 100
+            frame_avatar = Image.fromarray(image_utils.shift_hue(avatar_pixels, deform_hue))
+
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            hand = Image.open(f"data/meme/hyperpet/{img}.png")
+            frame.paste(frame_avatar, (35, 25 + vertical_offset[i]), frame_avatar)
+            frame.paste(hand, (10, 5), hand)
+            frames.append(frame)
+
+        return frames
+
+    @staticmethod
+    def get_bonk_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the bonk"""
+        frames = []
+        width, height = 200, 170
+        deformation = (0, 0, 0, 5, 10, 20, 15, 5)
+
+        avatar = Meme.round_image(avatar.resize((100, 100)))
+
+        for i in range(8):
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            bat = Image.open(f"data/meme/bonk/{img}.png")
+
+            frame_avatar = avatar.resize((100, 100 - deformation[i]))
+
+            frame.paste(frame_avatar, (80, 60 + deformation[i]), frame_avatar)
+            frame.paste(bat, (10, 5), bat)
+            frames.append(frame)
+
+        return frames
+
+    @staticmethod
+    def get_whip_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the whip"""
+        frames = []
+        width, height = 250, 150
+        deformation = (0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 9, 6, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        translation = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+        avatar = Meme.round_image(avatar.resize((100, 100)))
+
+        for i in range(26):
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            whip_frame = Image.open(f"data/meme/whip/{img}.png").resize((150, 150))
+
+            frame_avatar = avatar.resize((100 - deformation[i], 100))
+
+            frame.paste(frame_avatar, (135 + deformation[i] + translation[i], 25), frame_avatar)
+            frame.paste(whip_frame, (0, 0), whip_frame)
+            frames.append(frame)
+
+        return frames
+
+    @staticmethod
+    def get_spank_frames(avatar: Image.Image) -> List[Image.Image]:
+        """Get frames for the spank"""
+        frames = []
+        width, height = 200, 120
+        deformation = (4, 2, 1, 0, 0, 0, 0, 3)
+
+        avatar = Meme.round_image(avatar.resize((100, 100)))
+
+        for i in range(8):
+            img = "%02d" % (i + 1)
+            frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
+            spoon = Image.open(f"data/meme/spank/{img}.png").resize((100, 100))
+
+            frame_avatar = avatar.resize((100 + 2 * deformation[i], 100 + 2 * deformation[i]))
+
+            frame.paste(spoon, (10, 15), spoon)
+            frame.paste(frame_avatar, (80 - deformation[i], 10 - deformation[i]), frame_avatar)
+            frames.append(frame)
+
+        return frames

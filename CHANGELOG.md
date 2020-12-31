@@ -4,6 +4,22 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.1.7]
+
+### Added
+
+- Meme: `bonk` command
+- Base: Configuration for autopin that prevents pinning in selected channels
+
+### Updated
+
+- Meme: New animations for `pet`, `hyperpet` and `whip`
+
+### Maintenance
+
+- Database backup script has been updated: an error was deleting the new compressed archive
+- Database scheme for meme interactions was redesigned. You'll have to drop the table and start anew (since the bot is not used elsewhere, I did not bother).
+
 ## [1.1.6]
 
 ### Added
@@ -235,8 +251,9 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...devel
-[1.1.5]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...devel
+[1.1.7]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...v1.1.7
+[1.1.6]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.2...v1.1.3
