@@ -16,6 +16,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 ### Maintenance
 
 - Database backup script has been updated: an error was deleting the new compressed archive
+- Database scheme for meme interactions was redesigned. You'll have to drop the table and start anew (since the bot is not used elsewhere, I did not bother).
 
 ## [1.1.6]
 
