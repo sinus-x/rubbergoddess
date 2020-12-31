@@ -42,6 +42,8 @@
 	EmojiNotFound:         Takové emoji jsem nenašla.
 	PartialEmojiConversionFailure: Chyba konverze emoji.
 	BadBoolArgument:       Argument `((arg))` není binární.
+	BadColourArgument:     Neplatná barva.
+	BadInviteArgument:     Neplatný invite.
 	DisabledCommand:       Příkaz je zakázaný.
 	CommandInvokeError:    Chyba při vykonávání příkazu.
 	CommandOnCooldown:     Trochu zpomal, počkej ((time)).
