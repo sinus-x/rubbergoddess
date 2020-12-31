@@ -184,6 +184,47 @@ class Review(rubbercog.Rubbercog):
         await self.event.sudo(ctx, f"Subject **{subject}** removed.")
         await ctx.send(self.text.get("subject_removed"))
 
+    @commands.check(acl.check)
+    @commands.group(aliases=["vedouci", "vedoucí"])
+    async def supervisors(self, ctx):
+        """Thesis supervisor reviews"""
+        await utils.send_help(ctx)
+
+    @commands.check(acl.check)
+    @supervisors.command(name="add")
+    async def supervisors_add(
+        self,
+        ctx,
+        person_id: int,
+        name: str,
+        relationship: str,
+        thesis_type: str,
+        their_mark: str,
+        final_mark: str,
+        *,
+        text: str,
+    ) -> None:
+        """Add supervisor review
+
+        person_id: School ID of the supervisor
+        name: Supervisor's name
+        relationship: "supervisor" or "opponent"
+        thesis_type: "Bc", "Ing", "PhD", "semestral"
+        their_mark: The mark they gave you. A to F
+        final_mark: The mark you got. A to F
+        text: The text of your review
+        """
+        # Check data types
+        if relationship not in ("supervisor", "opponent"):
+            return await ctx.send("bad relationship argument")
+        if thesis_type.lower() not in ("bc", "ing", "phd", "semestral"):
+            return await ctx.send("bad thesis type argument")
+        if their_mark.upper() not in ("A", "B", "C", "D", "E", "F"):
+            return await ctx.send("bad `their mark` argument")
+        if final_mark.upper() not in ("A", "B", "C", "D", "E", "F"):
+            return await ctx.send("bad `final mark` argument")
+        pass
+
     ##
     ## Listeners
     ##

@@ -1,9 +1,11 @@
 import datetime
+from typing import List
+
 from sqlalchemy import func, desc
 
 from repository.base_repository import BaseRepository
 from repository.database import session
-from repository.database.review import Review, ReviewRelevance, Subject
+from repository.database.review import Review, ReviewRelevance, Subject, SupervisorReview
 
 
 class ReviewRepository(BaseRepository):
@@ -95,3 +97,39 @@ class ReviewRepository(BaseRepository):
         subject = Subject(shortcut=shortcut)
         session.merge(subject)
         session.commit()
+
+    # Supervisor
+
+    def get_supervisor_reviews_by_name(self, name: str) -> List[SupervisorReview]:
+        """Get reviews for supervisor"""
+        return session.query(SupervisorReview).filter(SupervisorReview.name == name).all()
+
+    def get_supervisor_reviews_by_id(self, person_id: int) -> List[SupervisorReview]:
+        """Get reviews for supervisor"""
+        return session.query(SupervisorReview).filter(SupervisorReview.person_id == person_id).all()
+
+    def add_supervisor_reviews(
+        self,
+        author: int,
+        timestamp: datetime.datetime,
+        person_id: int,
+        name: str,
+        relationship: str,
+        thesis_type: str,
+        mark_their: str,
+        mark_final: str,
+        text: str,
+    ) -> SupervisorReview:
+        result = SupervisorReview(
+            discord_id=author,
+            timestamp=timestamp,
+            person_id=person_id,
+            name=name,
+            relationship=relationship,
+            thesis_type=thesis_type,
+            mark_their=mark_their,
+            mark_final=mark_final,
+            text=text,
+        )
+        session.merge(result)
+        return result
