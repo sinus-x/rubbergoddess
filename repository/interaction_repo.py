@@ -12,30 +12,41 @@ class InteractionRepository(BaseRepository):
     def add(
         self,
         guild_id: int,
-        channel_id: int,
-        message_id: int,
         action: str,
         giver: int,
         receiver: int,
     ) -> Interaction:
+        result = (
+            session.query(Interaction)
+            .filter(
+                Interaction.guild_id == guild_id,
+                Interaction.name == action,
+                Interaction.giver == giver,
+                Interaction.receiver == receiver,
+            )
+            .one_or_none()
+        )
+
+        if result is not None:
+            result.count += 1
+            session.commit()
+            return result
+
         result = Interaction(
             guild_id=guild_id,
-            channel_id=channel_id,
-            message_id=message_id,
             name=action,
             giver=giver,
             receiver=receiver,
+            count=1,
         )
         session.add(result)
+        session.commit()
         return result
 
     # Filters by channel
 
-    def get_channel(self, channel_id: int) -> List[Interaction]:
-        return session.filter(Interaction.channel_id == channel_id).all()
-
     def get_guild(self, guild_id: int) -> List[Interaction]:
-        return session.filter(Interaction.guild_id == guild_id).all()
+        return session.query(Interaction).filter(Interaction.guild_id == guild_id).all()
 
     # Filters by action
     def get_action(self, action: str) -> List[Interaction]:

@@ -44,9 +44,9 @@ class Meme(rubbercog.Rubbercog):
             hugged = target
 
         if type(hugged) == discord.Role:
-            repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, None)
+            repo_i.add(ctx.guild.id, "hug", hugger.id, None)
         else:
-            repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hug", hugger.id, hugged.id)
+            repo_i.add(ctx.guild.id, "hug", hugger.id, hugged.id)
 
         await ctx.send(
             emote.hug_right
@@ -69,7 +69,7 @@ class Meme(rubbercog.Rubbercog):
             whipper = ctx.author
             whipped = user
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "whip", whipper.id, whipped.id)
+        repo_i.add(ctx.guild.id, "whip", whipper.id, whipped.id)
 
         async with ctx.typing():
             url = whipped.avatar_url_as(format="jpg")
@@ -107,7 +107,7 @@ class Meme(rubbercog.Rubbercog):
             spanker = ctx.author
             spanked = user
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "spank", spanker.id, spanked.id)
+        repo_i.add(ctx.guild.id, "spank", spanker.id, spanked.id)
 
         async with ctx.typing():
             url = spanked.avatar_url_as(format="jpg")
@@ -146,7 +146,7 @@ class Meme(rubbercog.Rubbercog):
             petter = ctx.author
             petted = member
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "pet", petter.id, petted.id)
+        repo_i.add(ctx.guild.id, "pet", petter.id, petted.id)
 
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
@@ -196,7 +196,7 @@ class Meme(rubbercog.Rubbercog):
             petter = ctx.author
             petted = member
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "hyperpet", petter.id, petted.id)
+        repo_i.add(ctx.guild.id, "hyperpet", petter.id, petted.id)
 
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
@@ -235,7 +235,7 @@ class Meme(rubbercog.Rubbercog):
             bonker = ctx.author
             bonked = member
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "bonk", bonker.id, bonked.id)
+        repo_i.add(ctx.guild.id, "bonk", bonker.id, bonked.id)
 
         async with ctx.typing():
             url = bonked.avatar_url_as(format="jpg")
@@ -276,7 +276,7 @@ class Meme(rubbercog.Rubbercog):
 
         options = ["つ", "づ", "ノ"]
 
-        repo_i.add(ctx.guild.id, ctx.channel.id, ctx.message.id, "slap", slapper.id, slapped.id)
+        repo_i.add(ctx.guild.id, "slap", slapper.id, slapped.id)
 
         await ctx.send(
             "**{}**{} {}".format(
@@ -306,6 +306,7 @@ class Meme(rubbercog.Rubbercog):
             embed.add_field(name=f"{config.prefix}{action}", value=value)
 
         await ctx.send(embed=embed)
+        await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])
