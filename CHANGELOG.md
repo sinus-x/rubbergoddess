@@ -7,6 +7,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 ### Added
 
 - Meme: `bonk` command
+- Base: Configuration for autopin that prevents pinning in selected channels
 
 ### Updated
 

@@ -64,6 +64,9 @@ class Base(rubbercog.Rubbercog):
             if message.pinned:
                 return await reaction.clear()
 
+            if channel.id in self.config.get("unpinnable"):
+                return await reaction.clear()
+
             if reaction.count < self.config.get("pins"):
                 return
 
