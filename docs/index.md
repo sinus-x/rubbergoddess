@@ -18,7 +18,6 @@ This Discord bot manages verification process, users, karma and some other funct
 ## Additional docs
 
 - Installation instructions are at [project's wiki page][wiki]
-- [Database tables](database.md)
 
 ## Related bots
 [Rubbergod], maintained by VUT FIT team. Rubbergoddess is younger, but more mature sister -- originally forked, now independent.
