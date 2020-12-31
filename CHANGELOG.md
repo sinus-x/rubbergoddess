@@ -4,6 +4,8 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.1.7]
+
 ### Added
 
 - Meme: `bonk` command
@@ -249,7 +251,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...devel
+[1.1.7]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.3...v1.1.4

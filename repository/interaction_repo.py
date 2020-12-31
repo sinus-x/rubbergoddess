@@ -58,12 +58,16 @@ class InteractionRepository(BaseRepository):
         user = session.query(Interaction).filter(
             Interaction.name == action, Interaction.guild_id == guild_id
         )
-        given = user.filter(Interaction.giver == user_id).one_or_none()
-        taken = user.filter(Interaction.receiver == user_id).one_or_none()
-        return (
-            given.count if given is not None else 0,
-            taken.count if taken is not None else 0,
-        )
+
+        given = 0
+        for i in user.filter(Interaction.giver == user_id).all():
+            given += i.count
+
+        taken = 0
+        for i in user.filter(Interaction.receiver == user_id).all():
+            taken += i.count
+
+        return (given, taken)
 
     # Mover module
 
