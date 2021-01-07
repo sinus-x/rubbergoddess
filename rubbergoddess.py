@@ -16,6 +16,7 @@ from repository.database.points import Points
 from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.seeking import Seeking
 from repository.database.verification import User
+from repository.database.anonpost import AnonpostChannel
 from repository.review_repo import ReviewRepository
 
 intents = discord.Intents.none()

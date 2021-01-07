@@ -1,0 +1,4 @@
+{
+    # image size, in kB
+    max_size: 8000
+}

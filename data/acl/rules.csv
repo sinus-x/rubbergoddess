@@ -55,6 +55,12 @@ config,0,MOD,
 commands,0,VERIFY,
 # Animals
 animal,0,MOD,
+# Anonpost
+anonpost,0,MOD,
+anonpost add,0,M0D,
+anonpost remove,0,M0D,
+anonpost rename,0,MOD,
+anonpost list,0,MOD SUBMOD,
 # Janitor
 hoarders,0,MOD,
 purge,0,MOD,

@@ -1,10 +1,15 @@
+import tempfile
+from io import BytesIO
+from PIL import Image
+
 import discord
 from discord.ext import commands
 
-
 from cogs.resource import CogConfig, CogText
 from core import acl, rubbercog, utils
-from repository.anonpost_repo import AnonPostRepository
+from repository.anonpost_repo import AnonpostRepository
+
+repo_a = AnonpostRepository()
 
 
 class AnonPost(rubbercog.Rubbercog):
@@ -22,37 +27,115 @@ class AnonPost(rubbercog.Rubbercog):
         """Manage anonymous channels"""
         await utils.send_help(ctx)
 
+    @commands.guild_only()
     @commands.check(acl.check)
     @anonpost.command(name="add")
     async def anonpost_add(self, ctx, name: str):
         """Add channel used for anonymous posts"""
-        pass
+        try:
+            repo_a.add(guild_id=ctx.guild.id, channel_id=ctx.channel.id, name=name)
+        except ValueError:
+            return await ctx.send(self.text.get("name exists"))
+
+        await self.event.sudo(ctx, f"Anonpost channel created: `{self.sanitise(name)}`.")
+        await ctx.send(self.text.get("added"))
 
     @commands.check(acl.check)
     @anonpost.command(name="remove")
-    async def anonpost_remove(self, ctx):
+    async def anonpost_remove(self, ctx, name: str):
         """Remove channel used for anonymous posts"""
-        pass
+        try:
+            repo_a.remove(name=name)
+        except ValueError:
+            return await ctx.send(self.text.get("bad name"))
+
+        await self.event.sudo(ctx, f"Anonpost channel removed: `{self.sanitise(name)}`.")
+        await ctx.send(self.text.get("removed"))
 
     @commands.check(acl.check)
     @anonpost.command(name="rename")
-    async def anonpost_rename(self, ctx, name: str):
+    async def anonpost_rename(self, ctx, old_name: str, new_name: str):
         """Rename anonymous post channel"""
-        pass
+        try:
+            repo_a.rename(old_name=str, new_name=str)
+        except ValueError as e:
+            return await ctx.send("`" + str(e) + "`")
 
+        await self.event.sudo(
+            ctx,
+            (
+                "Anonpost channel renamed: "
+                f"`{self.sanitise(old_name)}` to "
+                f"`{self.sanitise(new_name)}`."
+            ),
+        )
+        await ctx.send(self.text.get("renamed"))
+
+    @commands.guild_only()
     @commands.check(acl.check)
+    @anonpost.command(name="list")
+    async def anonpost_list(self, ctx):
+        """Get mappings for current guild."""
+        channels = repo_a.get_all(ctx.guild.id)
+        await ctx.send("```\n" + "\n".join([str(x) for x in channels]) + "\n```")
+
+    # The ACL does not support DMs
+    # @commands.check(acl.check)
     @commands.command()
-    async def anonsend(self, ctx, channel: str):
+    async def anonsend(self, ctx, name: str):
         """Send image anonymously
 
-        `channel`: Channel code to send the image to.
+        `name`: Channel code to send the image to.
         """
-        pass
-        # check channel
-        # check image format
-        # copy the image
-        # clear the exif
+        # get channel
+        target = repo_a.get(name=name)
+        if target is None:
+            return await ctx.send(self.text.get("no_channel"))
+
+        channel = self.bot.get_channel(target.channel_id)
+        if channel is None:
+            return await ctx.send(self.text.get("channel_not_found"))
+
+        guild = self.bot.get_guild(target.guild_id)
+        guild_user = guild.get_user(ctx.author.id)
+        if guild_user is None:
+            return await ctx.send(self.text.get("not_in_guild"))
+
+        # check attachment
+        if len(ctx.message.attachments) != 1:
+            return await ctx.send(self.text.get("bad_attachments"))
+
+        attachment = ctx.message.attachments[0]
+        max_size = self.config.get("max_size")
+        if attachment.size > max_size * 1024:
+            return await ctx.send(self.text.get("attachment_too_big", size=max_size))
+
+        # feedback
+        message = await ctx.send(self.text.get("downloading"))
+
+        # download image
+        image_bytes = BytesIO()
+        await attachment.save(image_bytes)
+        try:
+            image = Image.open(image_bytes)
+        except OSError:
+            return await ctx.send(self.text.get("not_image"))
+
+        # log it
+        await self.event.user(ctx, f"Anonymous post sent to `{name}`.")
+
+        # feedback
+        await message.edit(content=message.content + " " + self.text.get("uploading"))
+
         # send it
+        image_binary = tempfile.TemporaryFile()
+        image.convert("RGB").save(image_binary, "JPEG")
+        image_binary.seek(0)
+        await channel.send(file=discord.File(fp=image_binary, filename="anonymous.jpg"))
+        image_binary.close()
+
+        # feedback
+        await message.edit(content=message.content + " " + self.text.get("done"))
 
 
 def setup(bot):
