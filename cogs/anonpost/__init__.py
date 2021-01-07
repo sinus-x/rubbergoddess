@@ -81,11 +81,13 @@ class Anonpost(rubbercog.Rubbercog):
 
     # The ACL does not support DMs
     # @commands.check(acl.check)
+    @commands.dm_only()
     @commands.command()
-    async def anonsend(self, ctx, name: str):
+    async def anonsend(self, ctx, name: str, spoiler: str = None):
         """Send image anonymously
 
         `name`: Channel code to send the image to.
+        `spoiler`: The `spoiler` string to spoiler the image
         """
         # get channel
         target = repo_a.get(name=name)
@@ -131,7 +133,13 @@ class Anonpost(rubbercog.Rubbercog):
         image_binary = tempfile.TemporaryFile()
         image.convert("RGB").save(image_binary, "JPEG")
         image_binary.seek(0)
-        await channel.send(file=discord.File(fp=image_binary, filename="anonymous.jpg"))
+        await channel.send(
+            file=discord.File(
+                fp=image_binary,
+                filename="anonymous.jpg",
+                spoiler=(spoiler == "spoiler"),
+            )
+        )
         image_binary.close()
 
         # feedback

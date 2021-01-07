@@ -6,9 +6,9 @@ _New in v1.2._
 
 ## User commands
 
-### anonsend (code)
+### anonsend (code) (spoiler)
 
-Send image file anonymously. The `channel` is a submission code for target channel.
+Send image file anonymously. The `channel` is a submission code for target channel. The `spoiler` is a **"spoiler"** string -- if present, the attachment will be sent spoilered.
 
 ## ACL controlled commands
 
