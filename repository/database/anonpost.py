@@ -10,6 +10,7 @@ class AnonpostChannel(database.base):
     guild_id   = Column(BigInteger)
     channel_id = Column(BigInteger)
     name       = Column(String)
+    count      = Column(Integer)
     # fmt: on
 
     def __str__(self):
@@ -20,6 +21,7 @@ class AnonpostChannel(database.base):
             "<AnonpostChannel "
             f"guild_id={self.guild_id} "
             f"channel_id={self.channel_id} "
-            f"name={self.name}"
+            f"name={self.name} "
+            f"count={self.count}"
             ">"
         )

@@ -14,8 +14,15 @@ class AnonpostRepository(BaseRepository):
             guild_id=guild_id,
             channel_id=channel_id,
             name=name,
+            count=0,
         )
         session.add(result)
+        session.commit()
+        return result
+
+    def increment(self, name: str) -> AnonpostChannel:
+        result = self.get(name=name)
+        result.count += 1
         session.commit()
         return result
 

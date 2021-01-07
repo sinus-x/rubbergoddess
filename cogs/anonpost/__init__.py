@@ -1,6 +1,6 @@
 import tempfile
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageOps
 
 import discord
 from discord.ext import commands
@@ -12,7 +12,7 @@ from repository.anonpost_repo import AnonpostRepository
 repo_a = AnonpostRepository()
 
 
-class AnonPost(rubbercog.Rubbercog):
+class Anonpost(rubbercog.Rubbercog):
     """Send files anonymously"""
 
     def __init__(self, bot):
@@ -97,7 +97,7 @@ class AnonPost(rubbercog.Rubbercog):
             return await ctx.send(self.text.get("channel_not_found"))
 
         guild = self.bot.get_guild(target.guild_id)
-        guild_user = guild.get_user(ctx.author.id)
+        guild_user = guild.get_member(ctx.author.id)
         if guild_user is None:
             return await ctx.send(self.text.get("not_in_guild"))
 
@@ -121,8 +121,8 @@ class AnonPost(rubbercog.Rubbercog):
         except OSError:
             return await ctx.send(self.text.get("not_image"))
 
-        # log it
-        await self.event.user(ctx, f"Anonymous post sent to `{name}`.")
+        # fix rotation
+        image = ImageOps.exif_transpose(image)
 
         # feedback
         await message.edit(content=message.content + " " + self.text.get("uploading"))
@@ -137,7 +137,13 @@ class AnonPost(rubbercog.Rubbercog):
         # feedback
         await message.edit(content=message.content + " " + self.text.get("done"))
 
+        # increment log
+        anonchannel = repo_a.increment(name)
+        await self.event.user(
+            ctx.channel, f"Anonymous image sent: {name} has {anonchannel.count} uses."
+        )
+
 
 def setup(bot):
     """Load cog"""
-    bot.add_cog(AnonPost(bot))
+    bot.add_cog(Anonpost(bot))
