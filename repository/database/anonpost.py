@@ -14,7 +14,7 @@ class AnonpostChannel(database.base):
     # fmt: on
 
     def __str__(self):
-        return f"Channel {self.channel_id} in guild {self.guild_id}: {self.name}"
+        return f"Channel {self.channel_id} in guild {self.guild_id}: {self.name} ({self.count})"
 
     def __repr__(self):
         return (

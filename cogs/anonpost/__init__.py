@@ -147,9 +147,7 @@ class Anonpost(rubbercog.Rubbercog):
 
         # increment log
         anonchannel = repo_a.increment(name)
-        await self.event.user(
-            ctx.channel, f"Anonymous image sent: {name} has {anonchannel.count} uses."
-        )
+        await self.event.user("DMChannel", f"Anonymous image sent to **{self.sanitise(name)}**.")
 
 
 def setup(bot):
