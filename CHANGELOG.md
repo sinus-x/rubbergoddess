@@ -4,6 +4,11 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Updated
+
+- Karma now also counts animated emojis
+- Error notifications are no longer deleted
+
 ## [1.1.7]
 
 ### Added
