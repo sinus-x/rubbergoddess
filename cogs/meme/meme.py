@@ -294,7 +294,11 @@ class Meme(rubbercog.Rubbercog):
         if user is None:
             user = ctx.author
 
-        embed = self.embed(ctx=ctx, description=self.sanitise(user.display_name))
+        embed = self.embed(
+            ctx=ctx,
+            description=f"**{self.sanitise(user.display_name)}**\n"
+            f"{self.text.get('relations_help')}",
+        )
 
         for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip", "bonk"):
             lookup = repo_i.get_user_action(user.id, ctx.guild.id, action)
