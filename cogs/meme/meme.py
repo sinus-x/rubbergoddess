@@ -336,7 +336,7 @@ class Meme(rubbercog.Rubbercog):
                     text += letter.upper() if random.choice((True, False)) else letter.lower()
                 else:
                     text += letter
-            text = self.sanitise(text[:1900])
+            text = self.sanitise(text[:1900], markdown=True)
         await ctx.send(f"**{self.sanitise(ctx.author.display_name)}**\n>>> " + text)
         await utils.delete(ctx.message)
 
