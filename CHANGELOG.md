@@ -8,6 +8,8 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 - Karma now also counts animated emojis
 - Error notifications are no longer deleted
+- `subject` and `role` commands removed
+- Pinned-then-unpinned messages cannot be pinned again by the bot
 
 ## [1.1.7]
 

@@ -76,13 +76,6 @@ karma vote,0,MOD,
 karma set,0,,
 karma message,0,VERIFY,
 karma give,0,,
-# Roles
-subject,0,VUT,
-subject add,0,VUT,
-subject remove,0,VUT,
-role,0,VERIFY,
-role add,0,VERIFY,
-role remove,0,VERIFY,
 # Seeking
 seeking,0,VERIFY,
 seeking add,0,VERIFY,
