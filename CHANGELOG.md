@@ -11,6 +11,10 @@ See [Milestones] to get an idea on what you can expect in the future.
 - `subject` and `role` commands removed
 - Pinned-then-unpinned messages cannot be pinned again by the bot
 
+### Maintenance
+
+- Added `points` degradation to the docs.
+
 ## [1.1.7]
 
 ### Added
