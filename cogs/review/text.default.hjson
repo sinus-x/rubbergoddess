@@ -1,6 +1,9 @@
 {
 	no_subject: Takový předmět neznám.
 
+	# review list
+	empty: ((mention)), žádné předměty ještě nebyly ohodnoceny.
+
 	# review subject
 	no_reviews: ((mention)), předmět ještě žádné hodnocení nemá.
 

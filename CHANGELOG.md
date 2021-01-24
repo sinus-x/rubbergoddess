@@ -10,6 +10,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 - Error notifications are no longer deleted
 - `subject` and `role` commands removed
 - Pinned-then-unpinned messages cannot be pinned again by the bot
+- `review list` subcommand added
 
 ### Maintenance
 
