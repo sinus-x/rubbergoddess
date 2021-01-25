@@ -4,6 +4,19 @@
 	# review list
 	empty: ((mention)), žádné předměty ještě nebyly ohodnoceny.
 
+	# review info
+	info: {
+		reviews: Hodnocení
+		count: '''
+			Předmět má ((count)) hodnocení.
+			Zobrazit je můžeš příkazem `review subject ((subject))`.
+			'''
+		none: '''
+			Předmět ještě nikdo nehodnotil.
+			Můžeš být první použitím `review add`.
+			'''
+	}
+
 	# review subject
 	no_reviews: ((mention)), předmět ještě žádné hodnocení nemá.
 

@@ -63,8 +63,6 @@ class Review(rubbercog.Rubbercog):
             await message.add_reaction("🛑")
             await message.add_reaction("👎")
 
-        await utils.delete(ctx)
-
     @commands.check(acl.check)
     @review.command(name="list", aliases=["available"])
     async def review_list(self, ctx):
@@ -149,6 +147,34 @@ class Review(rubbercog.Rubbercog):
         await utils.send_help(ctx)
 
     @commands.check(acl.check)
+    @subject.command(name="info")
+    async def subject_info(self, ctx, subject: str):
+        """Get information about subject
+
+        subject: Subject code
+        """
+        db_subject = repo_s.get(subject)
+        if db_subject is None:
+            return await ctx.send(self.text.get("no_subject"))
+
+        embed = self.embed(ctx=ctx, title=db_subject.shortcut)
+        if db_subject.name or db_subject.category:
+            embed.add_field(
+                name=db_subject.name or "\u200b",
+                value=db_subject.category or "\u200b",
+                inline=False,
+            )
+        embed.add_field(
+            name=self.text.get("info", "reviews"),
+            value=self.text.get("info", "count", count=len(db_subject.reviews), subject=subject)
+            if len(db_subject.reviews)
+            else self.text.get("info", "none"),
+            inline=False,
+        )
+
+        await ctx.send(embed=embed)
+
+    @commands.check(acl.check)
     @subject.command(name="add")
     async def subject_add(self, ctx, subject: str, name: str, category: str):
         """Add subject
@@ -178,7 +204,7 @@ class Review(rubbercog.Rubbercog):
         if db_subject is None:
             return await ctx.send(self.text.get("no_subject"))
 
-        repo_s.update(subject, name, category)
+        repo_s.update(subject, name=name, category=category)
         await self.event.sudo(ctx, f"Subject **{subject}** updated.")
         await ctx.send(self.text.get("subject_updated"))
 

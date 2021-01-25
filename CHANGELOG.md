@@ -4,13 +4,17 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.2.0]
+
+First release of 2021 bumps the minor version, which sould have been done much earlier, probably.
+
 ### Updated
 
 - Karma now also counts animated emojis
 - Error notifications are no longer deleted
 - `subject` and `role` commands removed
 - Pinned-then-unpinned messages cannot be pinned again by the bot
-- `review list` subcommand added
+- `review list` and `subject info` subcommands added
 
 ### Maintenance
 
@@ -263,7 +267,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.2.0...devel
+[1.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...v1.2.0
 [1.1.7]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.4...v1.1.5
