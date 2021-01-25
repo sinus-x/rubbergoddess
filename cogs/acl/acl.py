@@ -1,8 +1,9 @@
-import csv
+import json
 import os
 import re
-from typing import List, Optional
+import tempfile
 from datetime import datetime
+from typing import List, Optional, Tuple
 
 import discord
 from discord.ext import commands
@@ -67,7 +68,7 @@ class ACL(rubbercog.Rubbercog):
             group.children = relationships[group.name]
             group.level = 0
 
-        def bfs(queue):
+        def bfs(queue) -> list:
             visited = []
             while queue:
                 group = queue.pop(0)
@@ -91,15 +92,14 @@ class ACL(rubbercog.Rubbercog):
         await ctx.send("```" + result + "```")
 
     @commands.check(acl.check)
-    @acl_group.command(name="get", aliases=["g"])
+    @acl_group.command(name="get", aliases=["info"])
     async def acl_group_get(self, ctx, name: str):
         """Get ACL group"""
         result = repo_a.get_group(ctx.guild.id, name)
-
         if result is None:
             return await ctx.send(self.text.get("group_get", "nothing"))
 
-        await ctx.send(self.get_group_representation(ctx.guild, result))
+        await ctx.send(embed=self.get_group_embed(ctx, result))
 
     @commands.check(acl.check)
     @acl_group.command(name="add", aliases=["a"])
@@ -120,8 +120,8 @@ class ACL(rubbercog.Rubbercog):
         if len(parent) == 0:
             parent = None
         result = repo_a.add_group(ctx.guild.id, name, parent, role_id)
-        await ctx.send(self.get_group_representation(ctx.guild, result))
-        await self.event.sudo(ctx, f"ACL group added: **{result.name}** (#{result.id}).")
+        await ctx.send(embed=self.get_group_embed(ctx, result))
+        await self.event.sudo(ctx, f"ACL group added: **{result.name}**.")
 
     @commands.check(acl.check)
     @acl_group.command(name="edit", aliases=["e"])
@@ -150,7 +150,7 @@ class ACL(rubbercog.Rubbercog):
         else:
             raise discord.BadArgument()
 
-        await ctx.send(self.get_group_representation(ctx.guild, result))
+        await ctx.send(embed=self.get_group_embed(ctx, result))
         await self.event.sudo(ctx, f"ACL group **{result.name}** updated: **{param}={value}**.")
 
     @commands.check(acl.check)
@@ -158,455 +158,282 @@ class ACL(rubbercog.Rubbercog):
     async def acl_group_remove(self, ctx, name: str):
         """Remove ACL group"""
         result = repo_a.delete_group(ctx.guild.id, name)
-        await ctx.send(self.get_group_mirror_representation(ctx.guild, result))
+        await ctx.send(embed=self.get_group_embed(ctx, result))
         await self.event.sudo(
             ctx, f"ACL group removed: **{result.get('name')}** (#{result.get('id')})."
         )
 
     ## Rules
 
+    @commands.guild_only()
     @commands.check(acl.check)
     @acl_.group(name="rule")
     async def acl_rule(self, ctx):
         """Command control"""
         await utils.send_help(ctx)
 
+    @commands.guild_only()
     @commands.check(acl.check)
-    @acl_rule.command(name="get")
+    @acl_rule.command(name="get", aliases=["info"])
     async def acl_rule_get(self, ctx, command: str):
         """See command's policy"""
         rule = repo_a.get_rule(ctx.guild.id, command)
         if rule is None:
             return await ctx.send(self.text.get("rule_get", "nothing"))
 
-        await ctx.send("```\n" + self.get_rule_representation(rule) + "```")
+        embed = self.get_rule_embed(ctx, rule)
+        await ctx.send(embed=embed)
 
+    @commands.guild_only()
     @commands.check(acl.check)
-    @acl_rule.command(name="add")
-    async def acl_rule_add(self, ctx, command: str, default: bool = False):
-        """Add command"""
-        if command not in self.get_command_names():
-            return await ctx.send(self.text.get("rule_add", "nothing"))
-        result = repo_a.add_rule(ctx.guild.id, command)
-        await ctx.send("```" + self.get_rule_representation(result) + "```")
-        await self.event.sudo(ctx, f"ACL rule added: **{result.command}** (#{result.id}).")
-
-    @commands.check(acl.check)
-    @acl_rule.command(name="remove", aliases=["delete"])
-    async def acl_rule_remove(self, ctx, command: str):
-        """Remove command"""
-        result = repo_a.delete_rule(ctx.guild.id, command)
-        await ctx.send("```" + self.get_rule_mirror_representation(result) + "```")
-        await self.event.sudo(
-            ctx, f"ACL rule removed: **{result.get('command')}** (#{result.get('id')})."
-        )
-
-    @commands.check(acl.check)
-    @acl_rule.command(name="flush")
-    async def acl_rule_flush(self, ctx):
-        """Remove all commands"""
-        result = repo_a.delete_rules(ctx.guild.id)
-        await ctx.send(self.text.get("rule_flush", count=result))
-        await self.event.sudo(ctx, "ACL rules flushed.")
-
-    ## Constraints
-
-    @commands.check(acl.check)
-    @acl_rule.command(name="default")
-    async def acl_rule_default(self, ctx, command: str, allow: bool):
-        """Set default response"""
-        result = repo_a.edit_rule(ctx.guild.id, command, allow)
-        await ctx.send("```" + self.get_rule_representation(result) + "```")
-        await self.event.sudo(ctx, f"ACL rule default for **{result.command}** set to **{allow}**.")
-
-    @commands.check(acl.check)
-    @acl_.group(name="user_constraint", aliases=["constraint_user", "uc"])
-    async def acl_user_constraint(self, ctx):
-        """Manage command constraints"""
-        await utils.send_help(ctx)
-
-    @commands.check(acl.check)
-    @acl_user_constraint.command(name="add", aliases=["a"])
-    async def acl_user_constraint_add(self, ctx, command: str, user_id: int, allow: bool):
-        """Add command constraint
-
-        command: A command
-        user_id: User ID
-        allow: True or False
-        """
-        result = repo_a.add_user_constraint(ctx.guild.id, user_id, command, allow)
-        await ctx.send("```" + self.get_rule_representation(result) + "```")
-        await self.event.sudo(
-            ctx, f"ACL user constraint for **{result.command}** added: **{user_id}={allow}**."
-        )
-
-    @commands.check(acl.check)
-    @acl_user_constraint.command(name="remove", aliases=["r"])
-    async def acl_user_constraint_remove(self, ctx, constraint_id: int):
-        """Remove command constraint
-
-        constraint_id: User constraint ID
-        """
-        result = repo_a.remove_user_constraint(constraint_id)
-        await ctx.send(
-            self.text.get("user_constraint", "removed")
-            if result
-            else self.text.get("user_constraint", "nothing")
-        )
-        await self.event.sudo(ctx, f"ACL user constraint **#{constraint_id}** removed.")
-
-    @commands.check(acl.check)
-    @acl_.group(name="group_constraint", aliases=["constraint_group", "gc"])
-    async def acl_group_constraint(self, ctx):
-        """Manage group command constraints"""
-        await utils.send_help(ctx)
-
-    @commands.check(acl.check)
-    @acl_group_constraint.command(name="add", aliases=["a"])
-    async def acl_group_constraint_add(self, ctx, command: str, group: str, allow: str):
-        """Add command constraint
-
-        command: A command
-        group: ACL group name or ID
-        allow: boolean
-        """
-        allow = allow in ("True", "true", "1")
-
-        result = repo_a.add_group_constraint(ctx.guild.id, group, command, allow)
-        await ctx.send("```" + self.get_rule_representation(result) + "```")
-        await self.event.sudo(
-            ctx, f"ACL group constraint for **{result.command}** added: **{group}={allow}**."
-        )
-
-    @commands.check(acl.check)
-    @acl_group_constraint.command(name="remove", aliases=["r"])
-    async def acl_group_constraint_remove(self, ctx, constraint_id: int):
-        """Remove command constraint
-
-        command: A command
-        constraint_id: Group constraint ID
-        """
-        result = repo_a.remove_group_constraint(constraint_id)
-        await ctx.send(
-            self.text.get("group_constraint", "removed")
-            if result
-            else self.text.get("group_constraint", "nothing")
-        )
-        await self.event.sudo(ctx, f"ACL group constraint **#{constraint_id}** removed.")
-
-    ## Security
-
-    @commands.check(acl.check)
-    @acl_.command(name="audit")
-    async def acl_audit(self, ctx, search: str = None):
-        """Make security audit
-
-        search: Only display commands containing the `search` string
-        """
-        rules = repo_a.get_rules(ctx.guild.id)
-        if search is not None:
-            rules = [r for r in rules if search in r.command]
-
-        result = []
-        for rule in sorted(rules, key=lambda r: r.command):
-            result.append(self.get_rule_representation(rule))
-
-        output = utils.paginate(result)
-        for page in output:
-            if len(page):
-                await ctx.send("```" + page + "```")
-
-        await ctx.send(self.text.get("audit"))
-
-    @commands.check(acl.check)
-    @acl_.command(name="check")
-    async def acl_check(self, ctx):
-        """Check, if all commands are in database"""
-        commands = self.get_free_commands(ctx.guild.id)
-        output = utils.paginate(commands)
-        for page in output:
-            if len(page):
-                await ctx.send("```" + page + "```")
-        if len(commands):
-            await ctx.send(self.text.get("check", "some", count=len(commands)))
-        else:
-            await ctx.send(self.text.get("check", "none"))
-
-    ## Import & Export
-
-    @commands.check(acl.check)
-    @acl_.command(name="init")
-    async def acl_init(self, ctx):
-        """Load default settings from file"""
-        now = datetime.now()
-
-        await self.import_csv(ctx, "data/acl/rules.csv")
-
-        delta = int((datetime.now() - now).total_seconds())
-        await ctx.send(self.text.get("import", "imported", delta=delta))
-        await self.event.sudo(ctx, "ACL rules initiated.")
-
-    @commands.check(acl.check)
-    @acl_.command(name="import")
-    async def acl_import(self, ctx):
-        """Import settings from attachment
-
-        Attached filename must have filename of `rules.csv`.
-        """
-        if len(ctx.message.attachments) != 1 or ctx.message.attachments[0].filename != "rules.csv":
+    @acl_rule.command(name="import")
+    async def acl_rule_import(self, ctx):
+        """Import command rules"""
+        if len(ctx.message.attachments) != 1:
             return await ctx.send(self.text.get("import", "wrong_file"))
+        if not ctx.message.attachments[0].filename.endswith("json"):
+            return await ctx.send(self.text.get("import", "wrong_json"))
 
-        now = datetime.now()
-        filename = f"import_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{ctx.author.id}.csv"
+        # Download
+        data_file = tempfile.TemporaryFile()
+        await ctx.message.attachments[0].save(data_file)
+        data_file.seek(0)
+        try:
+            data = json.load(data_file)
+        except json.decoder.JSONDecodeError as exc:
+            await ctx.send(self.text.get("import", "wrong_json") + f"\n> `{str(exc)}`")
 
-        m = await ctx.send(self.text.get("import", "saving"))
-        await ctx.message.attachments[0].save(filename)
-        await m.edit(content=self.text.get("import", "importing"))
+        new, edited, rejected = await self._import_json(ctx, data)
+        await ctx.send(self.text.get("import", "imported", new=len(new), edited=len(edited)))
 
-        await self.import_csv(ctx, filename)
+        result = ""
+        for (command, reason) in rejected:
+            result += "\n> " + self.text.get("import", "rejected", command=command, reason=reason)
+            if len(result) > 1900:
+                await ctx.send(result)
+                result = ""
+        if len(result):
+            await ctx.send(result)
 
-        delta = int((datetime.now() - now).total_seconds())
-        await m.edit(content=self.text.get("import", "imported", delta=delta))
-        await self.event.sudo(ctx, "ACL rules imported.")
+        data_file.close()
+        await self.event.sudo(ctx, f"Added {len(new)} and edited {len(edited)} ACL rules.")
+
+    @commands.guild_only()
+    @commands.check(acl.check)
+    @acl_rule.command(name="export")
+    async def acl_rule_export(self, ctx):
+        """Export command rules"""
+        filename = f"acl_{ctx.guild.id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+        rules = repo_a.get_rules(ctx.guild.id)
+        export = dict()
+
+        for rule in rules:
+            export[rule.command] = {
+                "default": rule.default,
+                "group allow": [g.group.name for g in rule.groups if g.allow],
+                "group deny": [g.group.name for g in rule.groups if not g.allow],
+                "user allow": [u.user_id for u in rule.users if u.allow],
+                "user deny": [u.user_id for u in rule.users if not u.allow],
+            }
+
+        file = tempfile.TemporaryFile(mode="w+")
+        json.dump(export, file, indent="\t")
+        file.seek(0)
+
+        await ctx.send(file=discord.File(fp=file, filename=filename))
+        file.close()
+        await self.event.sudo(ctx, "ACL rules exported.")
 
     @commands.check(acl.check)
-    @acl_.command(name="export")
-    async def acl_export(self, ctx):
-        """Export settings to attachment"""
-        now = datetime.now()
-        filename = f"export_{ctx.guild.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-
-        m = await ctx.send(self.text.get("export", "exporting", filename=filename))
-        rules = sorted(repo_a.get_rules(), key=lambda rule: rule.command)
-
-        with ctx.typing():
-            with open("data/acl/" + filename, "w", newline="") as handle:
-                writer = csv.DictWriter(handle, fieldnames=["command", "default", "allow", "deny"])
-                writer.writeheader()
-                for rule in rules:
-                    writer.writerow(
-                        {
-                            "command": rule.command,
-                            "default": "1" if rule.default else "0",
-                            "allow": " ".join(g.group.name for g in rule.groups if g.allow),
-                            "deny": " ".join(g.group.name for g in rule.groups if not g.allow),
-                        }
-                    )
-
-        delta = int((datetime.now() - now).total_seconds())
-        await m.edit(content=self.text.get("export", "exported", delta=delta))
-        await ctx.send(file=discord.File(fp="data/acl/" + filename))
-        os.remove("data/acl/" + filename)
-        await ctx.send(ctx, "ACL rules exported.")
+    @acl_rule.command(name="flush", ignore_extra=False)
+    async def acl_rule_flush(self, ctx):
+        """Flush all the command rules."""
+        count = repo_a.delete_rules(ctx.guild.id)
+        await ctx.send(self.text.get("rule_flush", count=count))
+        await self.event.sudo(ctx, "ACL rules flushed.")
 
     ##
     ## Logic
     ##
 
-    def get_command_names(self) -> Optional[List[str]]:
-        """Return list of registered commands"""
-        result = []
-        for command in self.bot.walk_commands():
-            result.append(command.qualified_name)
-        return result
-
-    def get_free_commands(
-        self, guild_id: int, *, commands: List[str] = None, rules: List[ACL_rule] = None
-    ) -> Optional[List[str]]:
-        """Return list of commands not in database"""
-        if commands is None:
-            commands = self.get_command_names()
-        if rules is None:
-            rules = repo_a.get_rules(guild_id)
-
-        for rule in rules:
-            if rule.command in commands:
-                commands.remove(rule.command)
-        return commands
-
-    def get_group_representation(self, guild: discord.Guild, group: ACL_group) -> str:
-        """Convert ACL_group object to human-friendly string"""
-        group_role = getattr(guild.get_role(group.role_id), "name", "")
-
-        message = [self.text.get("group_repr", "name", name=group.name)]
-        if len(group_role):
-            message.append(
-                self.text.get(
-                    "group_repr", "map", dname=self.sanitise(group_role), did=group.role_id
-                )
+    def get_rule_embed(self, ctx, rule: ACL_rule) -> discord.Embed:
+        embed = discord.Embed(
+            ctx=ctx,
+            title=self.text.get("rule_get", "title", command=rule.command),
+        )
+        embed.add_field(
+            name=self.text.get("rule_get", "default"),
+            value=str(rule.default),
+            inline=False,
+        )
+        if len([g for g in rule.groups if g.allow is True]):
+            embed.add_field(
+                name=self.text.get("rule_get", "group_allow"),
+                value=", ".join([g.group.name for g in rule.groups if g.allow is True]),
             )
-        if group.parent is not None:
-            message.append(self.text.get("group_repr", "parent", parent=group.parent))
-
-        return " ".join(message) + "."
-
-    def get_group_mirror_representation(self, guild: discord.Guild, mirror: dict) -> str:
-        """Convert dictionary to human-friendly string"""
-        group_role = getattr(guild.get_role(mirror.get("role_id")), "name", "")
-
-        message = [self.text.get("group_repr", "name", name=mirror.get("name"))]
-        if len(group_role):
-            message.append(
-                self.text.get(
-                    "group_repr", "map", dname=self.sanitise(group_role), did=mirror.get("role_id")
-                )
+        if len([g for g in rule.groups if g.allow is False]):
+            embed.add_field(
+                name=self.text.get("rule_get", "group_deny"),
+                value=", ".join([g.group.name for g in rule.groups if g.allow is False]),
             )
-        if mirror.get("parent") is not None:
-            message.append(self.text.get("group_repr", "parent", parent=mirror.get("parent")))
-
-        return " ".join(message) + "."
-
-    def get_rule_representation(self, rule: ACL_rule) -> str:
-        """Convert ACL_rule object to human-friendly string"""
-        template = "{}#{}"
-
-        def get_user(user_id: int) -> str:
-            return getattr(self.bot.get_user(user_id), "display_name", str(user_id))
-
-        result = [
-            "{default} {command}".format(
-                command=rule.command,
-                default="+" if rule.default else "-",
+        if len([u for u in rule.users if u.allow is True]):
+            embed.add_field(
+                name=self.text.get("rule_get", "user_allow"),
+                value=", ".join(
+                    [
+                        (self.bot.get_user(u.user_id) or str(u.user_id))
+                        for u in rule.users
+                        if u.allow is True
+                    ],
+                ),
             )
-        ]
-
-        gallow = " ".join(
-            template.format(group.group.name, group.id) for group in rule.groups if group.allow
-        )
-        gdeny = " ".join(
-            template.format(group.group.name, group.id) for group in rule.groups if not group.allow
-        )
-        uallow = " ".join(
-            template.format(get_user(user.user_id), user.id) for user in rule.users if user.allow
-        )
-        udeny = " ".join(
-            template.format(get_user(user.user_id), user.id)
-            for user in rule.users
-            if not user.allow
-        )
-
-        if len(gallow) or len(uallow):
-            result.append(f"  + {' '.join((gallow, uallow))}")
-        if len(gdeny) or len(udeny):
-            result.append(f"  - {' '.join((gdeny, udeny))}")
-
-        return "\n".join(result)
-
-    def get_rule_mirror_representation(self, mirror: dict) -> str:
-        """Convert dictionary to human-friendly string"""
-        template = "{}#{}"
-
-        def get_user(user_id: int) -> str:
-            return getattr(self.bot.get_user(user_id), "display_name", str(user_id))
-
-        result = [
-            "{default} {command}".format(
-                command=mirror.get("command"),
-                default="+" if mirror.get("default") else "-",
+        if len([u for u in rule.users if u.allow is False]):
+            embed.add_field(
+                name=self.text.get("rule_get", "user_deny"),
+                value=", ".join(
+                    [
+                        (self.bot.get_user(u.user_id) or str(u.user_id))
+                        for u in rule.users
+                        if u.allow is False
+                    ]
+                ),
             )
-        ]
 
-        gallow = " ".join(
-            template.format(group.get("name"), group.get("id"))
-            for group in mirror.get("groups")
-            if group.get("allow")
+        return embed
+
+    def get_group_embed(
+        self, ctx: commands.Context, group: Tuple[ACL_group, dict]
+    ) -> discord.Embed:
+        if type(group) == ACL_group:
+            group = group.mirror()
+
+        role = ctx.guild.get_role(group["role_id"])
+
+        embed = discord.Embed(
+            ctx=ctx,
+            title=self.text.get("group_get", "title", name=group["name"]),
         )
-        gdeny = " ".join(
-            template.format(group.get("name"), group.get("id"))
-            for group in mirror.get("groups")
-            if not group.get("allow")
-        )
-        uallow = " ".join(
-            template.format(get_user(user.get("user_id")), user.get("id"))
-            for user in mirror.get("users")
-            if user.get("allow")
-        )
-        udeny = " ".join(
-            template.format(get_user(user.get("user_id")), user.get("id"))
-            for user in mirror.get("users")
-            if not user.get("allow")
-        )
+        if role is not None:
+            embed.add_field(
+                name=self.text.get("group_get", "discord"),
+                value=f"{role.name} ({role.id})",
+                inline=False,
+            )
+        if group["parent"] is not None:
+            embed.add_field(
+                name=self.text.get("group_get", "parent"),
+                value=group["parent"],
+                inline=False,
+            )
 
-        if len(gallow) or len(uallow):
-            result.append(f"  + {' '.join((gallow, uallow))}")
-        if len(gdeny) or len(udeny):
-            result.append(f"  - {' '.join((gdeny, udeny))}")
+        return embed
 
-        return "\n".join(result)
+    async def _import_json(
+        self, ctx: commands.Context, data: dict
+    ) -> Tuple[List[str], List[str], List[Tuple[str, str]]]:
+        """Import JSON rules
 
-    async def import_csv(self, ctx: commands.Context, path: str) -> bool:
-        """Import rule csv"""
-        all_commands = self.get_command_names()
-        acl_groups = [g.name for g in repo_a.get_groups(ctx.guild.id)]
+        Returns
+        -------
+        list: New commands
+        list: Altered commands
+        list: Rejected commands as (command, reason) tuple
+        """
+        result_new = list()
+        result_alt = list()
+        result_rej = list()
 
-        skipped = []
-        errors = {}
-        done = []
+        # check data
+        for command, attributes in data.items():
+            # CHECK
+            bad: bool = False
 
-        with open(path, newline="") as csvfile:
-            reader = csv.DictReader(csvfile)
-
-            for i, rule in enumerate(reader, 1):
-                # skip comments
-                if rule["command"].startswith("#"):
-                    continue
-                # detect misconfigured rows
-                if len(rule) != 4:
-                    skipped.append(f"{i:>3} | wrong line    | {rule['command']}")
-                    continue
-                # detect misconfigured commands
-                if rule["command"] not in all_commands:
-                    skipped.append(f"{i:>3} | no command    | {rule['command']}")
-                    continue
-                # detect misconfigured defaults
-                if rule["default"] not in ("0", "1"):
-                    skipped.append(f"{i:>3} | wrong default | {rule['command']}: {rule['default']}")
-                    continue
-                # detect misconfigured groups
-                groups_allowed = [g for g in rule["allow"].split(" ") if len(g)]
-                groups_denied = [g for g in rule["deny"].split(" ") if len(g)]
-                skip = False
-                for group in groups_allowed + groups_denied:
-                    if group not in acl_groups:
-                        skipped.append(f"{i:>3} | wrong group   | {rule['command']}: {group}")
-                        skip = True
-                        break
-                if skip:
-                    continue
-
-                try:
-                    repo_a.add_rule(ctx.guild.id, rule["command"], (rule["default"] == 1))
-                    for group in groups_allowed:
-                        repo_a.add_group_constraint(
-                            guild_id=ctx.guild.id,
-                            name=group,
-                            command=rule["command"],
-                            allow=True,
+            # bool
+            if "default" in attributes:
+                if attributes["default"] not in (True, False):
+                    result_rej.append(
+                        (
+                            command,
+                            self.text.get("import", "bad_bool", key="default"),
                         )
-                    for group in groups_denied:
-                        repo_a.add_group_constraint(
-                            guild_id=ctx.guild.id,
-                            name=group,
-                            command=rule["command"],
-                            allow=False,
-                        )
-                    done.append(rule["command"])
-                except acl_repo.Duplicate:
-                    skipped.append(f"{i:>3} | already set   | {rule['command']}")
-                except acl_repo.ACLException as e:
-                    errors[rule["command"]] = str(e)
+                    )
+                    bad = True
+            else:
+                attributes["default"] = False
 
-        if len(done):
-            await ctx.send(self.text.get("csv_output", "new"))
-            await ctx.send("```" + ", ".join(done) + "```")
-        if len(skipped):
-            await ctx.send(self.text.get("csv_output", "skipped"))
-            for page in utils.paginate(skipped):
-                await ctx.send("```" + page + "```")
-        if len(errors):
-            await ctx.send(self.text.get("csv_output", "errors"))
-            output = []
-            for command, error in errors.items():
-                output.append(f"{command}: {error}")
-            for page in utils.paginate(output):
-                await ctx.send("```" + page + "```")
+            if "direct" in attributes:
+                if attributes["direct"] not in (True, False):
+                    result_rej.append(
+                        (
+                            command,
+                            self.text.get("import", "bad_bool", key="direct"),
+                        )
+                    )
+                    bad = True
+            else:
+                attributes["direct"] = False
+
+            # lists
+            for keyword in ("group allow", "group deny", "user allow", "user deny"):
+                if keyword in attributes:
+                    print(type(attributes[keyword]))
+                    if type(attributes[keyword]) != list:
+                        result_rej.append(
+                            (
+                                command,
+                                self.text.get("import", "bad_list", key=keyword),
+                            )
+                        )
+                        bad = True
+                else:
+                    print("Setting " + keyword + "to empty list")
+                    attributes[keyword] = list()
+
+            # groups
+            for keyword in ("group allow", "group deny"):
+                for group in attributes[keyword]:
+                    if type(group) != str:
+                        result_rej.append(
+                            (
+                                command,
+                                self.text.get("import", "bad_text", key=group),
+                            )
+                        )
+                        bad = True
+
+            # users
+            for keyword in ("user allow", "user deny"):
+                for user in attributes[keyword]:
+                    if type(user) != int:
+                        result_rej.append(
+                            (
+                                command,
+                                self.text.get("import", "bad_int", key=user),
+                            )
+                        )
+                        bad = True
+
+            if bad:
+                # do not proceed to adding
+                continue
+
+            # ADD
+            try:
+                repo_a.add_rule(ctx.guild.id, command, attributes["default"])
+                result_new.append(command)
+            except acl_repo.Duplicate:
+                repo_a.delete_rule(ctx.guild.id, command)
+                repo_a.add_rule(ctx.guild.id, command, attributes["default"])
+                result_alt.append(command)
+
+            for group in attributes["group allow"]:
+                repo_a.add_group_constraint(ctx.guild.id, command, group, allow=True)
+            for group in attributes["group deny"]:
+                repo_a.add_group_constraint(ctx.guild.id, command, group, allow=False)
+            for user in attributes["user allow"]:
+                repo_a.add_user_constraint(ctx.guild.id, command, user, allow=True)
+            for user in attributes["user deny"]:
+                repo_a.add_user_constraint(ctx.guild.id, command, user, allow=False)
+
+        return result_new, result_alt, result_rej

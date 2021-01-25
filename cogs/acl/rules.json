@@ -1,0 +1,72 @@
+{
+    "verify": {
+        "default": true,
+        "group allow": [],
+        "group deny": ["VERIFY"],
+        "user allow": [],
+        "user deny": []
+    },
+    "submit": {
+        "default": true,
+        "group allow": [],
+        "group deny": ["VERIFY"],
+        "user allow": [],
+        "user deny": []
+    },
+    "subject": {
+        "default": false,
+        "group allow": ["FEKT"],
+        "group deny": [],
+        "user allow": [],
+        "user deny": []
+    },
+    "subject add": {
+        "default": false,
+        "group allow": ["MD"],
+        "group deny": [4],
+        "user allow": [],
+        "user deny": []
+    },
+    "subject info": {
+        "default": false,
+        "group allow": ["FEKT"],
+        "group deny": [],
+        "user allow": [],
+        "user deny": []
+    },
+    "subject remove": {
+        "default": false,
+        "group allow": ["MOD"],
+        "group deny": [],
+        "user allow": [],
+        "user deny": []
+    },
+    "subject update": {
+        "default": false,
+        "group allow": ["MOD"],
+        "group deny": [],
+        "user allow": [],
+        "user deny": []
+    },
+    "whois": {
+        "default": false,
+        "group allow": ["MOD", "SUBMOD"],
+        "group deny": [],
+        "user allow": [],
+        "user deny": []
+    },
+    "whois member": {
+        "default": false,
+        "group allow": ["MOD", "SUBMOD"],
+        "group deny": [],
+        "user allow": [],
+        "user deny": []
+    },
+    "whois login": {
+        "default": false,
+        "group allow": ["MOD", "SUBMOD"],
+        "group deny": [],
+        "user allow": [],
+        "user deny": []
+    }
+}
