@@ -106,10 +106,7 @@ class Output:
 
             result += template_cont.format(error=error, traceback=tr)
 
-        if level in ("debug", "info", "warning"):
-            await source.send(result, delete_after=config.get("delay", "bot error"))
-        else:
-            await source.send(result)
+        await source.send(result)
 
 
 class Console:

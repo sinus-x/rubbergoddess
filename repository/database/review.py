@@ -49,7 +49,7 @@ class Subject(database.base):
     # fmt: on
 
     def __repr__(self):
-        return f"{self.shortcut}: {self.name} ({self.category})"
+        return f"<Subject shortcut={self.shortcut} name={self.name} category={self.category}>"
 
     def __str__(self):
-        return self.__repr__()
+        return f"{self.shortcut}: {self.name} ({self.category})"

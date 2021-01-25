@@ -356,7 +356,7 @@ class Actress(rubbercog.Rubbercog):
                     # last usage, disable
                     del self.reactions[name]["counter"]
                     self.reactions[name]["enabled"] = False
-                    await self.event.user(message, "Reaction disabled: **{name}**.")
+                    await self.event.user(message, f"Reaction disabled: **{name}**.")
                 self._save_reactions()
 
             break

@@ -1,5 +1,6 @@
 import datetime
 from sqlalchemy import func, desc
+from typing import List
 
 from repository.base_repository import BaseRepository
 from repository.database import session
@@ -13,7 +14,7 @@ class ReviewRepository(BaseRepository):
     def get(self, id: int) -> Review:
         return session.query(Review).filter(Review.id == id).one_or_none()
 
-    def get_subject_reviews(self, subject):
+    def get_subject_reviews(self, subject) -> List[Review]:
         return (
             session.query(
                 Review, func.count(Review.relevance).filter(ReviewRelevance.vote).label("total")
@@ -24,8 +25,8 @@ class ReviewRepository(BaseRepository):
             .order_by(desc("total"))
         )
 
-    def get_all_reviews(self):
-        return session.query(Review)
+    def get_all_reviews(self) -> List[Review]:
+        return session.query(Review).all()
 
     def get_review_by_author_subject(self, author_id, subject) -> Review:
         return (

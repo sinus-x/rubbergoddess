@@ -6,4 +6,5 @@
     attachments: Zpráva obsahuje přílohy: **((count))**
 
     "pin error": Zprávu se mi nepovedlo připnout ((emoji.sad))
+    "bad pin":   Pro připnutí zprávy používej 📌. Emoji 📍 přidávám při připnutí já.
 }

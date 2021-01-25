@@ -1,7 +1,9 @@
 {
 	nameday: {
-		cs: Dnes má svátek ((name)) ((emoji.happy))
-		sk: Dnes má meniny ((name)) ((emoji.happy))
+		cs:  Dnes má svátek ((name)) ((emoji.happy))
+		cs0: Dnes nikdo svátek nemá ((emoji.sad))
+		sk:  Dnes má meniny ((name)) ((emoji.happy))
+		sk0: Dnes nikdo meniny nemá ((emoji.sad))
 	}
 
 	week: {

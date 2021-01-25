@@ -26,7 +26,10 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(self.text.get("nameday", "cs", name=", ".join(names)))
+        if len(names):
+            await ctx.send(self.text.get("nameday", "cs", name=", ".join(names)))
+        else:
+            await ctx.send(self.text.get("nameday", "cs0"))
 
     @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
@@ -35,7 +38,10 @@ class Librarian(rubbercog.Rubbercog):
         names = []
         for i in res:
             names.append(i["name"])
-        await ctx.send(self.text.get("nameday", "sk", name=", ".join(names)))
+        if len(names):
+            await ctx.send(self.text.get("nameday", "sk", name=", ".join(names)))
+        else:
+            await ctx.send(self.text.get("nameday", "sk0"))
 
     @commands.command(aliases=["tyden", "týden", "tyzden", "týždeň"])
     async def week(self, ctx: commands.Context):

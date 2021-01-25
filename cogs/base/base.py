@@ -54,10 +54,21 @@ class Base(rubbercog.Rubbercog):
             message = await channel.fetch_message(payload.message_id)
         except discord.NotFound:
             return
-        if payload.emoji.is_custom_emoji() or payload.emoji.name != "📌":
+        if payload.emoji.is_custom_emoji():
+            return
+        reaction_author: discord.User = self.bot.get_user(payload.user_id)
+
+        if payload.emoji.name == "📍" and not reaction_author.bot:
+            await reaction_author.send(self.text.get("bad pin"))
+            return await message.remove_reaction(payload.emoji, reaction_author)
+
+        if payload.emoji.name != "📌":
             return
 
         for reaction in message.reactions:
+            if reaction.emoji == "📍" and self.bot.user in await reaction.users().flatten():
+                return await message.remove_reaction(payload.emoji, reaction_author)
+
             if reaction.emoji != "📌":
                 continue
 
