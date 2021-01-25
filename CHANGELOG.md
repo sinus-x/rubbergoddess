@@ -4,6 +4,10 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Updated
+
+- ACL has cleaner command interface and uses JSON files
+
 ## [1.2.0]
 
 First release of 2021 bumps the minor version, which sould have been done much earlier, probably.

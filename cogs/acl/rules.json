@@ -1,72 +1,705 @@
 {
-    "verify": {
-        "default": true,
-        "group allow": [],
-        "group deny": ["VERIFY"],
-        "user allow": [],
-        "user deny": []
-    },
-    "submit": {
-        "default": true,
-        "group allow": [],
-        "group deny": ["VERIFY"],
-        "user allow": [],
-        "user deny": []
-    },
-    "subject": {
-        "default": false,
-        "group allow": ["FEKT"],
-        "group deny": [],
-        "user allow": [],
-        "user deny": []
-    },
-    "subject add": {
-        "default": false,
-        "group allow": ["MD"],
-        "group deny": [4],
-        "user allow": [],
-        "user deny": []
-    },
-    "subject info": {
-        "default": false,
-        "group allow": ["FEKT"],
-        "group deny": [],
-        "user allow": [],
-        "user deny": []
-    },
-    "subject remove": {
-        "default": false,
-        "group allow": ["MOD"],
-        "group deny": [],
-        "user allow": [],
-        "user deny": []
-    },
-    "subject update": {
-        "default": false,
-        "group allow": ["MOD"],
-        "group deny": [],
-        "user allow": [],
-        "user deny": []
-    },
-    "whois": {
-        "default": false,
-        "group allow": ["MOD", "SUBMOD"],
-        "group deny": [],
-        "user allow": [],
-        "user deny": []
-    },
-    "whois member": {
-        "default": false,
-        "group allow": ["MOD", "SUBMOD"],
-        "group deny": [],
-        "user allow": [],
-        "user deny": []
-    },
-    "whois login": {
-        "default": false,
-        "group allow": ["MOD", "SUBMOD"],
-        "group deny": [],
-        "user allow": [],
-        "user deny": []
-    }
+	"acl": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl group": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl group add": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl group edit": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl group get": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl group list": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl group remove": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl rule": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl rule flush": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"acl rule get": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"animal": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"channelinfo": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD",
+			"HELPER"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"commands": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"config": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"database": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"database add": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"database remove": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"database show": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"database update": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"guild": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"hoarders": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"image": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"image download": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"image list": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"image remove": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"image show": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"journalctl": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"karma give": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"karma message": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"karma set": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"karma vote": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"nickname": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"nickname set": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"nickname unset": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"purge": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"react": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"react add": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"react edit": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"react list": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"react overview": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"react remove": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"react usage": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"review": {
+		"default": false,
+		"group allow": [
+			"FEKT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"review add": {
+		"default": false,
+		"group allow": [
+			"FEKT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"review add-anonymous": {
+		"default": false,
+		"group allow": [
+			"FEKT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"review list": {
+		"default": false,
+		"group allow": [
+			"FEKT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"review remove": {
+		"default": false,
+		"group allow": [
+			"FEKT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"review subject": {
+		"default": false,
+		"group allow": [
+			"FEKT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"roleinfo": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD",
+			"HELPER"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"scan": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"scan compare": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"scan history": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"scan message": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"seeking": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"seeking add": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"seeking remove": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"send": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"send dm": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"send image": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"send text": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"set": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"set avatar": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"set name": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"status": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"subject": {
+		"default": false,
+		"group allow": [
+			"VUT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"subject add": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"subject info": {
+		"default": false,
+		"group allow": [
+			"VUT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"subject remove": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"subject update": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"submit": {
+		"default": true,
+		"group allow": [],
+		"group deny": [
+			"VERIFY"
+		],
+		"user allow": [],
+		"user deny": []
+	},
+	"sudo_review": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"sudo_review remove": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"system": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"system off": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"system on": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"system shutdown": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"teacher_channel": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"unload": {
+		"default": false,
+		"group allow": [],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"verify": {
+		"default": true,
+		"group allow": [],
+		"group deny": [
+			"VERIFY"
+		],
+		"user allow": [],
+		"user deny": []
+	},
+	"whois": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"whois email": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"whois logins": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"whois member": {
+		"default": false,
+		"group allow": [
+			"MOD",
+			"SUBMOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	}
 }

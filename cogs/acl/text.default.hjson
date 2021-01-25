@@ -34,14 +34,18 @@
 	import: {
 		wrong_file: Musíš nahrát JSON soubor.
 		wrong_json: Nahraný soubor není validní JSON.
+		wrong_mode: Mód importu musí být `append` nebo `replace`.
 
 		imported:  Importovala jsem ((new)) nových pravidel, ((edited)) bylo změněno.
-		rejected:  Přeskakuji **((command))**: ((reason))
+		skip:      Přeskakuji **((command))**: ((reason))
+		warn:      Problém v **((command))**: ((reason))
 
 		bad_bool:  Hodnota `((key))` není binární.
 		bad_list:  Hodnota `((key))` není seznam.
 		bad_int:   Hodnota `((key))` není číslo.
 		bad_text:  Hodnota `((key))` není text.
+		duplicate: Pravidlo již existuje.
+		no_group:  Skupina `((name))` neexistuje.
 	}
 
 }

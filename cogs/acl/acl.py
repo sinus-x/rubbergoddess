@@ -187,12 +187,18 @@ class ACL(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.check(acl.check)
     @acl_rule.command(name="import")
-    async def acl_rule_import(self, ctx):
-        """Import command rules"""
+    async def acl_rule_import(self, ctx, mode: str):
+        """Import command rules
+
+        mode: `append` or `replace`
+        """
         if len(ctx.message.attachments) != 1:
             return await ctx.send(self.text.get("import", "wrong_file"))
         if not ctx.message.attachments[0].filename.endswith("json"):
             return await ctx.send(self.text.get("import", "wrong_json"))
+
+        if mode not in ("append", "replace"):
+            return await ctx.send(self.text.get("import", "wrong_mode"))
 
         # Download
         data_file = tempfile.TemporaryFile()
@@ -203,12 +209,12 @@ class ACL(rubbercog.Rubbercog):
         except json.decoder.JSONDecodeError as exc:
             await ctx.send(self.text.get("import", "wrong_json") + f"\n> `{str(exc)}`")
 
-        new, edited, rejected = await self._import_json(ctx, data)
+        new, edited, rejected = await self._import_json(ctx, data, mode=mode)
         await ctx.send(self.text.get("import", "imported", new=len(new), edited=len(edited)))
 
         result = ""
-        for (command, reason) in rejected:
-            result += "\n> " + self.text.get("import", "rejected", command=command, reason=reason)
+        for (msg, command, reason) in rejected:
+            result += "\n> " + self.text.get("import", msg, command=command, reason=reason)
             if len(result) > 1900:
                 await ctx.send(result)
                 result = ""
@@ -238,7 +244,7 @@ class ACL(rubbercog.Rubbercog):
             }
 
         file = tempfile.TemporaryFile(mode="w+")
-        json.dump(export, file, indent="\t")
+        json.dump(export, file, indent="\t", sort_keys=True)
         file.seek(0)
 
         await ctx.send(file=discord.File(fp=file, filename=filename))
@@ -330,7 +336,7 @@ class ACL(rubbercog.Rubbercog):
         return embed
 
     async def _import_json(
-        self, ctx: commands.Context, data: dict
+        self, ctx: commands.Context, data: dict, mode: str
     ) -> Tuple[List[str], List[str], List[Tuple[str, str]]]:
         """Import JSON rules
 
@@ -338,7 +344,7 @@ class ACL(rubbercog.Rubbercog):
         -------
         list: New commands
         list: Altered commands
-        list: Rejected commands as (command, reason) tuple
+        list: Rejected commands as (skip/warn, command, reason) tuple
         """
         result_new = list()
         result_alt = list()
@@ -354,6 +360,7 @@ class ACL(rubbercog.Rubbercog):
                 if attributes["default"] not in (True, False):
                     result_rej.append(
                         (
+                            "skip",
                             command,
                             self.text.get("import", "bad_bool", key="default"),
                         )
@@ -366,6 +373,7 @@ class ACL(rubbercog.Rubbercog):
                 if attributes["direct"] not in (True, False):
                     result_rej.append(
                         (
+                            "skip",
                             command,
                             self.text.get("import", "bad_bool", key="direct"),
                         )
@@ -377,17 +385,16 @@ class ACL(rubbercog.Rubbercog):
             # lists
             for keyword in ("group allow", "group deny", "user allow", "user deny"):
                 if keyword in attributes:
-                    print(type(attributes[keyword]))
                     if type(attributes[keyword]) != list:
                         result_rej.append(
                             (
+                                "skip",
                                 command,
                                 self.text.get("import", "bad_list", key=keyword),
                             )
                         )
                         bad = True
                 else:
-                    print("Setting " + keyword + "to empty list")
                     attributes[keyword] = list()
 
             # groups
@@ -396,6 +403,7 @@ class ACL(rubbercog.Rubbercog):
                     if type(group) != str:
                         result_rej.append(
                             (
+                                "skip",
                                 command,
                                 self.text.get("import", "bad_text", key=group),
                             )
@@ -408,6 +416,7 @@ class ACL(rubbercog.Rubbercog):
                     if type(user) != int:
                         result_rej.append(
                             (
+                                "skip",
                                 command,
                                 self.text.get("import", "bad_int", key=user),
                             )
@@ -423,14 +432,44 @@ class ACL(rubbercog.Rubbercog):
                 repo_a.add_rule(ctx.guild.id, command, attributes["default"])
                 result_new.append(command)
             except acl_repo.Duplicate:
-                repo_a.delete_rule(ctx.guild.id, command)
-                repo_a.add_rule(ctx.guild.id, command, attributes["default"])
-                result_alt.append(command)
+                if mode == "replace":
+                    repo_a.delete_rule(ctx.guild.id, command)
+                    repo_a.add_rule(ctx.guild.id, command, attributes["default"])
+                    result_alt.append(command)
+                else:
+                    result_rej.append((command, self.text.get("import", "duplicate")))
+                    continue
 
             for group in attributes["group allow"]:
-                repo_a.add_group_constraint(ctx.guild.id, command, group, allow=True)
+                try:
+                    repo_a.add_group_constraint(ctx.guild.id, command, group, allow=True)
+                except acl_repo.NotFound:
+                    result_rej.append(
+                        (
+                            "warn",
+                            command,
+                            self.text.get(
+                                "import",
+                                "no_group",
+                                name=group,
+                            ),
+                        )
+                    )
             for group in attributes["group deny"]:
-                repo_a.add_group_constraint(ctx.guild.id, command, group, allow=False)
+                try:
+                    repo_a.add_group_constraint(ctx.guild.id, command, group, allow=False)
+                except acl_repo.NotFound:
+                    result_rej.append(
+                        (
+                            "warn",
+                            command,
+                            self.text.get(
+                                "import",
+                                "no_group",
+                                name=group,
+                            ),
+                        )
+                    )
             for user in attributes["user allow"]:
                 repo_a.add_user_constraint(ctx.guild.id, command, user, allow=True)
             for user in attributes["user deny"]:
