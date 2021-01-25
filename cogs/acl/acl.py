@@ -1,9 +1,8 @@
 import json
-import os
 import re
 import tempfile
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import discord
 from discord.ext import commands
@@ -437,7 +436,7 @@ class ACL(rubbercog.Rubbercog):
                     repo_a.add_rule(ctx.guild.id, command, attributes["default"])
                     result_alt.append(command)
                 else:
-                    result_rej.append((command, self.text.get("import", "duplicate")))
+                    result_rej.append(("skip", command, self.text.get("import", "duplicate")))
                     continue
 
             for group in attributes["group allow"]:

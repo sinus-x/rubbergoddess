@@ -72,7 +72,7 @@ class Review(rubbercog.Rubbercog):
             subjects.add(r.subject)
 
         if not len(subjects):
-            return await ctx.send(self.text.get("empty"))
+            return await ctx.send(self.text.get("empty"), mention=ctx.author.mention)
 
         await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
 
@@ -86,7 +86,7 @@ class Review(rubbercog.Rubbercog):
                 subjects.add(r.subject)
 
         if not len(subjects):
-            return await ctx.send(self.text.get("empty"))
+            return await ctx.send(self.text.get("empty"), mention=ctx.author.mention)
 
         await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
 
