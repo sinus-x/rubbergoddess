@@ -7,6 +7,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 ### Updated
 
 - ACL has cleaner command interface and uses JSON files
+- `review my-list` subcommand
 
 ## [1.2.0]
 

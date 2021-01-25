@@ -59,68 +59,19 @@ Remove ACL group.
 
 Display settings for given command.
 
-### acl rule add (command) (allow)
+### acl rule import (mode)
 
-Add command to database.
+Import commands from JSON. Sample file is at `cogs/acl/rules.json`.
 
-**allow** parameter is boolean describing the default allow/deny response.
+**mode** is `append` or `replace`.
 
-### acl rule remove (command)
+### acl rule export
 
-Remove command from database.
-
-### acl rule default (command) (allow)
-
-Set the default outcome for DM or when no group defines it.
+Export all commands as JSON.
 
 ### acl rule flush
 
 Remove all commands. Useful if you plan to re-import the rules.
-
-### acl user_constraint add (command) (user_id) (allow)
-
-Add command constraint. **user_id** is user's Discord ID, **allow** is boolean.
-
-### acl user_constraint remove (constraint_id)
-
-Remove command constraint.
-
-### acl group_constraint add (command) (group) (allow)
-
-Add command constraint. **group** is group ID or name, **allow** is boolean.
-
-### acl group_constraint remove (constraint_id)
-
-Remove command constraint.
-
-### acl audit
-
-Print commands along with their default settings. Notifies if unsaved commands are found.
-
-Note that currently all commands are tested, not just those controlled by ACL.
-
-### acl check
-
-Check if all commands have been saved to the database.
-
-Note that currently all commands are tested, not just those controlled by ACL.
-
-### acl init
-
-Load recommended settings from file, located at `data/acl/rules.csv`.
-
-### acl import
-
-Import your CSV file as an attachment. The file has to be called **rules.csv**.
-
-The file may look like this:
-```csv
-command,default,allow,deny
-verify,1,,VERIFY
-hug,0,VERIFY,
-load,0,,
-acl rule get,0,MOD SUBMOD,
-```
 
 You can get much cleaner view if you open the file in LibreOffice Calc or Microsoft Excel:
 

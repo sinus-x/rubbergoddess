@@ -77,6 +77,20 @@ class Review(rubbercog.Rubbercog):
         await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
 
     @commands.check(acl.check)
+    @review.command(name="my-list")
+    async def review_mylist(self, ctx):
+        """Get list of your reviewed subjects"""
+        subjects = set()
+        for r in repo_r.get_all_reviews():
+            if r.discord_id == ctx.author.id:
+                subjects.add(r.subject)
+
+        if not len(subjects):
+            return await ctx.send(self.text.get("empty"))
+
+        await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
+
+    @commands.check(acl.check)
     @review.command(name="add", aliases=["update"])
     async def review_add(self, ctx, subject: str, mark: int, *, text: str):
         """Add a review

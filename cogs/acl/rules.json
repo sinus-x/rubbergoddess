@@ -389,6 +389,15 @@
 		"user allow": [],
 		"user deny": []
 	},
+	"review my-list": {
+		"default": false,
+		"group allow": [
+			"FEKT"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
 	"review remove": {
 		"default": false,
 		"group allow": [
