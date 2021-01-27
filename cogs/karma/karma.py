@@ -194,7 +194,7 @@ class Karma(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @karma.command(name="set")
-    async def karma_set(self, ctx, emoji, value: int):
+    async def karma_set(self, ctx, emoji: str, value: int):
         """Set karma value without public vote"""
         repo_k.set_emoji_value(str(self._get_emoji_id(emoji)), value)
         await ctx.send(self.text.get("emoji", emoji=emoji, value=value))
@@ -353,22 +353,28 @@ class Karma(rubbercog.Rubbercog):
             return False
         return demojized != text
 
-    def _get_emoji_list(self, guild_emotes: list, value: int) -> list:
-        db_emotes = repo_k.getEmotesByValue(value)
+    def _get_emoji_list(self, guild_emojis: list, value: int) -> list:
+        db_emojis = repo_k.getEmotesByValue(value)
 
         result = []
-        for guild_emote in guild_emotes:
-            if str(guild_emote.id) in db_emotes:
-                result.append(guild_emote)
+        # Include guild emojis
+        for emoji in guild_emojis:
+            if str(emoji.id) in db_emojis:
+                result.append(emoji)
+        # Include unicode emojis
+        for emoji in db_emojis:
+            if self._is_unicode_emoji(emoji):
+                result.append(emoji)
+
         return result
 
-    def get_nonvoted_emojis(self, guild_emotes: list) -> list:
-        db_emotes = [x.emoji_ID for x in repo_k.get_all_emojis()]
+    def get_nonvoted_emojis(self, guild_emojis: list) -> list:
+        db_emojis = [x.emoji_ID for x in repo_k.get_all_emojis()]
 
         result = []
-        for guild_emote in guild_emotes:
-            if str(guild_emote.id) not in db_emotes:
-                result.append(guild_emote)
+        for emoji in guild_emojis:
+            if str(emoji.id) not in db_emojis:
+                result.append(emoji)
         return result
 
     def _emojis_to_message(self, emotes: list) -> List[str]:
