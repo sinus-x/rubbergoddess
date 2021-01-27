@@ -194,7 +194,7 @@ class Karma(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @karma.command(name="set")
-    async def karma_set(self, ctx, emoji: discord.Emoji, value: int):
+    async def karma_set(self, ctx, emoji, value: int):
         """Set karma value without public vote"""
         repo_k.set_emoji_value(str(self._get_emoji_id(emoji)), value)
         await ctx.send(self.text.get("emoji", emoji=emoji, value=value))
