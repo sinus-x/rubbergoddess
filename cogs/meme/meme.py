@@ -34,7 +34,7 @@ class Meme(rubbercog.Rubbercog):
     async def hug(self, ctx, target: Union[discord.Member, discord.Role] = None):
         """Hug someone!
 
-        target: Discord user or role. If none, the bot will hug yourself.
+        target: Discord user or role. If none, the bot will hug you.
         """
         if target is None:
             hugger = self.bot.user
@@ -137,7 +137,7 @@ class Meme(rubbercog.Rubbercog):
     async def pet(self, ctx, member: discord.Member = None):
         """Pet someone!
 
-        member: Discord user. If none, the bot will pet yourself.
+        member: Discord user. If none, the bot will pet you.
         """
         if member is None:
             petter = self.bot.user
@@ -187,7 +187,7 @@ class Meme(rubbercog.Rubbercog):
     async def hyperpet(self, ctx, member: discord.Member = None):
         """Pet someone really hard
 
-        member: Discord user. If none, the bot will hyperpet yourself.
+        member: Discord user. If none, the bot will hyperpet you.
         """
         if member is None:
             petter = self.bot.user
@@ -226,7 +226,7 @@ class Meme(rubbercog.Rubbercog):
     async def bonk(self, ctx, member: discord.Member = None):
         """Bonk someone
 
-        member: Discord user. If none, the bot will bonk yourself.
+        member: Discord user. If none, the bot will bonk you.
         """
         if member is None:
             bonker = self.bot.user
@@ -265,7 +265,7 @@ class Meme(rubbercog.Rubbercog):
     async def slap(self, ctx, member: discord.Member = None):
         """Slap someone!
 
-        member: Discord user. If none, the bot will slap yourself.
+        member: Discord user. If none, the bot will slap you.
         """
         if member is None:
             slapper = self.bot.user
