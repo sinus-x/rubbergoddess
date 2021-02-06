@@ -21,7 +21,7 @@ def text_to_image(
     filepath = "data/temp.png"
 
     im = Image.new("RGBA", (width, height), bg)
-    font = ImageFont.truetype("data/Vafle VUT.pfb", 90)
+    font = ImageFont.truetype("resources/Vafle VUT.pfb", 90)
 
     draw = ImageDraw.Draw(im)
 

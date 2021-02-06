@@ -10,7 +10,7 @@
 
 		# Docker:      postgres://postgres:postgres@db:5432/postgres"
 		# Standalone:  postgres://rubbergoddess:rubbergoddess@localhost/rubbergoddess"
-		# No database: sqlite3:///rubbergoddess.db
+		# No database: sqlite:///data/rubbergoddess.db
 		string: postgres://postgres:postgres@db:5432/postgres
 	}
 
