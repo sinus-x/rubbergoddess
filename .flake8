@@ -31,7 +31,10 @@ exclude =
 	# .py files in this directory are deprecated
 	config/*,
 	# development and testing files
-	test.py
+	test.py,
+	# development
+	.venv/,
+	.git/
 count = True
 max-complexity = 20
 max-line-length = 100
