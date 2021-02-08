@@ -110,6 +110,10 @@
 		"user allow": [],
 		"user deny": []
 	},
+	"anonsend fetch": {
+		"default": false,
+		"group allow": ["MOD"]
+	},
 	"anonsend remove": {
 		"default": false,
 		"group allow": [

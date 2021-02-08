@@ -289,7 +289,6 @@ class Warden(rubbercog.Rubbercog):
             await message.add_reaction("▶")
             await asyncio.sleep(2)
             await message.remove_reaction("▶", self.bot.user)
-            return
 
         duplicates = {}
         posts_all = None
