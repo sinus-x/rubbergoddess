@@ -1,0 +1,20 @@
+{
+    name_exists: Takové jméno už existuje.
+    bad_name:    Takové jméno neexistuje.
+
+    added:   Mapování přidáno.
+    removed: Mepování odebráno.
+    renamed: Mapování přejmenováno.
+
+    # user feedback
+    no_channel:         Takový kanál neznám.
+    channel_not_found:  Takový kanál neexistuje.
+    not_in_guild:       Nejsi na cílovém serveru.
+    bad_attachments:    Zpráva musí obsahovat jeden obrázek.
+    attachment_too_big: Příloha je moc velká, musí se vejít pod **((size)) kB**.
+    not_image:          Příloha není obrázek.
+
+    downloading:        Stahuji...
+    uploading:          Nahrávám...
+    done:               Hotovo ((emoji.happy))
+}

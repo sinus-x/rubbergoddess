@@ -9,6 +9,7 @@ from core.config import config
 from repository.database import database
 from repository.database import session
 from repository.database.acl import ACL_group, ACL_rule, ACL_rule_user, ACL_rule_group
+from repository.database.anonsend import AnonsendChannel
 from repository.database.image import Image
 from repository.database.karma import Karma, Karma_emoji
 from repository.database.interactions import Interaction
