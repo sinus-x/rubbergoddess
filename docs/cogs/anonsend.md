@@ -30,4 +30,8 @@ List all anonsend channels in the guild.
 
 Link to upload webserver.
 
+### anonsend fetch
+
+Get list of pending files.
+
 ← Back to [module list](index.md) or [home](../index.md)

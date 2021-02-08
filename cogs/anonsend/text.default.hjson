@@ -17,4 +17,7 @@
     downloading:        Stahuji...
     uploading:          Nahrávám...
     done:               Hotovo ((emoji.happy))
+
+    fetch_server: Soubory na serveru
+    fetch_age:    stáří ((time))
 }

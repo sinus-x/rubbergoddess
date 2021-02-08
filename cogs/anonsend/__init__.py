@@ -1,3 +1,4 @@
+import datetime
 import requests
 import tempfile
 
@@ -76,9 +77,33 @@ class Anonsend(rubbercog.Rubbercog):
     @commands.check(acl.check)
     @anonsend.command(name="list")
     async def anonsend_list(self, ctx):
-        """Get mappings for current guild."""
+        """Get mappings for current guild"""
         channels = repo_a.get_all(ctx.guild.id)
         await ctx.send("```\n" + "\n".join([str(x) for x in channels]) + "\n```")
+
+    @commands.check(acl.check)
+    @anonsend.command(name="fetch")
+    async def anonsend_fetch(self, ctx):
+        """Get list of pending files"""
+        url_base = self.config.get("url") + "/api.php?apikey=" + self.config.get("apikey")
+        response = requests.get(url_base + "&action=list")
+        files = response.json()
+
+        embed = self.embed(ctx=ctx, title=self.text.get("fetch_server"))
+        for i, (file, timestamp) in enumerate(files.items()):
+            uploaded = datetime.datetime.fromtimestamp(timestamp)
+            embed.add_field(
+                name=file,
+                value=uploaded.strftime("%Y-%m-%d %H:%M:%S")
+                + "\n"
+                + self.text.get(
+                    "fetch_age",
+                    time=utils.seconds2str((datetime.datetime.now() - uploaded).seconds),
+                ),
+            )
+            if i % 24 == 0 and i > 0:
+                await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.check(acl.check)
     @anonsend.command(name="link", aliases=["url"])
