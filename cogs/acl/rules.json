@@ -92,6 +92,60 @@
 		"user allow": [],
 		"user deny": []
 	},
+	"anonsend": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"anonsend add": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"anonsend remove": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"anonsend rename": {
+		"default": false,
+		"group allow": [
+			"MOD"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"anonsend list": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
+	"anonsend link": {
+		"default": false,
+		"group allow": [
+			"VERIFY"
+		],
+		"group deny": [],
+		"user allow": [],
+		"user deny": []
+	},
 	"channelinfo": {
 		"default": false,
 		"group allow": [

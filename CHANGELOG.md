@@ -4,6 +4,10 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Added
+
+- Anonsend module
+
 ### Updated
 
 - ACL has cleaner command interface and uses JSON files

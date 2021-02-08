@@ -82,18 +82,18 @@ class Anonsend(rubbercog.Rubbercog):
         await ctx.send("```\n" + "\n".join([str(x) for x in channels]) + "\n```")
 
     @commands.check(acl.check)
-    @anonsend.command(name="link")
+    @anonsend.command(name="link", aliases=["url"])
     async def anonsend_link(self, ctx):
         """Get link to the anonsend upload website"""
         await ctx.send(self.config.get("url"))
 
     @commands.dm_only()
     @anonsend.command(name="submit")
-    async def anonsend_submit(self, ctx, channel: str, filename: str):
+    async def anonsend_submit(self, ctx, name: str, filename: str):
         """Send a file"""
 
         # get channel
-        target = repo_a.get(name=channel)
+        target = repo_a.get(name=name)
         if target is None:
             return await ctx.send(self.text.get("no_channel"))
 
@@ -145,8 +145,8 @@ class Anonsend(rubbercog.Rubbercog):
         await message.edit(content=message.content + " " + self.text.get("done"))
 
         # increment log
-        anonchannel = repo_a.increment(channel)
-        await self.event.user("DMChannel", f"Anonymous image sent to **{self.sanitise(channel)}**.")
+        anonchannel = repo_a.increment(name)
+        await self.event.user("DMChannel", f"Anonymous image sent to **{self.sanitise(name)}**.")
 
 
 def setup(bot):
