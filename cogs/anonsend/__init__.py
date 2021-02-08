@@ -20,7 +20,6 @@ class Anonsend(rubbercog.Rubbercog):
         self.text = CogText("anonsend")
         self.config = CogConfig("anonsend")
 
-    @commands.check(acl.check)
     @commands.group()
     async def anonsend(self, ctx):
         """Send an image anonymously.
