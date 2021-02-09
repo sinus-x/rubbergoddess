@@ -30,10 +30,6 @@ Allow anonymous image sharing.
 
 Basic bot information: uptime, ping.
 
-## [Howto](howto.md)
-
-Simple help module for common questions.
-
 ## [Janitor](janitor.md)
 
 Management, such role hoarding prevention or purge.
