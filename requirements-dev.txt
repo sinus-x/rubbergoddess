@@ -4,4 +4,3 @@ flake8-bugbear
 flake8-print >= 3.1.0
 flake8-todo
 pre-commit
-wheel
