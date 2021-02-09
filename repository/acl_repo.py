@@ -130,7 +130,7 @@ class ACLRepository(BaseRepository):
     ## Constraints
     ##
 
-    def add_group_constraint(self, guild_id: int, name: str, command: str, allow: bool) -> ACL_rule:
+    def add_group_constraint(self, guild_id: int, command: str, name: str, allow: bool) -> ACL_rule:
         group = self.get_group(guild_id, name)
         if group is None:
             raise NotFound(guild_id=guild_id, name=name)
@@ -149,7 +149,7 @@ class ACLRepository(BaseRepository):
         return result > 0
 
     def add_user_constraint(
-        self, guild_id: int, user_id: int, command: str, allow: bool
+        self, guild_id: int, command: str, user_id: int, allow: bool
     ) -> ACL_rule:
         rule = self.get_rule(guild_id, command)
         if rule is None:

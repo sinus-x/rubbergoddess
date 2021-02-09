@@ -22,6 +22,10 @@ Prepare server for bot going offline (lock the jail and notify users that verifi
 
 Elite channel for users with animal as their avatar image.
 
+## [Anonsend](anonsend.md)
+
+Allow anonymous image sharing.
+
 ## [Base](base.md)
 
 Basic bot information: uptime, ping.

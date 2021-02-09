@@ -72,7 +72,21 @@ class Review(rubbercog.Rubbercog):
             subjects.add(r.subject)
 
         if not len(subjects):
-            return await ctx.send(self.text.get("empty"))
+            return await ctx.send(self.text.get("empty"), mention=ctx.author.mention)
+
+        await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
+
+    @commands.check(acl.check)
+    @review.command(name="my-list")
+    async def review_mylist(self, ctx):
+        """Get list of your reviewed subjects"""
+        subjects = set()
+        for r in repo_r.get_all_reviews():
+            if r.discord_id == ctx.author.id:
+                subjects.add(r.subject)
+
+        if not len(subjects):
+            return await ctx.send(self.text.get("empty"), mention=ctx.author.mention)
 
         await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
 
@@ -319,7 +333,7 @@ class Review(rubbercog.Rubbercog):
     async def _remove_reaction(self, reaction, user):
         try:
             await reaction.remove(user)
-        except:
+        except Exception:
             pass
 
     ##

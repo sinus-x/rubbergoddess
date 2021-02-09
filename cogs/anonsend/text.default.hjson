@@ -1,0 +1,19 @@
+{
+    name_exists: Takové jméno už existuje.
+    bad_name:    Takové jméno neexistuje.
+
+    added:   Mapování přidáno.
+    removed: Mepování odebráno.
+    renamed: Mapování přejmenováno.
+
+    # user feedback
+    no_channel:         Takový kanál neznám.
+    channel_not_found:  Takový kanál neexistuje.
+    not_in_guild:       Nejsi na cílovém serveru.
+    downloading:        Stahuji...
+    uploading:          Nahrávám...
+    done:               Hotovo ((emoji.happy))
+
+    fetch_server: Soubory na serveru
+    fetch_age:    stáří ((time))
+}

@@ -1,0 +1,6 @@
+{
+    // URL of your anonsend website
+    url: example.com
+    // APIKEY set in the website's settings
+    apikey: rubbergoddess
+}

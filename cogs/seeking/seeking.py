@@ -93,7 +93,7 @@ class Seeking(rubbercog.Rubbercog):
 
             try:
                 items.append(int(item))
-            except:
+            except Exception:
                 rejected.append(item)
 
         for item_id in items:

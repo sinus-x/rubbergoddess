@@ -77,7 +77,7 @@ class Random(rubbercog.Rubbercog):
         image_info = requests.get(f"https://picsum.photos/id/{image_id}/info")
         try:
             image_url = image_info.json()["url"]
-        except:
+        except Exception:
             image_url = discord.Embed.Empty
 
         footer = "picsum.photos"

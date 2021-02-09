@@ -66,8 +66,8 @@ def seconds2str(time):
     M = 60
 
     d = int((time - (time % D)) / D)
-    h = int((time - (time % H)) / H)
-    m = int((time - (time % M)) / M)
+    h = int((time - (time % H)) / H) % 24
+    m = int((time - (time % M)) / M) % 60
     s = time % 60
 
     if d > 0:
@@ -145,7 +145,7 @@ async def delete(thing):
 async def remove_reaction(reaction, user):
     try:
         await reaction.remove(user)
-    except:
+    except Exception:
         pass
 
 

@@ -5,69 +5,47 @@
 		nothing: Nejsou definovány žádné skupiny.
 	}
 
-	group_get: {
-		nothing: Taková skupina neexistuje.
-	}
-
 	group_remove: {
 		ok:      Skupina **((name))** odebrána.
 		nothing: Takovou skupinu jsem nenašla.
 	}
 
 	rule_get: {
-		nothing: Takové pravidlo neexistuje.
+		nothing:     Takové pravidlo neexistuje.
+
+		title:       ACL příkaz `((command))`
+		default:     Výchozí hodnota
+		group_allow: Povolené ACL skupiny
+		group_deny:  Zakázané ACL skupiny
+		user_allow:  Povolení uživatelé
+		user_deny:   Zakázaní uživatelé
 	}
 
-	rule_add: {
-		nothing: Takový příkaz neznám.
-	}
+	rule_flush: Smazala jsem **((count)) pravidel**.
 
-	rule_remove: {
-		ok:      Pravidlo pro příkaz **((command))** odebráno.
-		nothing: Takový příkaz neznám.
-	}
+	group_get: {
+		nothing: Taková ACL skupina neexistuje.
 
-	rule_flush: Smazala jsem všech **((count)) pravidel** pro tento server.
-
-	user_constraint: {
-		removed: Uživatelské pravidlo odebráno.
-		nothing: Takové uživatelské pravidlo neexistuje.
-	}
-
-	group_constraint: {
-		removed: Pravidlo skupiny odebráno.
-		nothing: Takové pravidlo skupiny neexistuje.
-	}
-
-	audit: Příkazy mimo ACL můžeš zobrazit s `acl check`.
-
-	check: {
-		some: Našla jsem **((count)) příkazů** bez definovaného pravidla. Pro přidání můžeš zavolat `acl rule add (příkaz)`.
-		none: Vše v pořádku, žádné příkazy bez pravidla jsem nenašla. Pro zobrazení pravidel zavolej `acl audit` nebo `acl rule get (příkaz)`.
+		title:   ACL skupina `((name))`
+		discord: Discord role
+		parent:  Rodičovská ACL skupina
 	}
 
 	import: {
-		wrong_file: Musíš nahrát soubor s názvem `rules.csv`.
+		wrong_file: Musíš nahrát JSON soubor.
+		wrong_json: Nahraný soubor není validní JSON.
+		wrong_mode: Mód importu musí být `append` nebo `replace`.
 
-		saving:    Ukládám...
-		importing: Importuji...
-		imported:  Pravidla jsem importovala za **((delta)) s**.
+		imported:  Importovala jsem ((new)) nových pravidel, ((edited)) bylo změněno.
+		skip:      Přeskakuji **((command))**: ((reason))
+		warn:      Problém v **((command))**: ((reason))
+
+		bad_bool:  Hodnota `((key))` není binární.
+		bad_list:  Hodnota `((key))` není seznam.
+		bad_int:   Hodnota `((key))` není číslo.
+		bad_text:  Hodnota `((key))` není text.
+		duplicate: Pravidlo již existuje.
+		no_group:  Skupina `((name))` neexistuje.
 	}
 
-	export: {
-		exporting: Exportuji do souboru `((filename))`...
-		exported:  Pravidla jsem exportovala za **((delta)) s**.
-	}
-
-
-	group_repr: {
-		name:   Skupina **((name))**
-		map:    mapovaná na Discord roli **((dname))** (`id ((did))`)
-		parent: má jako rodiče skupinu **((parent))**
-	}
-	csv_output: {
-		new:     Nová pravidla
-		skipped: Přeskočeno
-		errors:  Nalezené chyby
-	}
 }

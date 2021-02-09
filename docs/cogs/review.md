@@ -2,7 +2,7 @@
 
 # Review
 
-## User commands
+## ACL controlled commands
 
 ### review subject (subject shortcut)
 
@@ -20,22 +20,28 @@ Add anonymous review. Mark is integer (1 to 5, one being the best).
 
 Remove user's review.
 
-## Privileged commands
+### review list
+
+Get list of reviewed subjects.
+
+### review my-list
+
+Get list of your reviews.
 
 ### sudo_review remove (review id)
 
-Mod only. Remove given review.
+Remove given review.
 
-### sudo_subject add (subject shortcut) (subject name) (subject category)
+### subject add (subject shortcut) (subject name) (subject category)
 
-Mod only. Add new subject.
+Add new subject.
 
-### sudo_subject update (subject shortcut) (subject name) (subject category)
+### subject update (subject shortcut) (subject name) (subject category)
 
-Mod only. Update subject.
+Update subject.
 
-### sudo_subject remove (subject shortcut)
+### subject remove (subject shortcut)
 
-Mod only. Remove subject from database.
+Remove subject from database.
 
 ← Back to [module list](index.md) or [home](../index.md)
