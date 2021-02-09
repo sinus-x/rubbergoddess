@@ -145,7 +145,7 @@ async def delete(thing):
 async def remove_reaction(reaction, user):
     try:
         await reaction.remove(user)
-    except:
+    except Exception:
         pass
 
 

@@ -26,7 +26,7 @@ class Actress(rubbercog.Rubbercog):
         self.path = os.getcwd() + "/data/actress/"
         try:
             self.reactions = hjson.load(open(self.path + "reactions.hjson"))
-        except:
+        except Exception:
             self.reactions = {}
         self.usage = {}
 
@@ -215,7 +215,7 @@ class Actress(rubbercog.Rubbercog):
         new_reaction = await self.parse_react_message(ctx.message, strict=False)
         reaction = self.reactions[name]
 
-        for key, value in new_reaction.items():
+        for key in new_reaction.keys():
             reaction[key] = new_reaction[key]
 
         self.reactions[name] = reaction
@@ -419,7 +419,7 @@ class Actress(rubbercog.Rubbercog):
     async def _remove_reaction(self, reaction, user):
         try:
             await reaction.remove(user)
-        except:
+        except Exception:
             pass
 
     def _reaction_matches(self, message, reaction) -> bool:
@@ -519,12 +519,12 @@ class Actress(rubbercog.Rubbercog):
                 # convert to list of ints
                 try:
                     value = [int(x) for x in shlex.split(value)]
-                except:
+                except Exception:
                     raise ReactionParsingException(key, value)
             elif key == "counter":
                 try:
                     value = int(value)
-                except:
+                except Exception:
                     raise ReactionParsingException(key, value)
 
             result[key] = value

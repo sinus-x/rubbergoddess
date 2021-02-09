@@ -369,7 +369,7 @@ class Meme(rubbercog.Rubbercog):
                 if string.lower()[0] == "m" and len(string) > 2:
                     w = "W" if string[1].isupper() else "w"
                     string = string[0] + w + string[1:]
-            except:
+            except Exception:
                 # this is how we handle emojis
                 pass
             string = string.replace("r", "w").replace("R", "W")

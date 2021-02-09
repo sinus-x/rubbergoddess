@@ -27,7 +27,7 @@ class CogConfig:
                             self.config[key][subkey] = custom[key][subkey]
                 elif key in custom.keys():
                     self.config[key] = custom[key]
-        except:
+        except Exception:
             # there is no custom config
             pass
 
@@ -60,7 +60,7 @@ class CogText:
                             self.config[key][subkey] = custom[key][subkey]
                 elif key in custom.keys():
                     self.config[key] = custom[key]
-        except:
+        except Exception:
             # there is no custom config
             pass
 

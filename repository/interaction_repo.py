@@ -82,10 +82,10 @@ class InteractionRepository(BaseRepository):
         counter = 0
         for interaction in interactions:
             if interaction.giver == before_id:
-                interaction.giver == after_id
+                interaction.giver = after_id
                 counter += 1
             if interaction.receiver == before_id:
-                interaction.receiver == after_id
+                interaction.receiver = after_id
                 counter += 1
         session.commit()
         return counter

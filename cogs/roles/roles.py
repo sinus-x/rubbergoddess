@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import acl, rubbercog, utils
+from core import rubbercog
 from core.config import config
 from repository.subject_repo import SubjectRepository
 
@@ -108,7 +108,7 @@ class Roles(rubbercog.Rubbercog):
         if not result:
             try:
                 await message.remove_reaction(emoji, member)
-            except:
+            except Exception:
                 pass
 
     @commands.Cog.listener()
@@ -165,7 +165,7 @@ class Roles(rubbercog.Rubbercog):
                     # custom emote, get it's ID
                     emote = int(emote.replace("<#", "").replace(">", ""))
                 result.append((emote, target))
-            except:
+            except Exception:
                 # do not send errors if message is in #add-* channel
                 if message.channel.id in self.config.get("r2r_channels"):
                     return

@@ -160,8 +160,8 @@ class Anonsend(rubbercog.Rubbercog):
             )
         )
         feedback = requests.get(url_base + "&action=delete")
-        if response.status_code != 200:
-            await self.event.error(ctx, "delete error: " + str(response.status_code))
+        if feedback.status_code != 200:
+            await self.event.error(ctx, "delete error: " + str(feedback.status_code))
 
         image_binary.close()
 
@@ -169,7 +169,7 @@ class Anonsend(rubbercog.Rubbercog):
         await message.edit(content=message.content + " " + self.text.get("done"))
 
         # increment log
-        anonchannel = repo_a.increment(name)
+        repo_a.increment(name)
         await self.event.user("DMChannel", f"Anonymous image sent to **{self.sanitise(name)}**.")
 
 

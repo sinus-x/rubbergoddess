@@ -150,7 +150,8 @@ class GifConverter:
         del self._img_p_parsedpalette[0]
 
     def _get_unused_color(self) -> tuple:
-        """ Return a color for the palette that does not collide with any other already in the palette."""
+        """Return a color for the palette that does not collide with any other
+        already in the palette."""
         used_colors = set(self._img_p_parsedpalette.values())
         while True:
             new_color = (randrange(256), randrange(256), randrange(256))
@@ -158,8 +159,8 @@ class GifConverter:
                 return new_color
 
     def _process_palette(self):
-        """Adjust palette to have the zeroth color set as transparent. Basically, get another palette
-        index for the zeroth color."""
+        """Adjust palette to have the zeroth color set as transparent.
+        Basically, get another palette index for the zeroth color."""
         self._set_parsed_palette()
         if 0 in self._img_p_used_palette_idxs:
             self._remap_palette_idx_zero()

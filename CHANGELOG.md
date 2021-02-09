@@ -16,6 +16,10 @@ See [Milestones] to get an idea on what you can expect in the future.
 - `review my-list` subcommand
 - Check for `Admin`, so the #jail channel can't stay locked by accident
 
+### Removed
+
+- Howto module (not used, not mantained)
+
 ## [1.2.0]
 
 First release of 2021 bumps the minor version, which sould have been done much earlier, probably.

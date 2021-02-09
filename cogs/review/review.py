@@ -333,7 +333,7 @@ class Review(rubbercog.Rubbercog):
     async def _remove_reaction(self, reaction, user):
         try:
             await reaction.remove(user)
-        except:
+        except Exception:
             pass
 
     ##

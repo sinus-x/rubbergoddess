@@ -1,4 +1,3 @@
-import asyncio
 import subprocess
 
 from discord.ext import commands, tasks

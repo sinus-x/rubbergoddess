@@ -111,7 +111,7 @@ class Warden(rubbercog.Rubbercog):
         try:
             repost_message = embed_message.embeds[0].footer.text.split(" | ")[1]
             repost_message = await embed_message.channel.fetch_message(int(repost_message))
-        except:
+        except Exception:
             return await self.console.debug(embed_message, "Could not find repost's original.")
 
         for r in embed_message.reactions:
@@ -359,7 +359,7 @@ class Warden(rubbercog.Rubbercog):
             src_post = await src_chan.fetch_message(original.message_id)
             link = src_post.jump_url
             author = discord.utils.escape_markdown(src_post.author.display_name)
-        except:
+        except discord.errors.NotFound:
             link = "404 " + emote.sad
             author = "_??? (404)_"
 
