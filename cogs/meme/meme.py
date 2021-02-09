@@ -84,7 +84,7 @@ class Meme(rubbercog.Rubbercog):
                     format="GIF",
                     save_all=True,
                     append_images=frames[1:],
-                    duration=30,
+                    duration=60,
                     loop=0,
                     transparency=0,
                     disposal=2,
@@ -471,12 +471,12 @@ class Meme(rubbercog.Rubbercog):
         """Get frames for the whip"""
         frames = []
         width, height = 250, 150
-        deformation = (0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 9, 6, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        translation = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        deformation = (0, 0, 3, 3, 0, 0, 0)
+        translation = (0, 0, 1, 3, 1, 0, 0)
 
         avatar = Meme.round_image(avatar.resize((100, 100)))
 
-        for i in range(26):
+        for i in range(7):
             img = "%02d" % (i + 1)
             frame = Image.new("RGBA", (width, height), (54, 57, 63, 1))
             whip_frame = Image.open(f"data/meme/whip/{img}.png").resize((150, 150))
