@@ -4,6 +4,8 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+## [1.3.0]
+
 ### Added
 
 - Anonsend module
@@ -12,6 +14,7 @@ See [Milestones] to get an idea on what you can expect in the future.
 
 - ACL has cleaner command interface and uses JSON files
 - `review my-list` subcommand
+- Check for `Admin`, so the #jail channel can't stay locked by accident
 
 ## [1.2.0]
 
@@ -276,7 +279,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.2.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.3.0...devel
+[1.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...v1.2.0
 [1.1.7]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.5...v1.1.6
