@@ -1,6 +1,7 @@
+import asyncio
 import subprocess
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from cogs.resource import CogConfig, CogText
 from core import acl, rubbercog, utils
@@ -17,6 +18,12 @@ class Admin(rubbercog.Rubbercog):
         self.text = CogText("admin")
 
         self.usage = {}
+
+        self.jail_check.start()
+        self.just_booted = True
+
+    def cog_unload(self):
+        self.jail_check.cancel()
 
     ##
     ## Commands
@@ -215,6 +222,38 @@ class Admin(rubbercog.Rubbercog):
         await message.add_reaction("▶")
 
         await utils.room_check(ctx)
+
+    ##
+    ## Logic
+    ##
+
+    @tasks.loop(minutes=10)
+    async def jail_check(self):
+        """Check if the #jail is writable. This is used if the bot admin
+        forgets about that fact they did not run `system on` after the bot
+        loaded."""
+
+        if self.just_booted:
+            self.just_booted = False
+            return
+
+        async def get_jail_message():
+            jail = self.getGuild().get_channel(config.get("channels", "jail"))
+            if jail is not None:
+                for message in await jail.history(limit=10).flatten():
+                    if message.content.startswith(self.text.get("system_off", "jail")):
+                        return message
+
+        if await get_jail_message() is None:
+            return
+
+        botspam = self.getGuild().get_channel(config.get("channels", "botspam"))
+        await botspam.send(self.text.get("system_check", admin_id=config.admin_id))
+
+    @jail_check.before_loop
+    async def before_jail_check(self):
+        if not self.bot.is_ready():
+            await self.bot.wait_until_ready()
 
     ##
     ## Listeners

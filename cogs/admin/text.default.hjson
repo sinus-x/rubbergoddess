@@ -1,6 +1,8 @@
 {
 	power_fail: Ani jeden z definovaných kanálů není k dispozici.
 
+	system_check: Pořád běžím v omezeném režimu, <@((admin_id))>.
+
 	system_off: {
 		jail:    Dočasně nejde provádět verifikaci, jsem offline. Prosím, zkus to později.
 		botspam: Teď budu chvíli offline.
