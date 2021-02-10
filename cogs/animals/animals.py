@@ -1,11 +1,15 @@
 import asyncio
+import requests
+import tempfile
+from io import BytesIO
 from datetime import datetime
+from PIL import Image
 
 import discord
 from discord.ext import commands
 
 from cogs.resource import CogConfig, CogText
-from core import acl, rubbercog, utils
+from core import acl, image_utils, rubbercog, utils
 from repository import user_repo
 
 repo_u = user_repo.UserRepository()
@@ -122,11 +126,19 @@ class Animals(rubbercog.Rubbercog):
 
         # delete if the user has changed their avatar since the embed creation
         if str(message.embeds[0].image.url) != str(animal.avatar_url):
-            await self.console.info(animal, "Avatar has changed since. Vote aborted.")
+            await self.console.debug(animal, "Avatar has changed since. Vote aborted.")
             return await utils.delete(message)
+
+        animal_avatar_url = animal.avatar_url_as(format="jpg")
+        animal_avatar_data = requests.get(animal_avatar_url)
+        animal_avatar = Image.open(BytesIO(animal_avatar_data.content))
+        animal_avatar_file = tempfile.TemporaryFile()
 
         for r in message.reactions:
             if r.emoji == "☑️" and r.count > self.config.get("limit"):
+                avatar_result: Image.Image = Animals.add_border(animal_avatar, 3, True)
+                avatar_result.save(animal_avatar_file, "png")
+                animal_avatar_file.seek(0)
                 if self.getRole() in animal.roles:
                     # member is an animal and has been before
                     await self.getChannel().send(
@@ -134,7 +146,8 @@ class Animals(rubbercog.Rubbercog):
                             "result",
                             "yes_yes",
                             nickname=self.sanitise(animal.display_name),
-                        )
+                        ),
+                        file=discord.File(fp=animal_avatar_file, filename="animal.png"),
                     )
                 else:
                     # member is an animal and has not been before
@@ -142,26 +155,32 @@ class Animals(rubbercog.Rubbercog):
                         await animal.add_roles(self.getRole())
                         await self.event.user(animal, "New animal!")
                         await self.getChannel().send(
-                            self.text.get("result", "no_yes", mention=animal.mention)
+                            self.text.get("result", "no_yes", mention=animal.mention),
+                            file=discord.File(fp=animal_avatar_file, filename="animal.png"),
                         )
                     except Exception as e:
                         await self.console.error(message, "Could not add animal", e)
                 break
             elif r.emoji == "❎" and r.count > self.config.get("limit"):
+                avatar_result: Image.Image = Animals.add_border(animal_avatar, 3, False)
+                avatar_result.save(animal_avatar_file, "png")
+                animal_avatar_file.seek(0)
                 if self.getRole() in animal.roles:
                     # member is not an animal and has been before
                     try:
                         await animal.remove_roles(self.getRole())
                         await self.event.user(animal, "Animal left.")
                         await self.getChannel().send(
-                            self.text.get("result", "yes_no", mention=animal.mention)
+                            self.text.get("result", "yes_no", mention=animal.mention),
+                            file=discord.File(fp=animal_avatar_file, filename="animal.png"),
                         )
                     except Exception as e:
                         await self.console.error(message, "Could not remove animal", e)
                 else:
                     # member is not an animal and has not been before
                     await self.getChannel().send(
-                        self.text.get("result", "no_no", mention=animal.mention)
+                        self.text.get("result", "no_no", mention=animal.mention),
+                        file=discord.File(fp=animal_avatar_file, filename="animal.png"),
                     )
                 break
         else:
@@ -217,3 +236,19 @@ class Animals(rubbercog.Rubbercog):
             if m.type == discord.MessageType.pins_add:
                 await utils.delete(m)
                 break
+
+    @staticmethod
+    def add_border(image: Image.Image, border: int, animal: bool) -> Image.Image:
+        """Add border to created image.
+
+        image: The avatar.
+        border: width of the border.
+        animal: whether the avatar is an animal or not.
+        """
+        image_size = 160
+        frame_color = (22, 229, 0, 1) if animal else (221, 56, 31, 1)
+        frame = Image.new("RGBA", (image_size + border * 2, image_size + border * 2), frame_color)
+        frame = image_utils.round_image(frame)
+        avatar = image_utils.round_image(image.resize((image_size, image_size)))
+        frame.paste(avatar, (border, border), avatar)
+        return frame

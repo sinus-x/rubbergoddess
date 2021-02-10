@@ -408,7 +408,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 148, 148
         vertical_offset = (0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 2, 1, 0)
 
-        frame_avatar = Meme.round_image(avatar.resize((100, 100)))
+        frame_avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(14):
             img = "%02d" % (i + 1)
@@ -427,7 +427,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 148, 148
         vertical_offset = (0, 1, 2, 3, 1, 0)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
         avatar_pixels = np.array(avatar)
         git_hash = int(utils.git_get_hash(), 16)
 
@@ -451,7 +451,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 200, 170
         deformation = (0, 0, 0, 5, 10, 20, 15, 5)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(8):
             img = "%02d" % (i + 1)
@@ -474,7 +474,7 @@ class Meme(rubbercog.Rubbercog):
         deformation = (0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 9, 6, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         translation = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(26):
             img = "%02d" % (i + 1)
@@ -496,7 +496,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 200, 120
         deformation = (4, 2, 1, 0, 0, 0, 0, 3)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(8):
             img = "%02d" % (i + 1)
