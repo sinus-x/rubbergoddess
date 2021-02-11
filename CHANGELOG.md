@@ -4,6 +4,11 @@
 
 See [Milestones] to get an idea on what you can expect in the future.
 
+### Updated
+
+- Librarian properly displays the `week` command
+- Animals module sends the user avatar when the vote is announced
+
 ## [1.3.0]
 
 ### Added

@@ -47,7 +47,7 @@ class Librarian(rubbercog.Rubbercog):
     async def week(self, ctx: commands.Context):
         """See if the current week is odd or even"""
         cal_week = date.today().isocalendar()[1]
-        stud_week = cal_week - self.config.get("starting_week")
+        stud_week = cal_week - self.config.get("starting_week") + 1
         even, odd = self.text.get("week", "even"), self.text.get("week", "odd")
         cal_type = even if cal_week % 2 == 0 else odd
         stud_type = even if stud_week % 2 == 0 else odd

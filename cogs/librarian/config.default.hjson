@@ -1,5 +1,7 @@
 {
-	# week the current semester started
+	# The ISO week the current semester started.
+    # ISO week = the first week containing a Thursday.
+    # python3 -c "from datetime import date; print(date.today().isocalendar()[1])"
 	starting_week: 0
 
 	# openweathermap.com token
