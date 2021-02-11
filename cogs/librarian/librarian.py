@@ -54,13 +54,14 @@ class Librarian(rubbercog.Rubbercog):
 
         embed = self.embed(ctx=ctx)
         embed.add_field(
-            name=self.text.get("week", "study"),
-            value="{} ({})".format(stud_type, stud_week),
-        )
-        embed.add_field(
             name=self.text.get("week", "calendar"),
             value="{} ({})".format(cal_type, cal_week),
         )
+        if 0 < stud_week <= self.config.get("total_weeks"):
+            embed.add_field(
+                name=self.text.get("week", "study"),
+                value=str(stud_week),
+            )
         await ctx.send(embed=embed)
 
         await utils.delete(ctx)
