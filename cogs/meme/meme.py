@@ -31,7 +31,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def hug(self, ctx, target: Union[discord.Member, discord.Role] = None):
+    async def hug(self, ctx, *, target: Union[discord.Member, discord.Role] = None):
         """Hug someone!
 
         target: Discord user or role. If none, the bot will hug you.
@@ -60,7 +60,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def whip(self, ctx, user: discord.Member = None):
+    async def whip(self, ctx, *, user: discord.Member = None):
         """Whip someone"""
         if user is None:
             whipper = self.bot.user
@@ -98,7 +98,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def spank(self, ctx, user: discord.Member = None):
+    async def spank(self, ctx, *, user: discord.Member = None):
         """Spank someone"""
         if user is None:
             spanker = self.bot.user
@@ -134,7 +134,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def pet(self, ctx, member: discord.Member = None):
+    async def pet(self, ctx, *, member: discord.Member = None):
         """Pet someone!
 
         member: Discord user. If none, the bot will pet you.
@@ -184,7 +184,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def hyperpet(self, ctx, member: discord.Member = None):
+    async def hyperpet(self, ctx, *, member: discord.Member = None):
         """Pet someone really hard
 
         member: Discord user. If none, the bot will hyperpet you.
@@ -223,7 +223,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def bonk(self, ctx, member: discord.Member = None):
+    async def bonk(self, ctx, *, member: discord.Member = None):
         """Bonk someone
 
         member: Discord user. If none, the bot will bonk you.
@@ -262,7 +262,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
     @commands.command()
-    async def slap(self, ctx, member: discord.Member = None):
+    async def slap(self, ctx, *, member: discord.Member = None):
         """Slap someone!
 
         member: Discord user. If none, the bot will slap you.
@@ -289,7 +289,7 @@ class Meme(rubbercog.Rubbercog):
     @commands.guild_only()
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     @commands.command()
-    async def relations(self, ctx, user: discord.User = None):
+    async def relations(self, ctx, *, user: discord.User = None):
         """Get your information about hugs, pets, ..."""
         if user is None:
             user = ctx.author
@@ -408,7 +408,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 148, 148
         vertical_offset = (0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 2, 1, 0)
 
-        frame_avatar = Meme.round_image(avatar.resize((100, 100)))
+        frame_avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(14):
             img = "%02d" % (i + 1)
@@ -427,7 +427,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 148, 148
         vertical_offset = (0, 1, 2, 3, 1, 0)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
         avatar_pixels = np.array(avatar)
         git_hash = int(utils.git_get_hash(), 16)
 
@@ -451,7 +451,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 200, 170
         deformation = (0, 0, 0, 5, 10, 20, 15, 5)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(8):
             img = "%02d" % (i + 1)
@@ -474,7 +474,7 @@ class Meme(rubbercog.Rubbercog):
         deformation = (0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 9, 6, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         translation = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(26):
             img = "%02d" % (i + 1)
@@ -496,7 +496,7 @@ class Meme(rubbercog.Rubbercog):
         width, height = 200, 120
         deformation = (4, 2, 1, 0, 0, 0, 0, 3)
 
-        avatar = Meme.round_image(avatar.resize((100, 100)))
+        avatar = image_utils.round_image(avatar.resize((100, 100)))
 
         for i in range(8):
             img = "%02d" % (i + 1)

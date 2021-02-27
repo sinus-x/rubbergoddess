@@ -37,6 +37,15 @@ def text_to_image(
     return filepath
 
 
+def round_image(frame_avatar: Image.Image) -> Image.Image:
+    """Convert square avatar to circle"""
+    frame_mask = Image.new("1", frame_avatar.size, 0)
+    draw = ImageDraw.Draw(frame_mask)
+    draw.ellipse((0, 0) + frame_avatar.size, fill=255)
+    frame_avatar.putalpha(frame_mask)
+    return frame_avatar
+
+
 # Taken from https://stackoverflow.com/a/7274986
 # unutbu, September 2011 (https://stackoverflow.com/users/190597/unutbu)
 def rgb_to_hsv(rgb):

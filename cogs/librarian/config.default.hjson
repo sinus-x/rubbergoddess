@@ -1,6 +1,10 @@
 {
-	# week the current semester started
+	# The ISO week the current semester started.
+    # ISO week = the first week containing a Thursday.
+    # python3 -c "from datetime import date; print(date.today().isocalendar()[1])"
 	starting_week: 0
+    # if the number gets over, the "semester week" field won't be shown
+    total_weeks: 13
 
 	# openweathermap.com token
 	weather_token: 678a5932f6dd92ac668b20e9f89c0318

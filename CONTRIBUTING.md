@@ -1,20 +1,32 @@
 # Contributing
 
-## Tell us first
+**NOTE**: We're planning to migrate the codebase to the [pumpkin.py](https://github.com/Pumpkin-py) project. All the functions from this bot will be moved there.
 
-When contributing to this repository, first discuss the change you wish to make
-via issue, on Discord or any other way.
+## Repository setup
 
-## Pull Request process
+- Fork the repository
+- Clone your fork: `git clone git@github.com/<your-nickname>/rubbergoddess.git`
+- `cd rubbergoddess`
+- Add upstream: `git remote add upstream git@github.com:sinus-x/rubbergoddess.git`
+- Create your feature branch: `git checkout master && git branch my-feature && git checkout my-feature`
+- Open your pull requests from this branch
 
-Make sure no trailing `print()`s are present in the code, use flake8 and black
-with configuration present in this repository.
+## Bot setup
 
-Your PR must not break current configuration or database scheme, unless you
-have serious reason to do so.
+```bash
+# Download, create and enable venv environment
+sudo apt install python3-venv
+python3 -m pip install venv
+python3 -m venv .venv
+source .venv/bin/activate
 
-Always open pull requests against the `devel` branch. Your PR must pass the
-build in Github Actions.
+# Install bot packages
+python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements-dev.txt
+
+# Enable pre-commit
+pre-commit install
+```
 
 ## Cog organisation
 
@@ -78,29 +90,4 @@ class Test(rubbercog.Rubbercog):
 
 	def fill_embed(self, ctx: commands.Context) -> discord.Embed:
 		pass
-
-	##
-	## Helper functions
-	##
-
-	def send_if_guild(self, ctx: commands.Context):
-		pass
-
-	##
-	## Error catching
-	##
-
-	@commands.Cog.listener()
-	async def on_command_error(self, ctx, error):
-		if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
-			return
-		error = getattr(error, "original", error)
-
-		if not isintance(error, TestError):
-			return
-
-		await ctx.send("Custom text module error :(")
-
-class TestError(rubbercog.RubbercogException):
-	pass
 ```
