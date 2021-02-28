@@ -79,13 +79,13 @@ class Shop(rubbercog.Rubbercog):
         except discord.Forbidden:
             return await ctx.send(self.text.get("higher_role"))
 
-        repo_k.updateMemberKarma(ctx.author.id, -1 * self.price_nick)
+        repo_k.updateMemberKarma(ctx.author.id, -1 * self.config.get("set"))
         await ctx.send(
             self.text.get(
                 "new_nick",
                 mention=ctx.author.mention,
                 nick=discord.utils.escape_markdown(nick),
-                value=self.price_nick,
+                value=self.config.get("set"),
             )
         )
         await self.event.user(ctx, f"Nickname changed to {nick}.")
