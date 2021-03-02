@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-See [Milestones] to get an idea on what you can expect in the future.
+### Added
+
+- `dadjoke` command ([PR-261] by [nicx321])
 
 ### Updated
 
@@ -310,4 +312,6 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- PRs and user links -->
 
 [PR-214]: https://github.com/sinus-x/rubbergoddess/pull/214
+[PR-261]: https://github.com/sinus-x/rubbergoddess/pull/261
 [LakshyaShastri]: https://github.com/LakshyaShastri
+[nicx321]: https://github.com/nicx321
