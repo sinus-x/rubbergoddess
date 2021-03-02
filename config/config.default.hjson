@@ -10,7 +10,7 @@
 
 		# Docker:      postgres://postgres:postgres@db:5432/postgres"
 		# Standalone:  postgres://rubbergoddess:rubbergoddess@localhost/rubbergoddess"
-		# No database: sqlite:///data/rubbergoddess.db
+		# No database: sqlite:///rubbergoddess.db
 		string: postgres://postgres:postgres@db:5432/postgres
 	}
 
@@ -57,8 +57,6 @@
 			animals
 			# uptime, ping
 			base
-			# information cog
-			howto
 			# purge messages, duplicate subject channel for teacher
 			janitor
 			# see and manage karma
