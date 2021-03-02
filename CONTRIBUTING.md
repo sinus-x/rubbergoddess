@@ -8,8 +8,18 @@
 - Clone your fork: `git clone git@github.com/<your-nickname>/rubbergoddess.git`
 - `cd rubbergoddess`
 - Add upstream: `git remote add upstream git@github.com:sinus-x/rubbergoddess.git`
-- Create your feature branch: `git checkout master && git branch my-feature && git checkout my-feature`
+- Create your feature branch: `git checkout devel && git branch my-feature && git checkout my-feature`
 - Open your pull requests from this branch
+
+When the upstream **devel** branch gets updated, you can sync it with yours by running
+
+```bash
+git fetch upstream
+git merge upstream/master master
+git merge upstream/devel devel
+```
+
+If you commit directly to the devel branch, you will encounter merge issues you'll have to resolve yourself. So, don't do that and create your feature branch, it only takes two seconds.
 
 ## Bot setup
 
