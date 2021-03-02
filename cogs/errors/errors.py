@@ -137,13 +137,18 @@ class Errors(rubbercog.Rubbercog):
             return False
 
         # DiscordException, non-critical errors
-        if type(error) in (discord.NoMoreItems, discord.HTTPException, discord.Forbidden, discord.NotFound):
+        if type(error) in (
+            discord.errors.NoMoreItems,
+            discord.errors.HTTPException,
+            discord.errors.Forbidden,
+            discord.errors.NotFound,
+        ):
             await self.output.error(ctx, self.text.get(type(error).__name__))
             await self.console.error(ctx, type(error).__name__, error)
             return False
 
         # DiscordException, critical errors
-        if type(error) in (discord.DiscordException, discord.GatewayNotFound):
+        if type(error) in (discord.errors.DiscordException, discord.errors.GatewayNotFound):
             await self.output.error(ctx, self.text.get(type(error).__name__))
 
         # Database

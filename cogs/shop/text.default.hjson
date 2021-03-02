@@ -1,7 +1,11 @@
 {
     info: {
         title:       Změna přezdívky
-        description: Hodnoty jsou v karma bodech
+        description:
+            '''
+            Hodnoty jsou v karma bodech.
+            Použij příkaz **nickname**.
+            '''
 
         set:   Nastavení
         reset: Reset

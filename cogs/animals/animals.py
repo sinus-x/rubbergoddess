@@ -102,12 +102,17 @@ class Animals(rubbercog.Rubbercog):
         if payload.member.bot:
             return
 
-        message = await self.getChannel().fetch_message(payload.message_id)
-        # fmt: off
-        if not message or len(message.embeds) != 1 \
-        or message.embeds[0].title != self.text.get("title"):
+        try:
+            message = await self.getChannel().fetch_message(payload.message_id)
+        except Exception:
+            message = None
+
+        if (
+            message is None
+            or len(message.embeds) != 1
+            or message.embeds[0].title != self.text.get("title")
+        ):
             return
-        # fmt: on
 
         if str(payload.emoji) not in ("☑️", "❎"):
             return await message.remove_reaction(payload.emoji, payload.member)
