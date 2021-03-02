@@ -6,6 +6,7 @@ from discord.ext import commands
 
 from cogs.resource import CogText
 from core import rubbercog, utils
+from core.emote import emote
 
 
 class Random(rubbercog.Rubbercog):
@@ -106,7 +107,7 @@ class Random(rubbercog.Rubbercog):
     @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
     @commands.command()
     async def dog(self, ctx):
-        """Get random image of a cat"""
+        """Get random image of a dog"""
         data = requests.get("https://api.thedogapi.com/v1/images/search")
         if data.status_code != 200:
             return await ctx.send(f"E{data.status_code}")
@@ -151,6 +152,50 @@ class Random(rubbercog.Rubbercog):
             inline=False,
         )
         embed.set_image(url=fetched["img"])
+        await ctx.send(embed=embed)
+
+        await utils.room_check(ctx)
+
+    @commands.cooldown(rate=5, per=60, type=commands.BucketType.channel)
+    @commands.command()
+    async def dadjoke(self, ctx, keyword: str = None):
+        """
+        Get random dad joke
+
+        Arguments
+        ---------
+        keyword: search for a certain keyword in a joke
+        """
+        param = {"limit": "30"}
+        url = "https://icanhazdadjoke.com"
+        if keyword != None:
+            param['term'] = keyword
+            url += "/search"
+
+        fetched = requests.get(
+            url,
+            headers={'Accept': 'application/json'},
+            params = param)
+
+        if keyword != None:
+            res = fetched.json()["results"]
+            if len(res) == 0:
+                await ctx.send(ctx.author.mention + self.text.get("joke_notfound"))
+                return await utils.room_check(ctx)
+            JokeObj = random.choice(res)
+        else:
+            JokeObj = fetched.json()
+
+        jokeID = JokeObj["id"]
+        joke = JokeObj["joke"]
+
+        embed = self.embed(
+            ctx=ctx,
+            title=self.text.get("joke_found"),
+            description=joke,
+            footer="icanhazdadjoke.com/j/"+jokeID,
+            url="https://icanhazdadjoke.com/j/"+jokeID
+        )
         await ctx.send(embed=embed)
 
         await utils.room_check(ctx)
