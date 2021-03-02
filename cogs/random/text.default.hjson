@@ -2,6 +2,6 @@
 	answer: ((mention)) ((option))
 
 	flip: ["ano", "ne"],
-	joke_found: "Našla jsem ti vtip:"
-	joke_notfound: " takový vtip jsem nenašla ((emoji.sad))"
+
+	joke_notfound: ((mention)), takový vtip nenašla ((emoji.sad))
 }

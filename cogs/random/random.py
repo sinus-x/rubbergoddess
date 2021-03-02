@@ -158,44 +158,39 @@ class Random(rubbercog.Rubbercog):
 
     @commands.cooldown(rate=5, per=60, type=commands.BucketType.channel)
     @commands.command()
-    async def dadjoke(self, ctx, keyword: str = None):
-        """
-        Get random dad joke
+    async def dadjoke(self, ctx, *, keyword: str = None):
+        """Get random dad joke
 
         Arguments
         ---------
         keyword: search for a certain keyword in a joke
         """
+        if keyword is not None and ("&" in keyword or "?" in keyword):
+            await ctx.send(self.text.get("joke_notfound", mention=ctx.author.mention))
+            return await utils.room_check(ctx)
+
         param = {"limit": "30"}
         url = "https://icanhazdadjoke.com"
         if keyword != None:
-            param['term'] = keyword
+            param["term"] = keyword
             url += "/search"
 
-        fetched = requests.get(
-            url,
-            headers={'Accept': 'application/json'},
-            params = param)
+        fetched = requests.get(url, headers={"Accept": "application/json"}, params=param)
 
         if keyword != None:
             res = fetched.json()["results"]
             if len(res) == 0:
-                await ctx.send(ctx.author.mention + self.text.get("joke_notfound"))
+                await ctx.send(self.text.get("joke_notfound", mention=ctx.author.mention))
                 return await utils.room_check(ctx)
-            JokeObj = random.choice(res)
+            result = random.choice(res)
         else:
-            JokeObj = fetched.json()
-
-        jokeID = JokeObj["id"]
-        joke = JokeObj["joke"]
+            result = fetched.json()
 
         embed = self.embed(
             ctx=ctx,
-            title=self.text.get("joke_found"),
-            description=joke,
-            footer="icanhazdadjoke.com/j/"+jokeID,
-            url="https://icanhazdadjoke.com/j/"+jokeID
+            description=result["joke"],
+            footer="icanhazdadjoke.com",
+            url="https://icanhazdadjoke.com/j/" + result["id"],
         )
         await ctx.send(embed=embed)
-
         await utils.room_check(ctx)
