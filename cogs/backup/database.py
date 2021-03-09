@@ -25,6 +25,7 @@ def init():
 
 def wipe():
     database.base.metadata.drop_all(database.db)
+    init()
 
 
 class Information(database.base):
@@ -88,6 +89,36 @@ class User(database.base):
         return f'<User user_id="{self.user_id}" name="{self.name}">'
 
 
+class Emoji(database.base):
+    __tablename__ = "emojis"
+
+    emoji_id = Column(BigInteger, primary_key=True)
+    name = Column(String)
+    data = Column(LargeBinary)
+
+    @staticmethod
+    def get(emoji_id: int):
+        return (
+            session.query(Emoji)
+            .filter(
+                Emoji.emoji_id == emoji_id,
+            )
+            .one_or_none()
+        )
+
+    @staticmethod
+    def add(emoji_id: int, name: str, data):
+        if Emoji.get(emoji_id) is not None:
+            return
+
+        emoji = Emoji(emoji_id=emoji_id, name=name, data=data)
+        session.add(emoji)
+        session.commit()
+
+    def __repr__(self):
+        return f'<Emoji emoji_id="{self.emoji_id}" name="{self.name}">'
+
+
 class Message(database.base):
     __tablename__ = "messages"
 
@@ -137,4 +168,3 @@ class Message(database.base):
 
 
 wipe()
-init()
