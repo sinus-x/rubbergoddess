@@ -37,7 +37,7 @@ class Backup(commands.Cog):
         """
         now = datetime.datetime.now()
         database.Information.add(
-            guild_id=channel.guild.id,
+            id=channel.guild.id,
             channel_id=channel.id,
             author_id=ctx.author.id,
         )
@@ -61,7 +61,7 @@ class Backup(commands.Cog):
                     else None
                 )
                 database.Message.add(
-                    message_id=message.id,
+                    id=message.id,
                     author_id=message.author.id,
                     text=message.content,
                     attachments=attachments,
@@ -82,7 +82,7 @@ class Backup(commands.Cog):
         for user in users:
             try:
                 database.User.add(
-                    user_id=user.id,
+                    id=user.id,
                     name=user.name,
                     avatar=await user.avatar_url_as(format="png", size=256).read(),
                 )
@@ -128,12 +128,12 @@ class Backup(commands.Cog):
         """
         now = datetime.datetime.now()
         database.Information.add(
-            guild_id=ctx.guild.id,
+            id=ctx.guild.id,
             channel_id=ctx.channel.id,
             author_id=ctx.author.id,
         )
         database.User.add(
-            user_id=ctx.author.id,
+            id=ctx.author.id,
             name=ctx.author.name,
             avatar=await ctx.author.avatar_url_as(format="png", size=256).read(),
         )
@@ -142,7 +142,7 @@ class Backup(commands.Cog):
         for emoji in ctx.guild.emojis:
             try:
                 database.Emoji.add(
-                    emoji_id=emoji.id,
+                    id=emoji.id,
                     name=emoji.name,
                     data=await emoji.url.read(),
                 )
