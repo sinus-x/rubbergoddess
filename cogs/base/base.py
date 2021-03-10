@@ -23,7 +23,7 @@ class Base(rubbercog.Rubbercog):
     ## Commands
     ##
 
-    @commands.cooldown(rate=2, per=20.0, type=commands.BucketType.user)
+    @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.channel)
     @commands.command()
     async def uptime(self, ctx):
         """Bot uptime"""
@@ -33,12 +33,13 @@ class Base(rubbercog.Rubbercog):
         embed = self.embed(ctx=ctx)
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
+    @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.channel)
     @commands.command()
     async def ping(self, ctx):
         """Bot latency"""
-        await ctx.send("pong: **{:.2f} s**".format(self.bot.latency))
+        await ctx.reply("pong: **{:.2f} s**".format(self.bot.latency))
 
     ##
     ## Listeners

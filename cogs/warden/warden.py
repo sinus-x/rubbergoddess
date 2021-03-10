@@ -378,7 +378,7 @@ class Warden(rubbercog.Rubbercog):
             + "_",
         )
         embed.set_footer(text=f"{message.author.id} | {message.id}")
-        m = await message.channel.send(embed=embed)
+        m = await message.channel.reply(embed=embed)
         await m.add_reaction("❎")
         await m.add_reaction("🆗")
 

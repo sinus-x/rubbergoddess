@@ -1,10 +1,13 @@
 {
-	me:    Máš **((points))** bodů, držíš se na **((position)).** místě.
-	stalk: Uživatel **((display_name))** má **((points))** bodů a drží se na **((position)).** místě.
-
 	unknown: ???
 
-	embed: {
+	get: {
+		description: Body uživatele **((user))**
+		name:  Počet a pořadí
+		value: **((points))** (((position)).)
+	}
+
+	board: {
 		title: "Body  "
 
 		# note: *_n must have comma, *_0 cannot

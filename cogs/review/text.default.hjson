@@ -2,7 +2,7 @@
 	no_subject: Takový předmět neznám.
 
 	# review list
-	empty: ((mention)), žádné předměty ještě nebyly ohodnoceny.
+	empty: Žádné předměty ještě nebyly ohodnoceny.
 
 	# review info
 	info: {
@@ -18,7 +18,7 @@
 	}
 
 	# review subject
-	no_reviews: ((mention)), předmět ještě žádné hodnocení nemá.
+	no_reviews: Předmět ještě žádné hodnocení nemá.
 
 	embed: {
 		title:     "Review: "

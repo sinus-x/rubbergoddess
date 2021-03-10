@@ -5,6 +5,10 @@
 ### Added
 
 - `dadjoke` command ([PR-261] by [nicx321])
+- `Backup` cog
+- Use Discord's replies
+- `points` and `karma` user reply contains user's avatar
+- Namedays are retrieved over HTTPS
 
 ### Updated
 

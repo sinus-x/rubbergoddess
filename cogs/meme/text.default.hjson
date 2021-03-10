@@ -1,5 +1,5 @@
 {
-	fishing_fail: Smůla, ((mention)) ((emoji.sad))
+	fishing_fail: Smůla ((emoji.sad))
 
 	no_relations:   Žádné informace nemám ((emoji.sad))
     relations_help: rozdáno / získáno

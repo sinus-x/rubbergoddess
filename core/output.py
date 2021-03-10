@@ -106,7 +106,7 @@ class Output:
 
             result += template_cont.format(error=error, traceback=tr)
 
-        await source.send(result)
+        await source.reply(result)
 
 
 class Console:

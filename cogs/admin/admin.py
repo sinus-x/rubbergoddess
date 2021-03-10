@@ -133,64 +133,31 @@ class Admin(rubbercog.Rubbercog):
         await ctx.send("```\n{}\n```".format(stdout))
 
     @commands.check(acl.check)
-    @commands.command(name="journalctl")
-    async def journalctl(self, ctx: commands.Context):
-        """See bot logs"""
-        cmd = None
-        result = None
-
-        if config.loader == "standalone":
-            result = await self._readFile(ctx, "rubbergoddess.log")
-        elif config.loader == "systemd":
-            cmd = "sudo journalctl -u rubbergoddess"
-            try:
-                result = subprocess.check_output(cmd + " | tail -n 40", shell=True).decode("utf-8")
-            except subprocess.CalledProcessError as e:
-                await self.output.error(ctx, "Subprocess error", e)
-                return
-
-        output = list(result[0 + i : 1960 + i] for i in range(0, len(result), 1960))
-        for o in output:
-            await ctx.send("```{}```".format(o))
-        await utils.delete(ctx)
-
-    @commands.check(acl.check)
     @commands.command()
     async def config(self, ctx):
         """See configuration from 'bot' section"""
         embed = self.embed(ctx=ctx)
 
-        # fmt: off
         # hosting
         embed.add_field(
             name=self.text.get("config_embed", "host"),
-            value=config.get("bot", "host")
+            value=config.get("bot", "host"),
         )
         embed.add_field(
             name=self.text.get("config_embed", "loader"),
-            value=config.get("bot", "loader")
+            value=config.get("bot", "loader"),
         )
         # logging
         embed.add_field(
             name=self.text.get("config_embed", "log_level"),
-            value=config.get("bot", "logging")
+            value=config.get("bot", "logging"),
         )
         # extensions
-        embed.add_field(
-            name=self.text.get("config_embed", "default_cogs"),
-            value=", ".join([
-                x.lower()
-                for x
-                in sorted(config.get("bot", "extensions").append("errors"))
-            ]),
-            inline=False,
-        )
         embed.add_field(
             name=self.text.get("config_embed", "loaded_cogs"),
             value=", ".join([x.lower() for x in sorted(self.bot.cogs.keys())]),
             inline=False,
         )
-        # fmt: on
 
         await ctx.send(embed=embed)
         await utils.delete(ctx)

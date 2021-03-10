@@ -43,7 +43,7 @@ class Stalker(rubbercog.Rubbercog):
             ),
         )
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.check(acl.check)
     @commands.command(name="channelinfo")

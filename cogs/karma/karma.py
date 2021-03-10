@@ -55,7 +55,8 @@ class Karma(rubbercog.Rubbercog):
             name=self.text.get("stalk_negative"),
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
-        await ctx.send(embed=embed)
+        embed.set_thumbnail(url=member.avatar_url_as(size=256))
+        await ctx.reply(embed=embed)
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
@@ -69,13 +70,13 @@ class Karma(rubbercog.Rubbercog):
             except (ValueError, IndexError):
                 return await utils.send_help(ctx)
             except discord.NotFound:
-                return await ctx.send(self.text.get("emoji_not_found"))
+                return await ctx.reply(self.text.get("emoji_not_found"))
 
         value = repo_k.emoji_value_raw(emoji)
         if value is None:
-            return await ctx.send(self.text.get("emoji_not_voted"))
+            return await ctx.reply(self.text.get("emoji_not_voted"))
 
-        await ctx.send(self.text.get("emoji", emoji=str(emoji), value=str(value)))
+        await ctx.reply(self.text.get("emoji", emoji=str(emoji), value=str(value)))
         await utils.room_check(ctx)
 
     @commands.guild_only()
@@ -263,7 +264,7 @@ class Karma(rubbercog.Rubbercog):
             )
         else:
             embed.add_field(name="\u200b", value=self.text.get("embed_disabled"), inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
         await utils.room_check(ctx)
 
@@ -272,7 +273,7 @@ class Karma(rubbercog.Rubbercog):
     async def karma_give(self, ctx, member: discord.Member, value: int):
         """Give karma points to someone"""
         repo_k.update_karma(member=member, giver=ctx.author, emoji_value=value)
-        await ctx.send(self.text.get("give", "given" if value > 0 else "taken"))
+        await ctx.reply(self.text.get("give", "given" if value > 0 else "taken"))
         await self.event.sudo(ctx, f"{member} got {value} karma points.")
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
@@ -481,7 +482,7 @@ class Karma(rubbercog.Rubbercog):
         embed = self.embed(ctx=ctx, title=title, description=description)
         embed = self._fill_leaderboard(embed, member=ctx.author, order=parameter, offset=offset)
 
-        message = await ctx.send(embed=embed)
+        message = await ctx.reply(embed=embed)
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
         await message.add_reaction("▶")
