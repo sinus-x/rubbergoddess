@@ -38,6 +38,12 @@ python3 -m pip install -r requirements-dev.txt
 pre-commit install
 ```
 
+## Packages
+
+When fetching data online, prefer `aiohttp` over `requests` (yes, the code uses it from legacy reasons, but it shouldn't be added).
+
+If you use Sublime Text, install the package [`requirementstxt`](https://github.com/wuub/requirementstxt) and set syntax of `requirements.txt`. You can press `Alt+,` to update package version pins. **If the major version changes, revert the settings OR make sure *ALL* functionality the bot uses is still working.**
+
 ## Cog organisation
 
 Each module has its directory in `cogs/`, inside of it there is `__init__.py` file and file with the same name as its directory:
