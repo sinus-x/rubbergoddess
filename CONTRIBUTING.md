@@ -68,8 +68,8 @@ import discord
 from discord.ext import commands
 
 # bot
-from cogs.resource import CogConfig, CotText
-from core import rubbercog, utils
+from cogs.resource import CogConfig, CogText
+from core import acl, rubbercog, utils
 ```
 
 The class has four parts: init, commands, logic, helper functions and error catching. Not all parts have to be present.
@@ -90,11 +90,13 @@ class Test(rubbercog.Rubbercog):
 	## Commands
 	##
 
+	@commands.check(acl.check)
 	@commands.group(name="foo")
 	async def foo(self, ctx):
 		"""Command group"""
 		await utils.send_help(ctx)
 
+	@commands.check(acl.check)
 	@foo.command()
 	async def foo_bar(self, ctx):
 		"""Do bar"""
@@ -107,3 +109,5 @@ class Test(rubbercog.Rubbercog):
 	def fill_embed(self, ctx: commands.Context) -> discord.Embed:
 		pass
 ```
+
+If the bot's reply is an embed, the original message _should_ be deleted (because there is author reference in the footer), unless there is a reason not to do so. If the reply is regular message and the trigger message is not being removed, it should be a reply -- mentioning one, unles there's reason not to.

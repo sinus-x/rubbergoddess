@@ -56,8 +56,9 @@ class Karma(rubbercog.Rubbercog):
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
         embed.set_thumbnail(url=member.avatar_url_as(size=256))
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
         await utils.room_check(ctx)
+        await utils.delete(ctx.message)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emoji")
@@ -277,25 +278,25 @@ class Karma(rubbercog.Rubbercog):
         await self.event.sudo(ctx, f"{member} got {value} karma points.")
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command(aliases=["karmaboard"])
+    @karma.command(aliases=["karmaboard"])
     async def leaderboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.send_leaderboard(ctx, "desc", offset)
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command()
+    @karma.command()
     async def loserboard(self, ctx, offset: int = 0):
         """Karma leaderboard, from the worst"""
         await self.send_leaderboard(ctx, "asc", offset)
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command()
+    @karma.command()
     async def givingboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.send_leaderboard(ctx, "give", offset)
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command(aliases=["stealingboard"])
+    @karma.command(aliases=["stealingboard"])
     async def takingboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.send_leaderboard(ctx, "take", offset)
@@ -482,12 +483,13 @@ class Karma(rubbercog.Rubbercog):
         embed = self.embed(ctx=ctx, title=title, description=description)
         embed = self._fill_leaderboard(embed, member=ctx.author, order=parameter, offset=offset)
 
-        message = await ctx.reply(embed=embed)
+        message = await ctx.send(embed=embed)
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
         await message.add_reaction("▶")
 
         await utils.room_check(ctx)
+        await utils.delete(ctx.message)
 
     def _fill_leaderboard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
         limit = self.config.get("leaderboard limit")

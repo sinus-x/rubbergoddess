@@ -67,8 +67,9 @@ class Points(rubbercog.Rubbercog):
                 position=repo_p.getPosition(getattr(result, "points", 0)),
             ),
         )
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
         await utils.room_check(ctx)
+        await utils.delete(ctx.message)
 
     @points.command(name="leaderboard", aliases=["🏆"])
     async def points_leaderboard(self, ctx):
@@ -98,10 +99,11 @@ class Points(rubbercog.Rubbercog):
                 inline=False,
             )
 
-        message = await ctx.reply(embed=embed)
+        message = await ctx.send(embed=embed)
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
         await message.add_reaction("▶")
+        await utils.delete(ctx.message)
         await utils.room_check(ctx)
 
     @points.command(name="loserboard", aliases=["💩"])
@@ -130,10 +132,11 @@ class Points(rubbercog.Rubbercog):
                 inline=False,
             )
 
-        message = await ctx.reply(embed=embed)
+        message = await ctx.send(embed=embed)
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
         await message.add_reaction("▶")
+        await utils.delete(ctx.message)
         await utils.room_check(ctx)
 
     ##

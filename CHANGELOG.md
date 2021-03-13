@@ -14,6 +14,7 @@
 
 - Librarian properly displays the `week` command
 - Animals module sends the user avatar when the vote is announced
+- Moved karma \*boards under the `karma` command as subcommands
 
 ## [1.3.0]
 

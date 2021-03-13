@@ -62,8 +62,7 @@ class Librarian(rubbercog.Rubbercog):
                 name=self.text.get("week", "study"),
                 value=str(stud_week),
             )
-        await ctx.reply(embed=embed)
-
+        await ctx.send(embed=embed)
         await utils.delete(ctx)
 
     @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
@@ -185,8 +184,9 @@ class Librarian(rubbercog.Rubbercog):
             )
         embed.add_field(name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s")
 
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
         await utils.room_check(ctx)
+        await utils.delete(ctx)
 
     @commands.command(aliases=["b64"])
     async def base64(self, ctx, direction: str, *, data: str):
@@ -258,6 +258,8 @@ class Librarian(rubbercog.Rubbercog):
         url = f"https://api.maclookup.app/v2/macs/{mac}?format=json&apiKey={apikey}"
         res = await utils.fetch_json(url)
 
+        await utils.delete(ctx.message)
+
         if res["success"] is False:
             embed = self.embed(
                 ctx=ctx,
@@ -265,7 +267,7 @@ class Librarian(rubbercog.Rubbercog):
                 description=res["error"],
                 footer="maclookup.app",
             )
-            return await ctx.reply(embed=embed)
+            return await ctx.send(embed=embed)
 
         if res["found"] is False:
             embed = self.embed(
@@ -274,7 +276,7 @@ class Librarian(rubbercog.Rubbercog):
                 description=self.text.get("maclookup", "not_found"),
                 footer="maclookup.app",
             )
-            return await ctx.reply(embed=embed)
+            return await ctx.send(embed=embed)
 
         embed = self.embed(ctx=ctx, title=res["macPrefix"], footer="maclookup.app")
         embed.add_field(
@@ -289,7 +291,7 @@ class Librarian(rubbercog.Rubbercog):
             block += f"\n`{res['blockEnd']}`"
         embed.add_field(name=self.text.get("maclookup", "block"), value=f'`{res["blockStart"]}`')
 
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.cooldown(rate=2, per=20, type=commands.BucketType.user)
     # The API has limit of 45 requests per minute
@@ -312,6 +314,8 @@ class Librarian(rubbercog.Rubbercog):
         # If it is `0`, we must stop for `X-ttl` seconds.
         # https://ip-api.com/docs/api:json
 
+        await utils.delete(ctx.message)
+
         if res["status"] == "fail":
             embed = self.embed(
                 ctx=ctx,
@@ -319,7 +323,7 @@ class Librarian(rubbercog.Rubbercog):
                 description="`" + res["message"] + "`",
                 footer="ip-api.com",
             )
-            return await ctx.reply(embed=embed)
+            return await ctx.send(embed=embed)
 
         embed = self.embed(ctx=ctx, title=res["query"], footer="ip-api.com")
         embed.add_field(
@@ -340,4 +344,4 @@ class Librarian(rubbercog.Rubbercog):
             value=res["isp"],
         )
 
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
