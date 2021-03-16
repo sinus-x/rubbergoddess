@@ -28,10 +28,8 @@ Get random cat image via [The Cat API](https://thecatapi.com).
 
 Get random dog image via [The Dog API](https://thedogapi.com).
 
+### dadjoke
 
-## Privileged commands
-
-This module has no commands only usable by privileged users.
-
+Get random dad joke via [Can I Haz Dad Joke](https://icanhazdadjoke.com).
 
 ← Back to [module list](index.md) or [home](../index.md)

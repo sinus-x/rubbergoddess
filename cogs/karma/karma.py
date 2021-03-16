@@ -55,8 +55,10 @@ class Karma(rubbercog.Rubbercog):
             name=self.text.get("stalk_negative"),
             value=f"**{k.negative.value}** ({k.negative.position}.)",
         )
+        embed.set_thumbnail(url=member.avatar_url_as(size=256))
         await ctx.send(embed=embed)
         await utils.room_check(ctx)
+        await utils.delete(ctx.message)
 
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emoji")
@@ -69,13 +71,13 @@ class Karma(rubbercog.Rubbercog):
             except (ValueError, IndexError):
                 return await utils.send_help(ctx)
             except discord.NotFound:
-                return await ctx.send(self.text.get("emoji_not_found"))
+                return await ctx.reply(self.text.get("emoji_not_found"))
 
         value = repo_k.emoji_value_raw(emoji)
         if value is None:
-            return await ctx.send(self.text.get("emoji_not_voted"))
+            return await ctx.reply(self.text.get("emoji_not_voted"))
 
-        await ctx.send(self.text.get("emoji", emoji=str(emoji), value=str(value)))
+        await ctx.reply(self.text.get("emoji", emoji=str(emoji), value=str(value)))
         await utils.room_check(ctx)
 
     @commands.guild_only()
@@ -263,7 +265,7 @@ class Karma(rubbercog.Rubbercog):
             )
         else:
             embed.add_field(name="\u200b", value=self.text.get("embed_disabled"), inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
         await utils.room_check(ctx)
 
@@ -272,29 +274,29 @@ class Karma(rubbercog.Rubbercog):
     async def karma_give(self, ctx, member: discord.Member, value: int):
         """Give karma points to someone"""
         repo_k.update_karma(member=member, giver=ctx.author, emoji_value=value)
-        await ctx.send(self.text.get("give", "given" if value > 0 else "taken"))
+        await ctx.reply(self.text.get("give", "given" if value > 0 else "taken"))
         await self.event.sudo(ctx, f"{member} got {value} karma points.")
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command(aliases=["karmaboard"])
+    @karma.command(aliases=["karmaboard"])
     async def leaderboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.send_leaderboard(ctx, "desc", offset)
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command()
+    @karma.command()
     async def loserboard(self, ctx, offset: int = 0):
         """Karma leaderboard, from the worst"""
         await self.send_leaderboard(ctx, "asc", offset)
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command()
+    @karma.command()
     async def givingboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.send_leaderboard(ctx, "give", offset)
 
     @commands.cooldown(rate=3, per=30, type=commands.BucketType.channel)
-    @commands.command(aliases=["stealingboard"])
+    @karma.command(aliases=["stealingboard"])
     async def takingboard(self, ctx, offset: int = 0):
         """Karma leaderboard"""
         await self.send_leaderboard(ctx, "take", offset)
@@ -487,6 +489,7 @@ class Karma(rubbercog.Rubbercog):
         await message.add_reaction("▶")
 
         await utils.room_check(ctx)
+        await utils.delete(ctx.message)
 
     def _fill_leaderboard(self, embed, *, member, order: str, offset: int) -> discord.Embed:
         limit = self.config.get("leaderboard limit")

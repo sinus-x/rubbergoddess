@@ -34,7 +34,7 @@ class Review(rubbercog.Rubbercog):
         """See subject's reviews"""
         db_subject = repo_s.get(subject)
         if db_subject is None:
-            return await ctx.send(self.text.get("no_subject"))
+            return await ctx.reply(self.text.get("no_subject"))
 
         title = self.text.get("embed", "title") + subject
         name = db_subject.name if db_subject.name is not None else discord.Embed.Empty
@@ -43,7 +43,7 @@ class Review(rubbercog.Rubbercog):
 
         db_reviews = repo_r.get_subject_reviews(subject)
         if db_reviews.count() == 0:
-            return await ctx.send(self.text.get("no_reviews", mention=ctx.author.mention))
+            return await ctx.reply(self.text.get("no_reviews"))
 
         _total = 0
         for db_review in db_reviews:
@@ -72,9 +72,9 @@ class Review(rubbercog.Rubbercog):
             subjects.add(r.subject)
 
         if not len(subjects):
-            return await ctx.send(self.text.get("empty"), mention=ctx.author.mention)
+            return await ctx.reply(self.text.get("empty"))
 
-        await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
+        await ctx.reply(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
 
     @commands.check(acl.check)
     @review.command(name="my-list")
@@ -86,9 +86,9 @@ class Review(rubbercog.Rubbercog):
                 subjects.add(r.subject)
 
         if not len(subjects):
-            return await ctx.send(self.text.get("empty"), mention=ctx.author.mention)
+            return await ctx.reply(self.text.get("empty"))
 
-        await ctx.send(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
+        await ctx.reply(">>> " + ", ".join(f"`{s}`" for s in sorted(subjects)))
 
     @commands.check(acl.check)
     @review.command(name="add", aliases=["update"])
@@ -103,7 +103,7 @@ class Review(rubbercog.Rubbercog):
 
         if result is not None:
             await self.event.user(ctx, f"Review **#{result.id}** for **{subject}**.")
-            await ctx.send(self.text.get("added"))
+            await ctx.reply(self.text.get("added"))
 
     @commands.check(acl.check)
     @review.command(name="add-anonymous", aliases=["anonymous", "anon"])
@@ -134,7 +134,7 @@ class Review(rubbercog.Rubbercog):
 
         repo_r.remove(review.id)
         await self.event.user(ctx, f"Removed review for **{subject}**.")
-        return await ctx.send(self.text.get("removed"))
+        return await ctx.reply(self.text.get("removed"))
 
     @commands.check(acl.check)
     @commands.group(name="sudo_review")
@@ -152,7 +152,7 @@ class Review(rubbercog.Rubbercog):
 
         repo_r.remove(id)
         await self.event.sudo(ctx, f"Review **#{id}** removed")
-        return await ctx.send(self.text.get("removed"))
+        return await ctx.reply(self.text.get("removed"))
 
     @commands.check(acl.check)
     @commands.group(name="subject")
@@ -186,7 +186,7 @@ class Review(rubbercog.Rubbercog):
             inline=False,
         )
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.check(acl.check)
     @subject.command(name="add")
@@ -199,11 +199,11 @@ class Review(rubbercog.Rubbercog):
         """
         db_subject = repo_s.get(subject)
         if db_subject is not None:
-            return await ctx.send(self.text.get("subject_exists"))
+            return await ctx.reply(self.text.get("subject_exists"))
 
         repo_s.add(subject, name, category)
         await self.event.sudo(ctx, f"Subject **{subject}** added.")
-        await ctx.send(self.text.get("subject_added"))
+        await ctx.reply(self.text.get("subject_added"))
 
     @commands.check(acl.check)
     @subject.command(name="update")
@@ -216,11 +216,11 @@ class Review(rubbercog.Rubbercog):
         """
         db_subject = repo_s.get(subject)
         if db_subject is None:
-            return await ctx.send(self.text.get("no_subject"))
+            return await ctx.reply(self.text.get("no_subject"))
 
         repo_s.update(subject, name=name, category=category)
         await self.event.sudo(ctx, f"Subject **{subject}** updated.")
-        await ctx.send(self.text.get("subject_updated"))
+        await ctx.reply(self.text.get("subject_updated"))
 
     @commands.check(acl.check)
     @subject.command(name="remove")
@@ -231,11 +231,11 @@ class Review(rubbercog.Rubbercog):
         """
         db_subject = repo_s.get(subject)
         if db_subject is None:
-            return await ctx.send(self.text.get("no_subject"))
+            return await ctx.reply(self.text.get("no_subject"))
 
         repo_s.remove(subject)
         await self.event.sudo(ctx, f"Subject **{subject}** removed.")
-        await ctx.send(self.text.get("subject_removed"))
+        await ctx.reply(self.text.get("subject_removed"))
 
     ##
     ## Listeners

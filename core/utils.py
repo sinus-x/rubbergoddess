@@ -138,14 +138,14 @@ async def delete(thing):
     if isinstance(thing, discord.Message):
         try:
             await thing.delete()
-        except discord.Forbidden:
+        except discord.errors.HTTPException:
             pass
 
 
 async def remove_reaction(reaction, user):
     try:
         await reaction.remove(user)
-    except Exception:
+    except discord.errors.HTTPException:
         pass
 
 

@@ -38,7 +38,7 @@ class Points(rubbercog.Rubbercog):
 
     @commands.group(name="points", aliases=["body"])
     async def points(self, ctx):
-        """Points? Points!"""
+        """Get information about user points"""
         await utils.send_help(ctx)
 
     @points.command(name="get", aliases=["gde", "me", "stalk"])
@@ -48,33 +48,41 @@ class Points(rubbercog.Rubbercog):
             member = ctx.author
 
         result = repo_p.get(member.id)
-        position = repo_p.getPosition(result.points)
 
-        if member.id == ctx.author.id:
-            text = self.text.get("me", points=result.points, position=position)
-        else:
-            text = self.text.get(
-                "stalk",
-                display_name=self.sanitise(member.display_name),
-                points=result.points,
-                position=position,
-            )
-
-        await ctx.send(text)
+        embed = self.embed(
+            ctx=ctx,
+            description=self.text.get(
+                "get",
+                "description",
+                user=self.sanitise(member.display_name),
+            ),
+        )
+        embed.set_thumbnail(url=member.avatar_url_as(size=256))
+        embed.add_field(
+            name=self.text.get("get", "name"),
+            value=self.text.get(
+                "get",
+                "value",
+                points=getattr(result, "points", 0),
+                position=repo_p.getPosition(getattr(result, "points", 0)),
+            ),
+        )
+        await ctx.send(embed=embed)
         await utils.room_check(ctx)
+        await utils.delete(ctx.message)
 
     @points.command(name="leaderboard", aliases=["🏆"])
     async def points_leaderboard(self, ctx):
         """Points leaderboard"""
         embed = self.embed(
             ctx=ctx,
-            title=self.text.get("embed", "title") + self.text.get("embed", "desc_suffix"),
-            description=self.text.get("embed", "desc_description"),
+            title=self.text.get("board", "title") + self.text.get("board", "desc_suffix"),
+            description=self.text.get("board", "desc_description"),
         )
         users = repo_p.getUsers("desc", limit=self.config.get("board"), offset=0)
         value = self._getBoard(ctx.author, users)
         embed.add_field(
-            name=self.text.get("embed", "desc_0", num=self.config.get("board")),
+            name=self.text.get("board", "desc_0", num=self.config.get("board")),
             value=value,
             inline=False,
         )
@@ -84,7 +92,7 @@ class Points(rubbercog.Rubbercog):
             author = repo_p.get(ctx.author.id)
 
             embed.add_field(
-                name=self.text.get("embed", "user"),
+                name=self.text.get("board", "user"),
                 value="`{points:>8}` … {name}".format(
                     points=author.points, name="**" + self.sanitise(ctx.author.display_name) + "**"
                 ),
@@ -95,6 +103,7 @@ class Points(rubbercog.Rubbercog):
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
         await message.add_reaction("▶")
+        await utils.delete(ctx.message)
         await utils.room_check(ctx)
 
     @points.command(name="loserboard", aliases=["💩"])
@@ -102,13 +111,13 @@ class Points(rubbercog.Rubbercog):
         """Points loserboard"""
         embed = self.embed(
             ctx=ctx,
-            title=self.text.get("embed", "title") + self.text.get("embed", "asc_suffix"),
-            description=self.text.get("embed", "asc_description"),
+            title=self.text.get("board", "title") + self.text.get("board", "asc_suffix"),
+            description=self.text.get("board", "asc_description"),
         )
         users = repo_p.getUsers("asc", limit=self.config.get("board"), offset=0)
         value = self._getBoard(ctx.author, users)
         embed.add_field(
-            name=self.text.get("embed", "asc_0", num=self.config.get("board")), value=value
+            name=self.text.get("board", "asc_0", num=self.config.get("board")), value=value
         )
 
         # if the user is not present, add them to second field
@@ -116,7 +125,7 @@ class Points(rubbercog.Rubbercog):
             author = repo_p.get(ctx.author.id)
 
             embed.add_field(
-                name=self.text.get("embed", "user"),
+                name=self.text.get("board", "user"),
                 value="`{points:>8}` … {name}".format(
                     points=author.points, name="**" + self.sanitise(ctx.author.display_name) + "**"
                 ),
@@ -127,6 +136,7 @@ class Points(rubbercog.Rubbercog):
         await message.add_reaction("⏪")
         await message.add_reaction("◀")
         await message.add_reaction("▶")
+        await utils.delete(ctx.message)
         await utils.room_check(ctx)
 
     ##
@@ -182,14 +192,14 @@ class Points(rubbercog.Rubbercog):
         # fmt: off
         if len(reaction.message.embeds) != 1 \
         or type(reaction.message.embeds[0].title) != str \
-        or not reaction.message.embeds[0].title.startswith(self.text.get("embed", "title")):
+        or not reaction.message.embeds[0].title.startswith(self.text.get("board", "title")):
             return
         # fmt: on
 
         embed = reaction.message.embeds[0]
 
         # get ordering
-        if embed.title.endswith(self.text.get("embed", "desc_suffix")):
+        if embed.title.endswith(self.text.get("board", "desc_suffix")):
             order = "desc"
         else:
             order = "asc"
@@ -219,10 +229,10 @@ class Points(rubbercog.Rubbercog):
 
         if offset:
             name = self.text.get(
-                "embed", order + "_n", num=self.config.get("board"), offset=offset + 1
+                "board", order + "_n", num=self.config.get("board"), offset=offset + 1
             )
         else:
-            name = self.text.get("embed", order + "_0", num=self.config.get("board"))
+            name = self.text.get("board", order + "_0", num=self.config.get("board"))
         embed.clear_fields()
         embed.add_field(name=name, value=value, inline=False)
 
@@ -231,7 +241,7 @@ class Points(rubbercog.Rubbercog):
             author = repo_p.get(user.id)
 
             embed.add_field(
-                name=self.text.get("embed", "user"),
+                name=self.text.get("board", "user"),
                 value="`{points:>8}` … {name}".format(
                     points=author.points, name="**" + self.sanitise(user.display_name) + "**"
                 ),

@@ -51,9 +51,9 @@ class Meme(rubbercog.Rubbercog):
         await ctx.send(
             emote.hug_right
             + (
-                " **" + hugged.display_name + "**"
-                if type(target) == discord.Member
-                else " ***" + hugged.name + "***"
+                " ***" + hugged.display_name + "***"
+                if type(target) == discord.Role
+                else " **" + hugged.name + "**"
             )
         )
 
@@ -91,7 +91,10 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                await ctx.send(file=discord.File(fp=image_binary, filename="whip.gif"))
+                await ctx.reply(
+                    file=discord.File(fp=image_binary, filename="whip.gif"),
+                    mention_author=False,
+                )
 
             return
 
@@ -129,7 +132,10 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                await ctx.send(file=discord.File(fp=image_binary, filename="spank.gif"))
+                await ctx.reply(
+                    file=discord.File(fp=image_binary, filename="spank.gif"),
+                    mention_author=False,
+                )
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -168,18 +174,10 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
-
-            return
-
-            # this is a more intensive solution that creates non-transparent
-            # background without it being glitched
-
-            with BytesIO() as image_binary:
-                image_utils.save_gif(frames, 30, image_binary)
-                image_binary.seek(0)
-
-                await ctx.send(file=discord.File(fp=image_binary, filename="pet.gif"))
+                await ctx.reply(
+                    file=discord.File(fp=image_binary, filename="pet.gif"),
+                    mention_author=False,
+                )
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -218,7 +216,10 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                await ctx.send(file=discord.File(fp=image_binary, filename="hyperpet.gif"))
+                await ctx.reply(
+                    file=discord.File(fp=image_binary, filename="hyperpet.gif"),
+                    mention_author=False,
+                )
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -257,7 +258,10 @@ class Meme(rubbercog.Rubbercog):
                     optimize=False,
                 )
                 image_binary.seek(0)
-                await ctx.send(file=discord.File(fp=image_binary, filename="bonk.gif"))
+                await ctx.reply(
+                    file=discord.File(fp=image_binary, filename="bonk.gif"),
+                    mention_author=False,
+                )
 
     @commands.guild_only()
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -278,12 +282,13 @@ class Meme(rubbercog.Rubbercog):
 
         repo_i.add(ctx.guild.id, "slap", slapper.id, slapped.id)
 
-        await ctx.send(
+        await ctx.reply(
             "**{}**{} {}".format(
                 self.sanitise(slapper.display_name),
                 random.choice(options),
                 self.sanitise(slapped.display_name),
-            )
+            ),
+            mention_author=False,
         )
 
     @commands.guild_only()
@@ -310,6 +315,7 @@ class Meme(rubbercog.Rubbercog):
             embed.add_field(name=f"{config.prefix}{action}", value=value)
 
         await ctx.send(embed=embed)
+        await utils.delete(ctx.message)
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
@@ -351,9 +357,9 @@ class Meme(rubbercog.Rubbercog):
                 options = harvest
                 break
         else:
-            return await ctx.send(self.text.get("fishing_fail", mention=ctx.author.mention))
+            return await ctx.reply(self.text.get("fishing_fail"))
 
-        await ctx.send(random.choice(options))
+        await ctx.reply(random.choice(options))
 
     ##
     ## Logic

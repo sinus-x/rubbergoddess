@@ -6,6 +6,7 @@ from discord.ext import commands
 
 from cogs.resource import CogText
 from core import rubbercog, utils
+from core.emote import emote
 
 
 class Random(rubbercog.Rubbercog):
@@ -30,7 +31,7 @@ class Random(rubbercog.Rubbercog):
 
         option = self.sanitise(random.choice(args), limit=50)
         if option is not None:
-            await ctx.send(self.text.get("answer", mention=ctx.author.mention, option=option))
+            await ctx.reply(option)
 
         await utils.room_check(ctx)
 
@@ -39,7 +40,7 @@ class Random(rubbercog.Rubbercog):
     async def flip(self, ctx):
         """Yes/No"""
         option = random.choice(self.text.get("flip"))
-        await ctx.send(self.text.get("answer", mention=ctx.author.mention, option=option))
+        await ctx.reply(option)
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20.0, type=commands.BucketType.user)
@@ -53,7 +54,7 @@ class Random(rubbercog.Rubbercog):
             first, second = second, first
 
         option = random.randint(first, second)
-        await ctx.send(self.text.get("answer", mention=ctx.author.mention, option=option))
+        await ctx.reply(option)
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
@@ -69,7 +70,7 @@ class Random(rubbercog.Rubbercog):
         # we cannot use the URL directly, because embed will contain other image than its thumbnail
         image = requests.get(url)
         if image.status_code != 200:
-            return await ctx.send(f"E{image.status_code}")
+            return await ctx.reply(f"E{image.status_code}")
 
         # get image info
         # example url: https://i.picsum.photos/id/857/600/360.jpg?hmac=.....
@@ -85,7 +86,7 @@ class Random(rubbercog.Rubbercog):
             footer += f" ({seed})"
         embed = self.embed(ctx=ctx, title=discord.Embed.Empty, description=image_url, footer=footer)
         embed.set_image(url=image.url)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
         await utils.room_check(ctx)
 
@@ -95,25 +96,25 @@ class Random(rubbercog.Rubbercog):
         """Get random image of a cat"""
         data = requests.get("https://api.thecatapi.com/v1/images/search")
         if data.status_code != 200:
-            return await ctx.send(f"E{data.status_code}")
+            return await ctx.reply(f"E{data.status_code}")
 
         embed = self.embed(ctx=ctx, title=discord.Embed.Empty, footer="thecatapi.com")
         embed.set_image(url=data.json()[0]["url"])
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=20, type=commands.BucketType.channel)
     @commands.command()
     async def dog(self, ctx):
-        """Get random image of a cat"""
+        """Get random image of a dog"""
         data = requests.get("https://api.thedogapi.com/v1/images/search")
         if data.status_code != 200:
-            return await ctx.send(f"E{data.status_code}")
+            return await ctx.reply(f"E{data.status_code}")
 
         embed = self.embed(ctx=ctx, title=discord.Embed.Empty, footer="thedogapi.com")
         embed.set_image(url=data.json()[0]["url"])
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
         await utils.room_check(ctx)
 
@@ -151,6 +152,45 @@ class Random(rubbercog.Rubbercog):
             inline=False,
         )
         embed.set_image(url=fetched["img"])
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
+        await utils.room_check(ctx)
+
+    @commands.cooldown(rate=5, per=60, type=commands.BucketType.channel)
+    @commands.command()
+    async def dadjoke(self, ctx, *, keyword: str = None):
+        """Get random dad joke
+
+        Arguments
+        ---------
+        keyword: search for a certain keyword in a joke
+        """
+        if keyword is not None and ("&" in keyword or "?" in keyword):
+            await ctx.reply(self.text.get("joke_notfound"))
+            return await utils.room_check(ctx)
+
+        param = {"limit": "30"}
+        url = "https://icanhazdadjoke.com"
+        if keyword != None:
+            param["term"] = keyword
+            url += "/search"
+
+        fetched = requests.get(url, headers={"Accept": "application/json"}, params=param)
+
+        if keyword != None:
+            res = fetched.json()["results"]
+            if len(res) == 0:
+                await ctx.reply(self.text.get("joke_notfound"))
+                return await utils.room_check(ctx)
+            result = random.choice(res)
+        else:
+            result = fetched.json()
+
+        embed = self.embed(
+            ctx=ctx,
+            description=result["joke"],
+            footer="icanhazdadjoke.com",
+            url="https://icanhazdadjoke.com/j/" + result["id"],
+        )
+        await ctx.reply(embed=embed)
         await utils.room_check(ctx)

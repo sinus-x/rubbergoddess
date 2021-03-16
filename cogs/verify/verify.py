@@ -50,6 +50,7 @@ class Verify(rubbercog.Rubbercog):
 
         # check the database for email
         if repo_u.getByLogin(email) is not None:
+            await self.event.user(ctx, f"Verification rejected, email `{email}` is already used.")
             return await ctx.send(self.text.get("email_in_database"), delete_after=120)
 
         # check e-mail format

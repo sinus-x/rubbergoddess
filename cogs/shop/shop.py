@@ -58,11 +58,11 @@ class Shop(rubbercog.Rubbercog):
         """
         # stop if user does not have nickname set
         if ctx.author.nick is None and nick is None or not len(nick):
-            return await ctx.send(self.text.get("no_nick", mention=ctx.author.mention))
+            return await ctx.reply(self.text.get("no_nick", mention=ctx.author.mention))
 
         # check if user has karma
         if self.get_user_karma(ctx.author.id) < self.config.get("set"):
-            return await ctx.send(
+            return await ctx.reply(
                 self.text.get(
                     "not_enough_karma",
                     mention=ctx.author.mention,
@@ -71,16 +71,16 @@ class Shop(rubbercog.Rubbercog):
 
         for char in ("@", "#", "`", "'", '"'):
             if char in nick:
-                return await ctx.send(self.text.get("bad_character", mention=ctx.author.mention))
+                return await ctx.reply(self.text.get("bad_character", mention=ctx.author.mention))
 
         # set nickname
         try:
             await ctx.author.edit(nick=nick, reason="Nickname purchase")
         except discord.Forbidden:
-            return await ctx.send(self.text.get("higher_role"))
+            return await ctx.reply(self.text.get("higher_role"))
 
         repo_k.updateMemberKarma(ctx.author.id, -1 * self.config.get("set"))
-        await ctx.send(
+        await ctx.reply(
             self.text.get(
                 "new_nick",
                 mention=ctx.author.mention,
@@ -96,11 +96,11 @@ class Shop(rubbercog.Rubbercog):
     async def nickname_unset(self, ctx):
         """Unset the nickname"""
         if ctx.author.nick is None:
-            return await ctx.send(self.text.get("no_nick", mention=ctx.author.mention))
+            return await ctx.reply(self.text.get("no_nick", mention=ctx.author.mention))
 
         # check if user has karma
         if self.get_user_karma(ctx.author.id) < self.config.get("reset"):
-            return await ctx.send(
+            return await ctx.reply(
                 self.text.get(
                     "not_enough_karma",
                     mention=ctx.author.mention,
@@ -110,7 +110,7 @@ class Shop(rubbercog.Rubbercog):
         nick = ctx.author.nick
 
         await ctx.author.edit(nick=None, reason="Nickname reset")
-        await ctx.send(
+        await ctx.reply(
             self.text.get(
                 "nick_removed",
                 mention=ctx.author.mention,

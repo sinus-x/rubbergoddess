@@ -2,12 +2,19 @@
 
 ## [Unreleased]
 
-See [Milestones] to get an idea on what you can expect in the future.
+### Added
+
+- `dadjoke` command ([PR-261] by [nicx321])
+- `Backup` cog
+- Use Discord's replies
+- `points` and `karma` user reply contains user's avatar
+- Namedays are retrieved over HTTPS
 
 ### Updated
 
 - Librarian properly displays the `week` command
 - Animals module sends the user avatar when the vote is announced
+- Moved karma \*boards under the `karma` command as subcommands
 
 ## [1.3.0]
 
@@ -310,4 +317,6 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- PRs and user links -->
 
 [PR-214]: https://github.com/sinus-x/rubbergoddess/pull/214
+[PR-261]: https://github.com/sinus-x/rubbergoddess/pull/261
 [LakshyaShastri]: https://github.com/LakshyaShastri
+[nicx321]: https://github.com/nicx321

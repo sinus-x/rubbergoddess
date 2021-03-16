@@ -1,5 +1,5 @@
 {
-	answer: ((mention)) ((option))
+	flip: ["ano", "ne"],
 
-	flip: ["ano", "ne"]
+	joke_notfound: Takový vtip jsem nenašla ((emoji.sad))
 }

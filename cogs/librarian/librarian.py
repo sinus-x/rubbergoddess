@@ -21,27 +21,27 @@ class Librarian(rubbercog.Rubbercog):
 
     @commands.command(aliases=["svátek"])
     async def svatek(self, ctx):
-        url = f"http://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
+        url = f"https://svatky.adresa.info/json?date={date.today().strftime('%d%m')}"
         res = await utils.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
         if len(names):
-            await ctx.send(self.text.get("nameday", "cs", name=", ".join(names)))
+            await ctx.reply(self.text.get("nameday", "cs", name=", ".join(names)))
         else:
-            await ctx.send(self.text.get("nameday", "cs0"))
+            await ctx.reply(self.text.get("nameday", "cs0"))
 
     @commands.command(aliases=["sviatok"])
     async def meniny(self, ctx):
-        url = f"http://svatky.adresa.info/json?lang=sk&date={date.today().strftime('%d%m')}"
+        url = f"https://svatky.adresa.info/json?lang=sk&date={date.today().strftime('%d%m')}"
         res = await utils.fetch_json(url)
         names = []
         for i in res:
             names.append(i["name"])
         if len(names):
-            await ctx.send(self.text.get("nameday", "sk", name=", ".join(names)))
+            await ctx.reply(self.text.get("nameday", "sk", name=", ".join(names)))
         else:
-            await ctx.send(self.text.get("nameday", "sk0"))
+            await ctx.reply(self.text.get("nameday", "sk0"))
 
     @commands.command(aliases=["tyden", "týden", "tyzden", "týždeň"])
     async def week(self, ctx: commands.Context):
@@ -63,9 +63,7 @@ class Librarian(rubbercog.Rubbercog):
                 value=str(stud_week),
             )
         await ctx.send(embed=embed)
-
         await utils.delete(ctx)
-        await utils.room_check(ctx)
 
     @commands.command(aliases=["počasí", "pocasi", "počasie", "pocasie"])
     async def weather(self, ctx, *, place: str = "Brno"):
@@ -73,7 +71,7 @@ class Librarian(rubbercog.Rubbercog):
         place = place[:100]
 
         if "&" in place:
-            return await ctx.send(self.text.get("weather", "place_not_found"))
+            return await ctx.reply(self.text.get("weather", "place_not_found"))
 
         url = (
             "https://api.openweathermap.org/data/2.5/weather?q="
@@ -130,11 +128,11 @@ class Librarian(rubbercog.Rubbercog):
         """
 
         if str(res["cod"]) == "404":
-            return await ctx.send(self.text.get("weather", "place_not_found"))
+            return await ctx.reply(self.text.get("weather", "place_not_found"))
         elif str(res["cod"]) == "401":
-            return await ctx.send(self.text.get("weather", "token"))
+            return await ctx.reply(self.text.get("weather", "token"))
         elif str(res["cod"]) != "200":
-            return await ctx.send(self.text.get("weather", "place_error", message=res["message"]))
+            return await ctx.reply(self.text.get("weather", "place_error", message=res["message"]))
 
         title = res["weather"][0]["description"]
         description = (
@@ -186,8 +184,9 @@ class Librarian(rubbercog.Rubbercog):
             )
         embed.add_field(name=self.text.get("weather", "wind"), value=f"{res['wind']['speed']} m/s")
 
-        await utils.send(ctx, embed=embed)
+        await ctx.send(embed=embed)
         await utils.room_check(ctx)
+        await utils.delete(ctx)
 
     @commands.command(aliases=["b64"])
     async def base64(self, ctx, direction: str, *, data: str):
@@ -208,12 +207,12 @@ class Librarian(rubbercog.Rubbercog):
             try:
                 result = base64.b64decode(data.encode("utf-8")).decode("utf-8")
             except Exception as e:
-                return await ctx.send(f"> {e}")
+                return await ctx.reply(f"> {e}")
         else:
             return await utils.send_help(ctx)
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
-        await ctx.send(f"**base64 {direction}** ({quote}):\n> ```{result}```")
+        await ctx.reply(f"**base64 {direction}** ({quote}):\n> ```{result}```")
 
         await utils.room_check(ctx)
 
@@ -223,7 +222,7 @@ class Librarian(rubbercog.Rubbercog):
         result = "**hashlib**\n"
         result += "> " + " ".join(sorted(hashlib.algorithms_available))
 
-        await ctx.send(result)
+        await ctx.reply(result)
 
     @commands.command()
     async def hash(self, ctx, fn: str, *, data: str):
@@ -234,10 +233,10 @@ class Librarian(rubbercog.Rubbercog):
         if fn in hashlib.algorithms_available:
             result = hashlib.new(fn, data.encode("utf-8")).hexdigest()
         else:
-            return await ctx.send(self.text.get("invalid_hash"))
+            return await ctx.reply(self.text.get("invalid_hash"))
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
-        await ctx.send(f"**{fn}** ({quote}):\n> ```{result}```")
+        await ctx.reply(f"**{fn}** ({quote}):\n> ```{result}```")
 
     @commands.command(aliases=["maclookup"])
     async def macaddress(self, ctx, mac: str):
@@ -258,6 +257,8 @@ class Librarian(rubbercog.Rubbercog):
 
         url = f"https://api.maclookup.app/v2/macs/{mac}?format=json&apiKey={apikey}"
         res = await utils.fetch_json(url)
+
+        await utils.delete(ctx.message)
 
         if res["success"] is False:
             embed = self.embed(
@@ -312,6 +313,8 @@ class Librarian(rubbercog.Rubbercog):
         # TODO The API states that we should be listening for the `X-Rl` header.
         # If it is `0`, we must stop for `X-ttl` seconds.
         # https://ip-api.com/docs/api:json
+
+        await utils.delete(ctx.message)
 
         if res["status"] == "fail":
             embed = self.embed(

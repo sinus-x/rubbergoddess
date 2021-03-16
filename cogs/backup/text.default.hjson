@@ -1,0 +1,16 @@
+{
+    saved_as: Data jsem uložila do souboru **`((file))`**.
+    too_big:  Velikost souboru překračuje dovolenou velikost (má **((size)) kB**).
+    time:     Operace trvala **((seconds)) vteřin**.
+
+    channel: {
+        messages: Stahování zpráv: ((count)) / ((total))...
+        users:    Stahování uživatelů...
+        done:     Hotovo.
+    }
+
+    emojis: {
+        downloading: Stahování ((count)) emoji...
+        done:        Hotovo.
+    }
+}

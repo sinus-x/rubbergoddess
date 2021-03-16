@@ -36,6 +36,7 @@
 		comment: Komentář
 		roles:   Role
 		missing: _?_
+		not_in_database: V databázi není
 	}
 
 	prefix: {

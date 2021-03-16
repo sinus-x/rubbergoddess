@@ -67,12 +67,12 @@ class Seeking(rubbercog.Rubbercog):
         text: Any text under 140 characters
         """
         if len(text) > 140:
-            return await ctx.send(self.text.get("add", "too_long"))
+            return await ctx.reply(self.text.get("add", "too_long"))
 
         repo_s.add(
             user_id=ctx.author.id, message_id=ctx.message.id, channel_id=ctx.channel.id, text=text
         )
-        await ctx.send(self.text.get("add", "ok"))
+        await ctx.reply(self.text.get("add", "ok"))
 
     @seeking.command(name="remove")
     async def seeking_remove(self, ctx, *, ids: str):
@@ -108,7 +108,7 @@ class Seeking(rubbercog.Rubbercog):
 
             repo_s.delete(item_id)
 
-        await ctx.send(self.text.get("remove", "done"))
+        await ctx.reply(self.text.get("remove", "done"))
         if len(rejected):
             await ctx.send(
                 self.text.get(

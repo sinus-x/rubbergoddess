@@ -38,6 +38,12 @@ python3 -m pip install -r requirements-dev.txt
 pre-commit install
 ```
 
+## Packages
+
+When fetching data online, prefer `aiohttp` over `requests` (yes, the code uses it from legacy reasons, but it shouldn't be added).
+
+If you use Sublime Text, install the package [`requirementstxt`](https://github.com/wuub/requirementstxt) and set syntax of `requirements.txt`. You can press `Alt+,` to update package version pins. **If the major version changes, revert the settings OR make sure *ALL* functionality the bot uses is still working.**
+
 ## Cog organisation
 
 Each module has its directory in `cogs/`, inside of it there is `__init__.py` file and file with the same name as its directory:
@@ -62,8 +68,8 @@ import discord
 from discord.ext import commands
 
 # bot
-from cogs.resource import CogConfig, CotText
-from core import rubbercog, utils
+from cogs.resource import CogConfig, CogText
+from core import acl, rubbercog, utils
 ```
 
 The class has four parts: init, commands, logic, helper functions and error catching. Not all parts have to be present.
@@ -84,11 +90,13 @@ class Test(rubbercog.Rubbercog):
 	## Commands
 	##
 
+	@commands.check(acl.check)
 	@commands.group(name="foo")
 	async def foo(self, ctx):
 		"""Command group"""
 		await utils.send_help(ctx)
 
+	@commands.check(acl.check)
 	@foo.command()
 	async def foo_bar(self, ctx):
 		"""Do bar"""
@@ -101,3 +109,5 @@ class Test(rubbercog.Rubbercog):
 	def fill_embed(self, ctx: commands.Context) -> discord.Embed:
 		pass
 ```
+
+If the bot's reply is an embed, the original message _should_ be deleted (because there is author reference in the footer), unless there is a reason not to do so. If the reply is regular message and the trigger message is not being removed, it should be a reply -- mentioning one, unles there's reason not to.

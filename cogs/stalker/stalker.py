@@ -43,7 +43,7 @@ class Stalker(rubbercog.Rubbercog):
             ),
         )
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.check(acl.check)
     @commands.command(name="channelinfo")
@@ -340,7 +340,13 @@ class Stalker(rubbercog.Rubbercog):
                 inline=False,
             )
 
-        if db_member is not None:
+        if db_member is None:
+            embed.add_field(
+                name="???",
+                value=self.text.get("whois", "not_in_database"),
+                inline=False,
+            )
+        else:
             embed.add_field(
                 name=self.text.get("whois", "login"),
                 value=self.dbobj2email(db_member)
