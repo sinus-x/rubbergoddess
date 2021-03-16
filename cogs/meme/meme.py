@@ -51,9 +51,9 @@ class Meme(rubbercog.Rubbercog):
         await ctx.send(
             emote.hug_right
             + (
-                " **" + hugged.display_name + "**"
-                if type(target) == discord.Member
-                else " ***" + hugged.name + "***"
+                " ***" + hugged.display_name + "***"
+                if type(target) == discord.Role
+                else " **" + hugged.name + "**"
             )
         )
 
@@ -314,7 +314,8 @@ class Meme(rubbercog.Rubbercog):
             value = self.text.get("value", gave=lookup[0], got=lookup[1])
             embed.add_field(name=f"{config.prefix}{action}", value=value)
 
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
+        await utils.delete(ctx.message)
         await utils.room_check(ctx)
 
     @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
