@@ -123,10 +123,7 @@ class Animals(rubbercog.Rubbercog):
         animal = await self.getChannel().guild.fetch_member(animal_id)
 
         if animal is None:
-            await self.console.error(
-                "animals", f"Could not find member with ID {animal_id}. Vote aborted."
-            )
-            await self.console.info("animals", f"Could not find user {animal_id}, vote aborted.")
+            await self.console.error("animals", f"Could not find member {animal_id}: abort.")
             return await utils.delete(message)
 
         # delete if the user has changed their avatar since the embed creation
@@ -158,7 +155,6 @@ class Animals(rubbercog.Rubbercog):
                     # member is an animal and has not been before
                     try:
                         await animal.add_roles(self.getRole())
-                        await self.event.user(animal, "New animal!")
                         await self.getChannel().send(
                             self.text.get("result", "no_yes", mention=animal.mention),
                             file=discord.File(fp=animal_avatar_file, filename="animal.png"),
@@ -174,7 +170,6 @@ class Animals(rubbercog.Rubbercog):
                     # member is not an animal and has been before
                     try:
                         await animal.remove_roles(self.getRole())
-                        await self.event.user(animal, "Animal left.")
                         await self.getChannel().send(
                             self.text.get("result", "yes_no", mention=animal.mention),
                             file=discord.File(fp=animal_avatar_file, filename="animal.png"),
