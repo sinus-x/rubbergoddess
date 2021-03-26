@@ -33,7 +33,8 @@ class Base(rubbercog.Rubbercog):
         embed = self.embed(ctx=ctx)
         embed.add_field(name="Boot", value=str(boottime), inline=False)
         embed.add_field(name="Uptime", value=str(delta), inline=False)
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
+        await utils.delete(ctx.message)
 
     @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.channel)
     @commands.command()
