@@ -120,7 +120,11 @@ class Animals(rubbercog.Rubbercog):
         animal_id = int(message.embeds[0].description.split(" | ")[1])
         if animal_id == payload.member.id:
             return await message.remove_reaction(payload.emoji, payload.member)
-        animal = await self.getChannel().guild.fetch_member(animal_id)
+
+        try:
+            animal = await self.getChannel().guild.fetch_member(animal_id)
+        except discord.errors.NotFound:
+            animal = None
 
         if animal is None:
             await self.console.error("animals", f"Could not find member {animal_id}: abort.")
