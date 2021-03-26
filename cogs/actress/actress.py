@@ -12,6 +12,28 @@ from cogs.resource import CogConfig, CogText
 from core import acl, rubbercog, utils
 from core.config import config
 
+ZERO_WIDTH_CHARACTERS = (
+    # https://en.wikipedia.org/wiki/Whitespace_character
+    "\u2006",  # six-per-em space
+    "\u2009",  # thin space
+    "\u200a",  # hair space
+    "\u180e",  # mongolian vowel separator
+    "\u200b",  # zero width space
+    "\u200c",  # zero-width non-joiner
+    "\u200d",  # zero width joiner
+    "\u2060",  # word joiner
+    "\ufeff",  # zero width non-breaking space
+    # http://kb.mozillazine.org/Network.IDN.blacklist_chars
+    "\u115f",  # hangul choseong filler
+    "\u1160",  # hangul jungseong filler
+    # https://330k.github.io/misc_tools/unicode_steganography.html
+    "\u2062",  # invisible times
+    "\u2063",  # invisible separator
+    "\u202c",  # pop directional formatting
+    "\u200e",  # left-to-right mark
+    "\u200d",  # left-to-right embedding
+)
+
 
 class Actress(rubbercog.Rubbercog):
     """Be a human"""
@@ -434,6 +456,13 @@ class Actress(rubbercog.Rubbercog):
         else:
             text = message.content.lower()
             triggers = [x.lower() for x in reaction["triggers"]]
+
+        # remove zero-width characters
+        # This will prove to be difficult to mantain, because the abusers only have to find one way
+        # to break this. I'll try to keep this up to date. It's really easy to find what unicode
+        # character they are using just by copypasting it to python and having it printed out.
+        for character in ZERO_WIDTH_CHARACTERS:
+            text = text.replace(character, "")
 
         # check the type
         if reaction["match"] == "full" and text not in triggers:
