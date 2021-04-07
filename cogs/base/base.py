@@ -39,9 +39,10 @@ class Base(rubbercog.Rubbercog):
         elif self.bot.latency <= 0.8:
             status = "idle"
         else:
-            status = "busy"
+            status = "dnd"
 
         if self.status != status:
+            await self.console.info("latency", f"Updating status to {status}.")
             await utils.set_presence(self.bot, getattr(discord.Status, status))
 
     @status_loop.before_loop
@@ -82,25 +83,25 @@ class Base(rubbercog.Rubbercog):
         channel = self.bot.get_channel(payload.channel_id)
         if channel is None or not isinstance(channel, discord.TextChannel):
             return
+        if payload.emoji.name not in ("📌", "📍"):
+            return
+
         try:
             message = await channel.fetch_message(payload.message_id)
-        except discord.NotFound:
+        except discord.errors.NotFound:
             return
         if payload.emoji.is_custom_emoji():
             return
+
         reaction_author: discord.User = self.bot.get_user(payload.user_id)
+        if reaction_author.bot:
+            return
 
         if payload.emoji.name == "📍" and not reaction_author.bot:
             await reaction_author.send(self.text.get("bad pin"))
             return await message.remove_reaction(payload.emoji, reaction_author)
 
-        if payload.emoji.name != "📌":
-            return
-
         for reaction in message.reactions:
-            if reaction.emoji == "📍" and self.bot.user in await reaction.users().flatten():
-                return await message.remove_reaction(payload.emoji, reaction_author)
-
             if reaction.emoji != "📌":
                 continue
 
