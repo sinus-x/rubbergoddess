@@ -151,7 +151,7 @@ class Warden(rubbercog.Rubbercog):
 
             try:
                 await report.delete()
-            except discord.HTTPException as e:
+            except discord.errors.HTTPException as e:
                 await self.console.error(message, "Could not delete repost report.", e)
             break
 
