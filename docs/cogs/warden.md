@@ -10,7 +10,7 @@ We are using [dhash](https://pypi.org/project/dhash/) to compute image hashes.
 
 ### scan history (limit)
 
-Limit is an integer or "all" string.
+Limit is an integer, pass negative value for all messages.
 
 This command scans messages in current channel and adds their hashes to database.
 
@@ -23,8 +23,8 @@ This was tested on VUT FIT server in june 2020.
 - Scanning completed in 11 812 seconds (3:16:52, at 15:41:33) after scanning 21 375 hashes.
 - Stats: 226MB RAM, 10 % CPU on their SU server.
 
-### scan compare (message 1) (message 2)
+### scan compare (message 1) (message 2) ... (message n)
 
-Compare attachments in two messages.
+See hashes in messages.
 
 ← Back to [module list](index.md) or [home](../index.md)
