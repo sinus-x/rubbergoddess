@@ -31,19 +31,21 @@ class Base(rubbercog.Rubbercog):
 
     @tasks.loop(minutes=1)
     async def status_loop(self):
-        """Observe latency to the Discord API. If it goes below 0.4s, "online"
-        will be switched to "idle", over 0.8s is "busy".
+        """Observe latency to the Discord API. If it goes below 0.25s, "online"
+        will be switched to "idle", over 0.50s is "dnd".
         """
-        if self.bot.latency <= 0.4:
+        if self.bot.latency <= 0.25:
             status = "online"
-        elif self.bot.latency <= 0.8:
+        elif self.bot.latency <= 0.5:
             status = "idle"
         else:
             status = "dnd"
 
         if self.status != status:
-            await self.console.info("latency", f"Updating status to {status}.")
-            await utils.set_presence(self.bot, getattr(discord.Status, status))
+            await self.console.info(
+                "latency", f"Updating status to {status} (latency {self.bot.latency:.2f})."
+            )
+            await utils.set_presence(self.bot, status=getattr(discord.Status, status))
 
     @status_loop.before_loop
     async def before_status_loop(self):
