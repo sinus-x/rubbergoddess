@@ -300,7 +300,7 @@ class Warden(rubbercog.Rubbercog):
             original_channel = message.guild.get_channel(original.channel_id)
             original_message = await original_channel.fetch_message(original.message_id)
             author = discord.utils.escape_markdown(original_message.author.display_name)
-            link = (f"[**{author}**, {timestamp}]({original_message.jump_url})",)
+            link = f"[**{author}**, {timestamp}]({original_message.jump_url})"
         except discord.errors.NotFound:
             link = "404 " + emote.sad
 
