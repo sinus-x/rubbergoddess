@@ -9,6 +9,7 @@
 - Use Discord's replies
 - `points` and `karma` user reply contains user's avatar
 - Namedays are retrieved over HTTPS
+- `Base`: The bot changes its status based on latency
 
 ### Updated
 
@@ -16,6 +17,7 @@
 - Animals module sends the user avatar when the vote is announced
 - Animal updates are no longer logged as events
 - Moved karma \*boards under the `karma` command as subcommands
+- Warden has been rewritten to decrease maintenance complexity
 
 ## [1.3.0]
 
