@@ -31,7 +31,7 @@ def git_pull():
     return cmd.pull()
 
 
-async def set_presence(bot, status: discord.Status = discord.Status.online):
+async def set_presence(bot, status: discord.Status):
     activity = discord.Game(start=datetime.utcnow(), name=config.prefix + "help")
     await bot.change_presence(status=status, activity=activity)
 

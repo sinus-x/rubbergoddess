@@ -42,6 +42,7 @@ class Base(rubbercog.Rubbercog):
             status = "dnd"
 
         if self.status != status:
+            self.status = status
             await self.console.info(
                 "latency", f"Updating status to {status} (latency {self.bot.latency:.2f})."
             )
