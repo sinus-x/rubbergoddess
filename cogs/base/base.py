@@ -1,7 +1,7 @@
 import datetime
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from cogs.resource import CogConfig, CogText
 from core import rubbercog, utils
@@ -18,6 +18,36 @@ class Base(rubbercog.Rubbercog):
 
         self.config = CogConfig("base")
         self.text = CogText("base")
+
+        self.status_loop.start()
+        self.status = "online"
+
+    def cog_unload(self):
+        self.status_loop.cancel()
+
+    ##
+    ## Loops
+    ##
+
+    @tasks.loop(minutes=1)
+    async def status_loop(self):
+        """Observe latency to the Discord API. If it goes below 0.4s, "online"
+        will be switched to "idle", over 0.8s is "busy".
+        """
+        if self.bot.latency <= 0.4:
+            status = "online"
+        elif self.bot.latency <= 0.8:
+            status = "idle"
+        else:
+            status = "busy"
+
+        if self.status != status:
+            await utils.set_presence(self.bot, getattr(discord.Status, status))
+
+    @status_loop.before_loop
+    async def before_status_loop(self):
+        if not self.bot.is_ready():
+            await self.bot.wait_until_ready()
 
     ##
     ## Commands
@@ -120,7 +150,7 @@ class Base(rubbercog.Rubbercog):
 
             try:
                 await message.pin()
-            except discord.HTTPException as e:
+            except discord.errors.HTTPException as e:
                 await self.event.user(channel, "Could not pin message.", e)
                 error_embed = self.embed(
                     title=self.text.get("pin error"),
