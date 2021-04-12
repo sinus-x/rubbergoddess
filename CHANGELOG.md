@@ -10,6 +10,7 @@
 - `points` and `karma` user reply contains user's avatar
 - Namedays are retrieved over HTTPS
 - `Base`: The bot changes its status based on latency
+- `Base`: Bookmark message by reacting with "🔖"
 
 ### Updated
 

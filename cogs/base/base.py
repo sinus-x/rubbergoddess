@@ -1,4 +1,5 @@
 import datetime
+from typing import Union
 
 import discord
 from discord.ext import commands, tasks
@@ -86,7 +87,7 @@ class Base(rubbercog.Rubbercog):
         channel = self.bot.get_channel(payload.channel_id)
         if channel is None or not isinstance(channel, discord.TextChannel):
             return
-        if payload.emoji.name not in ("📌", "📍"):
+        if payload.emoji.name not in ("📌", "📍", "🔖"):
             return
 
         try:
@@ -103,6 +104,12 @@ class Base(rubbercog.Rubbercog):
         if payload.emoji.name == "📍" and not reaction_author.bot:
             await reaction_author.send(self.text.get("bad pin"))
             return await message.remove_reaction(payload.emoji, reaction_author)
+            return
+
+        if payload.emoji.name == "🔖":
+            await self.bookmark_message(message, reaction_author)
+            await message.remove_reaction(payload.emoji, reaction_author)
+            return
 
         for reaction in message.reactions:
             if reaction.emoji != "📌":
@@ -169,3 +176,43 @@ class Base(rubbercog.Rubbercog):
 
             await reaction.clear()
             await message.add_reaction("📍")
+
+    async def bookmark_message(
+        self,
+        message: discord.Message,
+        user: Union[discord.Member, discord.User],
+    ):
+        embed = self.embed(
+            title=self.text.get("bookmark", "title"),
+            description=message.content,
+            author=message.author,
+        )
+        timestamp = utils.id_to_datetime(message.id).strftime("%Y-%m-%d %H:%M:%S")
+        embed.add_field(
+            name=self.sanitise(message.author.display_name),
+            value=self.text.get(
+                "bookmark",
+                "info",
+                timestamp=timestamp,
+                channel=message.channel.name,
+                link=message.jump_url,
+            ),
+            inline=False,
+        )
+        info = set()
+        if len(message.attachments):
+            embed.add_field(
+                name=self.text.get("bookmark", "files"),
+                value=self.text.get("bookmark", "total", count=len(message.attachments)),
+            )
+        if len(message.embeds):
+            embed.add_field(
+                name=self.text.get("bookmark", "embeds"),
+                value=self.text.get("bookmark", "total", count=len(message.embeds)),
+            )
+        await user.send(embed=embed)
+        await self.event.user(
+            user,
+            f"Bookmarked message in #{message.channel.name}\n> {message.jump_url}",
+            escape_markdown=False,
+        )
