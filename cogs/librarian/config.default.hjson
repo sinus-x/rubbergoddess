@@ -11,4 +11,8 @@
 
 	# https://maclookup.app API key
 	maclookup_token: 0
+
+    # wttr.in parameters, see https://wttr.in/:help for full help
+    wttr_parameters: m
+    #mMFqAp
 }

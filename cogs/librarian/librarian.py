@@ -188,6 +188,28 @@ class Librarian(rubbercog.Rubbercog):
         await utils.room_check(ctx)
         await utils.delete(ctx)
 
+    @commands.command()
+    async def forecast(self, ctx):
+        place = ""
+        if "&" in place or "?" in place:
+            return await ctx.reply(self.text.get("forecast", "place_not_found"))
+
+        parameters = self.config.get("wttr_parameters")
+
+        # sanitise the place
+        place = place.replace(" ", "+").replace("_", "")
+        url = f"https://wttr.in/{place}"
+
+        embed = self.embed(
+            ctx=ctx,
+            description=f"{url}?{parameters}",  # self.text.get("forecast", "description"),
+            footer="wttr.in",
+            url=f"{url}?{parameters}",
+        )
+        embed.set_image(url=f"{url}_{parameters}.png")
+        await ctx.send(embed=embed)
+        await utils.delete(ctx.message)
+
     @commands.command(aliases=["b64"])
     async def base64(self, ctx, direction: str, *, data: str):
         """Get base64 data

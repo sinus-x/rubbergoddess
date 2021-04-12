@@ -35,6 +35,11 @@
 		wind:              Vítr
 	}
 
+	forecast: {
+		place_not_found: Takové místo neznám.
+		description: ```curl https://wttr.in/:help```
+	}
+
 	invalid_hash: Takovou hashovací funkci neznám ((emoji.sad))
 
 	maclookup: {
