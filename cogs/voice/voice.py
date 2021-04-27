@@ -145,7 +145,7 @@ class Voice(rubbercog.Rubbercog):
             try:
                 await voice.delete()
             except discord.NotFound as e:
-                await self.console.warning("Voice cleanup", f"Channel {voice} not found.", e)
+                await self.console.debug("Voice cleanup", f"Channel {voice} not found.", e)
 
         # Make sure the empty is writable
         await empty[-1].set_permissions(self.getVerifyRole(), view_channel=True)

@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.4.0]
 
 ### Added
 
@@ -9,12 +9,17 @@
 - Use Discord's replies
 - `points` and `karma` user reply contains user's avatar
 - Namedays are retrieved over HTTPS
+- `Base`: The bot changes its status based on latency
+- `Base`: Bookmark message by reacting with "🔖"
+- `scan message` takes unlimited number of message links
 
 ### Updated
 
 - Librarian properly displays the `week` command
 - Animals module sends the user avatar when the vote is announced
+- Animal updates are no longer logged as events
 - Moved karma \*boards under the `karma` command as subcommands
+- Warden has been rewritten to decrease maintenance complexity
 
 ## [1.3.0]
 
@@ -295,7 +300,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.3.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.4.0...devel
+[1.4.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...v1.2.0
 [1.1.7]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...v1.1.7

@@ -278,7 +278,7 @@ class Librarian(rubbercog.Rubbercog):
             )
             return await ctx.send(embed=embed)
 
-        embed = self.embed(ctx=ctx, title=res["macPrefix"], footer="maclookup.app")
+        embed = self.embed(ctx=ctx, description=res["macPrefix"], footer="maclookup.app")
         embed.add_field(
             name=self.text.get("maclookup", "company"),
             value=res["company"],
@@ -325,7 +325,7 @@ class Librarian(rubbercog.Rubbercog):
             )
             return await ctx.send(embed=embed)
 
-        embed = self.embed(ctx=ctx, title=res["query"], footer="ip-api.com")
+        embed = self.embed(ctx=ctx, description=res["query"], footer="ip-api.com")
         embed.add_field(
             name=res["city"],
             value=f"{res['regionName']}, {res['country']}",

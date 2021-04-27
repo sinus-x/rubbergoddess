@@ -99,7 +99,7 @@ class Janitor(rubbercog.Rubbercog):
             try:
                 await message.delete()
                 total += 1
-            except discord.HTTPException:
+            except discord.errors.HTTPException:
                 pass
 
         delta = str(int(time.monotonic() - now))

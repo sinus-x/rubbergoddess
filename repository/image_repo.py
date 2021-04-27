@@ -6,7 +6,7 @@ from repository.database.image import Image
 class ImageRepository(BaseRepository):
     def add_image(self, channel_id: int, message_id: int, attachment_id: int, dhash: str):
         """Add new image hash"""
-        if self.getByAttachment(attachment_id) is not None:
+        if self.get_by_attachment(attachment_id) is not None:
             # attachment already indexed
             return
 
@@ -20,19 +20,19 @@ class ImageRepository(BaseRepository):
         )
         session.commit()
 
-    def getHash(self, dhash: str):
+    def get_hash(self, dhash: str):
         return session.query(Image).filter(Image.dhash == dhash).all()
 
     def get_by_message(self, message_id: int):
         return session.query(Image).filter(Image.message_id == message_id).all()
 
-    def getByAttachment(self, attachment_id: int):
+    def get_by_attachment(self, attachment_id: int):
         return session.query(Image).filter(Image.attachment_id == attachment_id).one_or_none()
 
-    def getAll(self):
+    def get_all(self):
         return session.query(Image)
 
-    def deleteByMessage(self, message_id: int):
+    def delete_by_message(self, message_id: int):
         i = session.query(Image).filter(Image.message_id == message_id).delete()
         session.commit()
         return i

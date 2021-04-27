@@ -39,19 +39,31 @@ class Verify(rubbercog.Rubbercog):
         await utils.delete(ctx)
 
         if email.count("@") != 1:
-            return await ctx.send(self.text.get("not_email"), delete_after=120)
+            return await ctx.send(
+                self.text.get("not_email", mention=ctx.author.mention),
+                delete_after=120,
+            )
 
         if self.config.get("placeholder") in email:
-            return await ctx.send(self.text.get("placeholder"), delete_after=120)
+            return await ctx.send(
+                self.text.get("placeholder", mention=ctx.author.mention),
+                delete_after=120,
+            )
 
         # check the database for member ID
         if repo_u.get(ctx.author.id) is not None:
-            return await ctx.send(self.text.get("id_in_database"), delete_after=120)
+            return await ctx.send(
+                self.text.get("id_in_database", mention=ctx.author.mention),
+                delete_after=120,
+            )
 
         # check the database for email
         if repo_u.getByLogin(email) is not None:
             await self.event.user(ctx, f"Verification rejected, email `{email}` is already used.")
-            return await ctx.send(self.text.get("email_in_database"), delete_after=120)
+            return await ctx.send(
+                self.text.get("email_in_database", mention=ctx.author.mention),
+                delete_after=120,
+            )
 
         # check e-mail format
         role = await self._email_to_role(ctx, email)
@@ -87,7 +99,10 @@ class Verify(rubbercog.Rubbercog):
         db_user = repo_u.get(ctx.author.id)
 
         if db_user is None or db_user.status in ("unknown", "unverified") or db_user.code is None:
-            return await ctx.send(self.text.get("no_code"), delete_after=120)
+            return await ctx.send(
+                self.text.get("no_code", mention=ctx.author.mention),
+                delete_after=120,
+            )
 
         if db_user.status != "pending":
             raise ProblematicVerification(status=db_user.status, login=db_user.login)
@@ -96,7 +111,8 @@ class Verify(rubbercog.Rubbercog):
         code = code.replace("I", "1").replace("O", "0").upper()
         if code != db_user.code:
             await ctx.send(
-                self.text.get("WrongVerificationCode", mention=ctx.author.mention), delete_after=120
+                self.text.get("WrongVerificationCode", mention=ctx.author.mention),
+                delete_after=120,
             )
             await self.event.user(ctx, f"Rejecting code `{code}` (has `{db_user.code}`).")
             return
@@ -184,7 +200,7 @@ class Verify(rubbercog.Rubbercog):
                 return self.getGuild().get_role(role_id)
             else:
                 await self.event.user(ctx, f"Rejecting e-mail: {self.sanitise(email)}")
-                raise BadEmail(constraint=constraint)
+                raise BadEmail(constraint=constraint, mention=ctx.author.mention)
 
         # domain not found, fallback to basic guest role
         role_id = registered.get(".")
@@ -260,7 +276,10 @@ class Verify(rubbercog.Rubbercog):
         ) as server:
             server.starttls()
             server.ehlo()
-            server.login(self.config.get("email", "address"), self.config.get("email", "password"))
+            server.login(
+                self.config.get("email", "address"),
+                self.config.get("email", "password"),
+            )
             server.send_message(msg)
 
     async def _add_verify_roles(self, member: discord.Member, db_user: object):
@@ -287,12 +306,16 @@ class Verify(rubbercog.Rubbercog):
         # exceptions with parameters
         if isinstance(error, ProblematicVerification):
             await ctx.send(
-                self.text.get("ProblematicVerification", status=error.status), delete_after=120
+                self.text.get("ProblematicVerification", status=error.status),
+                delete_after=120,
             )
             await self.event.user(ctx, f"Problem with verification: {error.login}: {error.status}")
 
         elif isinstance(error, BadEmail):
-            await ctx.send(self.text.get("BadEmail", constraint=error.constraint), delete_after=120)
+            await ctx.send(
+                self.text.get("BadEmail", constraint=error.constraint, mention=ctx.author.mention),
+                delete_after=120,
+            )
 
         # exceptions without parameters
         elif isinstance(error, VerificationException):
@@ -309,9 +332,10 @@ class VerificationException(rubbercog.RubbercogException):
 
 
 class BadEmail(VerificationException):
-    def __init__(self, message: str = None, constraint: str = None):
+    def __init__(self, message: str, constraint: str, mention: str):
         super().__init__(message)
         self.constraint = constraint
+        self.mention = mention
 
 
 class ProblematicVerification(VerificationException):

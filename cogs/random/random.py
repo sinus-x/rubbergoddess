@@ -20,7 +20,7 @@ class Random(rubbercog.Rubbercog):
     @commands.cooldown(rate=3, per=20.0, type=commands.BucketType.user)
     @commands.command()
     async def pick(self, ctx, *args):
-        """"Pick an option"""
+        """Pick an option"""
         for i, arg in enumerate(args):
             if arg.endswith("?"):
                 args = args[i + 1 :]

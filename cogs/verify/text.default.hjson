@@ -41,12 +41,12 @@
 
 	# errors and exceptions
 	VerificationException: Chyba ve verifikaci.
-	placeholder:       `xlogin00` je tam jen na ukázku, potřebuji tvůj osobní xlogin.
-	BadEmail:          Neplatný e-mail, uživatelské jméno musí splňovat podmínku `((constraint))`.
-	not_email:         To není e-mail.
-	id_in_database:    Tvůj účet už v databázi je.
-	email_in_database: Tvůj e-mail už v databázi je.
-	no_code:       Nejdřív musíš zažádat o kód.
+	placeholder:       `xlogin00` je tam jen na ukázku, potřebuji tvůj osobní xlogin, ((mention)).
+	BadEmail:          To je neplatný e-mail, ((mention)), uživatelské jméno musí splňovat podmínku `((constraint))`.
+	not_email:         To není e-mail, ((mention)).
+	id_in_database:    ((mention)), tvůj účet už v databázi je.
+	email_in_database: ((mention)), tvůj e-mail už v databázi je.
+	no_code:           ((mention)), nejdřív musíš zažádat o kód.
 	ProblematicVerification: Hmm, ((admin)), je tu pokus o verifikaci se záznamem ((status))...
 	WrongVerificationCode:   Špatný kód, ((mention)).
 }

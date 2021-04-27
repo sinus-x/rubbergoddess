@@ -1,19 +1,41 @@
 {
-	"gif warning":  ((mention)), tvoje zpráva obsahuje zakázaný text. Snížila jsem ti karmu o ((value)).
-	"repost title": Nápověda
-	"repost description": ((name)), shoda **((value))**!
-	"repost content":
-		'''
-		Pokud je obrázek repost, dej mu ♻️.
-		Jestli není, klikni tady na ❎ a při ((limit)) takových reakcích se toto upozornění smaže.
-		Pokud jsi autor a jde o repost, klikni na 🆗.
-		'''
+    scan_history: {
+        title:
+            '''
+            **NAČÍTÁNÍ**
+            Staženo **((count))** zpráv.
+            '''
+        scanning:
+            '''
+            **SKENOVÁNÍ**
+            Zpracováno **((count))** z **((total))** zpráv (((percent)) %).
+            Vypočítáno **((hashes))** otisků.
+            '''
+        complete:
+            '''
+            **HOTOVO**
+            Zpracováno **((messages))** zpráv.
+            Vypočítáno **((hashes))** otisků obrázků za **((seconds))** vteřin.
+            '''
+    }
 
-    comparison: {
-        not_found:     Zpráva `((message_id))` není v databázi.
+    compare: {
+        not_found: Se zprávami nejsou asociovány žádné otisky obrázků.
 
         header: Zpráva **`((message_id))`**
         line:   > `((hash))`
         footer: Podobnost **((percent)) %** (((bits)) bitů).
+    }
+
+    report: {
+        title_full: "**♻️ To je repost!**"
+        title_hard: "**♻️ To je asi repost**"
+        title_soft: "To je možná repost"
+
+        original: Originál
+
+        help: Nápověda
+        description: ((name)), shoda **((similarity))**!
+        help_content: _Pokud je obrázek repost, dej mu ♻️. Jestli není, klikni tady na ❎ a při ((limit)) takových reakcích se toto upozornění smaže._
     }
 }

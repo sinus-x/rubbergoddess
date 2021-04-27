@@ -36,6 +36,7 @@ class Points(rubbercog.Rubbercog):
     ## Commands
     ##
 
+    @commands.guild_only()
     @commands.group(name="points", aliases=["body"])
     async def points(self, ctx):
         """Get information about user points"""
@@ -80,7 +81,7 @@ class Points(rubbercog.Rubbercog):
             description=self.text.get("board", "desc_description"),
         )
         users = repo_p.getUsers("desc", limit=self.config.get("board"), offset=0)
-        value = self._getBoard(ctx.author, users)
+        value = self._getBoard(ctx.guild, ctx.author, users)
         embed.add_field(
             name=self.text.get("board", "desc_0", num=self.config.get("board")),
             value=value,
@@ -115,7 +116,7 @@ class Points(rubbercog.Rubbercog):
             description=self.text.get("board", "asc_description"),
         )
         users = repo_p.getUsers("asc", limit=self.config.get("board"), offset=0)
-        value = self._getBoard(ctx.author, users)
+        value = self._getBoard(ctx.guild, ctx.author, users)
         embed.add_field(
             name=self.text.get("board", "asc_0", num=self.config.get("board")), value=value
         )
@@ -176,6 +177,9 @@ class Points(rubbercog.Rubbercog):
         if user.bot:
             return
 
+        if getattr(reaction.message, "guild", None) is None:
+            return
+
         # add points
         now = datetime.datetime.now()
         if (
@@ -222,7 +226,7 @@ class Points(rubbercog.Rubbercog):
             return await utils.remove_reaction(reaction, user)
 
         users = repo_p.getUsers(order, limit=self.config.get("board"), offset=offset)
-        value = self._getBoard(user, users)
+        value = self._getBoard(reaction.message.guild, user, users)
         if not value:
             # offset too big
             return await utils.remove_reaction(reaction, user)
@@ -256,12 +260,16 @@ class Points(rubbercog.Rubbercog):
     ##
 
     def _getBoard(
-        self, author: Union[discord.User, discord.Member], users: list, offset: int = 0
+        self,
+        guild: discord.Guild,
+        author: Union[discord.User, discord.Member],
+        users: list,
+        offset: int = 0,
     ) -> str:
         result = []
         template = "`{points:>8}` … {name}"
         for db_user in users:
-            user = self.bot.get_user(db_user.user_id)
+            user = guild.get_member(db_user.user_id)
             if user and user.display_name:
                 name = discord.utils.escape_markdown(user.display_name)
             else:

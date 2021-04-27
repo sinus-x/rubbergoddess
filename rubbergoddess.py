@@ -67,7 +67,7 @@ async def on_ready():
     print(message)
     channel = bot.get_channel(config.get("channels", "stdout"))
     await channel.send(f"```{message}```")
-    await utils.set_presence(bot)
+    await utils.set_presence(bot, status=discord.Status.online)
 
 
 @bot.event

@@ -7,4 +7,12 @@
 
     "pin error": Zprávu se mi nepovedlo připnout ((emoji.sad))
     "bad pin":   Pro připnutí zprávy používej 📌. Emoji 📍 přidávám při připnutí já.
+
+    bookmark: {
+        title:  🔖 Záložka přidána
+        info:   "[((timestamp)) v #((channel))](((link)))"
+        files:  Soubory
+        embeds: Tabulky
+        total:  Celkem ((count))
+    }
 }
