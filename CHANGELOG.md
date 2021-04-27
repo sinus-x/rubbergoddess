@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.4.0]
 
 ### Added
 
@@ -11,6 +11,7 @@
 - Namedays are retrieved over HTTPS
 - `Base`: The bot changes its status based on latency
 - `Base`: Bookmark message by reacting with "🔖"
+- `scan message` takes unlimited number of message links
 
 ### Updated
 
@@ -299,7 +300,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.3.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.4.0...devel
+[1.4.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...v1.2.0
 [1.1.7]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.6...v1.1.7
