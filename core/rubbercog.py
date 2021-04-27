@@ -1,4 +1,5 @@
 import datetime
+from typing import Union
 
 import discord
 from discord.ext import commands
@@ -104,7 +105,7 @@ class Rubbercog(commands.Cog):
         color: int = None,
         page: tuple = None,
         footer: str = None,
-        url: str = None,
+        url: Union[str, discord.Embed.Empty] = discord.Embed.Empty,
     ) -> discord.Embed:
         """Create embed
 
