@@ -26,6 +26,10 @@ class Animals(rubbercog.Rubbercog):
 
         self.channel = None
         self.role = None
+        # Because the API doesn't return the avatar resource immediately,
+        # sometimes nothing happens, because the client caches the 404
+        # response (?). This is an attempt to counter that.
+        self.check_delay = 10
 
     def getChannel(self):
         if self.channel is None:
@@ -66,6 +70,7 @@ class Animals(rubbercog.Rubbercog):
         if before.avatar_url == after.avatar_url:
             return
 
+        await asyncio.sleep(self.check_delay)
         await self.check(after, "on_user_update")
 
     @commands.Cog.listener()
@@ -91,6 +96,7 @@ class Animals(rubbercog.Rubbercog):
                 await self.console.debug(f"{after} reverified", "Skipping (unverify).")
                 return
 
+        await asyncio.sleep(self.check_delay)
         await self.check(after, "on_member_update")
 
     @commands.Cog.listener()
