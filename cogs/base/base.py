@@ -101,9 +101,13 @@ class Base(rubbercog.Rubbercog):
         if reaction_author.bot:
             return
 
+        if message.type != discord.MessageType.default:
+            await message.remove_reaction(payload.emoji, reaction_author)
+            return
+
         if payload.emoji.name == "📍" and not reaction_author.bot:
             await reaction_author.send(self.text.get("bad pin"))
-            return await message.remove_reaction(payload.emoji, reaction_author)
+            await message.remove_reaction(payload.emoji, reaction_author)
             return
 
         if payload.emoji.name == "🔖":
