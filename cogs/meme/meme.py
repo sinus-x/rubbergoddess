@@ -318,7 +318,6 @@ class Meme(rubbercog.Rubbercog):
         await utils.delete(ctx.message)
         await utils.room_check(ctx)
 
-    @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["owo"])
     async def uwu(self, ctx, *, message: str = None):
         """UWUize message"""
@@ -329,7 +328,6 @@ class Meme(rubbercog.Rubbercog):
         await ctx.send(f"**{self.sanitise(ctx.author.display_name)}**\n>>> " + text)
         await utils.delete(ctx.message)
 
-    @commands.cooldown(rate=5, per=120, type=commands.BucketType.user)
     @commands.command(aliases=["rcase", "randomise"])
     async def randomcase(self, ctx, *, message: str = None):
         """raNdOMisE cAsInG"""
