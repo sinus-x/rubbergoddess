@@ -60,6 +60,7 @@ class Karma(rubbercog.Rubbercog):
         await utils.room_check(ctx)
         await utils.delete(ctx.message)
 
+    @commands.guild_only()
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emoji")
     async def karma_emoji(self, ctx, emoji: str):
