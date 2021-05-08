@@ -50,6 +50,7 @@
 
 	iplookup: {
 		bad_query: ((mention)), tohle není IP adresa ani DNS jméno.
+		not_ascii: ((mention)), zadaný text není v ASCII. Zkus použít punycode (např. <https://punycoder.com>).
 		error:     Došlo k chybě ((emoji.sad))
 		geo:       Geolokace
 		isp:       Registrátor

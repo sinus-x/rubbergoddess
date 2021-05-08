@@ -14,11 +14,13 @@ class Librarian(rubbercog.Rubbercog):
 
     # TODO Move czech strings to text.default.json
 
-    URL_REGEX = re.compile(r"[a-z]{1,}\.[a-z\.]{1,}")
+    URL_REGEX = re.compile(r"[a-zA-Z0-9-]{1,}\.[a-zA-Z0-9-\.]{1,}")
+    # https://ihateregex.io/expr/ip/
     IPV4_REGEX = re.compile(
         r"(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]).){3}"
         r"([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])"
     )
+    # https://ihateregex.io/expr/ipv6/
     IPV6_REGEX = re.compile(
         r"(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}"
         r":|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}"
@@ -318,10 +320,15 @@ class Librarian(rubbercog.Rubbercog):
     @commands.command(aliases=["iplookup"])
     async def ipaddress(self, ctx, query: str):
         """Get information about an IP address or a domain name"""
+        if not query.isascii():
+            return await self.output.error(
+                ctx,
+                self.text.get("iplookup", "not_ascii", mention=ctx.author.mention),
+            )
+
         invalid: bool = False
         if "&" in query or "?" in query or not len(query):
             invalid = True
-
         for r in (self.URL_REGEX, self.IPV4_REGEX, self.IPV6_REGEX):
             # It could be re.search() instead, but the API returns error
             # if the URL contains protocol or query
@@ -329,7 +336,6 @@ class Librarian(rubbercog.Rubbercog):
                 break
         else:
             invalid = True
-
         if invalid:
             return await self.output.error(
                 ctx,
