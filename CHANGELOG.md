@@ -2,7 +2,13 @@
 
 ## Unreleased
 
+- Core: Fix issues with embed creation, that were introduced by bumpting the library to version 1.7
 - ACL: Fix issues with corrputed imports
+- Animals: Delay vote embed creation to combat Discord-side issues with content not being available at event creation
+- Base: Prevent users from pinning system messages
+- Karma: Limit "karma emoji" command to guild contexts
+- Librarian: Test "ipaddress" query with regex
+- Random: Include explainxkcd.com link in "xkcd" command
 
 ## [1.4.0]
 
