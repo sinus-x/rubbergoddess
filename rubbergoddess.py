@@ -1,5 +1,23 @@
 import traceback
 from datetime import datetime
+import logging
+
+
+class DiscordLogFilter(logging.Filter):
+    def filter(self, record):
+        # See https://github.com/Rapptz/discord.py/blob/
+        # 1bf7aadf943844ed5970a9d44b73d1d67b790b08/discord/http.py#L221
+        # and below.
+        return "rate limit" in record.msg
+
+
+discord_logger = logging.getLogger("discord")
+discord_logger.setLevel(logging.DEBUG)
+discord_logger_handler = logging.StreamHandler()
+discord_logger_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+discord_logger_handler.addFilter(DiscordLogFilter())
+discord_logger.addHandler(discord_logger_handler)
+
 
 import discord
 from discord.ext import commands
