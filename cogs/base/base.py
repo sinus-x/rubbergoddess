@@ -44,7 +44,7 @@ class Base(rubbercog.Rubbercog):
 
         if self.status != status:
             self.status = status
-            await self.console.info(
+            await self.console.debug(
                 "latency", f"Updating status to {status} (latency {self.bot.latency:.2f})."
             )
             await utils.set_presence(self.bot, status=getattr(discord.Status, status))
