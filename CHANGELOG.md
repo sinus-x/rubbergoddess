@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Core: Fix issues with embed creation, that were introduced by bumpting the library to version 1.7
+- Core: Fix issues with user error reporting throwing errors
 - ACL: Fix issues with corrputed imports
 - Animals: Delay vote embed creation to combat Discord-side issues with content not being available at event creation
 - Base: Prevent users from pinning system messages

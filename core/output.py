@@ -106,7 +106,10 @@ class Output:
 
             result += template_cont.format(error=error, traceback=tr)
 
-        await source.reply(result)
+        try:
+            await source.reply(result)
+        except discord.errors.HTTPException:
+            await source.send(result)
 
 
 class Console:
