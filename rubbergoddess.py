@@ -34,6 +34,7 @@ from repository.database.interactions import Interaction
 from repository.database.points import Points
 from repository.database.review import Review, ReviewRelevance, Subject
 from repository.database.seeking import Seeking
+from repository.database.comment import Comment
 from repository.database.verification import User
 from repository.review_repo import ReviewRepository
 

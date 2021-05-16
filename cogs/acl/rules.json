@@ -82,6 +82,22 @@
 		"default": false,
 		"group allow": ["VERIFY"],
 	},
+	"comment": {
+		"default": false,
+		"group allow": ["MOD","SUBMOD","HELPER"],
+	},
+	"comment add": {
+		"default": false,
+		"group allow": ["MOD","SUBMOD","HELPER"],
+	},
+	"comment remove": {
+		"default": false,
+		"group allow": ["MOD","SUBMOD"],
+	},
+	"comment list": {
+		"default": false,
+		"group allow": ["MOD","SUBMOD","HELPER"],
+	},
 	"config": {
 		"default": false,
 		"group allow": ["MOD"],
