@@ -29,7 +29,7 @@ class Random(rubbercog.Rubbercog):
         if not len(args):
             return
 
-        option = self.sanitise(random.choice(args), limit=50)
+        option = self.sanitise(random.choice(args))
         if option is not None:
             await ctx.reply(option)
 
