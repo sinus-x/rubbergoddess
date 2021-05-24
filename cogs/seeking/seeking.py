@@ -60,11 +60,11 @@ class Seeking(rubbercog.Rubbercog):
 
     @seeking.command(name="add")
     async def seeking_add(self, ctx, *, text: str):
-        """Announce that you're seeking something
+        """Announce that you're seeking something in under 140 characters
 
         Arguments
         ---------
-        text: Any text under 140 characters
+        text: Any text in the character limit
         """
         if len(text) > 140:
             return await ctx.reply(self.text.get("add", "too_long"))
