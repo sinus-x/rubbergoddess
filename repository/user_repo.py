@@ -14,17 +14,17 @@ class UserRepository(BaseRepository):
 
     def add(self, discord_id: int, login: str, group: str, code: str, status: str = "pending"):
         """Add new user"""
-        session.add(
-            User(
-                discord_id=discord_id,
-                login=login,
-                group=group,
-                code=code,
-                status=status,
-                changed=time(),
-            )
+        user = User(
+            discord_id=discord_id,
+            login=login,
+            group=group,
+            code=code,
+            status=status,
+            changed=time(),
         )
+        session.add(user)
         session.commit()
+        return user
 
     def save_verified(self, discord_id: int):
         """Insert login with discord name into database"""
