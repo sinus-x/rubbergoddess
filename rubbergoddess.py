@@ -14,7 +14,7 @@ class DiscordLogFilter(logging.Filter):
 discord_logger = logging.getLogger("discord")
 discord_logger.setLevel(logging.DEBUG)
 discord_logger_handler = logging.StreamHandler()
-discord_logger_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+discord_logger_handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
 discord_logger_handler.addFilter(DiscordLogFilter())
 discord_logger.addHandler(discord_logger_handler)
 

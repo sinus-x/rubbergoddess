@@ -332,8 +332,8 @@ class VerificationException(rubbercog.RubbercogException):
 
 
 class BadEmail(VerificationException):
-    def __init__(self, message: str, constraint: str, mention: str):
-        super().__init__(message)
+    def __init__(self, constraint: str, mention: str):
+        super().__init__()
         self.constraint = constraint
         self.mention = mention
 
