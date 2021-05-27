@@ -87,7 +87,7 @@ class Stalker(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @whois.command(name="member", aliases=["user"])
-    async def whois_member(self, ctx: commands.Context, member: Union[discord.Member, int]):
+    async def whois_member(self, ctx: commands.Context, *, member: Union[discord.Member, int]):
         """Get information about guild member
 
         member: A guild member
