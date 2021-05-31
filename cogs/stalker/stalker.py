@@ -349,7 +349,7 @@ class Stalker(rubbercog.Rubbercog):
     ) -> discord.Embed:
         """Construct the whois embed"""
         if type(member) in (discord.Member, discord.User):
-            description = member.name + "\n" + member.id
+            description = f"{member.name}\n{member.id}"
         elif db_member is not None:
             description = str(db_member.discord_id)
         else:
