@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.5.0]
+
 - Core: Fix issues with embed creation, that were introduced by bumpting the library to version 1.7
 - Core: Fix issues with user error reporting throwing errors
 - ACL: Fix issues with corrputed imports
@@ -9,8 +11,13 @@
 - Base: Prevent users from pinning system messages
 - Comment: User comment module
 - Karma: Limit "karma emoji" command to guild contexts
+- Karma: Fix argument in "emoji" subcommand
 - Librarian: Test "ipaddress" query with regex
 - Random: Include explainxkcd.com link in "xkcd" command
+- Random: Remove 50-character limit from "pick" output
+- Stalker: Update the command API (argument can be Member, User or integer)
+- Verify: Remove git hash from verification e-mail
+- Verify: Various fixes to the e-mail logic
 
 ## [1.4.0]
 
@@ -312,7 +319,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.4.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.5.0...devel
+[1.5.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.1.7...v1.2.0
