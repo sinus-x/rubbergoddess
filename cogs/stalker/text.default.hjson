@@ -21,6 +21,7 @@
 	not_in_guild: Na serveru není.
 
 	whois: {
+		none:    Nic
 		information: Informace
 		account_information:
 			'''
@@ -36,7 +37,7 @@
 		comment: Komentář
 		roles:   Role
 		missing: _?_
-		not_in_database: V databázi není
+		not_in_database: Takový uživatel v databázi není
 	}
 
 	prefix: {

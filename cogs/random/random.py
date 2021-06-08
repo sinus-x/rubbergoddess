@@ -29,7 +29,7 @@ class Random(rubbercog.Rubbercog):
         if not len(args):
             return
 
-        option = self.sanitise(random.choice(args), limit=50)
+        option = self.sanitise(random.choice(args))
         if option is not None:
             await ctx.reply(option)
 
@@ -148,7 +148,10 @@ class Random(rubbercog.Rubbercog):
                 f"-{str(fetched['month']).zfill(2)}"
                 f"-{str(fetched['day']).zfill(2)}"
             ),
-            value=f"https://xkcd.com/{number}",
+            value=(
+                f"https://xkcd.com/{number}\n"
+                + f"https://www.explainxkcd.com/wiki/index.php/{number}"
+            ),
             inline=False,
         )
         embed.set_image(url=fetched["img"])

@@ -1,0 +1,14 @@
+{
+    "list": {
+        "none": "K tomuto uživateli žádné poznámky nejsou."
+    }
+
+    "add": {
+        "ok": "Poznámku jsem úspěšně přidala."
+    }
+
+    "remove": {
+        "none": "Poznámka s takovým ID neexistuje."
+        "ok": "Poznámku jsem úspěšně odebrala."
+    }
+}

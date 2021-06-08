@@ -1,4 +1,5 @@
 import random
+from typing import Optional, Union
 
 import discord
 from discord.ext import commands
@@ -85,17 +86,17 @@ class Stalker(rubbercog.Rubbercog):
         await utils.send_help(ctx)
 
     @commands.check(acl.check)
-    @whois.command(name="member", aliases=["tag", "user", "id"])
-    async def whois_member(self, ctx: commands.Context, member: discord.Member):
+    @whois.command(name="member", aliases=["user"])
+    async def whois_member(self, ctx: commands.Context, *, member: Union[discord.Member, int]):
         """Get information about guild member
 
         member: A guild member
         """
-        db_member = repository.get(member.id)
+        db_member = repository.get(getattr(member, "id", member))
 
         embed = self.whois_embed(ctx, member, db_member)
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for member **{member}**.")
 
     @commands.check(acl.check)
@@ -112,7 +113,7 @@ class Stalker(rubbercog.Rubbercog):
         member = self.getGuild().get_member(db_member.discord_id)
         embed = self.whois_embed(ctx, member, db_member)
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for e-mail **{email}**.")
 
     @commands.check(acl.check)
@@ -151,7 +152,7 @@ class Stalker(rubbercog.Rubbercog):
                 value=self.text.get("prefix", "omitted"),
             )
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
         await self.event.sudo(ctx, f"Database lookup for e-mail prefix **{prefix}**.")
 
     @commands.check(acl.check)
@@ -162,48 +163,70 @@ class Stalker(rubbercog.Rubbercog):
 
     @commands.check(acl.check)
     @database.command(name="add")
-    async def database_add(self, ctx, user_id: int, login: str, group: str):
+    async def database_add(
+        self,
+        ctx,
+        user: Union[discord.User, discord.Member, int],
+        login: str,
+        group: str,
+    ):
         """Add user ID to database
 
-        user_id: User ID or zero, if not known
+        user: User, their ID or zero, if not known
         login: e-mail
         group: A role name
         """
         if repository.getByLogin(login) is not None:
             return await self.output.error(ctx, self.text.get("db", "duplicate"))
 
+        user_id: int = getattr(user, "id", user)
+
         # generate something random
         if user_id == 0:
-            user_id = random.randint(1000000000, 9999999999)
+            user_id: int = random.randint(1000000000, 9999999999)
 
         if repository.get(user_id) is not None:
             return await self.output.error(ctx, self.text.get("db", "duplicate"))
 
         try:
-            repository.add(discord_id=user_id, login=login, group=group, status="unknown", code="")
+            db_user = repository.add(
+                discord_id=user_id, login=login, group=group, status="unknown", code=""
+            )
         except Exception as e:
             return await self.output.error(ctx, self.text.get("db", "write_error"), e)
 
         # display the result
-        embed = self.whois_embed(ctx, None, repository.get(user_id))
+        embed = self.whois_embed(ctx, None, db_user)
         await ctx.send(embed=embed)
         await self.event.sudo(ctx, f"New member **{user_id}**.")
 
     @commands.check(acl.check)
     @database.command(name="remove", aliases=["delete"])
-    async def database_remove(self, ctx: commands.Context, user_id: int):
+    async def database_remove(
+        self,
+        ctx: commands.Context,
+        user: Union[discord.User, discord.Member, int],
+    ):
         """Remove user from database"""
-        result = repository.deleteId(discord_id=user_id)
+        user_id: int = getattr(user, "id", user)
+        result: int = repository.deleteId(discord_id=user_id)
 
         if result < 1:
             return await self.output.error(ctx, self.text.get("db", "delete_error"))
 
         await ctx.send(self.text.get("db", "delete_success", num=result))
-        await self.event.sudo(ctx, f"Member {user_id} removed from database.")
+        await self.event.sudo(ctx, f"Member {user} removed from database.")
 
     @commands.check(acl.check)
     @database.command(name="update")
-    async def database_update(self, ctx, user_id: int, key: str, *, value):
+    async def database_update(
+        self,
+        ctx,
+        user: Union[discord.User, discord.Member, int],
+        key: str,
+        *,
+        value: str,
+    ):
         """Update user entry in database
 
         key: value
@@ -212,24 +235,21 @@ class Stalker(rubbercog.Rubbercog):
         - status: [unknown, pending, verified, kicked, banned]
         - comment: commentary on user
         """
-        if key not in ("login", "group", "status", "comment"):
+        user_id = getattr(user, "id", user)
+
+        if key not in ("login", "group", "status"):
             return await self.output.error(ctx, self.text.get("db", "invalid_key"))
 
         if key == "login":
             repository.update(user_id, login=value)
-
         elif key == "group":
             repository.update(user_id, group=value)
-
         elif key == "status":
             if value not in ("unknown", "pending", "verified", "kicked", "banned"):
                 return await self.output.error(ctx, self.text.get("db", "invalid_value"))
             repository.update(user_id, status=value)
 
-        elif key == "comment":
-            repository.update(user_id, comment=value)
-
-        await self.event.sudo(ctx, f"Updated {user_id}: {key} = {value}.")
+        await self.event.sudo(ctx, f"Updated {user}: {key} = {value}.")
         await ctx.send(self.text.get("db", "update_success"))
 
     @commands.check(acl.check)
@@ -321,13 +341,23 @@ class Stalker(rubbercog.Rubbercog):
 
         await utils.delete(ctx)
 
-    def whois_embed(self, ctx, member: discord.Member, db_member: object) -> discord.Embed:
+    def whois_embed(
+        self,
+        ctx,
+        member: Optional[Union[discord.Member, discord.User, int]],
+        db_member: Optional[object],
+    ) -> discord.Embed:
         """Construct the whois embed"""
-        embed = self.embed(
-            ctx=ctx, title="Whois", description=member.mention if member is not None else "???"
-        )
+        if type(member) in (discord.Member, discord.User):
+            description = f"{member.name}\n{member.id}"
+        elif db_member is not None:
+            description = str(db_member.discord_id)
+        else:
+            description = discord.Embed.Empty
 
-        if member is not None:
+        embed = self.embed(ctx=ctx, title="Whois", description=description)
+
+        if type(member) in (discord.Member, discord.User):
             embed.add_field(
                 name=self.text.get("whois", "information"),
                 value=self.text.get(
@@ -342,7 +372,7 @@ class Stalker(rubbercog.Rubbercog):
 
         if db_member is None:
             embed.add_field(
-                name="???",
+                name=self.text.get("whois", "none"),
                 value=self.text.get("whois", "not_in_database"),
                 inline=False,
             )
@@ -379,7 +409,7 @@ class Stalker(rubbercog.Rubbercog):
                     name=self.text.get("whois", "comment"), value=db_member.comment, inline=False
                 )
 
-        if member is not None:
+        if type(member) in (discord.Member, discord.User):
             role_list = ", ".join(list((r.name) for r in member.roles[::-1])[:-1])
             embed.add_field(
                 name=self.text.get("whois", "roles"),

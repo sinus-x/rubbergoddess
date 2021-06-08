@@ -105,7 +105,7 @@ class Rubbercog(commands.Cog):
         color: int = None,
         page: tuple = None,
         footer: str = None,
-        url: Union[str, discord.Embed.Empty] = discord.Embed.Empty,
+        url: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
     ) -> discord.Embed:
         """Create embed
 

@@ -1,5 +1,5 @@
 import asyncio
-from typing import List
+from typing import List, Union
 
 import discord
 from discord.ext import commands
@@ -60,24 +60,37 @@ class Karma(rubbercog.Rubbercog):
         await utils.room_check(ctx)
         await utils.delete(ctx.message)
 
+    @commands.guild_only()
     @commands.cooldown(rate=2, per=30, type=commands.BucketType.user)
     @karma.command(name="emoji")
-    async def karma_emoji(self, ctx, emoji: str):
+    async def karma_emoji(self, ctx, emoji: Union[discord.Emoji, str]):
         """See emojis's karma"""
-        if not self._is_unicode_emoji(emoji):
-            try:
-                emoji_id = int(self._get_emoji_id(emoji))
-                emoji = await ctx.guild.fetch_emoji(emoji_id)
-            except (ValueError, IndexError):
-                return await utils.send_help(ctx)
-            except discord.NotFound:
-                return await ctx.reply(self.text.get("emoji_not_found"))
-
-        value = repo_k.emoji_value_raw(emoji)
+        identificator: str = str(getattr(emoji, "id", emoji))
+        name: str = str(getattr(emoji, "name", emoji))
+        value: int = repo_k.emoji_value_raw(identificator)
         if value is None:
             return await ctx.reply(self.text.get("emoji_not_voted"))
 
-        await ctx.reply(self.text.get("emoji", emoji=str(emoji), value=str(value)))
+        embed = self.embed(
+            ctx=ctx,
+            description=self.text.get("emoji_description", name=name),
+        )
+        embed.add_field(
+            name=self.text.get("emoji_value"),
+            value=str(value),
+        )
+        if type(emoji) is discord.Emoji:
+            embed.add_field(
+                name=self.text.get(
+                    "emoji_added",
+                    guild=self.sanitise(emoji.guild.name),
+                ),
+                value=emoji.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                inline=False,
+            )
+            embed.set_thumbnail(url=emoji.url)
+
+        await ctx.reply(embed=embed)
         await utils.room_check(ctx)
 
     @commands.guild_only()

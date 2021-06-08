@@ -6,6 +6,10 @@
 
 	# ?karma emoji/emojis
 	emoji:            Hodnota ((emoji)) je **((value))**.
+	emoji_description: Hodnota emoji **((name))**
+	emoji_value:       Karma
+	emoji_added:       Na serveru ((guild)) od
+
 	emojis_positive:  "Kladně ohodnocené emoji:"
 	emojis_neutral:   "Neutrálně hodnocené emoji:"
 	emojis_negative:  "Záporně ohodnocené emoji:"

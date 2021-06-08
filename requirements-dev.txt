@@ -1,6 +1,7 @@
-black==21.4b0
-flake8>=3.9.1,<4.0.0
+pre-commit>=2.13.0,<3.0.0
+
+black==21.5b2
+flake8==3.9.2
 flake8-bugbear
 flake8-print
 flake8-todo
-pre-commit

@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import re
 from datetime import date
 
 from discord.ext import commands
@@ -12,6 +13,26 @@ class Librarian(rubbercog.Rubbercog):
     """Knowledge and information based commands"""
 
     # TODO Move czech strings to text.default.json
+
+    URL_REGEX = re.compile(r"[a-zA-Z0-9-]{1,}\.[a-zA-Z0-9-\.]{1,}")
+    # https://ihateregex.io/expr/ip/
+    IPV4_REGEX = re.compile(
+        r"(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]).){3}"
+        r"([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])"
+    )
+    # https://ihateregex.io/expr/ipv6/
+    IPV6_REGEX = re.compile(
+        r"(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}"
+        r":|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}"
+        r"(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}"
+        r"|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}"
+        r"(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:"
+        r"((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|"
+        r"::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}"
+        r"(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:"
+        r"((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}"
+        r"(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
+    )
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -212,7 +233,7 @@ class Librarian(rubbercog.Rubbercog):
             return await utils.send_help(ctx)
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
-        await ctx.reply(f"**base64 {direction}** ({quote}):\n> ```{result}```")
+        await ctx.reply(f"**base64 {direction}** ({quote}):\n>>> ```{result}```")
 
         await utils.room_check(ctx)
 
@@ -293,13 +314,29 @@ class Librarian(rubbercog.Rubbercog):
 
         await ctx.send(embed=embed)
 
-    @commands.cooldown(rate=2, per=20, type=commands.BucketType.user)
+    # @commands.cooldown(rate=2, per=20, type=commands.BucketType.user)
     # The API has limit of 45 requests per minute
     @commands.cooldown(rate=45, per=55, type=commands.BucketType.default)
     @commands.command(aliases=["iplookup"])
     async def ipaddress(self, ctx, query: str):
         """Get information about an IP address or a domain name"""
+        if not query.isascii():
+            return await self.output.error(
+                ctx,
+                self.text.get("iplookup", "not_ascii", mention=ctx.author.mention),
+            )
+
+        invalid: bool = False
         if "&" in query or "?" in query or not len(query):
+            invalid = True
+        for r in (self.URL_REGEX, self.IPV4_REGEX, self.IPV6_REGEX):
+            # It could be re.search() instead, but the API returns error
+            # if the URL contains protocol or query
+            if re.fullmatch(r, query) is not None:
+                break
+        else:
+            invalid = True
+        if invalid:
             return await self.output.error(
                 ctx,
                 self.text.get("iplookup", "bad_query", mention=ctx.author.mention),
@@ -320,7 +357,7 @@ class Librarian(rubbercog.Rubbercog):
             embed = self.embed(
                 ctx=ctx,
                 title=self.text.get("iplookup", "error"),
-                description="`" + res["message"] + "`",
+                description=query + "\n`" + res["message"] + "`",
                 footer="ip-api.com",
             )
             return await ctx.send(embed=embed)

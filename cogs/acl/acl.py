@@ -206,7 +206,7 @@ class ACL(rubbercog.Rubbercog):
         try:
             data = json.load(data_file)
         except json.decoder.JSONDecodeError as exc:
-            await ctx.send(self.text.get("import", "wrong_json") + f"\n> `{str(exc)}`")
+            return await ctx.send(self.text.get("import", "wrong_json") + f"\n> `{str(exc)}`")
 
         new, edited, rejected = await self._import_json(ctx, data, mode=mode)
         await ctx.send(self.text.get("import", "imported", new=len(new), edited=len(edited)))
