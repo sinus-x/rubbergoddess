@@ -232,11 +232,12 @@ class Verify(rubbercog.Rubbercog):
         return code
 
     async def _send_verification_email(self, member: discord.Member, email: str, code: str) -> bool:
-        cleartext = self.text.get("plaintext mail").format(
+        cleartext = self.text.get(
+            "plaintext mail",
+            # variables
             guild_name=self.getGuild().name,
             code=code,
             bot_name=self.bot.user.name,
-            git_hash=utils.git_get_hash()[:7],
             prefix=config.prefix,
         )
 
@@ -252,7 +253,6 @@ class Verify(rubbercog.Rubbercog):
             user_name=member.name,
             # codes
             code=code,
-            git_hash=utils.git_get_hash()[:7],
             prefix=config.prefix,
             # images
             bot_avatar=self.bot.user.avatar_url_as(static_format="png", size=128),
@@ -268,6 +268,8 @@ class Verify(rubbercog.Rubbercog):
         msg["From"] = self.config.get("email", "address")
         msg["To"] = email
         msg["Bcc"] = self.config.get("email", "address")
+        msg["X-Rubbergoddess-Bot"] = f"{self.bot.user.id}"
+        msg["X-Rubbergoddess-User"] = f"{member.id}"
         msg.attach(MIMEText(cleartext, "plain"))
         msg.attach(MIMEText(richtext, "html"))
 

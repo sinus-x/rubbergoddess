@@ -112,7 +112,7 @@ class Errors(rubbercog.Rubbercog):
 
         # All cog-related errors
         if isinstance(error, smtplib.SMTPException):
-            await self.stdout.error(ctx, "Could not send e-mail", error)
+            await self.console.error(ctx, "Could not send e-mail", error)
             await ctx.send(self.text.get("SMTPException", name=type(error).__name__))
             return False
 
