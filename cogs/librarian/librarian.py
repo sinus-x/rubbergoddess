@@ -233,7 +233,7 @@ class Librarian(rubbercog.Rubbercog):
             return await utils.send_help(ctx)
 
         quote = self.sanitise(data[:50]) + ("…" if len(data) > 50 else "")
-        await ctx.reply(f"**base64 {direction}** ({quote}):\n> ```{result}```")
+        await ctx.reply(f"**base64 {direction}** ({quote}):\n>>> ```{result}```")
 
         await utils.room_check(ctx)
 
