@@ -148,9 +148,16 @@ class Base(rubbercog.Rubbercog):
             if len(message.content) >= 1024:
                 log_embed.add_field(
                     name="\u200b",
-                    value=message.content[1024:],
+                    value=message.content[1024:2048],
                     inline=False,
                 )
+            if len(message.content) >= 2048:
+                log_embed.add_field(
+                    name="\u200b",
+                    value="...",
+                    inline=False,
+                )
+
             if len(message.attachments):
                 log_embed.add_field(
                     name=self.text.get("content"),
