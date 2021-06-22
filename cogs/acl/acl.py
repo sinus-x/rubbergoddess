@@ -287,7 +287,7 @@ class ACL(rubbercog.Rubbercog):
                 name=self.text.get("rule_get", "user_allow"),
                 value=", ".join(
                     [
-                        (self.bot.get_user(u.user_id) or str(u.user_id))
+                        getattr(self.bot.get_user(u.user_id), "name", str(u.user_id))
                         for u in rule.users
                         if u.allow is True
                     ],
@@ -298,7 +298,7 @@ class ACL(rubbercog.Rubbercog):
                 name=self.text.get("rule_get", "user_deny"),
                 value=", ".join(
                     [
-                        (self.bot.get_user(u.user_id) or str(u.user_id))
+                        getattr(self.bot.get_user(u.user_id), "name", str(u.user_id))
                         for u in rule.users
                         if u.allow is False
                     ]
