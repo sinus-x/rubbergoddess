@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Admin: "system shutdown" & "system restart" commands
+
 ## [1.5.0]
 
 - Core: Fix issues with embed creation, that were introduced by bumpting the library to version 1.7
