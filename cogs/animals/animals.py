@@ -70,6 +70,14 @@ class Animals(rubbercog.Rubbercog):
         if before.avatar_url == after.avatar_url:
             return
 
+        # directly remove if they reverted to default avatar
+        if after.avatar_url == after.default_avatar_url:
+            if self.getRole() in member.roles:
+                await member.remove_roles(self.getRole())
+                await self.getChannel().send("result", "yes_no", mention=member.mention)
+                await self.console.debug(member, "Reverted to default avatar, not an animal.")
+            return
+
         await asyncio.sleep(self.check_delay)
         await self.check(after, "on_user_update")
 
