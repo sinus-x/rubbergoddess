@@ -211,7 +211,7 @@ class Verify(rubbercog.Rubbercog):
             return self.getGuild().get_role(role_id)
         else:
             await self.event.user(ctx, f"Rejecting e-mail: {self.sanitise(email)}")
-            raise BadEmail(constraint=constraint)
+            raise BadEmail(constraint=constraint, mention=ctx.author.mention)
 
     async def _add_user(self, member: discord.Member, login: str, role: discord.Role) -> str:
         code_source = string.ascii_uppercase.replace("O", "").replace("I", "") + string.digits
