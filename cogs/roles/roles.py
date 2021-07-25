@@ -157,7 +157,7 @@ class Roles(rubbercog.Rubbercog):
         result = []
         for line in content:
             try:
-                line_ = line.split(" ")
+                line_ = line.split(" ", 1)
                 emote = line_[0]
                 target = line_[1]
 
@@ -168,12 +168,12 @@ class Roles(rubbercog.Rubbercog):
             except Exception:
                 # do not send errors if message is in #add-* channel
                 if message.channel.id in self.config.get("r2r_channels"):
-                    return
+                    continue
                 await self._send(
                     message.channel,
                     self.text.fill("invalid_role_line", line=self.sanitise(line, limit=50)),
                 )
-                return
+                continue
         return result
 
     async def _reaction_payload_to_tuple(self, payload: discord.RawMessageUpdateEvent) -> tuple:
