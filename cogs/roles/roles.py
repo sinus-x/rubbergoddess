@@ -157,7 +157,7 @@ class Roles(rubbercog.Rubbercog):
         result = []
         for line in content:
             try:
-                line_ = line.split(" ", 1)
+                line_ = line.split(" ", 2)
                 emote = line_[0]
                 target = line_[1]
 
