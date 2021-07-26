@@ -105,7 +105,6 @@ class Anonsend(rubbercog.Rubbercog):
                 await ctx.send(embed=embed)
         await ctx.send(embed=embed)
 
-    @commands.check(acl.check)
     @anonsend.command(name="link", aliases=["url"])
     async def anonsend_link(self, ctx):
         """Get link to the anonsend upload website"""
