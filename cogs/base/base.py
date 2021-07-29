@@ -173,7 +173,7 @@ class Base(rubbercog.Rubbercog):
             try:
                 await message.pin()
             except discord.errors.HTTPException as e:
-                await self.event.user(channel, "Could not pin message.", e)
+                await self.event.user(reaction_author, "Could not pin message.", e)
                 error_embed = self.embed(
                     title=self.text.get("pin error"),
                     description=user_names,
