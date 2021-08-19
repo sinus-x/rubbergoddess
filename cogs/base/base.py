@@ -106,13 +106,13 @@ class Base(rubbercog.Rubbercog):
             return
 
         if payload.emoji.name == "📍" and not reaction_author.bot:
+            return await message.remove_reaction(payload.emoji, reaction_author)
             await reaction_author.send(self.text.get("bad pin"))
-            await message.remove_reaction(payload.emoji, reaction_author)
             return
 
         if payload.emoji.name == "🔖":
-            await self.bookmark_message(message, reaction_author)
             await message.remove_reaction(payload.emoji, reaction_author)
+            await self.bookmark_message(message, reaction_author)
             return
 
         for reaction in message.reactions:
@@ -221,7 +221,12 @@ class Base(rubbercog.Rubbercog):
                 name=self.text.get("bookmark", "embeds"),
                 value=self.text.get("bookmark", "total", count=len(message.embeds)),
             )
-        await user.send(embed=embed)
+        try:
+            await user.send(embed=embed)
+        except discord.Forbidden:
+            await self.console.info(message, "Can̈́'t send bookmark DM.")
+            return
+
         await self.event.user(
             user,
             f"Bookmarked message in #{message.channel.name}\n> {message.jump_url}",
