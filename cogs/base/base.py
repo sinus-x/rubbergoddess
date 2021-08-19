@@ -224,7 +224,7 @@ class Base(rubbercog.Rubbercog):
         try:
             await user.send(embed=embed)
         except discord.Forbidden:
-            await self.console.info(message, "Can̈́'t send bookmark DM.")
+            await self.console.debug(message, f"Can't send bookmark to {user}.")
             return
 
         await self.event.user(
