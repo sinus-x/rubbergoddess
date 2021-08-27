@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## [1.5.1]
+
+- ACL: Fix "acl rule get" embed
+- Admin: "system shutdown" & "system restart" commands
+- Animals: Detect reverts to default avatar
+- Anonsend: Do not guard 'anonsend link' by ACL
+- Anonsend: Add missing string
+- Base: Fix pinning error while logging
+- Base: Catch DM errors in bookmarks
+- Librarian: Fix 'macaddress' throwing errors
+- Meme: Include user avatar in 'relations' embed
+- Roles: Fix react-to-role resolver when the line only has one word
+- Roles: Alter react-to-role discovery
+- Verify: Allow dash in e-mail
+
 ## [1.5.0]
 
 - Core: Fix issues with embed creation, that were introduced by bumpting the library to version 1.7
@@ -319,7 +334,8 @@ Rubbergoddess detached from its parent project - [Rubbergod](https://github.com/
 <!-- Releases -->
 
 [Milestones]: https://github.com/sinus-x/rubbergoddess/milestones
-[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.5.0...devel
+[Unreleased]: https://github.com/sinus-x/rubbergoddess/compare/v1.5.1...devel
+[1.5.1]: https://github.com/sinus-x/rubbergoddess/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/sinus-x/rubbergoddess/compare/v1.2.0...v1.3.0

@@ -304,6 +304,7 @@ class Meme(rubbercog.Rubbercog):
             description=f"**{self.sanitise(user.display_name)}**\n"
             f"{self.text.get('relations_help')}",
         )
+        embed.set_thumbnail(url=user.avatar_url_as(size=256))
 
         for action in ("hug", "pet", "hyperpet", "slap", "spank", "whip", "bonk"):
             lookup = repo_i.get_user_action(user.id, ctx.guild.id, action)
@@ -340,7 +341,7 @@ class Meme(rubbercog.Rubbercog):
                     text += letter.upper() if random.choice((True, False)) else letter.lower()
                 else:
                     text += letter
-            text = self.sanitise(text[:1900], markdown=True)
+                text = self.sanitise(text, limit=1960)
         await ctx.send(f"**{self.sanitise(ctx.author.display_name)}**\n>>> " + text)
         await utils.delete(ctx.message)
 

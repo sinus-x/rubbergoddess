@@ -300,17 +300,25 @@ class Librarian(rubbercog.Rubbercog):
             return await ctx.send(embed=embed)
 
         embed = self.embed(ctx=ctx, description=res["macPrefix"], footer="maclookup.app")
-        embed.add_field(
-            name=self.text.get("maclookup", "company"),
-            value=res["company"],
-            inline=False,
-        )
-        embed.add_field(name=self.text.get("maclookup", "country"), value=res["country"])
+        if res["company"]:
+            embed.add_field(
+                name=self.text.get("maclookup", "company"),
+                value=res["company"],
+            )
+        if res["country"]:
+            embed.add_field(
+                name=self.text.get("maclookup", "country"),
+                value=res["country"],
+            )
 
         block = f"`{res['blockStart']}`"
         if res["blockStart"] != res["blockEnd"]:
             block += f"\n`{res['blockEnd']}`"
-        embed.add_field(name=self.text.get("maclookup", "block"), value=f'`{res["blockStart"]}`')
+        embed.add_field(
+            name=self.text.get("maclookup", "block"),
+            value=f'`{res["blockStart"]}`',
+            inline=False,
+        )
 
         await ctx.send(embed=embed)
 

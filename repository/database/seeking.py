@@ -8,7 +8,7 @@ class Seeking(database.base):
     # fmt: off
     id =         Column(Integer, primary_key=True, autoincrement=True)
     user_id =    Column(BigInteger)
-    message_id = Column(BigInteger)
-    channel_id = Column(BigInteger)
+    message_id = Column(BigInteger, unique=True)
+    channel_id = Column(BigInteger, index=True)
     text =       Column(String)
     # fmt: on

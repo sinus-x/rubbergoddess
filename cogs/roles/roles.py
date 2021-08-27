@@ -93,13 +93,13 @@ class Roles(rubbercog.Rubbercog):
         for emote_channel in emote_channel_list:
             if str(emoji) == emote_channel[0]:
                 # try both subject and role
-                subject = await self._get_subject(channel, emote_channel[1])
-                if subject is not None:
-                    result = await self._subject_add(message.channel, member, subject)
-                    break
                 role = await self._get_role(channel, emote_channel[1])
                 if role is not None:
                     result = await self._role_add(message.channel, member, role)
+                    break
+                subject = await self._get_subject(channel, emote_channel[1])
+                if subject is not None:
+                    result = await self._subject_add(message.channel, member, subject)
                     break
         else:
             # another emote was added
@@ -122,23 +122,20 @@ class Roles(rubbercog.Rubbercog):
         for emote_channel in emote_channel_list:
             if str(emoji) == emote_channel[0]:
                 # try both subject and role
-                subject = await self._get_subject(channel, emote_channel[1])
-                if subject is not None:
-                    await self._subject_remove(message.channel, member, subject)
-                    break
                 role = await self._get_role(channel, emote_channel[1])
                 if role is not None:
                     await self._role_remove(message.channel, member, role)
+                    break
+                subject = await self._get_subject(channel, emote_channel[1])
+                if subject is not None:
+                    await self._subject_remove(message.channel, member, subject)
                     break
 
     ##
     ## Helper functions
     ##
     async def _get_subject(self, location, shortcut: str) -> discord.TextChannel:
-        db_subject = repo_s.get(shortcut)
-        if db_subject is not None:
-            return discord.utils.get(location.guild.text_channels, name=shortcut)
-        return
+        return discord.utils.get(location.guild.text_channels, name=shortcut)
 
     async def _get_role(self, location, role: str) -> discord.Role:
         return discord.utils.get(location.guild.roles, name=role)
@@ -157,7 +154,7 @@ class Roles(rubbercog.Rubbercog):
         result = []
         for line in content:
             try:
-                line_ = line.split(" ")
+                line_ = line.split(" ", 2)
                 emote = line_[0]
                 target = line_[1]
 
@@ -168,12 +165,12 @@ class Roles(rubbercog.Rubbercog):
             except Exception:
                 # do not send errors if message is in #add-* channel
                 if message.channel.id in self.config.get("r2r_channels"):
-                    return
+                    continue
                 await self._send(
                     message.channel,
                     self.text.fill("invalid_role_line", line=self.sanitise(line, limit=50)),
                 )
-                return
+                continue
         return result
 
     async def _reaction_payload_to_tuple(self, payload: discord.RawMessageUpdateEvent) -> tuple:

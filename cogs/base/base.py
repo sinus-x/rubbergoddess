@@ -106,13 +106,13 @@ class Base(rubbercog.Rubbercog):
             return
 
         if payload.emoji.name == "📍" and not reaction_author.bot:
+            return await message.remove_reaction(payload.emoji, reaction_author)
             await reaction_author.send(self.text.get("bad pin"))
-            await message.remove_reaction(payload.emoji, reaction_author)
             return
 
         if payload.emoji.name == "🔖":
-            await self.bookmark_message(message, reaction_author)
             await message.remove_reaction(payload.emoji, reaction_author)
+            await self.bookmark_message(message, reaction_author)
             return
 
         for reaction in message.reactions:
@@ -148,9 +148,16 @@ class Base(rubbercog.Rubbercog):
             if len(message.content) >= 1024:
                 log_embed.add_field(
                     name="\u200b",
-                    value=message.content[1024:],
+                    value=message.content[1024:2048],
                     inline=False,
                 )
+            if len(message.content) >= 2048:
+                log_embed.add_field(
+                    name="\u200b",
+                    value="...",
+                    inline=False,
+                )
+
             if len(message.attachments):
                 log_embed.add_field(
                     name=self.text.get("content"),
@@ -166,7 +173,7 @@ class Base(rubbercog.Rubbercog):
             try:
                 await message.pin()
             except discord.errors.HTTPException as e:
-                await self.event.user(channel, "Could not pin message.", e)
+                await self.event.user(reaction_author, "Could not pin message.", e)
                 error_embed = self.embed(
                     title=self.text.get("pin error"),
                     description=user_names,
@@ -214,7 +221,12 @@ class Base(rubbercog.Rubbercog):
                 name=self.text.get("bookmark", "embeds"),
                 value=self.text.get("bookmark", "total", count=len(message.embeds)),
             )
-        await user.send(embed=embed)
+        try:
+            await user.send(embed=embed)
+        except discord.Forbidden:
+            await self.console.debug(message, f"Can't send bookmark to {user}.")
+            return
+
         await self.event.user(
             user,
             f"Bookmarked message in #{message.channel.name}\n> {message.jump_url}",

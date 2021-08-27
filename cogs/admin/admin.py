@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 from discord.ext import commands, tasks
 
@@ -111,7 +112,16 @@ class Admin(rubbercog.Rubbercog):
         """Shutdown the bot"""
         await self.event.sudo(ctx, "System shutdown.")
         await self.console.critical(ctx, "System shutdown initiated.")
-        await self.bot.logout()
+        await self.bot.close()
+
+    @commands.check(acl.check)
+    @system.command(name="restart")
+    async def system_restart(self, ctx):
+        """Restart the bot"""
+        await self.event.sudo(ctx, "System restart")
+        await self.console.critical(ctx, "System restart initiated.")
+        # await self.bot.close()
+        exit(1)
 
     @commands.check(acl.check)
     @commands.command(name="status")
