@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Release
-        uses: anton-yurchenko/git-release@master
+        uses: anton-yurchenko/git-release@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ALLOW_TAG_PREFIX: "true"
