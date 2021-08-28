@@ -3,17 +3,13 @@
 **WARNING**: Rubbergoddess is EOL. Only minor adjustments are being added. All development focus has shifted towards [discord.py](https://github.com/pumpkin-py).
 
 <p align="center">
-  <!-- Discord -->
-  <a href="https://discord.com/invite/9N3cP2E">
-    <img src="https://img.shields.io/badge/Home%20guild-VUT%20FEKT-success?style=flat-square" alt="VUT FEKT" />
-  </a>
   <!-- Build status -->
   <a href="https://github.com/sinus-x/rubbergoddess/actions?query=workflow%3ARubbergoddess">
     <img src="https://img.shields.io/github/workflow/status/sinus-x/rubbergoddess/Rubbergoddess?style=flat-square" alt="Build" />
   </a>
   <!-- Mantained? -->
   <a href="https://github.com/sinus-x/rubbergoddess/graphs/commit-activity">
-    <img src="https://img.shields.io/badge/mantained-yes-success?style=flat-square" alt="Mantained" />
+    <img src="https://img.shields.io/badge/mantained-EOL-orange?style=flat-square" alt="Maintenance: EOL" />
   </a>
   <!-- License -->
   <a href="https://github.com/sinus-x/rubbergoddess/blob/master/LICENSE">
