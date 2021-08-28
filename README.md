@@ -1,5 +1,7 @@
 # Rubbergoddess
 
+**WARNING**: Rubbergoddess is EOL. Only minor adjustments are being added. All development focus has shifted towards [discord.py](https://github.com/pumpkin-py).
+
 <p align="center">
   <!-- Discord -->
   <a href="https://discord.com/invite/9N3cP2E">
@@ -27,10 +29,6 @@
 
 ![Rubbergoddess](docs/images/rubbergoddess-wide.jpeg)
 
-## About
-
-This bot takes care of user management, karma and other functions on [VUT FEKT][invite] Discord server.
-
 ## Resources
 
 - [Installation and setup](https://github.com/sinus-x/rubbergoddess/wiki) on project Wiki
@@ -57,7 +55,6 @@ This project is licensed under the GNU GPL v.3 License.
 Rubbergoddess image is a CC0 photography by Peter Sjo hosted on [unsplash.com](https://unsplash.com/photos/Nxy-6QwGMzA).
 
 
-[invite]: https://discord.com/invite/9N3cP2E
 [sinus-x]: https://github.com/sinus-x
 [Czechbol]: https://github.com/Czechbol
 [Rubbergod]: https://github.com/Toaster192/rubbergod
