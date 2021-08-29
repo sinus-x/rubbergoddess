@@ -28,7 +28,7 @@ parser.add_argument(
 parser.add_argument(
     "--format",
     # TODO Add "guess from extension" option and make it default
-    choices=("html", "latex", "json"),
+    choices=("html", "latex", "json", "csv"),
     default="html",
     help="Output format",
 )
@@ -37,8 +37,8 @@ args = parser.parse_args()
 if args.fast != True:
     print("Only fast formatting is supported.")
     sys.exit(1)
-if args.format != "html":
-    print('The only supported format is "html".')
+if args.format not in ("html", "csv"):
+    print('The only supported format is "html" and "csv".')
     sys.exit(1)
 
 try:
@@ -113,7 +113,7 @@ class HTMLFormatter(Formatter):
 
         data = (
             "<div class='message' title='"
-            + get_datetime(message.id).strftime("%Y-%m-%d %H:%M:%S UTC")
+            + get_datetime(message.id).strftime("%Y-%m-%d %H:%M:%S")
             + "'>",
             "<span class='author'>" + self.get_user(message.author_id).name + "</span>",
             "<span class='text'>" + text + "</span>",
@@ -128,6 +128,27 @@ class HTMLFormatter(Formatter):
             "</html>",
         )
         return "\n".join(data) + "\n"
+
+
+class CSVFormatter(Formatter):
+    def header(self):
+        return "timestamp;author;message;attachments\n"
+
+    def format_message(self, message):
+        text = message.text
+        text = text.replace("\n", "\\n")
+        text = text.replace(";", ",")
+
+        data = (
+            get_datetime(message.id).strftime("%Y-%m-%dT%H:%M:%S"),
+            self.get_user(message.author_id).name,
+            text,
+            message.attachments or "",
+        )
+        return ";".join(data) + "\n"
+
+    def footer(self):
+        return ""
 
 
 connection = engine.connect()
@@ -148,7 +169,17 @@ def get_table(name: str, *, reverse: bool = False):
 users = get_table("users")
 messages = get_table("messages", reverse=True)  # [:100]
 
-formatter = HTMLFormatter(users)
+
+def get_formatter(formatter: str):
+    if formatter == "csv":
+        return CSVFormatter(users)
+    if formatter == "html":
+        return HTMLFormatter(users)
+    return ValueError("Formatter not supported.")
+
+
+formatter = get_formatter(args.format)
+
 
 with open(args.output, "w") as handle:
     handle.write(formatter.header())
