@@ -48,6 +48,7 @@ class HTMLFormatter(Formatter):
             ".message:hover {background: #43494F;}",
             ".author {display: inline-block; min-width: 5em;font-weight: bold;color: #DDC95E; padding-right: .5em}",
             "img {display: inline-block; max-height: 20em;}",
+            "a {color: #80BDE1; text-decoration:none;}",
             "</style>",
             "</head>",
             "<body>",
@@ -66,7 +67,11 @@ class HTMLFormatter(Formatter):
         text = text.replace("\n", "<br>")
 
         attachments = []
-        if message.attachments is not None:
+        if message.attachments is not None and fast:
+            for attachment in message.attachments.split(" "):
+                filename = attachment.split("/")[-1]
+                attachments.append(f"<a href='{attachment}' target='_blank'>📄 {filename}</a>")
+        if message.attachments is not None and not fast:
             for attachment in message.attachments.split(" "):
                 for extension in ("jpg", "jpeg", "gif", "png"):
                     if attachment.endswith(extension):
@@ -81,10 +86,9 @@ class HTMLFormatter(Formatter):
             + "'>",
             "<span class='author'>" + self.get_user(message.author_id).name + "</span>",
             "<span class='text'>" + text + "</span>",
+            "<div class='attachments'>" + "\n".join(attachments) + "</div>",
+            "</div>",
         )
-        if not fast:
-            data = data + ("<div class='attachments'>" + "\n".join(attachments) + "</div>",)
-        data = data + ("</div>",)
 
         return "".join(data) + "\n"
 
