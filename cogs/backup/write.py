@@ -1,12 +1,17 @@
 import argparse
 import datetime
+import os
 import sys
 
 import sqlalchemy
 
 
-def get_datetime(id: int) -> datetime.datetime:
+def snowflake_timestamp(id: int) -> datetime.datetime:
     return datetime.datetime.fromtimestamp(((id >> 22) + 1420070400000) / 1000)
+
+
+def timestamp_month(timestamp: datetime.datetime) -> str:
+    return timestamp.strftime("%Y-%m")
 
 
 class Formatter:
@@ -22,7 +27,7 @@ class Formatter:
     def header(self) -> str:
         raise NotImplemented
 
-    def format_message(self, message) -> str:
+    def format_message(self, message, fast: bool = True) -> str:
         raise NotImplemented
 
     def footer(self) -> str:
@@ -32,7 +37,7 @@ class Formatter:
 class HTMLFormatter(Formatter):
     def header(self):
         data = (
-            "<DOCTYPE html>",
+            "<!DOCTYPE html>",
             "<html>",
             "<head>",
             "<meta charset='utf-8'>",
@@ -40,6 +45,7 @@ class HTMLFormatter(Formatter):
             "<style>",
             "body {margin: 0;padding: 0;background: #36393F;color: #DCDDDE;font-family: Whitney,Helvetica Neue,Helvetica,Arial,sans-serif;}",
             ".message {padding: .3em .5em;}",
+            ".message:hover {background: #43494F;}",
             ".author {display: inline-block; min-width: 5em;font-weight: bold;color: #DDC95E; padding-right: .5em}",
             "img {display: inline-block; max-height: 20em;}",
             "</style>",
@@ -48,7 +54,7 @@ class HTMLFormatter(Formatter):
         )
         return "\n".join(data) + "\n"
 
-    def format_message(self, message):
+    def format_message(self, message, fast: bool = True):
         # DONE Hover to timestamp
         # TODO Embed formatter
         # TODO Link formatter
@@ -71,13 +77,15 @@ class HTMLFormatter(Formatter):
 
         data = (
             "<div class='message' title='"
-            + get_datetime(message.id).strftime("%Y-%m-%d %H:%M:%S")
+            + snowflake_timestamp(message.id).strftime("%Y-%m-%d %H:%M:%S")
             + "'>",
             "<span class='author'>" + self.get_user(message.author_id).name + "</span>",
             "<span class='text'>" + text + "</span>",
-            # "<div class='attachments'>" + "\n".join(attachments) + "</div>",
-            "</div>",
         )
+        if not fast:
+            data = data + ("<div class='attachments'>" + "\n".join(attachments) + "</div>",)
+        data = data + ("</div>",)
+
         return "".join(data) + "\n"
 
     def footer(self):
@@ -92,13 +100,13 @@ class CSVFormatter(Formatter):
     def header(self):
         return "timestamp;author;message;attachments\n"
 
-    def format_message(self, message):
+    def format_message(self, message, fast: bool = True):
         text = message.text
         text = text.replace("\n", "\\n")
         text = text.replace(";", ",")
 
         data = (
-            get_datetime(message.id).strftime("%Y-%m-%dT%H:%M:%S"),
+            snowflake_timestamp(message.id).strftime("%Y-%m-%dT%H:%M:%S"),
             self.get_user(message.author_id).name,
             text,
             message.attachments or "",
@@ -121,9 +129,20 @@ def get_parser():
         help="Input file path",
     )
     parser.add_argument(
-        "--output",
-        required=True,
-        help="Output file path",
+        "--output-dir",
+        help="Output directory",
+        default=".",
+    )
+    parser.add_argument(
+        "--separate",
+        help="Separate into files by month",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--title",
+        help="Dump title",
+        default="Server channel dump",
     )
     parser.add_argument(
         "--fast",
@@ -172,12 +191,13 @@ def get_formatter(formatter: str, users):
 def main():
     parser = get_parser()
     args = parser.parse_args()
-    if args.fast != True:
-        print("Only fast formatting is supported.")
-        sys.exit(1)
     if args.format not in ("html", "csv"):
         print('The only supported format is "html" and "csv".')
         sys.exit(1)
+
+    if not os.path.exists(args.output_dir):
+        print(f"> Creating directory {args.output_dir}")
+        os.mkdir(args.output_dir)
 
     print("> Loading database...")
     database = Database(args.input)
@@ -190,14 +210,35 @@ def main():
 
     print("> Loading formatter...")
     formatter = get_formatter(args.format, users)
+    formatter.title = args.title
 
-    print("> Writing data...")
-    with open(args.output, "w") as handle:
-        handle.write(formatter.header())
-        for message in messages:
-            handle.write(formatter.format_message(message))
-        handle.write(formatter.footer())
+    filepath = os.path.join(args.output_dir, f"dump.{args.format}")
+    if args.separate:
+        month = timestamp_month(snowflake_timestamp(messages[0].id))
+        filepath = os.path.join(args.output_dir, f"dump.{month}.{args.format}")
+        formatter.title = args.title + " " + month
+    print(f"> Writing data to {filepath}...")
 
+    handle = open(filepath, "w")
+    handle.write(formatter.header())
+
+    for message in messages:
+        if args.separate:
+            message_month = timestamp_month(snowflake_timestamp(message.id))
+            if message_month != month:
+                handle.write(formatter.footer())
+                handle.close()
+
+                month = message_month
+                filepath = os.path.join(args.output_dir, f"dump.{month}.{args.format}")
+                formatter.title = args.title + " " + month
+                print(f"> Writing data to {filepath}...")
+                handle = open(filepath, "w")
+                handle.write(formatter.header())
+
+        handle.write(formatter.format_message(message, fast=args.fast))
+
+    handle.write(formatter.footer())
     print("> Done")
 
 
