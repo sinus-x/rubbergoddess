@@ -74,7 +74,7 @@ class Meme(rubbercog.Rubbercog):
         async with ctx.typing():
             url = whipped.avatar_url_as(format="jpg")
             response = requests.get(url)
-            avatar = Image.open(BytesIO(response.content))
+            avatar = Image.open(BytesIO(response.content)).convert("RGBA")
 
             frames = self.get_whip_frames(avatar)
 
@@ -115,7 +115,7 @@ class Meme(rubbercog.Rubbercog):
         async with ctx.typing():
             url = spanked.avatar_url_as(format="jpg")
             response = requests.get(url)
-            avatar = Image.open(BytesIO(response.content))
+            avatar = Image.open(BytesIO(response.content)).convert("RGBA")
 
             frames = self.get_spank_frames(avatar)
 
@@ -157,7 +157,7 @@ class Meme(rubbercog.Rubbercog):
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
             response = requests.get(url)
-            avatar = Image.open(BytesIO(response.content))
+            avatar = Image.open(BytesIO(response.content)).convert("RGBA")
 
             frames = self.get_pet_frames(avatar)
 
@@ -199,7 +199,7 @@ class Meme(rubbercog.Rubbercog):
         async with ctx.typing():
             url = petted.avatar_url_as(format="jpg")
             response = requests.get(url)
-            avatar = Image.open(BytesIO(response.content))
+            avatar = Image.open(BytesIO(response.content)).convert("RGBA")
 
             frames = self.get_hyperpet_frames(avatar)
 
@@ -241,7 +241,7 @@ class Meme(rubbercog.Rubbercog):
         async with ctx.typing():
             url = bonked.avatar_url_as(format="jpg")
             response = requests.get(url)
-            avatar = Image.open(BytesIO(response.content))
+            avatar = Image.open(BytesIO(response.content)).convert("RGBA")
 
             frames = self.get_bonk_frames(avatar)
 
