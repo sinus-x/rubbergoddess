@@ -364,16 +364,15 @@ class Review(rubbercog.Rubbercog):
             name=self.text.get("embed", "mark"),
             value=review.tier
         )
-        embed.add_field(
-            inline=False,
-            name=self.text.get("embed", "text"),
-            value=review.text_review[:1024],
-        )
-        if len(review.text_review) > 1024:
+
+        text: str = review.text_review
+        n: int = 1024
+        text_pages: str = [(text[i:i+n]) for i in range(0, len(text), n)]
+        for i, page in enumerate(text_pages):
             embed.add_field(
                 inline=False,
-                name="\u200b",
-                value=review.text_review[1024:],
+                name=self.text.get("embed", "text") if i == 0 else "\u200b",
+                value=page,
             )
         # fmt: on
 
